@@ -19,7 +19,11 @@ VisFroG is a visualization framework that provides various visualization types t
 Grasshopper for its part is a plug-in of the commercial 3D computer graphics and computer-aided design application software [Rhinoceros](https://www.rhino3d.com/).
 The basic architecture of VisFroG consists of a core framework providing general functionality and a module based extension mechanism that easily allows to integrate new visualizations.
 
-Visualizations based on [WPF](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/?view=netdesktop-7.0), [d3.js](https://d3js.org/) and [Bokeh](https://bokeh.org/) are available.
+Currently, it is planned to offer the integration of visualizations that can be based on:
+- [WPF](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/?view=netdesktop-7.0)
+- [SciChart](https://www.scichart.com/) (Requires License)
+- [d3.js](https://d3js.org/)
+- [Bokeh](https://bokeh.org/)
 
 ## Installation
 
@@ -29,8 +33,6 @@ Building and running VisFroG requires following software. The appended versions 
 - Microsoft Visual Studio Enterprise 2022 (VisualStudio.17.Release/17.4.4+33213.308, Microsoft .NET Framework Version 4.8.04084)
 - Rhinoceros 3D (Version SR28, 7.28.23058.3001, 2023-02-27, Educational Lab License)
 - Grasshopper (Version Wednesday, 01 February 2023 13:00, Build 1.0 007)
-- Python (Version 3.8 and above)
-- Bokeh (Version 3.1.1, see [First Steps](https://docs.bokeh.org/en/latest/docs/first_steps.html#first-steps))
 
 ### Build
 
