@@ -8,16 +8,15 @@ using Microsoft.Owin.Hosting;
 using System.Net.Http;
 
 
-
 /*
  * Web API
  * 
  */
 namespace WebAPI
 {
-    internal class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public void Main()
         {
 
             Random generator = new Random();

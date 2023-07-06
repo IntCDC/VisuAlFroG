@@ -10,12 +10,11 @@ using Python.Runtime;
 using Microsoft.Scripting.Runtime;
 
 
-
 /*
  * Python.NET API
  * 
  */
-namespace PythonAPI { 
+namespace PythonInterface { 
 
     public class Script
     {
@@ -63,8 +62,8 @@ namespace PythonAPI {
 #-----------------------------------------------------------------
 
 import clr
-clr.AddReference('PythonAPI')
-from PythonAPI import PythonCallBack
+clr.AddReference('PythonInterface')
+from PythonInterface import PythonCallBack
 
 def Start():
     PythonCallBack.Call('hello')
@@ -292,9 +291,9 @@ show(p, width=800)
         }
     }
 
-    internal class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public void Main()
         {
 
             Script _script = new Script();

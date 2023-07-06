@@ -7,7 +7,7 @@
     <Description>Description of GrasshopperComponent</Description>
     <TargetExt>.gha</TargetExt>
     <UseWpf>true</UseWpf>
-    <Platforms>AnyCPU;x86;x64</Platforms>
+    <Platforms>x86;x64</Platforms>
     <BaseOutputPath>$(SolutionDir)bin</BaseOutputPath>
     <AssemblyName>$(SolutionName)</AssemblyName>
   </PropertyGroup>

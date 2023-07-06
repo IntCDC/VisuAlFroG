@@ -4,17 +4,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using EntityFrameworkDatabase;
+using Visualizations;
+
 
 /*
- * VisFroG Core functionality
+ * Core functionality
  * 
  */
 namespace Core
 {
-    internal class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public void Main()
         {
+
+            Visualizations.Program visualization = new Visualizations.Program();
+            visualization.Main();
+
+            DatabaseManagement database_management = new DatabaseManagement();
+            database_management.Initialize();
 
 
 

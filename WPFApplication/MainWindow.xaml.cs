@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using Core;
+using SciChartInterface;
 
 
 /*
@@ -39,6 +41,17 @@ namespace WPFApplication
         public MainWindow()
         {
             InitializeComponent();
+
+            //this.Loaded += OnLoaded;
+
+            Core.Program core = new Core.Program();
+            core.Main();
+
+            SciChartInterface.MainWindow scichart = new SciChartInterface.MainWindow();
+            scichart.Init();
+            scichart.DeclareSciChartSurface(ref main_grid);
+
+
             CompositionTarget.Rendering += oncePerFrame; // Called once per frame
 
 
@@ -141,6 +154,11 @@ namespace WPFApplication
 
         /* ------------------------------------------------------------------*/
         // private functions
+
+        private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        {
+            // ...
+        }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {

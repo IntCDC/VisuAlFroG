@@ -15,12 +15,12 @@ using System.Xml.Linq;
  */
 namespace EntityFrameworkDatabase
 {
-    internal class Program
+    public class DatabaseManagement
     {
 
-        private static DatabaseContext db = new DatabaseContext();
+        private DatabaseContext db = new DatabaseContext();
 
-        static void Main(string[] args)
+        public void Initialize()
         {
 
             

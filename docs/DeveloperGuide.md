@@ -1,10 +1,22 @@
-# Development Notes
+# Development Guide
+
+<!-- TOC -->
+
+## Contents
+
+- [Setup Entity Framework](#setup-entity-framework)
+- [WebAPI](#webapi)
+- [References](#references)
+
+<!-- /TOC -->
 
 
-
-
-
+<!-- ###################################################################### -->
+-----
 ## Setup Entity Framework
+
+- Install `EntityFramework` via NuGet Package Manager for the respective project.
+  The actual startup (currently *WPFApplication*) project also needs `EntityFramework` to be installed.
 
 - Open file `App.config` and add the following content below the `<configuration>` tag *(-> replace 'myContext' with appropriate context name)*
     
@@ -26,11 +38,19 @@
   - *PM>* `Add-Migration Initial`
   - *PM>* `Update-Database`
 
+<!-- ###################################################################### -->
+-----
+## WebAPI
+
+The actual startup (currently *WPFApplication*) project needs `Microsoft.Owin.Host.HttpListener` to be installed.
+
+<!-- ###################################################################### -->
+-----
 ## References
 
 - [use-owin-to-self-host-web-api](https://learn.microsoft.com/en-us/aspnet/web-api/overview/hosting-aspnet-web-api/use-owin-to-self-host-web-api)
 - [self-host-a-web-api](https://learn.microsoft.com/en-us/aspnet/web-api/overview/older-versions/self-host-a-web-api)
 - [create-a-rest-api-with-attribute-routing](https://learn.microsoft.com/en-us/aspnet/web-api/overview/web-api-routing-and-actions/create-a-rest-api-with-attribute-routing)
 
-
+<!-- ###################################################################### -->
 

@@ -8,6 +8,11 @@ message: >-
   metadata from this file.
 type: software
 authors:
+  - given-names: Moataz
+    family-names: Abdelaal
+    email: moataz.abdealaal@visus.uni-stuttgart.de
+    affiliation: University of Stuttgart
+    orcid: 'https://orcid.org/0000-0003-4630-7916'
   - given-names: Matthias
     family-names: Braun
     email: matthias.braun@intcdc.uni-stuttgart.de
@@ -18,21 +23,16 @@ authors:
     email: thomas.wortmann@icd.uni-stuttgart.de
     affiliation: University of Stuttgart
     orcid: 'https://orcid.org/0000-0002-5604-1624'
+  - given-names: Daniel
+    family-names: Weiskopf
+    orcid: 'https://orcid.org/0000-0003-1174-1026'
+    email: daniel.weiskopf@visus.uni-stuttgart.de
+    affiliation: University of Stuttgart
   - given-names: Max
     family-names: Zorn
     email: max-benjamin.zorn@icd.uni-stuttgart.de
     affiliation: University of Stuttgart
-    orcid: 'https://orcid.org/0000-0003-0109-1963'
-  - given-names: Moataz
-    family-names: Abdelaal
-    email: moataz.abdealaal@visus.uni-stuttgart.de
-    affiliation: University of Stuttgart
-    orcid: 'https://orcid.org/0000-0003-4630-7916'
-  - given-names: Weiskopf
-    family-names: Daniel
-    orcid: 'https://orcid.org/0000-0003-1174-1026'
-    email: Daniel.Weiskopf@visus.uni-stuttgart.de
-    affiliation: University of Stuttgart
+    orcid: 'https://orcid.org/0000-0003-0109-1963'    
 repository-code: 'https://github.tik.uni-stuttgart.de/IntCDC-RDM-RSE/VisFroG'
 abstract: >-
   VisFroG is a visualization framework that provides various
