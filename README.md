@@ -30,7 +30,7 @@ Currently, it is planned to offer the integration of visualizations that can be 
 
 ## Documentation
 
-- [Manual](docs/Manual.md) for installation and usage instructions.
+- [Manual](docs/Manual.md) - Installation and Usage instructions.
 - [Developer guide](docs/DeveloperGuide.md)
 
 
