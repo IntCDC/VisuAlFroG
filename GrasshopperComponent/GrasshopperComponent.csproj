@@ -13,7 +13,9 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Grasshopper" Version="7.13.21348.13001" IncludeAssets="compile;build" />
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="Grasshopper" Version="7.30.23163.13001" IncludeAssets="compile;build" />
+    <PackageReference Include="Microsoft.Owin.Host.HttpListener" Version="4.2.2" />
   </ItemGroup>
   
   <ItemGroup>

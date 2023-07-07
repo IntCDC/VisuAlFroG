@@ -19,15 +19,15 @@ using SciChart.Charting.Visuals.Axes;
 
 
 /*
- * Visualization Management
+ * SciChart Library
  * 
  */
 namespace SciChartInterface
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for SciChart
     /// </summary>
-    public partial class MainWindow : Window
+    public class MainWindow
     {
         public void Init()
         {
