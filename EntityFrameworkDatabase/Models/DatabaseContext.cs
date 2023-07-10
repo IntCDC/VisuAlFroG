@@ -22,7 +22,8 @@ namespace EntityFrameworkDatabase.Models
         // For more information refer to the documentation:
         // http://msdn.microsoft.com/en-us/data/jj591621.aspx
 
-        public DatabaseContext() : base("name=DatabaseContext")
+        public DatabaseContext() : base("Data Source=(localdb)\\MSSQLLocalDB; Integrated Security=True; MultipleActiveResultSets=True; AttachDbFilename=|DataDirectory|database.mdf") 
+        /// Use base("name=DatabaseContext") to look for connectionString in App.config => But App.config can not be used by Grasshopper component
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DatabaseContext, Configuration>());
         }

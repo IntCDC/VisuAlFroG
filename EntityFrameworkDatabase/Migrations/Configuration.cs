@@ -5,13 +5,16 @@
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
+    using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.SqlServer;
+
 
     internal sealed class Configuration : DbMigrationsConfiguration<EntityFrameworkDatabase.Models.DatabaseContext>
     {
         public Configuration()
         {
             var locPath = System.AppContext.BaseDirectory;
-            var dataDirPath = System.IO.Path.GetDirectoryName(locPath);
+            var dataDirPath = System.IO.Path.GetDirectoryName("C:\\temp\\");  /// locPath);
             AppDomain.CurrentDomain.SetData("DataDirectory", dataDirPath);
 
             AutomaticMigrationsEnabled = false;
