@@ -4,8 +4,7 @@ using Rhino.Geometry;
 using System;
 using System.Collections.Generic;
 using GrasshopperComponent.Utilities;
-using WPFApplication;
-
+using VisFroG_WPF;
 
 
 /*
@@ -50,7 +49,7 @@ namespace GrasshopperComponent
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
         {
 
-            pManager.AddGenericParameter("Generic Output Data", "Output Data", "Generic output data for visualization.", GH_ParamAccess.list);
+            pManager.AddGenericParameter("Generic Output Data", "Output Data", "Generic output data from interaction.", GH_ParamAccess.list);
 
             pManager.AddTextParameter("Debug Output", "Debug", "Output of debug information.", GH_ParamAccess.item);
         }
@@ -66,7 +65,7 @@ namespace GrasshopperComponent
             // Create new window if not created yet or closed previously
             if (window == null || !window.IsLoaded)
             {
-                window = new WPFApplication.MainWindow();
+                window = new VisFroG_WPF.MainWindow();
                 window.ReloadComponentFunction(this.ReloadInstance);
             }
             // Open window
@@ -166,7 +165,7 @@ namespace GrasshopperComponent
         /* ------------------------------------------------------------------*/
         // local variables
 
-        private WPFApplication.MainWindow window;
+        private VisFroG_WPF.MainWindow window;
         private Utilities.RuntimeMessages runtimemessages;
 
         private int exec_count;

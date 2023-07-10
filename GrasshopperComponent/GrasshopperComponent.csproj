@@ -10,12 +10,16 @@
     <Platforms>x86;x64</Platforms>
     <BaseOutputPath>$(SolutionDir)bin</BaseOutputPath>
     <AssemblyName>$(SolutionName)</AssemblyName>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <OutputPath>$(SolutionDir)bin</OutputPath>
+    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>   
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Grasshopper" Version="7.30.23163.13001" IncludeAssets="compile;build" />
-    <PackageReference Include="Microsoft.Owin.Host.HttpListener" Version="4.2.2" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.OwinSelfHost" Version="5.2.9" />
   </ItemGroup>
   
   <ItemGroup>

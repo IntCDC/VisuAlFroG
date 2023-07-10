@@ -22,11 +22,10 @@ namespace Core
             Visualizations.Program visualization = new Visualizations.Program();
             visualization.Main();
 
+            
             DatabaseManagement database_management = new DatabaseManagement();
             database_management.Initialize();
-
-
-
+            
 
         }
     }

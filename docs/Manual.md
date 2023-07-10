@@ -38,6 +38,11 @@ Building and running `VisFroG` requires following software. The appended version
 ### Build
 
 - Open the `VisFroG.sln` file with Visual Studio 2022 and from the menu `Build`choose `Build Solution`. The *Startup Project* should be `Interface/GrasshopperComponent`.
-- Move all files from the build output folder `\bin` to the Grasshopper plugin folder, e.g.: `C:\Users\...\AppData\Roaming\Grasshopper\Libraries`
+- Move all files from the build output folder `\bin` into a new Grasshopper plugin folder: `C:\Users\...\AppData\Roaming\Grasshopper\Libraries\VisFroG`
+
+### Usage
+
+- Open `Rhino` and start `Grasshopper`
+- In the `Visual Analysis` tab drag and drop the `VisFroG` component onto the grasshopper canvas.
 
 <!-- ###################################################################### -->

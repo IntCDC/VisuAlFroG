@@ -21,7 +21,7 @@ using SciChartInterface;
  * Main WPF Application
  * 
  */
-namespace WPFApplication
+namespace VisFroG_WPF
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

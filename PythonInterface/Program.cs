@@ -61,6 +61,10 @@ namespace PythonInterface {
         private string _source = @"#
 #-----------------------------------------------------------------
 
+### Required to prevent error message 'Python.Runtime.PythonException: 'unknown locale: en-US'' when starting VisFrog via Grasshopper
+import locale
+locale.setlocale(locale.LC_ALL, ""C"")
+
 import clr
 clr.AddReference('PythonInterface')
 from PythonInterface import PythonCallBack
