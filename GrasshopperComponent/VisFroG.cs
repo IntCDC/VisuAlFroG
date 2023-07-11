@@ -61,11 +61,12 @@ namespace GrasshopperComponent
         /// to store data in output parameters.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            string gh_document_filepath = OnPingDocument().FilePath; // OnPingDocument().FilePathChanged += this.FilePathChangedEvent
 
             // Create new window if not created yet or closed previously
             if (window == null || !window.IsLoaded)
             {
-                window = new VisFroG_WPF.MainWindow();
+                window = new VisFroG_WPF.MainWindow(base.NickName);
                 window.ReloadComponentFunction(this.ReloadInstance);
             }
             // Open window

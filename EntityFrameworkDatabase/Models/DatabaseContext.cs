@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Data;
 using System.Data.Entity;
 using EntityFrameworkDatabase.Migrations;
 using System.Runtime.Remoting.Contexts;
+using Utilities;
 
 
 namespace EntityFrameworkDatabase.Models
@@ -22,8 +23,10 @@ namespace EntityFrameworkDatabase.Models
         // For more information refer to the documentation:
         // http://msdn.microsoft.com/en-us/data/jj591621.aspx
 
-        public DatabaseContext() : base("Data Source=(localdb)\\MSSQLLocalDB; Integrated Security=True; MultipleActiveResultSets=True; AttachDbFilename=|DataDirectory|database.mdf") 
+
+        public DatabaseContext() : base("Data Source=(localdb)\\MSSQLLocalDB; Integrated Security=True; MultipleActiveResultSets=True; AttachDbFilename=|DataDirectory|" + Utilities.Artefacts.FileName("database", "mdf"))
         /// Use base("name=DatabaseContext") to look for connectionString in App.config => But App.config can not be used by Grasshopper component
+        /// // DataDirectory is defined in CTOR of Configuration
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DatabaseContext, Configuration>());
         }
@@ -33,5 +36,8 @@ namespace EntityFrameworkDatabase.Models
 
 
     }
+
+
+
 }
 

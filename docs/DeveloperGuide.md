@@ -4,15 +4,23 @@
 
 ## Contents
 
+- [Code Formatting](#code-formatting)
 - [Setup Entity Framework](#setup-entity-framework)
 - [WebAPI](#webapi)
 - [References](#references)
 
 <!-- /TOC -->
+-----
 
 
 <!-- ###################################################################### -->
------
+## Code Formatting
+
+Suggestions on how to format the code are stored in `.editorconfig` and are applied via [dotnet-format](https://github.com/dotnet/format). 
+See messages in *Error List* after building VisFroG.
+
+
+<!-- ###################################################################### -->
 ## Setup Entity Framework
 
 - Install `EntityFramework` via NuGet Package Manager for the respective project.
@@ -38,14 +46,14 @@
   - *PM>* `Add-Migration Initial`
   - *PM>* `Update-Database`
 
+
 <!-- ###################################################################### -->
------
 ## WebAPI
 
 The actual startup (currently *WPFApplication*) project needs `Microsoft.Owin.Host.HttpListener` to be installed.
 
+
 <!-- ###################################################################### -->
------
 ## References
 
 - [use-owin-to-self-host-web-api](https://learn.microsoft.com/en-us/aspnet/web-api/overview/hosting-aspnet-web-api/use-owin-to-self-host-web-api)

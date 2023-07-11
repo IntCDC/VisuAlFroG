@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
 using Core;
 using SciChartInterface;
 
@@ -38,7 +37,7 @@ namespace VisFroG_WPF
         /* ------------------------------------------------------------------*/
         // public functions
 
-        public MainWindow()
+        public MainWindow(string application_name)
         {
             InitializeComponent();
 
@@ -52,10 +51,10 @@ namespace VisFroG_WPF
             scichart.DeclareSciChartSurface(ref main_grid);
 
 
-            CompositionTarget.Rendering += oncePerFrame; // Called once per frame
+            CompositionTarget.Rendering += OncePerFrame; // Called once per frame
 
 
-            this.Title = "Canvas Sample";
+            this.Title = application_name;
             /*
             Canvas myParentCanvas = new Canvas();
             myParentCanvas.Width = 400;
@@ -181,7 +180,7 @@ namespace VisFroG_WPF
             }
         }
 
-        private void oncePerFrame(object sender, EventArgs args)
+        private void OncePerFrame(object sender, EventArgs args)
         {
             /// TODO Check if grasshopper component is still there ... otherwise close
         }

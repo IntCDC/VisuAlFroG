@@ -11,8 +11,6 @@
 
 <!---------------------------------------------------------------------------->
 
-----
-
 ## Description
 
 VisFroG is a visualization framework that provides various visualization types to support visual analytics for the algorithmic modelling software [Grasshopper](https://www.grasshopper3d.com/). 
@@ -26,20 +24,27 @@ Currently, it is planned to offer the integration of visualizations that can be 
 - [Bokeh](https://bokeh.org/)
 
 
-----
-
 ## Documentation
 
 - [Manual](docs/Manual.md) - Installation and Usage instructions.
 - [Developer guide](docs/DeveloperGuide.md)
 
 
-----
-
-
 ## License
 
 See the [license](LICENSE) file.
+
+All external dependecies are available as NuGet packages and different license might apply:
+- Grasshopper .NET (RhinoCommon) plugin: [???](https://developer.rhino3d.com/guides/rhinocommon/)
+- d3: [ISC License](https://github.com/d3/d3/blob/main/LICENSE) (functionally equivalent to MIT license)
+- Bokeh: [BSD-3 Clause](https://github.com/bokeh/bokeh/blob/main/LICENSE.txt)
+- SciChart: [EULA](https://www.scichart.com/scichart-eula/)
+- pythonnet [MIT](https://www.nuget.org/packages/pythonnet/3.0.1/license)
+- .NET [Software License Terms](https://dotnet.microsoft.com/en-us/dotnet_library_license.htm)
+- OWIN [Apache 2.0](https://github.com/owin-contrib/owin-hosting/blob/master/LICENSE.txt)
+- EntityFramework [Apache 2.0](https://licenses.nuget.org/Apache-2.0)
+- further dependencies are published under the [MIT](https://licenses.nuget.org/MIT) license
+
 
 ## Citation
 
@@ -47,10 +52,16 @@ Choose from GitHub citation prompt *Cite this repository* on the right.
 The [citation](CITATION.cff) is based on the [Citation Cite Format](https://citation-file-format.github.io/) (CFF) and has been generated with [CFFINIT](https://citation-file-format.github.io/cff-initializer-javascript/#/).
 
 
+## Acknowledgements
+
+- This project is supported by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) under Germany's Excellence Strategy – EXC 2120/1 – 390831618
+<!-- - Special thanks to SciChart Ltd. - 16 Beaufort Court, Admirals Way, Docklands, London, E14 9XL for allowing us to distribute SciChart with a free educational license key. -->
+<!-- - Thanks to the [Bokeh Development Team](https://github.com/bokeh/bokeh) (2014). Bokeh: Python library for interactive visualization, URL http://www.bokeh.pydata.org. -->
+
 ----
 
 ## Internal 
 
-Internal information and documentation can be found on [Confluence](https://wisman.izus.uni-stuttgart.de/pages/viewpage.action?pageId=448860958).
+Internal information and documentation can be found on the [Confluence project page](https://wisman.izus.uni-stuttgart.de/pages/viewpage.action?pageId=448860958).
 
 

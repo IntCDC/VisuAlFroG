@@ -4,10 +4,11 @@ using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.IO;
-
 using System.Threading;
 using Python.Runtime;
 using Microsoft.Scripting.Runtime;
+using Utilities;
+
 
 
 /*
@@ -89,7 +90,7 @@ from bokeh.layouts import row
 from bokeh.io import output_file, curdoc
 import pandas as pd
 
-output_file(""js_on_change.html"")
+output_file(PythonCallBack.GetBokehOutputFilePath())
 
 x = [[1,2,4], [3,5,6], [7,9,7], [5,7,6]]
 y = [[4,2,1], [6,5,8], [3,9,6], [2,2,1]]
@@ -293,6 +294,12 @@ show(p, width=800)
         {
             Console.WriteLine(message);
         }
+
+        public static string GetBokehOutputFilePath()
+        {
+            return Utilities.Artefacts.FilePath("bokeh", "html");
+        }
+
     }
 
     public class Program

@@ -70,8 +70,8 @@ namespace GrasshopperComponent.Utilities
         /* ------------------------------------------------------------------*/
         // local variables
 
-        private GH_Component parent;
-        private List<(Grasshopper.Kernel.GH_RuntimeMessageLevel, string)> messages;
+        private readonly GH_Component parent;
+        private readonly List<(Grasshopper.Kernel.GH_RuntimeMessageLevel, string)> messages;
 
         /* ------------------------------------------------------------------*/
         // local functions

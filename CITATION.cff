@@ -32,8 +32,8 @@ authors:
     family-names: Zorn
     email: max-benjamin.zorn@icd.uni-stuttgart.de
     affiliation: University of Stuttgart
-    orcid: 'https://orcid.org/0000-0003-0109-1963'    
-repository-code: 'https://github.tik.uni-stuttgart.de/IntCDC-RDM-RSE/VisFroG'
+    orcid: 'https://orcid.org/0000-0003-0109-1963'
+repository-code: 'https://github.com/IntCDC/VisFroG'
 abstract: >-
   VisFroG is a visualization framework that provides various
   visualization types to support visual analytics for the
@@ -45,10 +45,13 @@ abstract: >-
   functionality and a module based extension mechanism that
   easily allows to integrate new visualizations.
 keywords:
-  - visualization
-  - framework
-  - grasshopper
-  - rhinoceros
+  - visualization framework
+  - grasshopper plugin
   - visual analytics
   - research software
 license: MIT
+version: '0.1'
+contact:
+  - email: "rdm@intcdc.uni-stuttgart.de"
+    name: "IntCDC Research Data Management"
+license-url: "https://github.com/IntCDC/VisFroG/blob/main/LICENSE"

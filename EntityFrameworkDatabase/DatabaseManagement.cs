@@ -18,20 +18,23 @@ namespace EntityFrameworkDatabase
     public class DatabaseManagement
     {
 
-        private DatabaseContext db = new DatabaseContext();
+        private DatabaseContext db;
+
 
         public void Initialize()
         {
 
-            
+
+            this.db = new DatabaseContext();
+
             IQueryable<Entity> query = db.Entites.Where(e => e.Id == 4);
-            foreach (var obj in query)
+            foreach (Entity obj in query)
             {
                 Console.WriteLine(obj.Title);
             }
             
             Console.WriteLine("\nPress Enter to quit.");
-            Console.ReadLine();
+            string input = Console.ReadLine();
 
         }
     }
