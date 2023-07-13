@@ -21,43 +21,6 @@ namespace PythonInterface {
     {
         public string ID { get; set; }
 
-        /*
-
-         from bokeh.layouts import column
-        from bokeh.models import ColumnDataSource, CustomJS, Slider
-        from bokeh.plotting import Figure, output_file, show
-
-        output_file(""js_on_change.html"")
-
-        x = [x*0.005 for x in range(0, 200)]
-        y = x
-
-        source = ColumnDataSource(data=dict(x=x, y=y))
-
-        plot = Figure(width=400, height=400)
-        plot.line('x', 'y', source=source, line_width=3, line_alpha=0.6)
-
-        callback = CustomJS(args=dict(source=source), code=""""""
-            console.log('JS handler called ...');
-            const data = source.data;
-            const f = cb_obj.value
-            const x = data['x']
-            const y = data['y']
-            for (let i = 0; i < x.length; i++) {
-                y[i] = Math.pow(x[i], f)
-            }
-            source.change.emit();
-        """""")
-
-        slider = Slider(start=0.1, end=4, value=1, step=.1, title=""power"")
-        slider.js_on_change('value', callback)
-
-        layout = column(slider, plot)
-
-        show(layout)
-
-         */
-
 
         private string _source = @"#
 #-----------------------------------------------------------------
@@ -154,12 +117,6 @@ show(p, width=800)
             var pathToVirtualEnv = @"C:\ProgramData\Anaconda3";
             Console.WriteLine(pathToVirtualEnv);
 
-            //var path = Environment.GetEnvironmentVariable("PATH").TrimEnd(';');
-            //path = string.IsNullOrEmpty(path) ? pathToVirtualEnv : path + ";" + pathToVirtualEnv;
-            //Environment.SetEnvironmentVariable("PATH", path, EnvironmentVariableTarget.Process);
-            //Environment.SetEnvironmentVariable("PATH", pathToVirtualEnv, EnvironmentVariableTarget.Process);
-            //Environment.SetEnvironmentVariable("PYTHONHOME", pathToVirtualEnv, EnvironmentVariableTarget.Process);
-            //Environment.SetEnvironmentVariable("PYTHONPATH", python_path, EnvironmentVariableTarget.Process);
             string python_path = $"{pathToVirtualEnv}\\Lib\\site-packages;{pathToVirtualEnv}\\Lib;{pathToVirtualEnv}\\DLLs";
 
             PythonEngine.PythonHome = pathToVirtualEnv;
@@ -174,69 +131,6 @@ show(p, width=800)
 
             PythonEngine.Initialize();
             PythonEngine.BeginAllowThreads();
-
-            /*
-            Runtime.PythonDLL = @"C:\Users\<username>\AppData\Local\Programs\Python\Python310\python310.dll";
-            var pathToVirtualEnv = @"path\to\env";
-
-            // be sure not to overwrite your existing "PATH" environmental variable.
-            var path = Environment.GetEnvironmentVariable("PATH").TrimEnd(';');
-            path = string.IsNullOrEmpty(path) ? pathToVirtualEnv : path + ";" + pathToVirtualEnv;
-            Environment.SetEnvironmentVariable("PATH", path, EnvironmentVariableTarget.Process);
-            Environment.SetEnvironmentVariable("PATH", pathToVirtualEnv, EnvironmentVariableTarget.Process);
-            // Environment.SetEnvironmentVariable("PYTHONHOME", pathToVirtualEnv, EnvironmentVariableTarget.Process);
-            Environment.SetEnvironmentVariable("PYTHONPATH", $"{pathToVirtualEnv}\\Lib\\site-packages;{pathToVirtualEnv}\\Lib", EnvironmentVariableTarget.Process);
-
-            PythonEngine.Initialize();
-
-            PythonEngine.PythonHome = pathToVirtualEnv;
-            PythonEngine.PythonPath = Environment.GetEnvironmentVariable("PYTHONPATH", EnvironmentVariableTarget.Process);
-
-
-
-            string pathToVirtualEnv = "/path/to/venv/";
-
-            Environment.SetEnvironmentVariable("PATH", pathToVirtualEnv, EnvironmentVariableTarget.Process);
-            Environment.SetEnvironmentVariable("PYTHONHOME", pathToVirtualEnv, EnvironmentVariableTarget.Process);
-            Environment.SetEnvironmentVariable("PYTHONPATH", $"{pathToVirtualEnv}\\Lib\\site-packages;{pathToVirtualEnv}\\Lib", EnvironmentVariableTarget.Process);
-
-
-            PythonEngine.PythonHome = pathToVirtualEnv;
-            PythonEngine.PythonPath = PythonEngine.PythonPath + ";" + Environment.GetEnvironmentVariable("PYTHONPATH", EnvironmentVariableTarget.Process);
-            */
-
-
-            //var searchPaths = this._engine.GetSearchPaths();
-            //foreach (var s in searchPaths)
-            //    Console.WriteLine(s);
-
-            //ICollection<string> searchPaths = new List<string>();
-
-            /*
-            // This will get the current WORKING directory (i.e. \bin\Debug)
-            string workingDirectory = Environment.CurrentDirectory;
-            // or: Directory.GetCurrentDirectory() gives the same result
-            // This will get the current PROJECT bin directory (ie ../bin/)
-            string projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;
-            // This will get the current PROJECT directory
-            string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName
-            */
-            /*
-            string workingDirectory = Environment.CurrentDirectory;
-            string basedir = Directory.GetParent(workingDirectory).Parent.FullName; // AppDomain.CurrentDomain.BaseDirectory;
-            string libpath = Path.Combine(basedir, "lib");
-            //searchPaths.Add(libpath);
-            //Console.WriteLine(libpath);
-
-
-
-            //searchPaths.Add(@"C:\Program Files (x86)\Microsoft Visual Studio\Shared\Anaconda3_64\Lib");
-            //searchPaths.Add(@"C:\Program Files (x86)\Microsoft Visual Studio\Shared\Anaconda3_64\Lib\site-packages");
-            searchPaths.Add(@"C:\Program Files\Python34\Lib");
-            searchPaths.Add(@"C:\Program Files\Python34\Lib\site-packages");
-            this._engine.SetSearchPaths(searchPaths);
-            */
-
         }
 
         public void Execute()

@@ -12,11 +12,13 @@ namespace Utilities
 
         static public string Path()
         {
+            // Returns the path of the VisFroG plugin, e.g. C:\Users\...\AppData\Roaming\Grasshopper\Libraries\VisFrog
             return System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location); // System.AppContext.BaseDirectory;
         }
 
         static public string FileName(string body, string extension)
         {
+            // Append unified prefix
             const string prefix = "visfrog_";
             return prefix + body + "." + extension; ;
         }

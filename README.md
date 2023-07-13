@@ -2,6 +2,7 @@
 
 <!-- BADGES ------------------------------------------------------------------>
 
+[![Build](https://github.com/IntCDC/VisFroG/actions/workflows/build.yml/badge.svg)](https://github.com/IntCDC/VisFroG/actions/workflows/build.yml)
 [![Github Repo Badge](https://img.shields.io/badge/github-repo-000.svg?logo=github&labelColor=gray&color=blue)](https://github.com/IntCDC/VisFroG)
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![GitHub License](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.tik.uni-stuttgart.de/IntCDC-RDM-RSE/VisFroG/blob/main/LICENSE)

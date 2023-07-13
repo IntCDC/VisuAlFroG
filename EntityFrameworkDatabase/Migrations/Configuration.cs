@@ -15,6 +15,7 @@ namespace EntityFrameworkDatabase.Migrations
     {
         public Configuration()
         {
+            // Set data directory variable given in connection string of DatabaseContext
             AppDomain.CurrentDomain.SetData("DataDirectory", Utilities.Artefacts.Path());
 
             AutomaticMigrationsEnabled = false;
