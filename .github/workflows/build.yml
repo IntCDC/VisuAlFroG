@@ -1,0 +1,29 @@
+name: Build
+
+on:
+  push:
+    branches: main
+  pull_request:
+    branches: main
+  workflow_dispatch:
+  
+jobs:
+
+  build:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+      with:
+          msbuild-architecture: x64
+          
+    - uses: nuget/setup-nuget@v1
+      with:
+        nuget-api-key: ${{ secrets.NuGetAPIKey }}
+        nuget-version: '5.x'
+    - run: nuget restore VisFroG.sln
+
+    - name: Build app for release
+      run: msbuild VisFroG.sln -t:rebuild -verbosity:diag -property:Configuration=Releas
