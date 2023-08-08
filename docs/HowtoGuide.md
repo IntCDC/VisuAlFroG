@@ -31,19 +31,21 @@ Building and running `VisFroG` requires following software being installed befor
 (The appended versions show the last tested versions)
 
 > **Note**
-> Upon account creation, the [full version of Rhinoceros 3D](https://www.rhino3d.com/download/rhino-for-windows/evaluation) can be used for free for 90 days.
-> Upon account creation, the free [trial version of SciChart](https://www.scichart.com/getting-started/scichart-wpf/) can be used for 30 days
+> - Upon account creation, the [full version of Rhinoceros 3D](https://www.rhino3d.com/download/rhino-for-windows/evaluation) can be used for free for 90 days.
+> - Upon account creation, the free [trial version of SciChart](https://www.scichart.com/getting-started/scichart-wpf/) can be used for 30 days
 
+> **Note**
+> 
 
 <!-- ###################################################################### -->
 ### Building and Installation
 
 - Open the `VisFroG.sln` file with Visual Studio 2022.
 - Open the file  `...\SciChartInterface\SciChartRuntimeLicenseKey.cs` and replace the comment ***"INSERT YOUR SCICHART LICENCE KEY HERE"*** with your SciChart runtime license key.
-Make git skip your local changes in `/SciChartInterface/SciChartRuntimeLicenseKey.cs``:
-'''console
+- Make git skip your local changes in `/SciChartInterface/SciChartRuntimeLicenseKey.cs``:
+```console
 $ git update-index --skip-worktree SciChartInterface/SciChartRuntimeLicenseKey.cs
-'''
+```
 - From the menu `Build` choose `Build Solution`. **Note**: Mkae sure that `Interface/GrasshopperComponent` is the *Startup Project*.
 - Move all files from the build output folder `\bin` into a new Grasshopper plugin folder, e.g.: `C:\Users\...\AppData\Roaming\Grasshopper\Libraries\VisFroG`.
 - Open `Rhino` and start `Grasshopper`.

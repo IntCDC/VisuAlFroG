@@ -1,4 +1,4 @@
-# VisFroG Development Guide
+# VisFroG Developer Guide
 
 <!-- TOC -->
 
@@ -24,8 +24,7 @@ See messages in *Error List* after building VisFroG.
 ## Setup Entity Framework
 
 - Install `EntityFramework` via NuGet Package Manager for the respective project.
-  The actual startup (currently *WPFApplication*) project also needs `EntityFramework` to be installed.
-
+  The actual startup project also needs `EntityFramework` to be installed.
 - Open file `App.config` and add the following content below the `<configuration>` tag *(-> replace 'myContext' with appropriate context name)*
     
 ```XML
