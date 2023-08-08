@@ -38,12 +38,16 @@ Building and running `VisFroG` requires following software being installed befor
 <!-- ###################################################################### -->
 ### Building and Installation
 
-- Open the `VisFroG.sln` file with Visual Studio 2022
-- Open the file  `...\SciChartInterface\SciChartRuntimeLicenseKey.cs` and replace the comment ***"INSERT YOUR SCICHART LICENCE KEY HERE"*** with your SciChart runtime license key (this file is listed in *.gitignore* to prevent commiting your license key)
-- From the menu `Build` choose `Build Solution` **Note**: The *Startup Project* should be `Interface/GrasshopperComponent`
-- Move all files from the build output folder `\bin` into a new Grasshopper plugin folder, e.g.: `C:\Users\...\AppData\Roaming\Grasshopper\Libraries\VisFroG`
-- Open `Rhino` and start `Grasshopper`
-- In the `Visual Analysis` tab drag and drop the `VisFroG` component onto the grasshopper canvas
+- Open the `VisFroG.sln` file with Visual Studio 2022.
+- Open the file  `...\SciChartInterface\SciChartRuntimeLicenseKey.cs` and replace the comment ***"INSERT YOUR SCICHART LICENCE KEY HERE"*** with your SciChart runtime license key.
+Make git skip your local changes in `/SciChartInterface/SciChartRuntimeLicenseKey.cs``:
+'''console
+$ git update-index --skip-worktree SciChartInterface/SciChartRuntimeLicenseKey.cs
+'''
+- From the menu `Build` choose `Build Solution`. **Note**: Mkae sure that `Interface/GrasshopperComponent` is the *Startup Project*.
+- Move all files from the build output folder `\bin` into a new Grasshopper plugin folder, e.g.: `C:\Users\...\AppData\Roaming\Grasshopper\Libraries\VisFroG`.
+- Open `Rhino` and start `Grasshopper`.
+- In the `Visual Analysis` tab drag and drop the `VisFroG` component onto the grasshopper canvas.
 
 
 <!-- ###################################################################### -->
