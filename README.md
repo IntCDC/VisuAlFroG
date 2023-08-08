@@ -34,18 +34,17 @@ Currently, it is planned to offer the integration of visualizations that can be 
 
 See the [license](LICENSE) file.
 
-All *external dependencies* are automatically downloaded via NuGet when Visual Studio solution is opened.
-
-Different licenses apply:
-- Grasshopper .NET (RhinoCommon) plugin: [?](https://developer.rhino3d.com/guides/rhinocommon/)
+For *external dependencies* different licenses apply:
+- RhinoCommon (.NET plugin SDK for Rhino): [MIT](https://developer.rhino3d.com/)
+- Grasshopper .NET plugin: [MIT](https://developer.rhino3d.com/)
 - d3: [ISC License](https://github.com/d3/d3/blob/main/LICENSE) (functionally equivalent to MIT license)
 - Bokeh: [BSD-3 Clause](https://github.com/bokeh/bokeh/blob/main/LICENSE.txt)
 - SciChart: [EULA](https://www.scichart.com/scichart-eula/)
-- pythonnet [MIT](https://www.nuget.org/packages/pythonnet/3.0.1/license)
-- OWIN [Apache 2.0](https://github.com/owin-contrib/owin-hosting/blob/master/LICENSE.txt)
-- EntityFramework [Apache 2.0](https://licenses.nuget.org/Apache-2.0)
-- .NET [Software License Terms](https://dotnet.microsoft.com/en-us/dotnet_library_license.htm)
-- further dependencies are published under the [MIT](https://licenses.nuget.org/MIT) license
+- pythonnet: [MIT](https://www.nuget.org/packages/pythonnet/3.0.1/license)
+- OWIN: [Apache 2.0](https://github.com/owin-contrib/owin-hosting/blob/master/LICENSE.txt)
+- OwinSelfHost: [Microsoft Software License Terms](https://www.nuget.org/packages/Microsoft.AspNet.WebApi.OwinSelfHost/5.2.9/license)
+- EntityFramework: [Apache 2.0](https://licenses.nuget.org/Apache-2.0)
+- other transitive dependencies are published under the [MIT](https://licenses.nuget.org/MIT) license or under the [Microsoft Software License Terms](https://dotnet.microsoft.com/en-us/dotnet_library_license.htm)
 
 
 ## Citation

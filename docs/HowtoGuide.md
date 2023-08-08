@@ -34,8 +34,6 @@ Building and running `VisFroG` requires following software being installed befor
 > - Upon account creation, the [full version of Rhinoceros 3D](https://www.rhino3d.com/download/rhino-for-windows/evaluation) can be used for free for 90 days.
 > - Upon account creation, the free [trial version of SciChart](https://www.scichart.com/getting-started/scichart-wpf/) can be used for 30 days
 
-> **Note**
-> 
 
 <!-- ###################################################################### -->
 ### Building and Installation
@@ -47,6 +45,7 @@ Building and running `VisFroG` requires following software being installed befor
 $ git update-index --skip-worktree SciChartInterface/SciChartRuntimeLicenseKey.cs
 ```
 - From the menu `Build` choose `Build Solution`. **Note**: Mkae sure that `Interface/GrasshopperComponent` is the *Startup Project*.
+  - All *external dependencies* are automatically downloaded via NuGet when Visual Studio solution is built.
 - Move all files from the build output folder `\bin` into a new Grasshopper plugin folder, e.g.: `C:\Users\...\AppData\Roaming\Grasshopper\Libraries\VisFroG`.
 - Open `Rhino` and start `Grasshopper`.
 - In the `Visual Analysis` tab drag and drop the `VisFroG` component onto the grasshopper canvas.
