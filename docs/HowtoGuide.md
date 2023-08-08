@@ -21,7 +21,7 @@
 <!-- ###################################################################### -->
 ### Prerequisites
 
-Building and running `VisFroG` requires following software being installed beforehand:
+Building and running *VisFroG* requires following software being installed beforehand:
 - [Microsoft Visual Studio 2022](https://visualstudio.microsoft.com/vs/) (VisualStudio.17.Release/17.4.4+33213.308 Enterprise, Microsoft .NET Framework Version 4.8.04084)
 - [Rhinoceros 3D](https://www.rhino3d.com/) (Version SR28, 7.28.23058.3001, 2023-02-27, Educational Lab License)
 - [Grasshopper](https://www.grasshopper3d.com/) (Version Wednesday, 01 February 2023 13:00, Build 1.0 007, part of Rhino3D)
@@ -39,16 +39,16 @@ Building and running `VisFroG` requires following software being installed befor
 ### Building and Installation
 
 - Open the `VisFroG.sln` file with Visual Studio 2022.
-- Open the file  `...\SciChartInterface\SciChartRuntimeLicenseKey.cs` and replace the comment ***"INSERT YOUR SCICHART LICENCE KEY HERE"*** with your SciChart runtime license key.
-- Make git skip your local changes in `/SciChartInterface/SciChartRuntimeLicenseKey.cs`:
+- Open the file  `...\SciChartInterface\SciChartRuntimeLicenseKey.cs` and replace *INSERT YOUR SCICHART LICENCE KEY HERE* with your SciChart runtime license key.
+  - *Optional:* Make git skip your local changes in `/SciChartInterface/SciChartRuntimeLicenseKey.cs`:
 ```console
-$ git update-index --skip-worktree SciChartInterface/SciChartRuntimeLicenseKey.cs
+      $ git update-index --skip-worktree SciChartInterface/SciChartRuntimeLicenseKey.cs
 ```
 - From the menu `Build` choose `Build Solution`. **Note**: Mkae sure that `Interface/GrasshopperComponent` is the *Startup Project*.
   - All *external dependencies* are automatically downloaded via NuGet when Visual Studio solution is built.
 - Move all files from the build output folder `\bin` into a new Grasshopper plugin folder, e.g.: `C:\Users\...\AppData\Roaming\Grasshopper\Libraries\VisFroG`.
 - Open `Rhino` and start `Grasshopper`.
-- In the `Visual Analysis` tab drag and drop the `VisFroG` component onto the grasshopper canvas.
+- In the `Visual Analysis` tab drag and drop the `VisFroG.gha` component onto the grasshopper canvas.
 
 
 <!-- ###################################################################### -->

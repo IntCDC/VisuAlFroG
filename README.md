@@ -56,8 +56,8 @@ The [citation](CITATION.cff) is based on the [Citation Cite Format](https://cita
 ## Acknowledgements
 
 - This project is supported by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) under Germany's Excellence Strategy – EXC 2120/1 – 390831618
-- Special thanks to SciChart Ltd. - 16 Beaufort Court, Admirals Way, Docklands, London, E14 9XL for allowing us to redistribute licensed SciChart as part of the compiled form of this software.
-- Thanks to the [Bokeh Development Team](https://github.com/bokeh/bokeh) (2014), Bokeh: Python library for interactive visualization, URL http://www.bokeh.pydata.org.
+- Special thanks to [SciChart](https://www.scichart.com/contact-us/) for permission to distribute licensed SciChart as part of the compiled form of this software.
+- Thanks to the [Bokeh Development Team](https://github.com/bokeh/bokeh).
 
 ----
 
