@@ -42,7 +42,7 @@ Building and running `VisFroG` requires following software being installed befor
 
 - Open the `VisFroG.sln` file with Visual Studio 2022.
 - Open the file  `...\SciChartInterface\SciChartRuntimeLicenseKey.cs` and replace the comment ***"INSERT YOUR SCICHART LICENCE KEY HERE"*** with your SciChart runtime license key.
-- Make git skip your local changes in `/SciChartInterface/SciChartRuntimeLicenseKey.cs``:
+- Make git skip your local changes in `/SciChartInterface/SciChartRuntimeLicenseKey.cs`:
 ```console
 $ git update-index --skip-worktree SciChartInterface/SciChartRuntimeLicenseKey.cs
 ```
