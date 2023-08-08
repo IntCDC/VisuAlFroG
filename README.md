@@ -3,7 +3,6 @@
 <!-- BADGES ------------------------------------------------------------------>
 
 [![Build](https://github.com/IntCDC/VisFroG/actions/workflows/build.yml/badge.svg)](https://github.com/IntCDC/VisFroG/actions/workflows/build.yml)
-[![Github Repo Badge](https://img.shields.io/badge/github-repo-000.svg?logo=github&labelColor=gray&color=blue)](https://github.com/IntCDC/VisFroG)
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![GitHub License](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.tik.uni-stuttgart.de/IntCDC-RDM-RSE/VisFroG/blob/main/LICENSE)
 [![Windows](https://badgen.net/badge/icon/windows?icon=windows&label)](https://microsoft.com/windows/)
@@ -16,34 +15,36 @@
 
 VisFroG is a visualization framework that provides various visualization types to support visual analytics for the algorithmic modelling software [Grasshopper](https://www.grasshopper3d.com/). 
 Grasshopper for its part is a plug-in of the commercial 3D computer graphics and computer-aided design application software [Rhinoceros](https://www.rhino3d.com/).
-The basic architecture of VisFroG consists of a core framework providing general functionality and a module based extension mechanism that easily allows to integrate new visualizations.
+The basic architecture of VisFroG consists of a core framework providing general functionality and a module-based extension mechanism that easily allows to integrate new visualizations.
 
 Currently, it is planned to offer the integration of visualizations that can be based on:
 - [WPF](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/?view=netdesktop-7.0)
-- [SciChart](https://www.scichart.com/) (Requires License)
+- [SciChart](https://www.scichart.com/)
 - [d3.js](https://d3js.org/)
 - [Bokeh](https://bokeh.org/)
 
 
 ## Documentation
 
-- [Manual](docs/Manual.md) - Installation and Usage instructions.
-- [Developer guide](docs/DeveloperGuide.md)
+- [How-to Guide](docs/HowtoGuide.md)
+- [Developer Guide](docs/DeveloperGuide.md)
 
 
 ## License
 
 See the [license](LICENSE) file.
 
-All external dependecies are available as NuGet packages and different license might apply:
-- Grasshopper .NET (RhinoCommon) plugin: [???](https://developer.rhino3d.com/guides/rhinocommon/)
+All *external dependencies* are automatically downloaded via NuGet when Visual Studio solution is opened.
+
+Different licenses apply:
+- Grasshopper .NET (RhinoCommon) plugin: [?](https://developer.rhino3d.com/guides/rhinocommon/)
 - d3: [ISC License](https://github.com/d3/d3/blob/main/LICENSE) (functionally equivalent to MIT license)
 - Bokeh: [BSD-3 Clause](https://github.com/bokeh/bokeh/blob/main/LICENSE.txt)
 - SciChart: [EULA](https://www.scichart.com/scichart-eula/)
 - pythonnet [MIT](https://www.nuget.org/packages/pythonnet/3.0.1/license)
-- .NET [Software License Terms](https://dotnet.microsoft.com/en-us/dotnet_library_license.htm)
 - OWIN [Apache 2.0](https://github.com/owin-contrib/owin-hosting/blob/master/LICENSE.txt)
 - EntityFramework [Apache 2.0](https://licenses.nuget.org/Apache-2.0)
+- .NET [Software License Terms](https://dotnet.microsoft.com/en-us/dotnet_library_license.htm)
 - further dependencies are published under the [MIT](https://licenses.nuget.org/MIT) license
 
 
@@ -56,13 +57,11 @@ The [citation](CITATION.cff) is based on the [Citation Cite Format](https://cita
 ## Acknowledgements
 
 - This project is supported by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) under Germany's Excellence Strategy – EXC 2120/1 – 390831618
-<!-- - Special thanks to SciChart Ltd. - 16 Beaufort Court, Admirals Way, Docklands, London, E14 9XL for allowing us to distribute SciChart with a free educational license key. -->
-<!-- - Thanks to the [Bokeh Development Team](https://github.com/bokeh/bokeh) (2014). Bokeh: Python library for interactive visualization, URL http://www.bokeh.pydata.org. -->
+- Special thanks to SciChart Ltd. - 16 Beaufort Court, Admirals Way, Docklands, London, E14 9XL for allowing us to redistribute licensed SciChart as part of the compiled form of this software.
+- Thanks to the [Bokeh Development Team](https://github.com/bokeh/bokeh) (2014), Bokeh: Python library for interactive visualization, URL http://www.bokeh.pydata.org.
 
 ----
 
-## Internal 
-
-Internal information and documentation can be found on the [Confluence project page](https://wisman.izus.uni-stuttgart.de/pages/viewpage.action?pageId=448860958).
-
+> **Note**
+> Internal information and documentation can be found on the [Confluence project page](https://wisman.izus.uni-stuttgart.de/pages/viewpage.action?pageId=448860958).
 

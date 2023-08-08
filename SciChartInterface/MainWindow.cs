@@ -31,10 +31,8 @@ namespace SciChartInterface
     {
         public void Init()
         {
-
             // Set this code once in App.xaml.cs or application startup
-            SciChartSurface.SetRuntimeLicenseKey("4Mp/qpwBPib0Le7wzWfBZmAPX00gKYqpDS0FqvAjKjmSICdOJlGdTZ80jjEcrJOOGyzf/LeYGe3oH5d4tlzDNxJ16qVEnvqlT1Ehp1iPdtllji5jJGsdity7sr3xP34cMh977mGctuqroj9bRahq5ZuTzxGu0Pd6WCA9J8HRf8wRs3DoycH84BG/v57WR263nu4zDJHo+apytqFWuNeMn/RG/FcAgFnwyFlDv53KsYUbuQYkMMXSLVqZRiPQHbvA8x9NFRFUPw6GGdd2bULHNkERdXQvg/Ch9OfA799bTuYNpyolyk6MgtNPCfNTE+jMdGHptMr0DM44NifQEXH0ijajMJHqKpETRlkKgJ4PI6IIPOR+brDr/3QDdISMp0o5Hrmn06BccE3ghuHka7pFSYvRKCfewT6YJIO2vHxOQkvK640GYnrqoQyMRp0V36iNpkl1HEtIqdT80LSMgrIwbidZBmSXCNpOO1FAezYOex/7UQ0Z9vzKxSuYqiE/JIEWOvahPn3AmqJT+TLXgZWIUIEWj6OQDw8ZqfFPER5Oq/EsKiUuM1daaMFhKorW6rF4MADVgBBzg2mJ0FiQ03mgTmNYv0yR");
-
+            SciChartSurface.SetRuntimeLicenseKey(SciChartRuntimeLicense.Key);
         }
 
         //public void declare_scichart_surface(object sender, RoutedEventArgs routedEventArgs)
