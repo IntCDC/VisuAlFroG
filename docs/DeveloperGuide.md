@@ -17,7 +17,7 @@
 ## Code Formatting
 
 Suggestions on how to format the code are stored in `.editorconfig` and are applied via [dotnet-format](https://github.com/dotnet/format). 
-See messages in *Error List* after building VisFroG.
+See messages in *Error List* after building *VisFroG*.
 
 
 <!-- ###################################################################### -->
