@@ -1,3 +1,4 @@
+// SciChart runtime license key
 
 class SciChartRuntimeLicense
 {
