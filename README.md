@@ -1,4 +1,4 @@
-# **VIS**ualization **FR**amework f**O**r **G**rasshopper (VisFroG)
+# Visualization Framework for Grasshopper (VisFroG)
 
 <!-- BADGES ------------------------------------------------------------------>
 

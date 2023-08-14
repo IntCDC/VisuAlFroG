@@ -97,13 +97,18 @@
     <Compile Include="Controllers\RequestController.cs" />
     <Compile Include="Models\Request.cs" />
     <Compile Include="StartUp.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="WebAPIService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{8da3258e-49cf-483f-a100-3a12304bde0e}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

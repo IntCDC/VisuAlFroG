@@ -4,12 +4,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebAPI.Models
-{
-    public class Request
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
 
+
+/*
+ * Web API Request
+ * 
+ */
+namespace Visualizations
+{
+    namespace WebAPI
+    {
+        namespace Models
+        {
+            public class Request
+            {
+
+                /* ------------------------------------------------------------------*/
+                // public variables
+
+                public int Id { get; set; }
+
+                public string Name { get; set; }
+
+            }
+        }
     }
 }

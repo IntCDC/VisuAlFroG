@@ -7,30 +7,45 @@ using System.Data;
 using System.Data.Entity;
 using EntityFrameworkDatabase.Migrations;
 using System.Runtime.Remoting.Contexts;
-using Utilities;
+using Core.Utilities;
 
 
-namespace EntityFrameworkDatabase.Models
+
+/*
+ * Database Context
+ * 
+ */
+
+namespace EntityFrameworkDatabase
 {
-
-    public class DatabaseContext : DbContext
+    namespace Models
     {
 
-        // You can add custom code to this file. Changes will not be overwritten.
-        // 
-        // If you want Entity Framework to drop and regenerate your database
-        // automatically whenever you change your model schema, please use data migrations.
-        // For more information refer to the documentation:
-        // http://msdn.microsoft.com/en-us/data/jj591621.aspx
-
-        public DatabaseContext() : base("Data Source=(localdb)\\MSSQLLocalDB; Integrated Security=True; MultipleActiveResultSets=True; AttachDbFilename=|DataDirectory|" + Utilities.Artefacts.FileName("database", "mdf"))
-        /// Use base("name=DatabaseContext") to look for connectionString in App.config => But App.config can not be used by Grasshopper component
-        /// // DataDirectory is defined in CTOR of Configuration
+        public class DatabaseContext : DbContext
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DatabaseContext, Configuration>());
+
+            /* ------------------------------------------------------------------*/
+            // public functions
+
+            // You can add custom code to this file. Changes will not be overwritten.
+            // 
+            // If you want Entity Framework to drop and regenerate your database
+            // automatically whenever you change your model schema, please use data migrations.
+            // For more information refer to the documentation:
+            // http://msdn.microsoft.com/en-us/data/jj591621.aspx
+
+            public DatabaseContext() : base("Data Source=(localdb)\\MSSQLLocalDB; Integrated Security=True; MultipleActiveResultSets=True; AttachDbFilename=|DataDirectory|" + Artefacts.FileName("database", "mdf"))
+            /// Use base("name=DatabaseContext") to look for connectionString in App.config => But App.config can not be used by Grasshopper component
+            /// // DataDirectory is defined in CTOR of Configuration
+            {
+                Database.SetInitializer(new MigrateDatabaseToLatestVersion<DatabaseContext, Configuration>());
+            }
+
+            /* ------------------------------------------------------------------*/
+            // public variables
+
+            public System.Data.Entity.DbSet<EntityFrameworkDatabase.Models.Entity> Entites { get; set; }
+
         }
-
-        public System.Data.Entity.DbSet<EntityFrameworkDatabase.Models.Entity> Entites { get; set; }
-
     }
 }

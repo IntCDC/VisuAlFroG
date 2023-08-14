@@ -82,18 +82,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="PythonCallback.cs" />
+    <Compile Include="PythonInterfaceService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PythonScript.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
-      <Project>{b4b4910d-4b22-4f93-91ad-4b3938335b01}</Project>
-      <Name>Utilities</Name>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{8da3258e-49cf-483f-a100-3a12304bde0e}</Project>
+      <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>

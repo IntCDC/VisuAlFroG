@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,184 +13,199 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Core;
 using SciChartInterface;
+using Frontend.ChildWindows;
+using Core.Utilities;
+using Visualizations;
+using Visualizations.SciChartInterface;
+using Frontend.GUI;
+using System.Data.Entity.ModelConfiguration.Conventions;
+using System.Xml.Linq;
+using static Frontend.ChildWindows.AbstractContent;
+
 
 
 /*
  * Main WPF Application
  * 
+ * 
+ * Interaction logic for MainWindow.xaml
+ * 
  */
-namespace VisFroG_WPF
+namespace Frontend
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    namespace Application
     {
 
-        /* ------------------------------------------------------------------*/
-        // public delegates
-
-        public delegate void ReloadFunction_del();
-
-
-        /* ------------------------------------------------------------------*/
-        // public functions
-
-        public MainWindow(string application_name)
-        {
-            InitializeComponent();
-
-            //this.Loaded += OnLoaded;
-
-            Core.Program core = new Core.Program();
-            core.Main();
-
-            SciChartInterface.MainWindow scichart = new SciChartInterface.MainWindow();
-            scichart.Init();
-            scichart.DeclareSciChartSurface(ref main_grid);
-
-
-            CompositionTarget.Rendering += OncePerFrame; // Called once per frame
-
-
-            this.Title = application_name;
-            /*
-            Canvas myParentCanvas = new Canvas();
-            myParentCanvas.Width = 400;
-            myParentCanvas.Height = 400;
-            Canvas.SetTop(myParentCanvas, 0);
-            Canvas.SetLeft(myParentCanvas, 0);
-            */
-            System.Windows.Shapes.Rectangle myRect = new System.Windows.Shapes.Rectangle();
-            myRect.Stroke = System.Windows.Media.Brushes.Black;
-            myRect.Fill = System.Windows.Media.Brushes.SkyBlue;
-            myRect.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-            myRect.VerticalAlignment = System.Windows.VerticalAlignment.Center;
-            myRect.Height = 50;
-            myRect.Width = 50;
-            /*
-            myParentCanvas.Children.Add(myRect
-            grid1.Children.Add(myParentCanvas);
-            */
-            main_grid.Children.Add(myRect);
-
-
-            ///System.Drawing 
-
-
-            Grid DynamicGrid = new Grid();
-            /*
-            < Grid.ColumnDefinitions >
-                < ColumnDefinition Width = "*" />
-                < ColumnDefinition Width = "5" />
-                < ColumnDefinition Width = "*" />
-            </ Grid.ColumnDefinitions >
-            < TextBlock FontSize = "55" HorizontalAlignment = "Center" VerticalAlignment = "Center" TextWrapping = "Wrap" > Left side </ TextBlock >
-            < GridSplitter Grid.Column = "1" Width = "5" HorizontalAlignment = "Stretch" />
-            < TextBlock Grid.Column = "2" FontSize = "55" HorizontalAlignment = "Center" VerticalAlignment = "Center" TextWrapping = "Wrap" > Right side </ TextBlock >
-            */
-            ColumnDefinition gridCol1 = new ColumnDefinition();
-            gridCol1.Width = new GridLength(1, GridUnitType.Star);
-            ColumnDefinition gridCol2 = new ColumnDefinition();
-            gridCol2.Width = new GridLength(5);
-            ColumnDefinition gridCol3 = new ColumnDefinition();
-            gridCol3.Width = new GridLength(1, GridUnitType.Star); ;
-            DynamicGrid.ColumnDefinitions.Add(gridCol1);
-            DynamicGrid.ColumnDefinitions.Add(gridCol2);
-            DynamicGrid.ColumnDefinitions.Add(gridCol3);
-
-            TextBlock txtBlock1 = new TextBlock();
-            txtBlock1.Text = "Left side";
-            txtBlock1.FontSize = 55;
-            txtBlock1.FontWeight = FontWeights.Bold;
-            txtBlock1.TextWrapping = TextWrapping.Wrap;
-            txtBlock1.HorizontalAlignment = HorizontalAlignment.Center;
-            txtBlock1.VerticalAlignment = VerticalAlignment.Center;
-            Grid.SetColumn(txtBlock1, 0);
-            DynamicGrid.Children.Add(txtBlock1);
-
-            GridSplitter gridSplit1 = new GridSplitter();
-            gridSplit1.Width = 5.0;
-            gridSplit1.HorizontalAlignment = HorizontalAlignment.Stretch;
-            gridSplit1.Background = Brushes.AliceBlue;
-            Grid.SetColumn(gridSplit1, 1);
-            DynamicGrid.Children.Add(gridSplit1);
-
-            TextBlock txtBlock2 = new TextBlock();
-            txtBlock2.Text = "Right side";
-            txtBlock2.FontSize = 55;
-            txtBlock2.FontWeight = FontWeights.Bold;
-            txtBlock2.TextWrapping = TextWrapping.Wrap;
-            txtBlock2.HorizontalAlignment = HorizontalAlignment.Center;
-            txtBlock2.VerticalAlignment = VerticalAlignment.Center;
-            Grid.SetColumn(txtBlock2, 2);
-            DynamicGrid.Children.Add(txtBlock2);
-
-            // <Button x:Name="btn1" Content="Reload Plugin" Height="79" Width="212" Click="Button_Click" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="88,52,0,0"/>
-            Button btn = new Button();
-            btn.Name = "btn1";
-            btn.Content = "Reload Plugin";
-            btn.Height = 79.0;
-            btn.Width = 212.0;
-            btn.Click += this.Button_Click;
-            btn.HorizontalAlignment = HorizontalAlignment.Left;
-            btn.VerticalAlignment = VerticalAlignment.Top;
-            btn.Margin = new Thickness(88.0, 52.0, 0.0, 0.0);
-            Grid.SetColumn(btn, 2);
-            DynamicGrid.Children.Add(btn);
-
-            main_grid.Children.Add(DynamicGrid);
-
-
-        }
-
-        public void ReloadComponentFunction(ReloadFunction_del func)
-        {
-            this.reload_func = func;
-        }
-
-
-        /* ------------------------------------------------------------------*/
-        // private functions
-
-        private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
-        {
-            // ...
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
+        public partial class MainWindow : Window
         {
 
-            // DEBUG
-            Button btn = (Button)sender;
-            btn.Content = "Reload Count:" + (this.clicks++).ToString();
+            /* ------------------------------------------------------------------*/
+            // public functions
+
+            // Used for stand-alone execution (DEBUG)
+            public MainWindow() : this("Visualization Framework for Grasshopper (VisFroG)", false) { }
 
 
-            if (this.reload_func != null)
+            public MainWindow(string app_name, bool soft_close)
             {
-                try
+                _soft_close = soft_close;
+                initialize(app_name);
+                execute();
+            }
+
+
+            // Get reload function call from Grasshopper
+            public void ReloadComponentFunction(ReloadFunctionCall func)
+            {
+                _reload_func = func;
+            }
+
+
+            // Soft close is used when called from Grasshopper.
+            // Only change visibility and abort closing for being able to restore window on close.
+            protected override void OnClosing(CancelEventArgs cancel_args)
+            {
+                if (_soft_close)
                 {
-                    this.reload_func();
+                    base.Visibility = Visibility.Hidden;
+                    cancel_args.Cancel = true;
                 }
-                catch (System.IO.FileNotFoundException)
+                else
                 {
-                    // runtimemessages.Add(MessageLevel.Error, "System.IO.FileNotFoundException Message = Die Datei oder Assembly "FlagBufferComponent ...");
+                    base.OnClosing(cancel_args);
                 }
             }
+
+
+            /* ------------------------------------------------------------------*/
+            // public delegates
+
+            public delegate void ReloadFunctionCall();
+
+
+            /* ------------------------------------------------------------------*/
+            // private functions
+
+            public bool initialize(string app_name)
+            {
+                if (_initilized)
+                {
+                    return false;
+                }
+                _timer.Start();
+
+                InitializeComponent();
+                base.Title = app_name;
+                // Callback additionally invoked on loading of main window
+                base.Loaded += on_loaded;
+                // Callback invoked once per frame
+                CompositionTarget.Rendering += once_per_frame;
+
+
+                // Register child window content
+                var log_content = new LogContent();
+                Log.Default.RegisterListener(log_content.LogListener);
+                window_contents.Add(log_content.Name(), log_content);
+
+
+                // Initialize visualizations
+                bool initilized = _vismanager.Initialize();
+                bool setup = false;
+                var scichart_service = _vismanager.GetService<SciChartInterfaceService>();
+                if (scichart_service != null)
+                {
+                    scichart_service.SetGrid(_main_grid);
+                    setup = true;
+                }
+
+                _timer.Stop(this.GetType().FullName);
+                _initilized = initilized && setup;
+                return _initilized;
+            }
+
+
+            public bool execute()
+            {
+                if (!_initilized)
+                {
+                    return false;
+                }
+                _timer.Start();
+
+                //bool executed = _vismanager.Execute();
+
+                draw_window();
+
+                _timer.Stop(this.GetType().FullName);
+                return true;
+            }
+
+
+            private void draw_window()
+            {
+                _windowtree.CreateRoot(_main_grid, windows_available_content, windows_request_content);
+            }
+
+
+            private void on_loaded(object sender, RoutedEventArgs routedEventArgs)
+            {
+                // so far unused ...
+            }
+
+
+            private void once_per_frame(object sender, EventArgs args)
+            {
+                // so far unused ...
+            }
+
+
+            // Provide names of available window content
+            private List<Tuple<string, string, SetContentAvailableCall>> windows_available_content()
+            {
+                // Only show available
+                var content_names = new List<Tuple<string, string, SetContentAvailableCall>>();
+                foreach (var c in window_contents)
+                {
+                    if (c.Value.IsAvailable())
+                    {
+                        string header = c.Value.Header();
+                        string name = c.Key;
+                        content_names.Add(new Tuple<string, string, SetContentAvailableCall>(header, name, c.Value.SetAvailable));
+                    }
+                }
+                return content_names;
+            }
+
+
+            public void windows_request_content(string content_name, Grid content_grid)
+            {
+                if (window_contents.ContainsKey(content_name))
+                {
+                    window_contents[content_name].ProvideContent(content_grid);
+                    window_contents[content_name].SetAvailable(false);
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "BUG: Invalid content name");
+                }
+            }
+
+
+            /* ------------------------------------------------------------------*/
+            // local variables
+
+            private bool _initilized = false;
+            private bool _soft_close = false;
+
+            private VisualizationManager _vismanager = new VisualizationManager();
+            private ChildBranch _windowtree = new ChildBranch();
+
+            private ReloadFunctionCall _reload_func;
+            private TimeBenchmark _timer = new TimeBenchmark();
+
+            Dictionary<string, AbstractContent> window_contents = new Dictionary<string, AbstractContent>();
+
         }
-
-        private void OncePerFrame(object sender, EventArgs args)
-        {
-            /// TODO Check if grasshopper component is still there ... otherwise close
-        }
-
-        /* ------------------------------------------------------------------*/
-        // local variables
-
-        private ReloadFunction_del reload_func;
-        private int clicks = 0;
-
     }
 }

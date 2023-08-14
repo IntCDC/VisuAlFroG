@@ -1,5 +1,6 @@
 ﻿using Grasshopper;
 using Grasshopper.Kernel;
+
 using System;
 using System.Drawing;
 
@@ -9,24 +10,31 @@ using System.Drawing;
  * VisFrog Grasshopper Component Info
  * 
  */
-namespace GrasshopperComponent
+namespace Interface
 {
-    public class VisFroGInfo : GH_AssemblyInfo
+    namespace GrasshopperComponent
     {
-        public override string Name => "VisFroG";
+        public class VisFroGInfo : GH_AssemblyInfo
+        {
 
-        //Return a 24x24 pixel bitmap to represent this GHA library.
-        public override Bitmap Icon => null;
+            /* ------------------------------------------------------------------*/
+            // public functions
 
-        //Return a short string describing the purpose of this GHA library.
-        public override string Description => "Visualization framework providing the concept of visual analytics pipeline within grasshopper.";
+            public override string Name => "VisFroG";
 
-        public override Guid Id => new Guid("1baa1150-3229-4744-888d-eb44f39968b4");
+            //Return a 24x24 pixel bitmap to represent this GHA library.
+            public override Bitmap Icon => null;
 
-        //Return a string identifying you or your company.
-        public override string AuthorName => "Matthias Braun";
+            //Return a short string describing the purpose of this GHA library.
+            public override string Description => "Visualization framework providing the concept of visual analytics pipeline within grasshopper.";
 
-        //Return a string representing your preferred contact details.
-        public override string AuthorContact => "matthias.braun@intcdc.uni-stuttgart.de";
+            public override Guid Id => new Guid("1baa1150-3229-4744-888d-eb44f39968b4");
+
+            //Return a string identifying you or your company.
+            public override string AuthorName => "Matthias Braun";
+
+            //Return a string representing your preferred contact details.
+            public override string AuthorContact => "matthias.braun@intcdc.uni-stuttgart.de";
+        }
     }
 }

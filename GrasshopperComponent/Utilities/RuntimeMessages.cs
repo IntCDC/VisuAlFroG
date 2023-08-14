@@ -29,10 +29,10 @@ namespace GrasshopperComponent.Utilities
 
         /* ------------------------------------------------------------------*/
         // public functions
+
         public RuntimeMessages(GH_Component ghcomponent)
         {
-            this.parent = ghcomponent;
-            this.messages = new List<(GH_RuntimeMessageLevel, string)>();
+            _parent = ghcomponent;
         }
 
 
@@ -41,13 +41,13 @@ namespace GrasshopperComponent.Utilities
             switch(l)
             {
                 case (MessageLevel.Error):
-                    this.messages.Add((GH_RuntimeMessageLevel.Error, m));
+                    _messages.Add((GH_RuntimeMessageLevel.Error, m));
                     break;
                 case (MessageLevel.Warning):
-                    this.messages.Add((GH_RuntimeMessageLevel.Warning, m)); 
+                    _messages.Add((GH_RuntimeMessageLevel.Warning, m)); 
                     break;
                 case (MessageLevel.Info):
-                    this.messages.Add((GH_RuntimeMessageLevel.Remark, m)); 
+                    _messages.Add((GH_RuntimeMessageLevel.Remark, m)); 
                     break;
             }
         }
@@ -55,27 +55,23 @@ namespace GrasshopperComponent.Utilities
 
         public void Show()
         {
-            this.parent.ClearRuntimeMessages();
-            if (this.messages.Count != 0)
+            _parent.ClearRuntimeMessages();
+            if (_messages.Count != 0)
             {
-                foreach ((Grasshopper.Kernel.GH_RuntimeMessageLevel, string) m in this.messages)
+                foreach ((Grasshopper.Kernel.GH_RuntimeMessageLevel, string) m in _messages)
                 {
-                    this.parent.AddRuntimeMessage(m.Item1, m.Item2);
+                    _parent.AddRuntimeMessage(m.Item1, m.Item2);
                 }
-                this.messages.Clear();
+                _messages.Clear();
             }
         }
 
 
         /* ------------------------------------------------------------------*/
-        // local variables
+        // private variables
 
-        private readonly GH_Component parent;
-        private readonly List<(Grasshopper.Kernel.GH_RuntimeMessageLevel, string)> messages;
-
-        /* ------------------------------------------------------------------*/
-        // local functions
-
+        private GH_Component _parent;
+        private List<(Grasshopper.Kernel.GH_RuntimeMessageLevel, string)> _messages = new List<(GH_RuntimeMessageLevel, string)>();
 
     }
 }

@@ -5,16 +5,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EntityFrameworkDatabase.Models
+
+
+/*
+ * Database Model
+ * 
+ */
+namespace EntityFrameworkDatabase
 {
-    public class Entity
+    namespace Models
     {
-        public int Id { get; set; }
-        [Required]
+        public class Entity
+        {
 
-        public string Title { get; set; }
+            /* ------------------------------------------------------------------*/
+            // public variables
 
-        public string Name { get; set; }
+            public int Id { get; set; }
+            [Required]
 
+
+            public string Title { get; set; }
+
+
+            public string Name { get; set; }
+
+        }
     }
 }

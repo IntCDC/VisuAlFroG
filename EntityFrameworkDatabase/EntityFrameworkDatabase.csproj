@@ -87,7 +87,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DatabaseContext.cs" />
     <Compile Include="Models\Entity.cs" />
-    <Compile Include="DatabaseManagement.cs" />
+    <Compile Include="DatabaseService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -100,9 +100,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
-      <Project>{b4b4910d-4b22-4f93-91ad-4b3938335b01}</Project>
-      <Name>Utilities</Name>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{8da3258e-49cf-483f-a100-3a12304bde0e}</Project>
+      <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

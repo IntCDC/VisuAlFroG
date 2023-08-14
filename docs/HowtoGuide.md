@@ -23,8 +23,8 @@
 
 Building and running *VisFroG* requires following software being installed beforehand:
 - [Microsoft Visual Studio 2022](https://visualstudio.microsoft.com/vs/) (VisualStudio.17.Release/17.4.4+33213.308 Enterprise, Microsoft .NET Framework Version 4.8.04084)
-- [Rhinoceros 3D](https://www.rhino3d.com/) (Version SR28, 7.28.23058.3001, 2023-02-27, Educational Lab License)
-- [Grasshopper](https://www.grasshopper3d.com/) (Version Wednesday, 01 February 2023 13:00, Build 1.0 007, part of Rhino3D)
+- [Rhinoceros 3D](https://www.rhino3d.com/) (Version 7 SR31, 7.31.23166.15001, 2023-06-15, Educational Lab License)
+- [Grasshopper](https://www.grasshopper3d.com/) (7.31.23166.15001)
 - [Python](https://www.python.org/downloads/) (Version 3.8 and above)
 - [Bokeh](https://bokeh.org/) (Version 3.1.1, see [First Steps](https://docs.bokeh.org/en/latest/docs/first_steps.html#first-steps))
 - [SciChart](https://www.scichart.com/) (Version 7.0.2.27161)
@@ -33,6 +33,9 @@ Building and running *VisFroG* requires following software being installed befor
 > **Note**
 > - Upon account creation, the [full version of Rhinoceros 3D](https://www.rhino3d.com/download/rhino-for-windows/evaluation) can be used for free for 90 days.
 > - Upon account creation, the free [trial version of SciChart](https://www.scichart.com/getting-started/scichart-wpf/) can be used for 30 days
+
+> **Warn**
+> The .NET SDK version of Rhino and Grasshopper should not be larger than the version of the desktop application.
 
 
 <!-- ###################################################################### -->

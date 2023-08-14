@@ -5,36 +5,49 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.SqlServer;
-using Utilities;
+using Core.Utilities;
 
 
-namespace EntityFrameworkDatabase.Migrations
+
+/*
+ * Database Configuration
+ * 
+ */
+
+namespace EntityFrameworkDatabase
 {
-
-    internal sealed class Configuration : DbMigrationsConfiguration<EntityFrameworkDatabase.Models.DatabaseContext>
+    namespace Migrations
     {
-        public Configuration()
+
+        internal sealed class Configuration : DbMigrationsConfiguration<EntityFrameworkDatabase.Models.DatabaseContext>
         {
-            // Set data directory variable given in connection string of DatabaseContext
-            AppDomain.CurrentDomain.SetData("DataDirectory", Utilities.Artefacts.Path());
 
-            AutomaticMigrationsEnabled = false;
-        }
+            /* ------------------------------------------------------------------*/
+            // public functions
 
-        protected override void Seed(EntityFrameworkDatabase.Models.DatabaseContext context)
-        {
-            //  This method will be called after migrating to the latest version.
+            public Configuration()
+            {
+                // Set data directory variable given in connection string of DatabaseContext
+                AppDomain.CurrentDomain.SetData("DataDirectory", Artefacts.Path());
 
-            //  You can use the DbSet<T>.AddOrUpdate() helper extension method
-            //  to avoid creating duplicate seed data.
-            context.Entites.AddOrUpdate(
-                new Entity[] {
+                AutomaticMigrationsEnabled = false;
+            }
+
+            protected override void Seed(EntityFrameworkDatabase.Models.DatabaseContext context)
+            {
+                //  This method will be called after migrating to the latest version.
+
+                //  You can use the DbSet<T>.AddOrUpdate() helper extension method
+                //  to avoid creating duplicate seed data.
+                context.Entites.AddOrUpdate(
+                    new Entity[] {
                     new Entity() { Id = 1, Title = "Title1", Name = "One" },
                     new Entity() { Id = 2, Title = "Title2", Name = "Two" },
                     new Entity() { Id = 3, Title = "Title3", Name = "Three" },
                     new Entity() { Id = 4, Title = "Title4", Name = "Four" }
-                    }
-                );
+                        }
+                    );
+            }
         }
     }
 }

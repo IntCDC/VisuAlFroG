@@ -60,8 +60,3 @@ The actual startup (currently *WPFApplication*) project needs `Microsoft.Owin.Ho
 - [create-a-rest-api-with-attribute-routing](https://learn.microsoft.com/en-us/aspnet/web-api/overview/web-api-routing-and-actions/create-a-rest-api-with-attribute-routing)
 
 <!-- ###################################################################### -->
-
-<!-- 
-> **Warn**
-> 
--->

@@ -73,21 +73,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Management\AbstractService.cs" />
+    <Compile Include="Management\ServiceManager.cs" />
+    <Compile Include="Management\VisualizationManager.cs" />
+    <Compile Include="Management\AbstractVisualization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\EntityFrameworkDatabase\EntityFrameworkDatabase.csproj">
-      <Project>{25e78628-3abc-441b-b8c3-1b4e451cad2b}</Project>
-      <Name>EntityFrameworkDatabase</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Visualizations\Visualizations.csproj">
-      <Project>{73cd0ec1-44da-469c-b382-42479d3de8ef}</Project>
-      <Name>Visualizations</Name>
-    </ProjectReference>
+    <Compile Include="Utilities\ArtefactPath.cs" />
+    <Compile Include="Utilities\Log.cs" />
+    <Compile Include="Utilities\Metadata.cs" />
+    <Compile Include="Utilities\TimeBenchmark.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -94,7 +94,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Types\Histrogram\HistrogramVisualization.cs" />
+    <Compile Include="VisualizationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -102,9 +103,18 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Templates\" />
+    <Folder Include="Types\ParallelCoordinatesPlot%28PCP%29\" />
+    <Folder Include="Types\ScatterPlotMatrices%28SPLOM%29\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{8da3258e-49cf-483f-a100-3a12304bde0e}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EntityFrameworkDatabase\EntityFrameworkDatabase.csproj">
+      <Project>{25e78628-3abc-441b-b8c3-1b4e451cad2b}</Project>
+      <Name>EntityFrameworkDatabase</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PythonInterface\PythonInterface.csproj">
       <Project>{1233eab1-db38-4264-830a-a40fc694d44d}</Project>
       <Name>PythonInterface</Name>
@@ -118,5 +128,11 @@
       <Name>WebAPI</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Templates\bokeh-template.py" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(ProjectDir)Templates\"* "$(SolutionDir)bin"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
