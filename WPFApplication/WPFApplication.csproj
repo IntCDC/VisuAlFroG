@@ -6,7 +6,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{F7EA1364-BB72-4A5C-8D18-B17FB1259CEC}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>VisFroG_WPF</RootNamespace>
     <AssemblyName>VisFroG_WPF</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
