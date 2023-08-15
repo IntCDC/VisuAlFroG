@@ -35,15 +35,7 @@ namespace Interface
                 "Visualization framework providing the concept of visual analytics pipeline within grasshopper.",
                 "Visual Analysis", "VisFroG")
             {
-                _timer.Start();
-
                 _runtimemessages = new RuntimeMessages(this);
-
-                string app_name = base.Name + " (" + base.NickName + ")";
-                _window = new MainWindow(app_name, true);
-                _window.ReloadComponentFunction(reload_instance);
-
-                _timer.Stop(this.GetType().FullName);
             }
 
 
@@ -77,6 +69,13 @@ namespace Interface
             {
                 _timer.Start();
 
+                // Lazy init required!
+                if (_window == null)
+                {
+                    string app_name = base.Name + " (" + base.NickName + ")";
+                    _window = new MainWindow(app_name, true);
+                    _window.ReloadComponentFunction(reload_instance);
+                }
                 // Open or restore invisible window
                 _window.Show();
 

@@ -53,7 +53,7 @@ namespace Frontend
 
                 // Default for Level.Info
                 var font_color = Brushes.White;
-                string level_prefix = "<INFO>";
+                string level_prefix = "<INFO> ";
                 switch (msgdata.level)
                 {
                     case (Log.Level.Warn):
@@ -72,7 +72,7 @@ namespace Frontend
 
                 // Fixed padding
                 string trace_meta = level_prefix + " " + trace_file + trace_method + trace_line;
-                trace_meta = trace_meta.PadRight(50, ' ');
+                trace_meta = trace_meta.PadRight(60, ' ');
                 string text = (trace_meta + " > " + msgdata.message + Environment.NewLine);
 
                 var run = new Run(text);

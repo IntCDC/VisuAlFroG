@@ -44,7 +44,7 @@ namespace Frontend
             // public functions
 
             // Used for stand-alone execution (DEBUG)
-            public MainWindow() : this("Visualization Framework for Grasshopper (VisFroG)", false) { }
+            public MainWindow() : this("[detached] Visualization Framework for Grasshopper (VisFroG)", false) { }
 
 
             public MainWindow(string app_name, bool soft_close)

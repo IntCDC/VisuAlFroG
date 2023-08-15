@@ -26,4 +26,4 @@ jobs:
     - run: nuget restore VisFroG.sln
 
     - name: Build app for release
-      run: msbuild VisFroG.sln -t:rebuild -verbosity:diag -property:Configuration=Release 
+      run: msbuild VisFroG.sln -target:rebuild -verbosity:normal -property:Configuration=Release 
