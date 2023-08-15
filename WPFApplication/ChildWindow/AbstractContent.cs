@@ -20,10 +20,11 @@ namespace Frontend
     {
         public abstract class AbstractContent
         {
+
+            /* ------------------------------------------------------------------*/
+            // public types
+
             public delegate void SetContentAvailableCall(bool available);
-            // Provide header and name of content element
-            public delegate List<Tuple<string, string, SetContentAvailableCall>> AvailableContentCall();
-            public delegate void RequestContentCall(string content_name, Grid content_grid);
 
 
             /* ------------------------------------------------------------------*/

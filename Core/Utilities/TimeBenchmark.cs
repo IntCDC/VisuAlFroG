@@ -40,7 +40,7 @@ namespace Core
                 {
                     _watch.Stop();
                     var elapsed_ms = _watch.ElapsedMilliseconds;
-                    Log.Default.Msg(Log.Level.Info, "Elapsed Time: " + elapsed_ms.ToString(), new StackTrace(true));
+                    Log.Default.Msg(Log.Level.Debug, "Elapsed Time: " + elapsed_ms.ToString(), new StackTrace(true));
                     _started = false;
                 }
 #endif

@@ -97,6 +97,9 @@ namespace Frontend
 
                 InitializeComponent();
                 base.Title = app_name;
+                base.Width = 1280;
+                base.Height = 720;
+
                 // Callback additionally invoked on loading of main window
                 base.Loaded += on_loaded;
                 // Callback invoked once per frame
@@ -171,6 +174,7 @@ namespace Frontend
                     {
                         string header = c.Value.Header();
                         string name = c.Key;
+                        // Provide info on content element: Header, Name (= unique ID), delegate to set availability of content element
                         content_names.Add(new Tuple<string, string, SetContentAvailableCall>(header, name, c.Value.SetAvailable));
                     }
                 }

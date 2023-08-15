@@ -45,7 +45,7 @@ namespace Frontend
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public void CreateRoot(Grid parent_grid, AbstractContent.AvailableContentCall available_content, AbstractContent.RequestContentCall request_content)
+            public void CreateRoot(Grid parent_grid, AvailableContentCall available_content, RequestContentCall request_content)
             {
                 if (parent_grid == null)
                 {
@@ -183,7 +183,7 @@ namespace Frontend
             /* ------------------------------------------------------------------*/
             // private functions
 
-            private void add_leaf_child(ChildBranch parent_branch, AbstractContent.AvailableContentCall available_content, AbstractContent.RequestContentCall request_content, Grid grid, ChildLeaf child_leaf)
+            private void add_leaf_child(ChildBranch parent_branch, AvailableContentCall available_content, RequestContentCall request_content, Grid grid, ChildLeaf child_leaf)
             {
                 _parent_is_root = false;
                 _parent_branch = parent_branch;

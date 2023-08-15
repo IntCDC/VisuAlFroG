@@ -109,11 +109,6 @@ namespace Core
 
 
             /* ------------------------------------------------------------------*/
-            // private functions
-
-
-
-            /* ------------------------------------------------------------------*/
             // private variables
 
             private static Log _instance = null;

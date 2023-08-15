@@ -33,7 +33,7 @@ namespace Frontend
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public ChildLeaf(ChildBranch parent_branch, bool parent_is_root, AbstractContent.AvailableContentCall available_content, AbstractContent.RequestContentCall request_content)
+            public ChildLeaf(ChildBranch parent_branch, bool parent_is_root, AvailableContentCall available_content, RequestContentCall request_content)
             {
                 _parent_branch = parent_branch;
                 _parent_is_root = parent_is_root;
@@ -158,10 +158,7 @@ namespace Frontend
                     content_item.Click += menuitem_clicked;
                     item_content_menu.Items.Add(content_item);
                 }
-                if (!item_content_menu.Items.IsEmpty)
-                {
-                    contextmenu.Items.Add(item_content_menu);
-                }
+                contextmenu.Items.Add(item_content_menu);
             }
 
             private void menuitem_clicked(object sender, RoutedEventArgs e)
@@ -192,7 +189,9 @@ namespace Frontend
                     if (_reset_content_available != null)
                     {
                         _reset_content_available(true);
-                    } else {
+                    }
+                    else
+                    {
                         Log.Default.Msg(Log.Level.Error, "BUG: Missing value for _reset_content_available");
                     }
                 }
@@ -217,7 +216,7 @@ namespace Frontend
             private readonly string _vertical_right = "child_vertical_right" + GenerateID();
             private readonly string _delete = "child_delete" + GenerateID();
 
-            private AbstractContent.SetContentAvailableCall _reset_content_available = null; 
+            private AbstractContent.SetContentAvailableCall _reset_content_available = null;
         }
     }
 }

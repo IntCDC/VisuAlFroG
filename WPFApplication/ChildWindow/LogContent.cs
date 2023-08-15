@@ -47,33 +47,35 @@ namespace Frontend
 
             public void LogListener(Log.MessageData msgdata)
             {
-                string trace_file = "[File:" + Path.GetFileName(msgdata.caller_file) + "]";
-                string trace_method = "[Method:" + msgdata.caller_method + "]";
-                string trace_line = "[Line:" + msgdata.caller_line + "]";
-                string trace_meta = trace_file + trace_method + trace_line;
-                // Fixed padding
-                trace_meta = trace_meta.PadRight(65, ' ');
-                string text = (trace_meta + " > " + msgdata.message + Environment.NewLine);
+                string trace_file = "[" + Path.GetFileName(msgdata.caller_file) + "]";
+                string trace_method = "[" + msgdata.caller_method + "]";
+                string trace_line = "[" + msgdata.caller_line + "]";
 
                 // Default for Level.Info
                 var font_color = Brushes.White;
-                string level_prefix = "<INFO> ";
+                string level_prefix = "<INFO>";
                 switch (msgdata.level)
                 {
                     case (Log.Level.Warn):
                         font_color = Brushes.Yellow;
-                        level_prefix = "<WARN> ";
+                        level_prefix = "<WARN>";
                         break;
                     case (Log.Level.Error):
                         font_color = Brushes.Red;
-                        level_prefix = "<ERROR> ";
+                        level_prefix = "<ERROR>";
                         break;
                     case (Log.Level.Debug):
                         font_color = Brushes.Gray;
-                        level_prefix = "<DEBUG> ";
+                        level_prefix = "<DEBUG>";
                         break;
                 }
-                var run = new Run(level_prefix + text);
+
+                // Fixed padding
+                string trace_meta = level_prefix + " " + trace_file + trace_method + trace_line;
+                trace_meta = trace_meta.PadRight(50, ' ');
+                string text = (trace_meta + " > " + msgdata.message + Environment.NewLine);
+
+                var run = new Run(text);
                 run.Foreground = font_color;
                 _textblock.Inlines.Add(run);
             }
