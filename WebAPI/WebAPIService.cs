@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Owin.Hosting;
 using System.Net.Http;
 using Core.Utilities;
-using Core.Management;
+using Core.Abstracts;
 
 
 
@@ -45,7 +41,7 @@ namespace Visualizations
                 WebApp.Start<StartUp>(url: _base_address);
                 _client = new HttpClient();
 
-                _timer.Stop(this.GetType().FullName);
+                _timer.Stop();
                 _initilized = true;
                 return _initilized;
             }
@@ -55,6 +51,7 @@ namespace Visualizations
             {
                 if (!_initilized)
                 {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return false;
                 }
                 _timer.Start();
@@ -68,7 +65,7 @@ namespace Visualizations
                     received_response = true;
                 }
 
-                _timer.Stop(this.GetType().FullName);
+                _timer.Stop();
                 return received_response;
             }
 

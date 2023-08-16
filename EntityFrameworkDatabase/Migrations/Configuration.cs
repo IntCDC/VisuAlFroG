@@ -1,10 +1,6 @@
 ﻿using EntityFrameworkDatabase.Models;
 using System;
-using System.Data.Entity;
 using System.Data.Entity.Migrations;
-using System.Linq;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity.SqlServer;
 using Core.Utilities;
 
 
@@ -13,7 +9,6 @@ using Core.Utilities;
  * Database Configuration
  * 
  */
-
 namespace EntityFrameworkDatabase
 {
     namespace Migrations

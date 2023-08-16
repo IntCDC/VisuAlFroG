@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
-using Frontend.ChildWindows;
-
-using static Frontend.ChildWindows.AbstractContent;
+using Core.GUI;
 
 
 
@@ -15,9 +10,9 @@ using static Frontend.ChildWindows.AbstractContent;
  * 
  * 
  */
-namespace Frontend
+namespace Core
 {
-    namespace ChildWindows
+    namespace Abstracts
     {
         public abstract class AbstractChild
         {
@@ -30,7 +25,7 @@ namespace Frontend
             }
 
             // Provide header and name of content element
-            public delegate List<Tuple<string, string, SetContentAvailableCall>> AvailableContentCall();
+            public delegate List<Tuple<string, string, AbstractContent.SetContentAvailableCall>> AvailableContentCall();
             public delegate void RequestContentCall(string content_name, Grid content_grid);
 
 

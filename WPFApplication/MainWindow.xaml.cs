@@ -13,15 +13,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using SciChartInterface;
-using Frontend.ChildWindows;
-using Core.Utilities;
-using Visualizations;
-using Visualizations.SciChartInterface;
-using Frontend.GUI;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Xml.Linq;
-using static Frontend.ChildWindows.AbstractContent;
+using Core.Utilities;
+using Core.Abstracts;
+using Visualizations;
+using Core.GUI;
+using Visualizations.SciChartInterface;
+using Visualizations.Types;
 
 
 
@@ -91,6 +90,7 @@ namespace Frontend
             {
                 if (_initilized)
                 {
+                    Log.Default.Msg(Log.Level.Warn, "Initialization should only be called once");
                     return false;
                 }
                 _timer.Start();
@@ -106,24 +106,21 @@ namespace Frontend
                 CompositionTarget.Rendering += once_per_frame;
 
 
-                // Register child window content
+                // Register window content
                 var log_content = new LogContent();
                 Log.Default.RegisterListener(log_content.LogListener);
                 window_contents.Add(log_content.Name(), log_content);
 
-
                 // Initialize visualizations
                 bool initilized = _vismanager.Initialize();
-                bool setup = false;
-                var scichart_service = _vismanager.GetService<SciChartInterfaceService>();
-                if (scichart_service != null)
-                {
-                    scichart_service.SetGrid(_main_grid);
-                    setup = true;
-                }
 
-                _timer.Stop(this.GetType().FullName);
-                _initilized = initilized && setup;
+                // Register visualizations as window content
+                var testvis = new TestVisualization();
+                window_contents.Add(testvis.Name(), testvis);
+
+
+                _timer.Stop();
+                _initilized = initilized;
                 return _initilized;
             }
 
@@ -132,15 +129,16 @@ namespace Frontend
             {
                 if (!_initilized)
                 {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return false;
                 }
                 _timer.Start();
 
-                //bool executed = _vismanager.Execute();
+                bool executed = _vismanager.Execute();
 
                 draw_window();
 
-                _timer.Stop(this.GetType().FullName);
+                _timer.Stop();
                 return true;
             }
 
@@ -164,10 +162,10 @@ namespace Frontend
 
 
             // Provide names of available window content
-            private List<Tuple<string, string, SetContentAvailableCall>> windows_available_content()
+            private List<Tuple<string, string, AbstractContent.SetContentAvailableCall>> windows_available_content()
             {
                 // Only show available
-                var content_names = new List<Tuple<string, string, SetContentAvailableCall>>();
+                var content_names = new List<Tuple<string, string, AbstractContent.SetContentAvailableCall>>();
                 foreach (var c in window_contents)
                 {
                     if (c.Value.IsAvailable())
@@ -175,7 +173,7 @@ namespace Frontend
                         string header = c.Value.Header();
                         string name = c.Key;
                         // Provide info on content element: Header, Name (= unique ID), delegate to set availability of content element
-                        content_names.Add(new Tuple<string, string, SetContentAvailableCall>(header, name, c.Value.SetAvailable));
+                        content_names.Add(new Tuple<string, string, AbstractContent.SetContentAvailableCall>(header, name, c.Value.SetAvailable));
                     }
                 }
                 return content_names;

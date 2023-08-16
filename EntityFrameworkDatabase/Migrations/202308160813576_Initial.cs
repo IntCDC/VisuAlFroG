@@ -1,12 +1,16 @@
-﻿
+﻿using System;
+using System.Data.Entity.Migrations;
 
+
+
+/*
+ * Database Migration
+ * 
+ */
 namespace EntityFrameworkDatabase
 {
     namespace Migrations
-    {
-        using System;
-        using System.Data.Entity.Migrations;
-
+    { 
         public partial class Initial : DbMigration
         {
             public override void Up()
@@ -30,4 +34,3 @@ namespace EntityFrameworkDatabase
         }
     }
 }
-

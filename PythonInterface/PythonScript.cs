@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Python.Runtime;
 using System.IO;
 using Core.Utilities;
@@ -64,8 +60,9 @@ namespace Visualizations
                         start();
                     }
                 }
-                Log.Default.Msg(Log.Level.Debug, "PythonScript>>> StringID = " + _StringID);
 
+                /// Runs in parallel thread which is currently not supported by Log.Default.Msg
+                Console.WriteLine("PythonScript>>> StringID = " + _StringID);
             }
 
 

@@ -2,7 +2,6 @@ using Grasshopper;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 using System;
-using System.Collections.Generic;
 using GrasshopperComponent.Utilities;
 using Frontend.Application;
 using Core.Utilities;
@@ -102,7 +101,7 @@ namespace Interface
                 _runtimemessages.Show();
 
 
-                _timer.Stop(this.GetType().FullName);
+                _timer.Stop();
             }
 
 

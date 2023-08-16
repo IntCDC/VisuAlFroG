@@ -1,11 +1,7 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using Core.Utilities;
+using Core.Abstracts;
 
 
 
@@ -43,6 +39,7 @@ namespace Core
             {
                 if (!_initilized)
                 {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return false;
                 }
                 bool executed = true;

@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Core.Utilities;
+
 
 
 /*
@@ -23,7 +19,8 @@ namespace Visualizations
 
             public static void PrintMessage(string message)
             {
-                Log.Default.Msg(Log.Level.Debug, "PythonCallback>>> Message = " + message);
+                /// Runs in parallel thread which is currently not supported by Log.Default.Msg
+                Console.WriteLine("PythonCallback>>> Message = " + message);
             }
 
             public static string GetBokehOutputFilePath()

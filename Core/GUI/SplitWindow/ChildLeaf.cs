@@ -1,20 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Frontend.GUI;
-using Frontend.ChildWindows;
-using Core.Utilities;
+using Core.GUI;
+using Core.Abstracts;
 
 
 
@@ -23,9 +12,9 @@ using Core.Utilities;
  * 
  * 
  */
-namespace Frontend
+namespace Core
 {
-    namespace ChildWindows
+    namespace GUI
     {
         public class ChildLeaf : AbstractChild
         {
@@ -184,16 +173,12 @@ namespace Frontend
                 }
                 else if (sender_name == _delete)
                 {
-                    _parent_branch.DeleteLeaf();
                     _grid.Children.Clear();
                     if (_reset_content_available != null)
                     {
                         _reset_content_available(true);
                     }
-                    else
-                    {
-                        Log.Default.Msg(Log.Level.Error, "BUG: Missing value for _reset_content_available");
-                    }
+                    _parent_branch.DeleteLeaf();
                 }
 
                 var available_child_content = _available_content();

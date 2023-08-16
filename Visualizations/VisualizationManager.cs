@@ -9,6 +9,7 @@ using Visualizations.SciChartInterface;
 using System.Net.Http;
 using Microsoft.Owin.Hosting;
 using Core.Utilities;
+using Core.Abstracts;
 using Core.Management;
 using EntityFrameworkDatabase;
 
@@ -29,7 +30,8 @@ namespace Visualizations
         public VisualizationManager()
         {
             _servicemanager.AddService(new WebAPIService());
-            _servicemanager.AddService(new PythonInterfaceService());
+            /// TODO fix hard coded paths
+            /// _servicemanager.AddService(new PythonInterfaceService());
             _servicemanager.AddService(new SciChartInterfaceService());
             _servicemanager.AddService(new DatabaseService());
         }
@@ -54,6 +56,7 @@ namespace Visualizations
         {
             if (!_initilized)
             {
+                Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                 return false;
             }
 

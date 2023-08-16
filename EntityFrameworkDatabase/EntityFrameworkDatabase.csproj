@@ -80,9 +80,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Migrations\202307061550558_Initial.cs" />
-    <Compile Include="Migrations\202307061550558_Initial.designer.cs">
-      <DependentUpon>202307061550558_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\202308160813576_Initial.cs" />
+    <Compile Include="Migrations\202308160813576_Initial.designer.cs">
+      <DependentUpon>202308160813576_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DatabaseContext.cs" />
@@ -95,15 +95,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202307061550558_Initial.resx">
-      <DependentUpon>202307061550558_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{8da3258e-49cf-483f-a100-3a12304bde0e}</Project>
       <Name>Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202308160813576_Initial.resx">
+      <DependentUpon>202308160813576_Initial.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

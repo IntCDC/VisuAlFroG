@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Threading;
 using Python.Runtime;
-using Microsoft.Scripting.Runtime;
-using Core.Management;
+using Core.Utilities;
+using Core.Abstracts;
 
 
 
@@ -58,7 +53,7 @@ namespace Visualizations
                     _initilized = true;
                 }
 
-                _timer.Stop(this.GetType().FullName);
+                _timer.Stop();
                 return _initilized;
             }
 
@@ -67,13 +62,14 @@ namespace Visualizations
             {
                 if (!_initilized)
                 {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return false;
                 }
                 _timer.Start();
 
                 _worker.Start();
 
-                _timer.Stop(this.GetType().FullName);
+                _timer.Stop();
                 return true;
             }
 

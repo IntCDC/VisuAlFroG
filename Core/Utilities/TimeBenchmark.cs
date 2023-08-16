@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 
 
 
@@ -33,7 +28,7 @@ namespace Core
 #endif
             }
 
-            public void Stop(string calling_class)
+            public void Stop()
             {
 #if DEBUG
                 if (_started)

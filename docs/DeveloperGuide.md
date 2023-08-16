@@ -38,9 +38,8 @@ See messages in *Error List* after building *VisFroG*.
     *PM>* `Enable-Migrations`
   - Then, open the file `.../Migrations/Configuration.cs`, and in the function `Configuration()`add:
 ```C#
-        var locPath = System.AppContext.BaseDirectory;
-        var dataDirPath = System.IO.Path.GetDirectoryName(locPath);
-        AppDomain.CurrentDomain.SetData("DataDirectory", dataDirPath);
+        // Set data directory variable given in connection string of DatabaseContext
+        AppDomain.CurrentDomain.SetData("DataDirectory", Artefacts.Path());
 ```
   - *PM>* `Add-Migration Initial`
   - *PM>* `Update-Database`

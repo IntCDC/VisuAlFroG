@@ -1,13 +1,7 @@
 ﻿using EntityFrameworkDatabase.Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using Core.Utilities;
-using Core.Management;
+using Core.Abstracts;
 
 
 
@@ -29,7 +23,7 @@ namespace EntityFrameworkDatabase
 
             _database_context = new DatabaseContext();
 
-            _timer.Stop(this.GetType().FullName);
+            _timer.Stop();
             _initilized = true;
             return _initilized;
         }
@@ -39,6 +33,7 @@ namespace EntityFrameworkDatabase
         {
             if (!_initilized)
             {
+                Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                 return false;
             }
             _timer.Start();
@@ -49,7 +44,7 @@ namespace EntityFrameworkDatabase
                 Log.Default.Msg(Log.Level.Info, obj.Title);
             }
 
-            _timer.Stop(this.GetType().FullName);
+            _timer.Stop();
             return true;
         }
 

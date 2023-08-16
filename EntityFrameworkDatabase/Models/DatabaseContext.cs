@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using EntityFrameworkDatabase.Migrations;
-using System.Runtime.Remoting.Contexts;
 using Core.Utilities;
 
 
@@ -15,7 +8,6 @@ using Core.Utilities;
  * Database Context
  * 
  */
-
 namespace EntityFrameworkDatabase
 {
     namespace Models

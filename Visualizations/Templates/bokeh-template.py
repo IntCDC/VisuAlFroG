@@ -14,8 +14,8 @@ from bokeh.io import output_file
 import pandas as pd
 
 import clr
-clr.AddReference('PythonInterface')
-from PythonInterface import PythonCallback
+clr.AddReference('Visualizations')
+from Visualizations.PythonInterface import PythonCallback
 
 
 

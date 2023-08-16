@@ -62,6 +62,8 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -71,12 +73,18 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Management\AbstractService.cs" />
+    <Compile Include="Abstracts\AbstractChild.cs" />
+    <Compile Include="Abstracts\AbstractContent.cs" />
+    <Compile Include="Abstracts\AbstractService.cs" />
+    <Compile Include="GUI\SplitWindow\ChildBranch.cs" />
+    <Compile Include="GUI\SplitWindow\ChildLeaf.cs" />
+    <Compile Include="GUI\WindowContent\LogContent.cs" />
+    <Compile Include="GUI\ColorTheme.cs" />
     <Compile Include="Management\ServiceManager.cs" />
-    <Compile Include="Management\VisualizationManager.cs" />
-    <Compile Include="Management\AbstractVisualization.cs" />
+    <Compile Include="Abstracts\AbstractVisualization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\ArtefactPath.cs" />
     <Compile Include="Utilities\Log.cs" />

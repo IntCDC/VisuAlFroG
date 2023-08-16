@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Xml.Linq;
 
 
 
@@ -14,9 +7,9 @@ using System.Xml.Linq;
  * Abstract Child Content
  * 
  */
-namespace Frontend
+namespace Core
 {
-    namespace ChildWindows
+    namespace Abstracts
     {
         public abstract class AbstractContent
         {

@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting.Contexts;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Media.Media3D;
 using System.IO;
 using Core.Utilities;
+using Core.Abstracts;
 using System.Windows.Media;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Data;
 using System.Windows.Documents;
 
 
@@ -22,9 +13,9 @@ using System.Windows.Documents;
  * GUI Log Console
  * 
  */
-namespace Frontend
+namespace Core
 {
-    namespace ChildWindows
+    namespace GUI
     {
         public sealed class LogContent : AbstractContent
         {
@@ -41,7 +32,6 @@ namespace Frontend
             {
                 grid.Background = Brushes.Black;
                 grid.Children.Add(_content);
-
             }
 
 
@@ -103,8 +93,8 @@ namespace Frontend
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private ScrollViewer _content;
-            private TextBlock _textblock;
+            private ScrollViewer _content = null;
+            private TextBlock _textblock = null;
         }
 
     }
