@@ -161,10 +161,6 @@
       <Project>{8da3258e-49cf-483f-a100-3a12304bde0e}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SciChartInterface\SciChartInterface.csproj">
-      <Project>{ac9a69f3-1273-46cd-bdd2-14bc512c8413}</Project>
-      <Name>SciChartInterface</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Visualizations\Visualizations.csproj">
       <Project>{73cd0ec1-44da-469c-b382-42479d3de8ef}</Project>
       <Name>Visualizations</Name>
@@ -172,6 +168,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\visfrog-logo.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

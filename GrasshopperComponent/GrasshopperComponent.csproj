@@ -12,7 +12,8 @@
     <AssemblyName>$(SolutionName)</AssemblyName>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>   
+    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>   
   </PropertyGroup>
 
   <ItemGroup>
