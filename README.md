@@ -44,7 +44,7 @@ For *external dependencies* different licenses apply:
 - OWIN: [Apache 2.0](https://github.com/owin-contrib/owin-hosting/blob/master/LICENSE.txt)
 - OwinSelfHost: [Microsoft Software License Terms](https://www.nuget.org/packages/Microsoft.AspNet.WebApi.OwinSelfHost/5.2.9/license)
 - EntityFramework: [Apache 2.0](https://licenses.nuget.org/Apache-2.0)
-- other transitive dependencies are published under the [MIT](https://licenses.nuget.org/MIT) license or under the [Microsoft Software License Terms](https://dotnet.microsoft.com/en-us/dotnet_library_license.htm)
+- other transitive dependencies are published under [MIT](https://licenses.nuget.org/MIT), [Apache 2.0](https://licenses.nuget.org/Apache-2.0), or the [Microsoft Software License Terms](https://dotnet.microsoft.com/en-us/dotnet_library_license.htm)
 
 
 ## Citation

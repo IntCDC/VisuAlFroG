@@ -29,7 +29,7 @@ See messages in *Error List* after building *VisFroG*.
     
 ```XML
 	<connectionStrings>
-		<add name="myContext" connectionString="Data Source=(localdb)\MSSQLLocalDB; Integrated Security=True; MultipleActiveResultSets=True; AttachDbFilename=|DataDirectory|myContext-Database.mdf" providerName="System.Data.SqlClient" />
+		<add name="myContext" connectionString="Data Source=(localdb)\MSSQLLocalDB; Integrated Security=True; MultipleActiveResultSets=True; AttachDbFilename=|DataDirectory|database.mdf" providerName="System.Data.SqlClient" />
 	</connectionStrings>
 ```
 - Open *Tools* / *NuGet Package Manager* / **Package Manager Console** (PMC)
