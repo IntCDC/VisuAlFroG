@@ -49,5 +49,9 @@
     <StartArguments></StartArguments>
     <StartAction>Program</StartAction>
   </PropertyGroup>
+  
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(SolutionDir)Visualizations\Templates\&quot;* &quot;$(OutputPath)&quot;" />
+  </Target>
 
 </Project>
