@@ -33,6 +33,7 @@ namespace Core
                 content_grid.Background = Brushes.Black;
                 content_grid.Children.Add(_content);
 
+                _attached = true;
                 return true;
             }
 

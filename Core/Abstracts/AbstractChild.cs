@@ -5,22 +5,27 @@ using Core.GUI;
 
 
 
+
 /*
  * Abstract Child Window
  * 
  * 
  */
+
+using ContentDataListType = System.Collections.Generic.List<System.Tuple<string, string, Core.Abstracts.AbstractContent.DetachContentCall>>;
+
 namespace Core
 {
     namespace Abstracts
     {
         public abstract class AbstractChild
         {
+
             /* ------------------------------------------------------------------*/
             // public delegates
 
             // Provide 'id', 'header' and 'availability function' of content element
-            public delegate List<Tuple<string, string, AbstractContent.ContentAttachedCall>> AvailableContentCall();
+            public delegate ContentDataListType AvailableContentCall();
 
             public delegate bool RequestContentCall(string content_name, Grid content_grid);
 
@@ -45,7 +50,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // protected variables
 
-            protected Grid _grid = null;
+            protected Grid _content = null;
             protected bool _parent_is_root = false;
             protected ChildBranch _parent_branch = null;
             protected AvailableContentCall _available_content = null;

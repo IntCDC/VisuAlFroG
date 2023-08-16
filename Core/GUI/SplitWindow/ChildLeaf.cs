@@ -5,6 +5,8 @@ using System.Windows.Media;
 using Core.GUI;
 using Core.Abstracts;
 using Core.Utilities;
+using System.Windows.Input;
+using System.Windows.Shapes;
 
 
 
@@ -13,6 +15,9 @@ using Core.Utilities;
  * 
  * 
  */
+
+using ContentDataType = System.Tuple<string, string, Core.Abstracts.AbstractContent.DetachContentCall>;
+
 namespace Core
 {
     namespace GUI
@@ -30,28 +35,41 @@ namespace Core
                 _available_content = available_content;
                 _request_content = request_content;
 
-                _grid = new Grid();
-                _grid.Background = ColorTheme.GridBackground;
-                _grid.Name = "grid_" + UniqueStringID.Generate();
+                _content = new Grid();
+                _content.Background = ColorTheme.GridBackground;
+                _content.Name = "grid_" + UniqueStringID.Generate();
+
+                // Drag and drop
+                _content.KeyDown += content_keydown;
+                _content.KeyUp += content_keyup;
+                _content.MouseMove += content_mousemove;
+                _content.GiveFeedback += content_givefeedback;
+                _content.AllowDrop = true;
+                _content.DragEnter += content_dragenter;
+                _content.DragLeave += content_dragleave;
+                _content.DragOver += content_dragover;
+                _content.Drop += content_drop;
 
                 /// DEBUG background color
+                 /*
                 var generator = new Random();
                 var color = generator.Next(1111, 9999).ToString();
-                _grid.Background = (Brush)new BrushConverter().ConvertFrom("#" + color);
+                _content.Background = (Brush)new BrushConverter().ConvertFrom("#" + color);
+                */
 
-                setup_contextmenu();
+                contextmenu_setup();
             }
 
             ~ChildLeaf()
             {
-                _grid = null;
+                _content = null;
                 _parent_branch = null;
             }
 
 
             public Grid GetContentElement()
             {
-                return _grid;
+                return _content;
             }
 
 
@@ -60,20 +78,20 @@ namespace Core
                 _parent_branch = parent_branch;
                 _parent_is_root = parent_is_root;
                 // Recreate context menu due to changed root
-                setup_contextmenu();
+                contextmenu_setup();
             }
 
 
             /* ------------------------------------------------------------------*/
             // private functions
 
-            private void setup_contextmenu()
+            private void contextmenu_setup()
             {
                 ContextMenu contextmenu = new ContextMenu();
                 contextmenu.Style = ColorTheme.ContextMenuStyle();
                 // Dynamically create context menu when loaded
                 contextmenu.Loaded += contextmenu_loaded;
-                _grid.ContextMenu = contextmenu;
+                _content.ContextMenu = contextmenu;
             }
 
 
@@ -152,69 +170,188 @@ namespace Core
                     item_content_menu.IsEnabled = false;
                 }
                 contextmenu.Items.Add(item_content_menu);
+
+                var item_sep = new Separator();
+                contextmenu.Items.Add(item_sep);
+
+                var item_dad = new TextBlock();
+                item_dad.Text = "Press 'Ctrl' key to drag & drop " + Environment.NewLine +
+                                "content to another window." + Environment.NewLine +
+                                "NOTE: Target content will be replaced.";
+                item_dad.IsEnabled = false;
+                contextmenu.Items.Add(item_dad);
             }
+
 
             private void menuitem_clicked(object sender, RoutedEventArgs e)
             {
                 var sender_menuitem = sender as MenuItem;
-                string sender_name = sender_menuitem.Name;
+                if (sender_menuitem == null)
+                {
+                    return;
+                }
 
-                if (sender_name == _horizontal_top)
+                string menuitem_id = sender_menuitem.Name;
+                if (menuitem_id == _horizontal_top)
                 {
                     _parent_branch.Split(ChildBranch.SplitOrientation.Horizontal, ChildBranch.ChildLocation.Top_Left);
                 }
-                else if (sender_name == _horizontal_bottom)
+                else if (menuitem_id == _horizontal_bottom)
                 {
                     _parent_branch.Split(ChildBranch.SplitOrientation.Horizontal, ChildBranch.ChildLocation.Bottom_Right);
                 }
-                else if (sender_name == _vertical_Left)
+                else if (menuitem_id == _vertical_Left)
                 {
                     _parent_branch.Split(ChildBranch.SplitOrientation.Vertical, ChildBranch.ChildLocation.Top_Left);
                 }
-                else if (sender_name == _vertical_right)
+                else if (menuitem_id == _vertical_right)
                 {
                     _parent_branch.Split(ChildBranch.SplitOrientation.Vertical, ChildBranch.ChildLocation.Bottom_Right);
                 }
-                else if (sender_name == _delete)
+                else if (menuitem_id == _delete)
                 {
-                    reset_content();
+                    content_detach();
                     _parent_branch.DeleteLeaf();
                 }
 
-                var available_child_content = _available_content();
-                foreach (var content in available_child_content)
+                var available_contents = _available_content();
+                foreach (var available_content in available_contents)
                 {
-                    if (sender_name == content.Item1) // = ID
+                    if (menuitem_id == available_content.Item1) // = ID
                     {
-                        if (content.Item3 == null)
-                        {
-                            Log.Default.Msg(Log.Level.Error, "ContentAttachedCall delegate is null");
-                            return;
-                        }
-                        reset_content();
-                        _content_attached = content.Item3; // attached content delegate
-                        if (_request_content(content.Item1, _grid))
-                        {
-                            _content_attached(true);
-                        }
-                        else
-                        {
-                            Log.Default.Msg(Log.Level.Warn, "requested content could not be provided");
-                            reset_content();
-                        }
+                        content_detach();
+                        content_attach(available_content);
                     }
                 }
             }
 
-            private void reset_content()
+
+            private void content_attach(ContentDataType content_data)
             {
-                _grid.Children.Clear();
-                if (_content_attached != null)
+                if (content_data.Item3 == null) // DetachContentCall
                 {
-                    _content_attached(false);
+                    Log.Default.Msg(Log.Level.Error, "DetachContentCall delegate is null");
+                    return;
                 }
-                _content_attached = null;
+                // Request content to be added
+                if (_request_content(content_data.Item1, _content))
+                {
+                    // Save local copy of attached content data
+                    _attached_content = content_data;
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Requested content could not be provided");
+                }
             }
+
+
+            private void content_detach()
+            {
+                _content.Children.Clear();
+                _content.Background = ColorTheme.GridBackground;
+
+                if (_attached_content != null)
+                {
+                    if (_attached_content.Item3 != null)
+                    {
+                        _attached_content.Item3(); // DetachContentCall
+                    }
+                    else
+                    {
+                        Log.Default.Msg(Log.Level.Error, "DetachContentCall delegate is null");
+                    }
+                    _attached_content = null;
+                }
+            }
+
+
+            private void content_keydown(object sender, KeyEventArgs e)
+            {
+                if ((e.Key == Key.LeftCtrl) || (e.Key == Key.RightCtrl))
+                {
+                    _key_ctrl_down = true;
+                }
+            }
+
+
+            private void content_keyup(object sender, KeyEventArgs e)
+            {
+                _key_ctrl_down = false;
+            }
+
+
+            private void content_mousemove(object sender, MouseEventArgs e)
+            {
+                var sender_grid = sender as Grid;
+                if (sender_grid == null)
+                {
+                    return;
+                }
+                // Enable drag source if content is attached and Ctrl is pressed while mouse move
+                if ((_attached_content != null) && (e.LeftButton == MouseButtonState.Pressed) && _key_ctrl_down)
+                {
+                    var tmp_attached_content = _attached_content;
+                    content_detach();
+                    _key_ctrl_down = false;
+                    DragDrop.DoDragDrop(sender_grid, tmp_attached_content, DragDropEffects.All);
+                }
+            }
+
+
+            private void content_givefeedback(object sender, GiveFeedbackEventArgs e)
+            {
+                // unused
+            }
+
+
+            private void content_dragenter(object sender, DragEventArgs e)
+            {
+                // unused
+            }
+
+
+            private void content_dragleave(object sender, DragEventArgs e)
+            {
+                // unused
+            }
+
+
+            private void content_dragover(object sender, DragEventArgs e)
+            {
+                var sender_grid = sender as Grid;
+                if (sender_grid == null)
+                {
+                    return;
+                }
+                // Check for compatible data
+                var data_type = typeof(ContentDataType);
+                if (e.Data.GetDataPresent(data_type))
+                {
+                    e.Effects = DragDropEffects.All;
+                }
+            }
+
+
+            private void content_drop(object sender, DragEventArgs e)
+            {
+                var sender_grid = sender as Grid;
+                if (sender_grid == null)
+                {
+                    return;
+                }
+                // Drop data
+                var data_type = typeof(ContentDataType);
+                if (e.Data.GetDataPresent(data_type))
+                {
+                    var content_data = (ContentDataType)e.Data.GetData(data_type);
+                    // Currently attached content is replaced
+                    content_detach();
+                    content_attach(content_data);
+                    _key_ctrl_down = false;
+                }
+            }
+
 
             /* ------------------------------------------------------------------*/
             // private variables
@@ -225,7 +362,11 @@ namespace Core
             private readonly string _vertical_right = "child_vertical_right" + UniqueStringID.Generate();
             private readonly string _delete = "child_delete" + UniqueStringID.Generate();
 
-            private AbstractContent.ContentAttachedCall _content_attached = null;
+            private ContentDataType _attached_content = null;
+
+            // Used to trigger drag & drop
+            private bool _key_ctrl_down = false;
+            private bool _mouse_over = false;
         }
     }
 }

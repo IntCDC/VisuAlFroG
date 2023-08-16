@@ -51,10 +51,10 @@ namespace Core
 
                 _child_leaf = new ChildLeaf(this, _parent_is_root, _available_content, _request_content);
 
-                _grid = new Grid();
-                _grid.Name = "grid_parent_is_root";
-                _grid.Children.Add(_child_leaf.GetContentElement());
-                parent_grid.Children.Add(_grid);
+                _content = new Grid();
+                _content.Name = "grid_parent_is_root";
+                _content.Children.Add(_child_leaf.GetContentElement());
+                parent_grid.Children.Add(_content);
             }
 
 
@@ -68,7 +68,7 @@ namespace Core
                     return;
                 }
 
-                clear_content(_grid);
+                clear_content(_content);
 
                 _orientation = orientation;
                 _location = location;
@@ -78,14 +78,14 @@ namespace Core
                 gridsplitter.HorizontalAlignment = HorizontalAlignment.Stretch;
                 gridsplitter.Style = ColorTheme.GridSplitterStyle();
 
-                Grid grid_topleft = (use_existing_childs) ? child_branch_1._grid : null;
+                Grid grid_topleft = (use_existing_childs) ? child_branch_1._content : null;
                 if (grid_topleft == null)
                 {
                     grid_topleft = new Grid();
                     grid_topleft.Name = "grid_" + UniqueStringID.Generate();
                 }
 
-                Grid grid_bottomright = (use_existing_childs) ? child_branch_2._grid : null;
+                Grid grid_bottomright = (use_existing_childs) ? child_branch_2._content : null;
                 if (grid_bottomright == null)
                 {
                     grid_bottomright = new Grid();
@@ -100,15 +100,15 @@ namespace Core
 
                             var column_left = new ColumnDefinition();
                             column_left.Width = new GridLength(1, GridUnitType.Star);
-                            _grid.ColumnDefinitions.Add(column_left);
+                            _content.ColumnDefinitions.Add(column_left);
 
                             var column_splitter = new ColumnDefinition();
                             column_splitter.Width = new GridLength(ColorTheme.GridSplitterSize);
-                            _grid.ColumnDefinitions.Add(column_splitter);
+                            _content.ColumnDefinitions.Add(column_splitter);
 
                             var column_right = new ColumnDefinition();
                             column_right.Width = new GridLength(1, GridUnitType.Star); ;
-                            _grid.ColumnDefinitions.Add(column_right);
+                            _content.ColumnDefinitions.Add(column_right);
 
                             Grid.SetColumn(grid_topleft, 0);
                             Grid.SetColumn(gridsplitter, 1);
@@ -122,15 +122,15 @@ namespace Core
 
                             var row_top = new RowDefinition();
                             row_top.Height = new GridLength(1, GridUnitType.Star);
-                            _grid.RowDefinitions.Add(row_top);
+                            _content.RowDefinitions.Add(row_top);
 
                             var row_splitter = new RowDefinition();
                             row_splitter.Height = new GridLength(ColorTheme.GridSplitterSize);
-                            _grid.RowDefinitions.Add(row_splitter);
+                            _content.RowDefinitions.Add(row_splitter);
 
                             var row_bottom = new RowDefinition();
                             row_bottom.Height = new GridLength(1, GridUnitType.Star);
-                            _grid.RowDefinitions.Add(row_bottom);
+                            _content.RowDefinitions.Add(row_bottom);
 
                             Grid.SetRow(grid_topleft, 0);
                             Grid.SetRow(gridsplitter, 1);
@@ -138,9 +138,9 @@ namespace Core
                         }
                         break;
                 }
-                _grid.Children.Add(grid_topleft);
-                _grid.Children.Add(gridsplitter);
-                _grid.Children.Add(grid_bottomright);
+                _content.Children.Add(grid_topleft);
+                _content.Children.Add(gridsplitter);
+                _content.Children.Add(grid_bottomright);
 
                 if (create_new_childs)
                 {
@@ -191,8 +191,8 @@ namespace Core
                     _child_leaf.SetParent(this, _parent_is_root);
                 }
 
-                _grid = grid;
-                _grid.Children.Add(_child_leaf.GetContentElement());
+                _content = grid;
+                _content.Children.Add(_child_leaf.GetContentElement());
             }
 
 
@@ -214,8 +214,8 @@ namespace Core
                 _child_leaf = null;
 
                 // Reset grids
-                clear_content(_grid);
-                clear_content(kept_child._grid);
+                clear_content(_content);
+                clear_content(kept_child._content);
 
                 if ((kept_child._child_branch_1 != null) && (kept_child._child_branch_2 != null))
                 {
@@ -231,7 +231,7 @@ namespace Core
                 {
                     _child_leaf = kept_child._child_leaf;
                     _child_leaf.SetParent(this, _parent_is_root);
-                    _grid.Children.Add(_child_leaf.GetContentElement());
+                    _content.Children.Add(_child_leaf.GetContentElement());
                 }
                 else
                 {
@@ -240,7 +240,7 @@ namespace Core
                 }
 
                 // Clear unused branch child
-                kept_child._grid = null;
+                kept_child._content = null;
                 kept_child._child_branch_1 = null;
                 kept_child._child_branch_2 = null;
                 kept_child._child_leaf = null;

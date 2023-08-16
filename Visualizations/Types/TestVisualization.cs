@@ -4,6 +4,7 @@ using SciChart.Charting.Visuals.Axes;
 using Core.Abstracts;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Runtime.Remoting.Contexts;
 
 
 
@@ -29,11 +30,23 @@ namespace Visualizations
 
             public override bool AttachContent(Grid content_grid)
             {
+                _content.ChartModifier.IsAttached = true;
+
                 content_grid.Background = Brushes.White;
                 content_grid.Children.Add(_content);
 
+                _attached = true;
                 return true;
             }
+
+            public override bool DetachContent()
+            {
+                _content.ChartModifier.IsAttached = false;
+
+                _attached = false;
+                return true;
+            }
+
 
             /* ------------------------------------------------------------------*/
             // private functions

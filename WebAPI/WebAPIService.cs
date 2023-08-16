@@ -32,6 +32,7 @@ namespace Visualizations
                 /// TODO Is there a reason why to choose random port? Break sometimes (when port is already used?)
                 var generator = new Random();
                 var port = generator.Next(49215, 65535).ToString();
+                port = "55555";
 
                 // Create base address
                 _base_address = "http://localhost:" + port + "/";

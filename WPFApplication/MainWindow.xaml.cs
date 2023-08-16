@@ -11,7 +11,6 @@ using Visualizations;
 using Core.GUI;
 using Visualizations.Types;
 using System.Windows.Media.Imaging;
-using VisFroG_WPF.Properties;
 
 
 
@@ -22,6 +21,10 @@ using VisFroG_WPF.Properties;
  * Interaction logic for MainWindow.xaml
  * 
  */
+
+using ContentDataType = System.Tuple<string, string, Core.Abstracts.AbstractContent.DetachContentCall>;
+using ContentDataListType = System.Collections.Generic.List<System.Tuple<string, string, Core.Abstracts.AbstractContent.DetachContentCall>>;
+
 namespace Frontend
 {
     namespace Application
@@ -122,7 +125,7 @@ namespace Frontend
                 var testvis = new TestVisualization();
                 window_contents.Add(testvis.ID(), testvis);
 
-
+                Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + base.Title);
                 _timer.Stop();
                 _initilized = initilized;
                 return _initilized;
@@ -169,9 +172,9 @@ namespace Frontend
             ///  Provide necessary information of available window content
             /// Called by child leaf in _windowtree
             /// </summary>
-            private List<Tuple<string, string, AbstractContent.ContentAttachedCall>> windows_available_content()
+            private ContentDataListType windows_available_content()
             {
-                var content_ids = new List<Tuple<string, string, AbstractContent.ContentAttachedCall>>();
+                var content_ids = new ContentDataListType();
                 foreach (var c in window_contents)
                 {
                     if (!c.Value.IsAttached())
@@ -179,7 +182,7 @@ namespace Frontend
                         string id = c.Key;
                         string name = c.Value.Header();
                         // Provide info on content element: ID, Name, and delegate to set availability of content element
-                        content_ids.Add(new Tuple<string, string, AbstractContent.ContentAttachedCall>(id, name, c.Value.ContendAttached));
+                        content_ids.Add(new ContentDataType(id, name, c.Value.DetachContent));
                     }
                 }
                 return content_ids;

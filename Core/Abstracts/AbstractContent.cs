@@ -19,13 +19,27 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public types
 
-            public delegate void ContentAttachedCall(bool attached);
+            public delegate bool DetachContentCall();
 
 
             /* ------------------------------------------------------------------*/
             // abstract functions
 
+            /// <summary>
+            /// Attach content to provided content_grid.
+            ///  Set "_attached=true" when attached successfully.
+            /// </summary>
             public abstract bool AttachContent(Grid content_grid);
+
+
+            /* ------------------------------------------------------------------*/
+            // virtual functions
+
+            public virtual bool DetachContent()
+            {
+                _attached = false;
+                return true;
+            }
 
 
             /* ------------------------------------------------------------------*/
@@ -54,10 +68,10 @@ namespace Core
                 return _attached;
             }
 
-            public void ContendAttached(bool a)
-            {
-                _attached = a;
-            }
+            /* ------------------------------------------------------------------*/
+            // private variables
+
+            protected bool _attached = false;
 
 
             /* ------------------------------------------------------------------*/
@@ -65,7 +79,7 @@ namespace Core
 
             private readonly string _header;
             private readonly string _id;
-            private bool _attached = false;
+            
         }
     }
 }
