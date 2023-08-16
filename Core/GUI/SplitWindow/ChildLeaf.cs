@@ -173,11 +173,7 @@ namespace Core
                 }
                 else if (sender_name == _delete)
                 {
-                    _grid.Children.Clear();
-                    if (_reset_content_available != null)
-                    {
-                        _reset_content_available(true);
-                    }
+                    reset_content();
                     _parent_branch.DeleteLeaf();
                 }
 
@@ -186,10 +182,21 @@ namespace Core
                 {
                     if (sender_name == content.Item2)
                     {
+                        reset_content();
                         _request_content(content.Item2, _grid);
                         _reset_content_available = content.Item3;
                     }
                 }
+            }
+
+            private void reset_content()
+            {
+                _grid.Children.Clear();
+                if (_reset_content_available != null)
+                {
+                    _reset_content_available(true);
+                }
+                _reset_content_available = null;
             }
 
             /* ------------------------------------------------------------------*/

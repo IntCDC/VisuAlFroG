@@ -51,7 +51,7 @@
   </PropertyGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(SolutionDir)Visualizations\Templates\&quot;* &quot;$(OutputPath)&quot;" />
+    <Exec Command="copy &quot;$(SolutionDir)Visualizations\Templates\&quot;* &quot;$(OutputPath)&quot;" />
   </Target>
 
 </Project>
