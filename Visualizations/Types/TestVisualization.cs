@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xaml;
-using System.Threading.Tasks;
-using SciChart.Charting.Visuals;
+﻿using SciChart.Charting.Visuals;
 using SciChart.Charting.Visuals.Annotations;
 using SciChart.Charting.Visuals.Axes;
-using SciChart.Core;
-using Core.Utilities;
 using Core.Abstracts;
-using System.Runtime.Remoting.Contexts;
 using System.Windows.Controls;
 using System.Windows.Media;
 

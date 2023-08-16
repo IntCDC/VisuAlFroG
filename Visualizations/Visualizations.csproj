@@ -77,10 +77,18 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="SciChart.Charting, Version=6.6.0.26505, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL" />
-    <Reference Include="SciChart.Core, Version=6.6.0.26505, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL" />
-    <Reference Include="SciChart.Data, Version=6.6.0.26505, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL" />
-    <Reference Include="SciChart.Drawing, Version=6.6.0.26505, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL" />
+    <Reference Include="SciChart.Charting, Version=7.0.2.27161, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>..\packages\SciChart.7.0.2.27161\lib\net462\SciChart.Charting.dll</HintPath>
+    </Reference>
+    <Reference Include="SciChart.Core, Version=7.0.2.27161, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>..\packages\SciChart.7.0.2.27161\lib\net462\SciChart.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="SciChart.Data, Version=7.0.2.27161, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>..\packages\SciChart.7.0.2.27161\lib\net462\SciChart.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="SciChart.Drawing, Version=7.0.2.27161, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>..\packages\SciChart.7.0.2.27161\lib\net462\SciChart.Drawing.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.9.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -139,6 +147,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\bokeh-template.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
