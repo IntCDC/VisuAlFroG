@@ -27,10 +27,12 @@ namespace Visualizations
             }
 
 
-            public override void ProvideContent(Grid grid)
+            public override bool AttachContent(Grid content_grid)
             {
-                grid.Background = Brushes.White;
-                grid.Children.Add(_content);
+                content_grid.Background = Brushes.White;
+                content_grid.Children.Add(_content);
+
+                return true;
             }
 
             /* ------------------------------------------------------------------*/

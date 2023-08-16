@@ -38,7 +38,7 @@ namespace Core
             {
                 if (parent_grid == null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "BUG: Grid parameter must not be NULL");
+                    Log.Default.Msg(Log.Level.Error, "Grid parameter must not be NULL");
                     return;
                 }
 
@@ -64,7 +64,7 @@ namespace Core
                 bool use_existing_childs = ((child_branch_1 != null) && (child_branch_2 != null));
                 if (!create_new_childs && !use_existing_childs)
                 {
-                    Log.Default.Msg(Log.Level.Error, "BUG: No valid child paramter set");
+                    Log.Default.Msg(Log.Level.Error, "No valid child paramter set");
                     return;
                 }
 
@@ -74,7 +74,7 @@ namespace Core
                 _location = location;
 
                 var gridsplitter = new GridSplitter();
-                gridsplitter.Name = "gridplitter_" + GenerateID();
+                gridsplitter.Name = "gridplitter_" + UniqueStringID.Generate();
                 gridsplitter.HorizontalAlignment = HorizontalAlignment.Stretch;
                 gridsplitter.Style = ColorTheme.GridSplitterStyle();
 
@@ -82,14 +82,14 @@ namespace Core
                 if (grid_topleft == null)
                 {
                     grid_topleft = new Grid();
-                    grid_topleft.Name = "grid_" + GenerateID();
+                    grid_topleft.Name = "grid_" + UniqueStringID.Generate();
                 }
 
                 Grid grid_bottomright = (use_existing_childs) ? child_branch_2._grid : null;
                 if (grid_bottomright == null)
                 {
                     grid_bottomright = new Grid();
-                    grid_bottomright.Name = "grid_" + GenerateID();
+                    grid_bottomright.Name = "grid_" + UniqueStringID.Generate();
                 }
 
                 switch (_orientation)
@@ -148,10 +148,10 @@ namespace Core
                     bool move_bottom_right = (_location == ChildLocation.Bottom_Right);
 
                     _child_branch_1 = new ChildBranch();
-                    _child_branch_1.add_leaf_child(this, _available_content, _request_content, grid_topleft, (move_top_left ? _child_leaf : null));
+                    _child_branch_1.add_leafchild(this, _available_content, _request_content, grid_topleft, (move_top_left ? _child_leaf : null));
 
                     _child_branch_2 = new ChildBranch();
-                    _child_branch_2.add_leaf_child(this, _available_content, _request_content, grid_bottomright, (move_bottom_right ? _child_leaf : null));
+                    _child_branch_2.add_leafchild(this, _available_content, _request_content, grid_bottomright, (move_bottom_right ? _child_leaf : null));
 
                     _child_leaf = null;
                 }
@@ -162,7 +162,7 @@ namespace Core
             {
                 if (_parent_branch == null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "BUG: Parent should not be NULL");
+                    Log.Default.Msg(Log.Level.Error, "Parent should not be NULL");
                     return;
                 }
                 _parent_branch.delete_childbranch(this);
@@ -172,7 +172,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private functions
 
-            private void add_leaf_child(ChildBranch parent_branch, AvailableContentCall available_content, RequestContentCall request_content, Grid grid, ChildLeaf child_leaf)
+            private void add_leafchild(ChildBranch parent_branch, AvailableContentCall available_content, RequestContentCall request_content, Grid grid, ChildLeaf child_leaf)
             {
                 _parent_is_root = false;
                 _parent_branch = parent_branch;
@@ -201,7 +201,7 @@ namespace Core
                 ChildBranch kept_child = ((delete_child == _child_branch_1) ? _child_branch_2 : ((delete_child == _child_branch_2) ? _child_branch_1 : null));
                 if (kept_child == null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "BUG: Invalid parameter value constellation");
+                    Log.Default.Msg(Log.Level.Error, "Invalid parameter value constellation");
                     return;
                 }
 
@@ -235,7 +235,7 @@ namespace Core
                 }
                 else
                 {
-                    Log.Default.Msg(Log.Level.Error, "BUG: Invalid parameter value constellation");
+                    Log.Default.Msg(Log.Level.Error, "Invalid parameter value constellation");
                     return;
                 }
 

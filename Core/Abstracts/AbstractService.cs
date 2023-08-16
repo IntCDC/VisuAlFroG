@@ -15,13 +15,16 @@ namespace Core
         {
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            // abstract functions
 
             public abstract bool Initialize();
 
 
             public abstract bool Execute();
 
+
+            /* ------------------------------------------------------------------*/
+            // virtual functions
 
             public virtual bool Terminate()
             {

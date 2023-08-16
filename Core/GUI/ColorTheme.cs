@@ -14,12 +14,12 @@ namespace Core
     {
         public class ColorTheme
         {
-            // GRID
+            // GRID -----------------------------------------------------------
 
             public static Brush GridBackground { get { return Brushes.AliceBlue; } }
 
 
-            //  GRID SPLITTER
+            //  GRID SPLITTER -------------------------------------------------
 
             public static Brush GridSplitterBackground { get { return Brushes.LightSkyBlue; } }
             public static Brush GridSplitterHovered { get { return Brushes.DeepSkyBlue; } }
@@ -49,7 +49,7 @@ namespace Core
             }
 
 
-            // MENU ITEM
+            // MENU ITEM ------------------------------------------------------
 
             public static Brush MenuItemBackground { get { return Brushes.AliceBlue; } }
 

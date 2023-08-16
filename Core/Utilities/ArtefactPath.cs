@@ -15,11 +15,14 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // static functions
 
+            /// <summary>
+            ///  Returns the path of the VisFroG plugin
+            ///  e.g. C:\Users\...\AppData\Roaming\Grasshopper\Libraries\VisFrog
+            ///  </summary>
             static public string Path()
             {
-                // Returns the path of the VisFroG plugin, e.g. C:\Users\...\AppData\Roaming\Grasshopper\Libraries\VisFrog
                 return System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                /// Alternative: System.AppContext.CoreDirectory;
+                // Alternative: System.AppContext.CoreDirectory;
             }
 
 

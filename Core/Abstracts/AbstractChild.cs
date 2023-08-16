@@ -17,16 +17,12 @@ namespace Core
         public abstract class AbstractChild
         {
             /* ------------------------------------------------------------------*/
-            // static functions
+            // public delegates
 
-            public static string GenerateID()
-            {
-                return Guid.NewGuid().ToString("N");
-            }
+            // Provide 'id', 'header' and 'availability function' of content element
+            public delegate List<Tuple<string, string, AbstractContent.ContentAttachedCall>> AvailableContentCall();
 
-            // Provide header and name of content element
-            public delegate List<Tuple<string, string, AbstractContent.SetContentAvailableCall>> AvailableContentCall();
-            public delegate void RequestContentCall(string content_name, Grid content_grid);
+            public delegate bool RequestContentCall(string content_name, Grid content_grid);
 
 
             /* ------------------------------------------------------------------*/

@@ -48,9 +48,9 @@ namespace Visualizations
                     {
                         /// DEBUG
                         // convert object to a PyObject
-                        //PyObject pyPerson = person.ToPython();
+                        // PyObject pyPerson = person.ToPython();
                         // create a Python variable "person"
-                        //scope.Set("person", pyPerson);
+                        // scope.Set("person", pyPerson);
                         // the person object may now be used in Python
 
                         scope.Exec(_source);
@@ -61,7 +61,7 @@ namespace Visualizations
                     }
                 }
 
-                /// Runs in parallel thread which is currently not supported by Log.Default.Msg
+                /// TODO Runs in parallel thread which is currently not supported by Log.Default.Msg
                 Console.WriteLine("PythonScript>>> StringID = " + _StringID);
             }
 

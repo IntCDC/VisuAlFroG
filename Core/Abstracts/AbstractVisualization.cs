@@ -15,11 +15,16 @@ namespace Core
     {
         public abstract class AbstractVisualization : AbstractContent
         {
+
+
+            /* ------------------------------------------------------------------*/
+            // public functions
+
             public AbstractVisualization(string name) : base(name)
             {
             }
 
-            public override void ProvideContent(Grid grid) { }
+            public override bool AttachContent(Grid content_grid) { return false; }
 
         }
     }

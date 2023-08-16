@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows.Controls;
 
+using Core.Utilities;
+
 
 
 /*
@@ -17,7 +19,13 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public types
 
-            public delegate void SetContentAvailableCall(bool available);
+            public delegate void ContentAttachedCall(bool attached);
+
+
+            /* ------------------------------------------------------------------*/
+            // abstract functions
+
+            public abstract bool AttachContent(Grid content_grid);
 
 
             /* ------------------------------------------------------------------*/
@@ -26,13 +34,13 @@ namespace Core
             public AbstractContent(string header)
             {
                 _header = header;
-                _name = header.Replace(" ", "_") + AbstractChild.GenerateID(); ;
+                _id = header.Replace(" ", "_") + UniqueStringID.Generate(); ;
             }
 
 
-            public string Name()
+            public string ID()
             {
-                return _name;
+                return _id;
             }
 
             public string Header()
@@ -40,17 +48,15 @@ namespace Core
                 return _header;
             }
 
-            public abstract void ProvideContent(Grid content_grid);
 
-
-            public bool IsAvailable()
+            public bool IsAttached()
             {
-                return _available;
+                return _attached;
             }
 
-            public void SetAvailable(bool a)
+            public void ContendAttached(bool a)
             {
-                _available = a;
+                _attached = a;
             }
 
 
@@ -58,8 +64,8 @@ namespace Core
             // private variables
 
             private readonly string _header;
-            private readonly string _name;
-            private bool _available = true;
+            private readonly string _id;
+            private bool _attached = false;
         }
     }
 }

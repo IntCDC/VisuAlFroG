@@ -31,7 +31,7 @@ namespace Visualizations
         {
             _servicemanager.AddService(new WebAPIService());
             /// TODO fix hard coded paths
-            /// _servicemanager.AddService(new PythonInterfaceService());
+            // _servicemanager.AddService(new PythonInterfaceService());
             _servicemanager.AddService(new SciChartInterfaceService());
             _servicemanager.AddService(new DatabaseService());
         }

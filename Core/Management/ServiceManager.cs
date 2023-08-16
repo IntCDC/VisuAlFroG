@@ -84,11 +84,11 @@ namespace Core
                 }
             }
 
+
             /* ------------------------------------------------------------------*/
             // private variables
 
             private Dictionary<Type, AbstractService> _services = new Dictionary<Type, AbstractService>();
-
         }
     }
 }

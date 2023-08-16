@@ -19,7 +19,7 @@ namespace Visualizations
 
             public static void PrintMessage(string message)
             {
-                /// Runs in parallel thread which is currently not supported by Log.Default.Msg
+                /// TODO Runs in parallel thread which is currently not supported by Log.Default.Msg
                 Console.WriteLine("PythonCallback>>> Message = " + message);
             }
 

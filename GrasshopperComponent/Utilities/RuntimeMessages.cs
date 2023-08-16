@@ -72,6 +72,5 @@ namespace GrasshopperComponent.Utilities
 
         private GH_Component _parent;
         private List<(Grasshopper.Kernel.GH_RuntimeMessageLevel, string)> _messages = new List<(GH_RuntimeMessageLevel, string)>();
-
     }
 }

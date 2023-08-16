@@ -5,6 +5,7 @@ using System;
 using GrasshopperComponent.Utilities;
 using Frontend.Application;
 using Core.Utilities;
+using System.Resources;
 
 
 
@@ -62,7 +63,7 @@ namespace Interface
             /// <summary>
             /// This is the method that actually does the work.
             /// </summary>
-            /// <param name="DA">The DA object can be used to retrieve data from input parameters and 
+            /// <param name="DA"> The DA object can be used to retrieve data from input parameters and 
             /// to store data in output parameters.</param>
             protected override void SolveInstance(IGH_DataAccess DA)
             {
@@ -80,7 +81,7 @@ namespace Interface
 
 
                 string gh_document_filepath = OnPingDocument().FilePath;
-                /// OnPingDocument().FilePathChanged += this.FilePathChangedEvent
+                /// TODO Callback: OnPingDocument().FilePathChanged += this.FilePathChangedEvent
 
 
                 // Access input paramter
@@ -142,7 +143,7 @@ namespace Interface
             /// You can add image files to your project resources and access them like this:
             /// return Resources.IconForThisComponent;
             /// </summary>
-            protected override System.Drawing.Bitmap Icon => null;
+            protected override System.Drawing.Bitmap Icon => new System.Drawing.Bitmap(@"visfrog.ico");
 
             /// <summary>
             /// Each component must have a unique Guid to identify it. 

@@ -17,8 +17,10 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            // This code configures Web API.
-            // The Startup class is specified as a type parameter in the WebApp.Start method.
+            /// <summary>
+            /// This code configures Web API.
+            /// The Startup class is specified as a type parameter in the WebApp.Start method.
+            /// </summary>
             public void Configuration(IAppBuilder appBuilder)
             {
                 // Configure Web API for self-host. 

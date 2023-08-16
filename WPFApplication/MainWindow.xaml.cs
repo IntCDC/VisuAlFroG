@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
@@ -9,6 +10,8 @@ using Core.Abstracts;
 using Visualizations;
 using Core.GUI;
 using Visualizations.Types;
+using System.Windows.Media.Imaging;
+using VisFroG_WPF.Properties;
 
 
 
@@ -30,7 +33,10 @@ namespace Frontend
             /* ------------------------------------------------------------------*/
             // public functions
 
-            // Used for stand-alone execution (DEBUG)
+            /// <summary>
+            /// Used for detached execution
+            /// that use the old ID will partially fail during loading.
+            /// </summary>
             public MainWindow() : this("[detached] Visualization Framework for Grasshopper (VisFroG)", false) { }
 
 
@@ -42,15 +48,19 @@ namespace Frontend
             }
 
 
-            // Get reload function call from Grasshopper
+            /// <summary>
+            /// Get reload function call from Grasshopper
+            /// </summary>
             public void ReloadComponentFunction(ReloadFunctionCall func)
             {
                 _reload_func = func;
             }
 
 
-            // Soft close is used when called from Grasshopper.
-            // Only change visibility and abort closing for being able to restore window on close.
+            /// <summary>
+            /// Soft close is used when called from interface (= Grasshopper).
+            /// Only change visibility and abort closing for being able to restore closed window
+            /// </summary>
             protected override void OnClosing(CancelEventArgs cancel_args)
             {
                 if (_soft_close)
@@ -68,6 +78,9 @@ namespace Frontend
             /* ------------------------------------------------------------------*/
             // public delegates
 
+            /// <summary>
+            /// Function provided by the interface (= Grasshopper) which allows to trigger relaoding of the interface
+            /// </summary>
             public delegate void ReloadFunctionCall();
 
 
@@ -83,10 +96,12 @@ namespace Frontend
                 }
                 _timer.Start();
 
+
                 InitializeComponent();
                 base.Title = app_name;
                 base.Width = 1280;
                 base.Height = 720;
+                base.Icon = new BitmapImage(new Uri("visfrog.ico", UriKind.Relative));
 
                 // Callback additionally invoked on loading of main window
                 base.Loaded += on_loaded;
@@ -97,14 +112,15 @@ namespace Frontend
                 // Register window content
                 var log_content = new LogContent();
                 Log.Default.RegisterListener(log_content.LogListener);
-                window_contents.Add(log_content.Name(), log_content);
+                window_contents.Add(log_content.ID(), log_content);
 
-                // Initialize visualizations
+
+                // Initialize visualizations (prior to registration)
                 bool initilized = _vismanager.Initialize();
 
                 // Register visualizations as window content
                 var testvis = new TestVisualization();
-                window_contents.Add(testvis.Name(), testvis);
+                window_contents.Add(testvis.ID(), testvis);
 
 
                 _timer.Stop();
@@ -149,36 +165,42 @@ namespace Frontend
             }
 
 
-            // Provide names of available window content
-            private List<Tuple<string, string, AbstractContent.SetContentAvailableCall>> windows_available_content()
+            /// <summary>
+            ///  Provide necessary information of available window content
+            /// Called by child leaf in _windowtree
+            /// </summary>
+            private List<Tuple<string, string, AbstractContent.ContentAttachedCall>> windows_available_content()
             {
-                // Only show available
-                var content_names = new List<Tuple<string, string, AbstractContent.SetContentAvailableCall>>();
+                var content_ids = new List<Tuple<string, string, AbstractContent.ContentAttachedCall>>();
                 foreach (var c in window_contents)
                 {
-                    if (c.Value.IsAvailable())
+                    if (!c.Value.IsAttached())
                     {
-                        string header = c.Value.Header();
-                        string name = c.Key;
-                        // Provide info on content element: Header, Name (= unique ID), delegate to set availability of content element
-                        content_names.Add(new Tuple<string, string, AbstractContent.SetContentAvailableCall>(header, name, c.Value.SetAvailable));
+                        string id = c.Key;
+                        string name = c.Value.Header();
+                        // Provide info on content element: ID, Name, and delegate to set availability of content element
+                        content_ids.Add(new Tuple<string, string, AbstractContent.ContentAttachedCall>(id, name, c.Value.ContendAttached));
                     }
                 }
-                return content_names;
+                return content_ids;
             }
 
 
-            public void windows_request_content(string content_name, Grid content_grid)
+            /// <summary>
+            /// Draw requested content to provided grid
+            /// Called by child leaf in _windowtree
+            /// </summary>
+            public bool windows_request_content(string content_id, Grid content_grid)
             {
-                if (window_contents.ContainsKey(content_name))
+                if (window_contents.ContainsKey(content_id))
                 {
-                    window_contents[content_name].ProvideContent(content_grid);
-                    window_contents[content_name].SetAvailable(false);
+                    return window_contents[content_id].AttachContent(content_grid);
                 }
                 else
                 {
-                    Log.Default.Msg(Log.Level.Error, "BUG: Invalid content name");
+                    Log.Default.Msg(Log.Level.Error, "Unknown content id");
                 }
+                return false;
             }
 
 

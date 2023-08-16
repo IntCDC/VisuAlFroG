@@ -26,12 +26,17 @@ namespace EntityFrameworkDatabase
             // For more information refer to the documentation:
             // http://msdn.microsoft.com/en-us/data/jj591621.aspx
 
+
+            /// <summary>
+            /// Use base("name=DatabaseContext") to look for connectionString in App.config 
+            /// => But App.config can not be used by Grasshopper component
+            /// DataDirectory is defined in CTOR of Configuration
+            /// </summary>
             public DatabaseContext() : base("Data Source=(localdb)\\MSSQLLocalDB; Integrated Security=True; MultipleActiveResultSets=True; AttachDbFilename=|DataDirectory|" + Artefacts.FileName("database", "mdf"))
-            /// Use base("name=DatabaseContext") to look for connectionString in App.config => But App.config can not be used by Grasshopper component
-            /// // DataDirectory is defined in CTOR of Configuration
             {
                 Database.SetInitializer(new MigrateDatabaseToLatestVersion<DatabaseContext, Configuration>());
             }
+
 
             /* ------------------------------------------------------------------*/
             // public variables

@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Core.GUI;
 using Core.Abstracts;
+using Core.Utilities;
 
 
 
@@ -31,7 +32,7 @@ namespace Core
 
                 _grid = new Grid();
                 _grid.Background = ColorTheme.GridBackground;
-                _grid.Name = "grid_" + ChildBranch.GenerateID();
+                _grid.Name = "grid_" + UniqueStringID.Generate();
 
                 /// DEBUG background color
                 var generator = new Random();
@@ -141,11 +142,14 @@ namespace Core
                 {
                     var content_item = new MenuItem();
                     content_item.Style = ColorTheme.MenuItemStyle();
-                    content_item.Header = content_data.Item1;
-                    string name_id = content_data.Item2;
-                    content_item.Name = name_id;
+                    content_item.Header = content_data.Item2; // = Name
+                    content_item.Name = content_data.Item1; // = ID;
                     content_item.Click += menuitem_clicked;
                     item_content_menu.Items.Add(content_item);
+                }
+                if (item_content_menu.Items.IsEmpty)
+                {
+                    item_content_menu.IsEnabled = false;
                 }
                 contextmenu.Items.Add(item_content_menu);
             }
@@ -180,11 +184,24 @@ namespace Core
                 var available_child_content = _available_content();
                 foreach (var content in available_child_content)
                 {
-                    if (sender_name == content.Item2)
+                    if (sender_name == content.Item1) // = ID
                     {
+                        if (content.Item3 == null)
+                        {
+                            Log.Default.Msg(Log.Level.Error, "ContentAttachedCall delegate is null");
+                            return;
+                        }
                         reset_content();
-                        _request_content(content.Item2, _grid);
-                        _reset_content_available = content.Item3;
+                        _content_attached = content.Item3; // attached content delegate
+                        if (_request_content(content.Item1, _grid))
+                        {
+                            _content_attached(true);
+                        }
+                        else
+                        {
+                            Log.Default.Msg(Log.Level.Warn, "requested content could not be provided");
+                            reset_content();
+                        }
                     }
                 }
             }
@@ -192,23 +209,23 @@ namespace Core
             private void reset_content()
             {
                 _grid.Children.Clear();
-                if (_reset_content_available != null)
+                if (_content_attached != null)
                 {
-                    _reset_content_available(true);
+                    _content_attached(false);
                 }
-                _reset_content_available = null;
+                _content_attached = null;
             }
 
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private readonly string _horizontal_top = "child_horizontal_top_" + GenerateID();
-            private readonly string _horizontal_bottom = "Child_horizontal_bottom_" + GenerateID();
-            private readonly string _vertical_Left = "child_vertical_left_" + GenerateID();
-            private readonly string _vertical_right = "child_vertical_right" + GenerateID();
-            private readonly string _delete = "child_delete" + GenerateID();
+            private readonly string _horizontal_top = "child_horizontal_top_" + UniqueStringID.Generate();
+            private readonly string _horizontal_bottom = "Child_horizontal_bottom_" + UniqueStringID.Generate();
+            private readonly string _vertical_Left = "child_vertical_left_" + UniqueStringID.Generate();
+            private readonly string _vertical_right = "child_vertical_right" + UniqueStringID.Generate();
+            private readonly string _delete = "child_delete" + UniqueStringID.Generate();
 
-            private AbstractContent.SetContentAvailableCall _reset_content_available = null;
+            private AbstractContent.ContentAttachedCall _content_attached = null;
         }
     }
 }

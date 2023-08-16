@@ -41,7 +41,7 @@ namespace EntityFrameworkDatabase
             IQueryable<Entity> query = _database_context.Entites.Where(e => e.Id == 4);
             foreach (Entity obj in query)
             {
-                Log.Default.Msg(Log.Level.Info, obj.Title);
+                Log.Default.Msg(Log.Level.Debug, obj.Title);
             }
 
             _timer.Stop();

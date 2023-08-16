@@ -26,8 +26,7 @@ namespace Visualizations
             {
                 _timer.Start();
 
-                // Set this code once in App.xaml.cs or at application startup
-                /// Paste your SciChart runtime license key in SciChartInterface\SciChartRuntimeLicenseKey.cs
+                /// TODO Paste your SciChart runtime license key in SciChartInterface\SciChartRuntimeLicenseKey.cs
                 SciChartSurface.SetRuntimeLicenseKey(SciChartRuntimeLicense.Key);
 
                 _timer.Stop();
@@ -36,7 +35,6 @@ namespace Visualizations
             }
 
 
-            //public void declare_scichart_surface(object sender, RoutedEventArgs routedEventArgs)
             public override bool Execute()
             {
                 if (!_initilized)
