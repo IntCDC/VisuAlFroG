@@ -28,7 +28,7 @@ namespace Core
 {
     namespace GUI
     {
-        public sealed class ChildBranch : AbstractChild
+        public sealed class WindowBranch : AbstractWindow
         {
 
             /* ------------------------------------------------------------------*/
@@ -49,7 +49,7 @@ namespace Core
                 _available_content = available_content;
                 _request_content = request_content;
 
-                _child_leaf = new ChildLeaf(this, _parent_is_root, _available_content, _request_content);
+                _child_leaf = new WindowLeaf(this, _parent_is_root, _available_content, _request_content);
 
                 _content = new Grid();
                 _content.Name = "grid_parent_is_root";
@@ -58,7 +58,7 @@ namespace Core
             }
 
 
-            public void Split(SplitOrientation orientation, ChildLocation location, ChildBranch child_branch_1 = null, ChildBranch child_branch_2 = null)
+            public void Split(SplitOrientation orientation, ChildLocation location, WindowBranch child_branch_1 = null, WindowBranch child_branch_2 = null)
             {
                 bool create_new_childs = ((child_branch_1 == null) && (child_branch_2 == null));
                 bool use_existing_childs = ((child_branch_1 != null) && (child_branch_2 != null));
@@ -147,10 +147,10 @@ namespace Core
                     bool move_top_left = (_location == ChildLocation.Top_Left);
                     bool move_bottom_right = (_location == ChildLocation.Bottom_Right);
 
-                    _child_branch_1 = new ChildBranch();
+                    _child_branch_1 = new WindowBranch();
                     _child_branch_1.add_leafchild(this, _available_content, _request_content, grid_topleft, (move_top_left ? _child_leaf : null));
 
-                    _child_branch_2 = new ChildBranch();
+                    _child_branch_2 = new WindowBranch();
                     _child_branch_2.add_leafchild(this, _available_content, _request_content, grid_bottomright, (move_bottom_right ? _child_leaf : null));
 
                     _child_leaf = null;
@@ -172,7 +172,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private functions
 
-            private void add_leafchild(ChildBranch parent_branch, AvailableContentCallback available_content, RequestContentCallback request_content, Grid grid, ChildLeaf child_leaf)
+            private void add_leafchild(WindowBranch parent_branch, AvailableContentCallback available_content, RequestContentCallback request_content, Grid grid, WindowLeaf child_leaf)
             {
                 _parent_is_root = false;
                 _parent_branch = parent_branch;
@@ -184,7 +184,7 @@ namespace Core
                 _child_leaf = child_leaf;
                 if (_child_leaf == null)
                 {
-                    _child_leaf = new ChildLeaf(this, _parent_is_root, _available_content, _request_content);
+                    _child_leaf = new WindowLeaf(this, _parent_is_root, _available_content, _request_content);
                 }
                 else
                 {
@@ -196,9 +196,9 @@ namespace Core
             }
 
 
-            private void delete_childbranch(ChildBranch delete_child)
+            private void delete_childbranch(WindowBranch delete_child)
             {
-                ChildBranch kept_child = ((delete_child == _child_branch_1) ? _child_branch_2 : ((delete_child == _child_branch_2) ? _child_branch_1 : null));
+                WindowBranch kept_child = ((delete_child == _child_branch_1) ? _child_branch_2 : ((delete_child == _child_branch_2) ? _child_branch_1 : null));
                 if (kept_child == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Invalid parameter value constellation");
@@ -259,9 +259,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private ChildBranch _child_branch_1 = null;
-            private ChildBranch _child_branch_2 = null;
-            private ChildLeaf _child_leaf = null;
+            private WindowBranch _child_branch_1 = null;
+            private WindowBranch _child_branch_2 = null;
+            private WindowLeaf _child_leaf = null;
 
             private SplitOrientation _orientation = SplitOrientation.None;
             private ChildLocation _location = ChildLocation.None;

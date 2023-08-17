@@ -17,7 +17,7 @@ namespace Core
 {
     namespace Abstracts
     {
-        public abstract class AbstractChild
+        public abstract class AbstractWindow
         {
 
             /* ------------------------------------------------------------------*/
@@ -51,7 +51,7 @@ namespace Core
 
             protected Grid _content = null;
             protected bool _parent_is_root = false;
-            protected ChildBranch _parent_branch = null;
+            protected WindowBranch _parent_branch = null;
             protected AvailableContentCallback _available_content = null;
             protected RequestContentCallback _request_content = null;
         }

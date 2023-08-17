@@ -78,12 +78,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Abstracts\AbstractChild.cs" />
+    <Compile Include="Abstracts\AbstractWindow.cs" />
     <Compile Include="Abstracts\AbstractContent.cs" />
     <Compile Include="Abstracts\AbstractService.cs" />
     <Compile Include="GUI\MenuBar.cs" />
-    <Compile Include="GUI\SplitWindow\ChildBranch.cs" />
-    <Compile Include="GUI\SplitWindow\ChildLeaf.cs" />
+    <Compile Include="GUI\SplitWindow\WindowBranch.cs" />
+    <Compile Include="GUI\SplitWindow\WindowLeaf.cs" />
     <Compile Include="GUI\WindowContent\LogContent.cs" />
     <Compile Include="GUI\ColorTheme.cs" />
     <Compile Include="Management\ServiceManager.cs" />

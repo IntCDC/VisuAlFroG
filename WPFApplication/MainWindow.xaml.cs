@@ -213,7 +213,7 @@ namespace Frontend
 
             private VisualizationManager _vismanager = new VisualizationManager();
 
-            private ChildBranch _subwindows = new ChildBranch();
+            private WindowBranch _subwindows = new WindowBranch();
             private MenuBar _menubar = new MenuBar();
 
             private ReloadCallback _reload_func;

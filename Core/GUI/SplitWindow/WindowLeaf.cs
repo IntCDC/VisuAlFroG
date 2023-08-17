@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Remoting.Contexts;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -20,13 +21,13 @@ namespace Core
 {
     namespace GUI
     {
-        public class ChildLeaf : AbstractChild
+        public class WindowLeaf : AbstractWindow
         {
 
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public ChildLeaf(ChildBranch parent_branch, bool parent_is_root, AvailableContentCallback available_content, RequestContentCallback request_content)
+            public WindowLeaf(WindowBranch parent_branch, bool parent_is_root, AvailableContentCallback available_content, RequestContentCallback request_content)
             {
                 _parent_branch = parent_branch;
                 _parent_is_root = parent_is_root;
@@ -36,6 +37,12 @@ namespace Core
                 _content = new Grid();
                 _content.Background = ColorTheme.GridBackground;
                 _content.Name = "grid_" + UniqueStringID.Generate();
+
+                var info_text = new TextBlock();
+                info_text.Text = "  [Right-click for Context Menu]";
+                info_text.Foreground = ColorTheme.TextDisabled;
+                _content.Children.Add(info_text);
+
                 // Drag and drop
                 _content.MouseMove += content_mousemove;
                 _content.AllowDrop = true;
@@ -51,7 +58,7 @@ namespace Core
             }
 
 
-            public void SetParent(ChildBranch parent_branch, bool parent_is_root)
+            public void SetParent(WindowBranch parent_branch, bool parent_is_root)
             {
                 _parent_branch = parent_branch;
                 _parent_is_root = parent_is_root;
@@ -91,14 +98,14 @@ namespace Core
 
                 // Horizontal 
                 var item_horizontal_top = new MenuItem();
-                item_horizontal_top.Style = ColorTheme.MenuItemStyle("move-top.png");
-                item_horizontal_top.Header = "Move Top";
+                item_horizontal_top.Style = ColorTheme.MenuItemStyle("align-top.png");
+                item_horizontal_top.Header = "Align Top";
                 item_horizontal_top.Name = _item_id_hori_top;
                 item_horizontal_top.Click += menuitem_click;
 
                 var item_horizontal_bottom = new MenuItem();
-                item_horizontal_bottom.Style = ColorTheme.MenuItemStyle("move-bottom.png");
-                item_horizontal_bottom.Header = "Move Bottom";
+                item_horizontal_bottom.Style = ColorTheme.MenuItemStyle("align-bottom.png");
+                item_horizontal_bottom.Header = "Align Bottom";
                 item_horizontal_bottom.Name = _item_id_hori_bottom;
                 item_horizontal_bottom.Click += menuitem_click;
 
@@ -111,14 +118,14 @@ namespace Core
 
                 // Vertical
                 var item_vertical_left = new MenuItem();
-                item_vertical_left.Style = ColorTheme.MenuItemStyle("move-left.png");
-                item_vertical_left.Header = "Move Left";
+                item_vertical_left.Style = ColorTheme.MenuItemStyle("align-left.png");
+                item_vertical_left.Header = "Align Left";
                 item_vertical_left.Name = _item_id_vert_Left;
                 item_vertical_left.Click += menuitem_click;
 
                 var item_vertical_right = new MenuItem();
-                item_vertical_right.Style = ColorTheme.MenuItemStyle("move-right.png");
-                item_vertical_right.Header = "Move Right";
+                item_vertical_right.Style = ColorTheme.MenuItemStyle("align-right.png");
+                item_vertical_right.Header = "Align Right";
                 item_vertical_right.Name = _item_id_vert_right;
                 item_vertical_right.Click += menuitem_click;
 
@@ -207,19 +214,19 @@ namespace Core
                 string content_id = sender_content.Name;
                 if (content_id == _item_id_hori_top)
                 {
-                    _parent_branch.Split(ChildBranch.SplitOrientation.Horizontal, ChildBranch.ChildLocation.Top_Left);
+                    _parent_branch.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.Top_Left);
                 }
                 else if (content_id == _item_id_hori_bottom)
                 {
-                    _parent_branch.Split(ChildBranch.SplitOrientation.Horizontal, ChildBranch.ChildLocation.Bottom_Right);
+                    _parent_branch.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.Bottom_Right);
                 }
                 else if (content_id == _item_id_vert_Left)
                 {
-                    _parent_branch.Split(ChildBranch.SplitOrientation.Vertical, ChildBranch.ChildLocation.Top_Left);
+                    _parent_branch.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.Top_Left);
                 }
                 else if (content_id == _item_id_vert_right)
                 {
-                    _parent_branch.Split(ChildBranch.SplitOrientation.Vertical, ChildBranch.ChildLocation.Bottom_Right);
+                    _parent_branch.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.Bottom_Right);
                 }
                 else if (content_id == _item_id_window_delete)
                 {
