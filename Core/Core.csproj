@@ -67,6 +67,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -79,6 +80,7 @@
     <Compile Include="Abstracts\AbstractChild.cs" />
     <Compile Include="Abstracts\AbstractContent.cs" />
     <Compile Include="Abstracts\AbstractService.cs" />
+    <Compile Include="GUI\MenuBar.cs" />
     <Compile Include="GUI\SplitWindow\ChildBranch.cs" />
     <Compile Include="GUI\SplitWindow\ChildLeaf.cs" />
     <Compile Include="GUI\WindowContent\LogContent.cs" />
@@ -90,6 +92,12 @@
     <Compile Include="Utilities\Log.cs" />
     <Compile Include="Utilities\TimeBenchmark.cs" />
     <Compile Include="Utilities\UniqueStringID.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bhg.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\move-top.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

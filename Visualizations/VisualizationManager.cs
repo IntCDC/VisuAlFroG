@@ -29,7 +29,8 @@ namespace Visualizations
 
         public VisualizationManager()
         {
-            _servicemanager.AddService(new WebAPIService());
+            /// TODO Not needed so far
+            //_servicemanager.AddService(new WebAPIService());
             /// TODO fix hard coded paths
             // _servicemanager.AddService(new PythonInterfaceService());
             _servicemanager.AddService(new SciChartInterfaceService());

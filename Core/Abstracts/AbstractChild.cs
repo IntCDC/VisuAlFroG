@@ -9,10 +9,9 @@ using Core.GUI;
 /*
  * Abstract Child Window
  * 
- * 
  */
 
-using ContentDataListType = System.Collections.Generic.List<System.Tuple<string, string, Core.Abstracts.AbstractContent.DetachContentCall>>;
+using ContentDataListType = System.Collections.Generic.List<System.Tuple<string, string, Core.Abstracts.AbstractContent.DetachContentCallback>>;
 
 namespace Core
 {
@@ -25,9 +24,9 @@ namespace Core
             // public delegates
 
             // Provide 'id', 'header' and 'availability function' of content element
-            public delegate ContentDataListType AvailableContentCall();
+            public delegate ContentDataListType AvailableContentCallback();
 
-            public delegate bool RequestContentCall(string content_name, Grid content_grid);
+            public delegate bool RequestContentCallback(string content_name, Grid content_element);
 
 
             /* ------------------------------------------------------------------*/
@@ -53,8 +52,8 @@ namespace Core
             protected Grid _content = null;
             protected bool _parent_is_root = false;
             protected ChildBranch _parent_branch = null;
-            protected AvailableContentCall _available_content = null;
-            protected RequestContentCall _request_content = null;
+            protected AvailableContentCallback _available_content = null;
+            protected RequestContentCallback _request_content = null;
         }
     }
 }

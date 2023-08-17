@@ -38,7 +38,7 @@ namespace Core
 
             }
 
-            public delegate void LogListenerCall(MessageData msgdata);
+            public delegate void LogListenerCallback(MessageData msgdata);
 
 
             /* ------------------------------------------------------------------*/
@@ -94,7 +94,7 @@ namespace Core
             }
 
 
-            public void RegisterListener(LogListenerCall listener)
+            public void RegisterListener(LogListenerCallback listener)
             {
                 _listeners.Add(listener);
             }
@@ -106,7 +106,7 @@ namespace Core
             private static Log _instance = null;
             private static readonly object _padlock = new object();
             private List<MessageData> _messages = new List<MessageData>();
-            private List<LogListenerCall> _listeners = new List<LogListenerCall>();
+            private List<LogListenerCallback> _listeners = new List<LogListenerCallback>();
         }
     }
 

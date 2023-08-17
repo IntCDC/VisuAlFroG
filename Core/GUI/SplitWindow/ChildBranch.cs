@@ -34,9 +34,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public void CreateRoot(Grid parent_grid, AvailableContentCall available_content, RequestContentCall request_content)
+            public void CreateRoot(Grid parent_element, AvailableContentCallback available_content, RequestContentCallback request_content)
             {
-                if (parent_grid == null)
+                if (parent_element == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Grid parameter must not be NULL");
                     return;
@@ -54,7 +54,7 @@ namespace Core
                 _content = new Grid();
                 _content.Name = "grid_parent_is_root";
                 _content.Children.Add(_child_leaf.GetContentElement());
-                parent_grid.Children.Add(_content);
+                parent_element.Children.Add(_content);
             }
 
 
@@ -172,7 +172,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private functions
 
-            private void add_leafchild(ChildBranch parent_branch, AvailableContentCall available_content, RequestContentCall request_content, Grid grid, ChildLeaf child_leaf)
+            private void add_leafchild(ChildBranch parent_branch, AvailableContentCallback available_content, RequestContentCallback request_content, Grid grid, ChildLeaf child_leaf)
             {
                 _parent_is_root = false;
                 _parent_branch = parent_branch;
@@ -247,12 +247,12 @@ namespace Core
                 kept_child._parent_branch = null;
             }
 
-            private void clear_content(Grid grid)
+            private void clear_content(Grid cotent_element)
             {
-                grid.Children.Clear();
-                grid.RowDefinitions.Clear();
-                grid.ColumnDefinitions.Clear();
-                grid.UpdateLayout();
+                cotent_element.Children.Clear();
+                cotent_element.RowDefinitions.Clear();
+                cotent_element.ColumnDefinitions.Clear();
+                cotent_element.UpdateLayout();
             }
 
 

@@ -22,7 +22,7 @@ namespace Interface
             public override string Name => "VisFroG";
 
             // Return a 24x24 pixel bitmap to represent this GHA library.
-            public override Bitmap Icon => new Bitmap(@"visfrog.ico");
+            public override Bitmap Icon => new Bitmap("resources/logo32.png");
 
             // Return a short string describing the purpose of this GHA library.
             public override string Description => "Visualization framework providing the concept of visual analytics pipeline within grasshopper.";

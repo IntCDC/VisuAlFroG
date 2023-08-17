@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
-using Core.GUI;
+using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
+
 using Core.Abstracts;
 using Core.Utilities;
-using System.Windows.Input;
-using System.Windows.Shapes;
-
-
-
 /*
  * Child Leaf
  * 
  * 
  */
 
-using ContentDataType = System.Tuple<string, string, Core.Abstracts.AbstractContent.DetachContentCall>;
+using ContentDataType = System.Tuple<string, string, Core.Abstracts.AbstractContent.DetachContentCallback>;
 
 namespace Core
 {
@@ -28,7 +26,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public ChildLeaf(ChildBranch parent_branch, bool parent_is_root, AvailableContentCall available_content, RequestContentCall request_content)
+            public ChildLeaf(ChildBranch parent_branch, bool parent_is_root, AvailableContentCallback available_content, RequestContentCallback request_content)
             {
                 _parent_branch = parent_branch;
                 _parent_is_root = parent_is_root;
@@ -40,13 +38,8 @@ namespace Core
                 _content.Name = "grid_" + UniqueStringID.Generate();
 
                 // Drag and drop
-                _content.KeyDown += content_keydown;
-                _content.KeyUp += content_keyup;
                 _content.MouseMove += content_mousemove;
-                _content.GiveFeedback += content_givefeedback;
                 _content.AllowDrop = true;
-                _content.DragEnter += content_dragenter;
-                _content.DragLeave += content_dragleave;
                 _content.DragOver += content_dragover;
                 _content.Drop += content_drop;
 
@@ -97,25 +90,24 @@ namespace Core
 
             private void contextmenu_loaded(object sender, RoutedEventArgs e)
             {
-
                 var contextmenu = (ContextMenu)sender;
                 contextmenu.Items.Clear();
 
                 // Horizontal 
                 var item_horizontal_top = new MenuItem();
-                item_horizontal_top.Style = ColorTheme.MenuItemStyle();
-                item_horizontal_top.Header = "Move Child Top";
-                item_horizontal_top.Name = _horizontal_top;
-                item_horizontal_top.Click += menuitem_clicked;
+                item_horizontal_top.Style = ColorTheme.MenuItemStyle("/resources/menu/move-top.png");
+                item_horizontal_top.Header = "Move Top";
+                item_horizontal_top.Name = _item_id_hori_top;
+                item_horizontal_top.Click += menuitem_click;
 
                 var item_horizontal_bottom = new MenuItem();
-                item_horizontal_bottom.Style = ColorTheme.MenuItemStyle();
-                item_horizontal_bottom.Header = "Move Child Bottom";
-                item_horizontal_bottom.Name = _horizontal_bottom;
-                item_horizontal_bottom.Click += menuitem_clicked;
+                item_horizontal_bottom.Style = ColorTheme.MenuItemStyle("/resources/menu/move-bottom.png");
+                item_horizontal_bottom.Header = "Move Bottom";
+                item_horizontal_bottom.Name = _item_id_hori_bottom;
+                item_horizontal_bottom.Click += menuitem_click;
 
                 var item_horizontal = new MenuItem();
-                item_horizontal.Style = ColorTheme.MenuItemStyle();
+                item_horizontal.Style = ColorTheme.MenuItemStyle("/resources/menu/split-horizontal.png");
                 item_horizontal.Header = "Horizontal Split";
                 item_horizontal.Items.Add(item_horizontal_top);
                 item_horizontal.Items.Add(item_horizontal_bottom);
@@ -123,19 +115,19 @@ namespace Core
 
                 // Vertical
                 var item_vertical_left = new MenuItem();
-                item_vertical_left.Style = ColorTheme.MenuItemStyle();
-                item_vertical_left.Header = "Move Child Left";
-                item_vertical_left.Name = _vertical_Left;
-                item_vertical_left.Click += menuitem_clicked;
+                item_vertical_left.Style = ColorTheme.MenuItemStyle("/resources/menu/move-left.png");
+                item_vertical_left.Header = "Move Left";
+                item_vertical_left.Name = _item_id_vert_Left;
+                item_vertical_left.Click += menuitem_click;
 
                 var item_vertical_right = new MenuItem();
-                item_vertical_right.Style = ColorTheme.MenuItemStyle();
-                item_vertical_right.Header = "Move Child Right";
-                item_vertical_right.Name = _vertical_right;
-                item_vertical_right.Click += menuitem_clicked;
+                item_vertical_right.Style = ColorTheme.MenuItemStyle("/resources/menu/move-right.png");
+                item_vertical_right.Header = "Move Right";
+                item_vertical_right.Name = _item_id_vert_right;
+                item_vertical_right.Click += menuitem_click;
 
                 var item_vertical = new MenuItem();
-                item_vertical.Style = ColorTheme.MenuItemStyle();
+                item_vertical.Style = ColorTheme.MenuItemStyle("/resources/menu/split-vertical.png");
                 item_vertical.Header = "Vertical Split";
                 item_vertical.Items.Add(item_vertical_left);
                 item_vertical.Items.Add(item_vertical_right);
@@ -145,16 +137,16 @@ namespace Core
                 if (!_parent_is_root)
                 {
                     var item_delete = new MenuItem();
-                    item_delete.Style = ColorTheme.MenuItemStyle();
-                    item_delete.Header = "Delete Child Window";
-                    item_delete.Name = _delete;
-                    item_delete.Click += menuitem_clicked;
+                    item_delete.Style = ColorTheme.MenuItemStyle("/resources/menu/delete-window.png");
+                    item_delete.Header = "Delete Window";
+                    item_delete.Name = _item_id_delete;
+                    item_delete.Click += menuitem_click;
                     contextmenu.Items.Add(item_delete);
                 }
 
                 var item_content_menu = new MenuItem();
-                item_content_menu.Style = ColorTheme.MenuItemStyle();
-                item_content_menu.Header = "Content";
+                item_content_menu.Style = ColorTheme.MenuItemStyle("/resources/menu/add-content.png");
+                item_content_menu.Header = "Add Content";
                 var available_child_content = _available_content();
                 foreach (var content_data in available_child_content)
                 {
@@ -162,7 +154,7 @@ namespace Core
                     content_item.Style = ColorTheme.MenuItemStyle();
                     content_item.Header = content_data.Item2; // = Name
                     content_item.Name = content_data.Item1; // = ID;
-                    content_item.Click += menuitem_clicked;
+                    content_item.Click += menuitem_click;
                     item_content_menu.Items.Add(content_item);
                 }
                 if (item_content_menu.Items.IsEmpty)
@@ -174,41 +166,45 @@ namespace Core
                 var item_sep = new Separator();
                 contextmenu.Items.Add(item_sep);
 
-                var item_dad = new TextBlock();
-                item_dad.Text = "Press 'Ctrl' key to drag & drop " + Environment.NewLine +
-                                "content to another window." + Environment.NewLine +
-                                "NOTE: Target content will be replaced.";
-                item_dad.IsEnabled = false;
-                contextmenu.Items.Add(item_dad);
+                var item_sep_temp = new Separator();
+                var sep_template = new ControlTemplate();
+                sep_template.TargetType = typeof(Separator);
+                var text = new FrameworkElementFactory(typeof(TextBlock));
+                text.SetValue(TextBlock.TextProperty, "Drag & Drop Content: Middle mouse button" + Environment.NewLine + "(Target content will be replaced)");
+                text.SetValue(TextBlock.ForegroundProperty, ColorTheme.TextDisabled);
+                text.SetValue(TextBlock.MarginProperty, new Thickness(35.0, 2.0, 2.0, 2.0)); // left,top,right,bottom
+                sep_template.VisualTree = text;
+                item_sep_temp.Template = sep_template;
+                contextmenu.Items.Add(item_sep_temp);
             }
 
 
-            private void menuitem_clicked(object sender, RoutedEventArgs e)
+            private void menuitem_click(object sender, RoutedEventArgs e)
             {
-                var sender_menuitem = sender as MenuItem;
-                if (sender_menuitem == null)
+                var sender_content = sender as MenuItem;
+                if (sender_content == null)
                 {
                     return;
                 }
 
-                string menuitem_id = sender_menuitem.Name;
-                if (menuitem_id == _horizontal_top)
+                string content_id = sender_content.Name;
+                if (content_id == _item_id_hori_top)
                 {
                     _parent_branch.Split(ChildBranch.SplitOrientation.Horizontal, ChildBranch.ChildLocation.Top_Left);
                 }
-                else if (menuitem_id == _horizontal_bottom)
+                else if (content_id == _item_id_hori_bottom)
                 {
                     _parent_branch.Split(ChildBranch.SplitOrientation.Horizontal, ChildBranch.ChildLocation.Bottom_Right);
                 }
-                else if (menuitem_id == _vertical_Left)
+                else if (content_id == _item_id_vert_Left)
                 {
                     _parent_branch.Split(ChildBranch.SplitOrientation.Vertical, ChildBranch.ChildLocation.Top_Left);
                 }
-                else if (menuitem_id == _vertical_right)
+                else if (content_id == _item_id_vert_right)
                 {
                     _parent_branch.Split(ChildBranch.SplitOrientation.Vertical, ChildBranch.ChildLocation.Bottom_Right);
                 }
-                else if (menuitem_id == _delete)
+                else if (content_id == _item_id_delete)
                 {
                     content_detach();
                     _parent_branch.DeleteLeaf();
@@ -217,7 +213,7 @@ namespace Core
                 var available_contents = _available_content();
                 foreach (var available_content in available_contents)
                 {
-                    if (menuitem_id == available_content.Item1) // = ID
+                    if (content_id == available_content.Item1) // = ID
                     {
                         content_detach();
                         content_attach(available_content);
@@ -266,21 +262,6 @@ namespace Core
             }
 
 
-            private void content_keydown(object sender, KeyEventArgs e)
-            {
-                if ((e.Key == Key.LeftCtrl) || (e.Key == Key.RightCtrl))
-                {
-                    _key_ctrl_down = true;
-                }
-            }
-
-
-            private void content_keyup(object sender, KeyEventArgs e)
-            {
-                _key_ctrl_down = false;
-            }
-
-
             private void content_mousemove(object sender, MouseEventArgs e)
             {
                 var sender_grid = sender as Grid;
@@ -288,32 +269,12 @@ namespace Core
                 {
                     return;
                 }
-                // Enable drag source if content is attached and Ctrl is pressed while mouse move
-                if ((_attached_content != null) && (e.LeftButton == MouseButtonState.Pressed) && _key_ctrl_down)
+                if ((_attached_content != null) && (e.MiddleButton == MouseButtonState.Pressed))
                 {
                     var tmp_attached_content = _attached_content;
                     content_detach();
-                    _key_ctrl_down = false;
                     DragDrop.DoDragDrop(sender_grid, tmp_attached_content, DragDropEffects.All);
                 }
-            }
-
-
-            private void content_givefeedback(object sender, GiveFeedbackEventArgs e)
-            {
-                // unused
-            }
-
-
-            private void content_dragenter(object sender, DragEventArgs e)
-            {
-                // unused
-            }
-
-
-            private void content_dragleave(object sender, DragEventArgs e)
-            {
-                // unused
             }
 
 
@@ -328,7 +289,7 @@ namespace Core
                 var data_type = typeof(ContentDataType);
                 if (e.Data.GetDataPresent(data_type))
                 {
-                    e.Effects = DragDropEffects.All;
+                    e.Effects = DragDropEffects.Move | DragDropEffects.Copy;
                 }
             }
 
@@ -348,7 +309,6 @@ namespace Core
                     // Currently attached content is replaced
                     content_detach();
                     content_attach(content_data);
-                    _key_ctrl_down = false;
                 }
             }
 
@@ -356,17 +316,13 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private readonly string _horizontal_top = "child_horizontal_top_" + UniqueStringID.Generate();
-            private readonly string _horizontal_bottom = "Child_horizontal_bottom_" + UniqueStringID.Generate();
-            private readonly string _vertical_Left = "child_vertical_left_" + UniqueStringID.Generate();
-            private readonly string _vertical_right = "child_vertical_right" + UniqueStringID.Generate();
-            private readonly string _delete = "child_delete" + UniqueStringID.Generate();
-
             private ContentDataType _attached_content = null;
 
-            // Used to trigger drag & drop
-            private bool _key_ctrl_down = false;
-            private bool _mouse_over = false;
+            private readonly string _item_id_hori_top = "item_horizontal_top_" + UniqueStringID.Generate();
+            private readonly string _item_id_hori_bottom = "item_horizontal_bottom_" + UniqueStringID.Generate();
+            private readonly string _item_id_vert_Left = "item_vertical_left_" + UniqueStringID.Generate();
+            private readonly string _item_id_vert_right = "item_vertical_right" + UniqueStringID.Generate();
+            private readonly string _item_id_delete = "item_delete" + UniqueStringID.Generate();
         }
     }
 }

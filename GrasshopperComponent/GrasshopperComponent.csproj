@@ -51,7 +51,7 @@
   </PropertyGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;$(SolutionDir)Visualizations\Templates\&quot;* &quot;$(OutputPath)&quot;&#xD;&#xA;copy &quot;$(SolutionDir)resources\&quot;* &quot;$(OutputPath)&quot;" />
+    <Exec Command="robocopy &quot;$(SolutionDir)resources&quot; &quot;$(OutDir)resources&quot; /E&#xD;&#xA;if %25errorlevel%25 leq 3 exit 0 else exit %25errorlevel%25" />
   </Target>
 
 </Project>

@@ -19,17 +19,17 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public types
 
-            public delegate bool DetachContentCall();
+            public delegate bool DetachContentCallback();
 
 
             /* ------------------------------------------------------------------*/
             // abstract functions
 
             /// <summary>
-            /// Attach content to provided content_grid.
+            /// Attach content to provided content_element.
             ///  Set "_attached=true" when attached successfully.
             /// </summary>
-            public abstract bool AttachContent(Grid content_grid);
+            public abstract bool AttachContent(Grid content_element);
 
 
             /* ------------------------------------------------------------------*/

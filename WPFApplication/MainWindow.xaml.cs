@@ -22,8 +22,8 @@ using System.Windows.Media.Imaging;
  * 
  */
 
-using ContentDataType = System.Tuple<string, string, Core.Abstracts.AbstractContent.DetachContentCall>;
-using ContentDataListType = System.Collections.Generic.List<System.Tuple<string, string, Core.Abstracts.AbstractContent.DetachContentCall>>;
+using ContentDataType = System.Tuple<string, string, Core.Abstracts.AbstractContent.DetachContentCallback>;
+using ContentDataListType = System.Collections.Generic.List<System.Tuple<string, string, Core.Abstracts.AbstractContent.DetachContentCallback>>;
 
 namespace Frontend
 {
@@ -32,6 +32,15 @@ namespace Frontend
 
         public partial class MainWindow : Window
         {
+
+            /* ------------------------------------------------------------------*/
+            // public delegates
+
+            /// <summary>
+            /// Function provided by the interface (= Grasshopper) which allows to trigger relaoding of the interface
+            /// </summary>
+            public delegate void ReloadCallback();
+
 
             /* ------------------------------------------------------------------*/
             // public functions
@@ -54,9 +63,9 @@ namespace Frontend
             /// <summary>
             /// Get reload function call from Grasshopper
             /// </summary>
-            public void ReloadComponentFunction(ReloadFunctionCall func)
+            public void RegisterReloadCallback(ReloadCallback reloadCallback)
             {
-                _reload_func = func;
+                _reload_func = reloadCallback;
             }
 
 
@@ -79,15 +88,6 @@ namespace Frontend
 
 
             /* ------------------------------------------------------------------*/
-            // public delegates
-
-            /// <summary>
-            /// Function provided by the interface (= Grasshopper) which allows to trigger relaoding of the interface
-            /// </summary>
-            public delegate void ReloadFunctionCall();
-
-
-            /* ------------------------------------------------------------------*/
             // private functions
 
             public bool initialize(string app_name)
@@ -104,25 +104,27 @@ namespace Frontend
                 base.Title = app_name;
                 base.Width = 1280;
                 base.Height = 720;
-                base.Icon = new BitmapImage(new Uri("visfrog.ico", UriKind.Relative));
+                base.Icon = new BitmapImage(new Uri("resources/logo64.png", UriKind.Relative));
 
                 // Callback additionally invoked on loading of main window
                 base.Loaded += on_loaded;
                 // Callback invoked once per frame
                 CompositionTarget.Rendering += once_per_frame;
 
-
-                // Register window content
+                // Start logging
                 var log_content = new LogContent();
                 Log.Default.RegisterListener(log_content.LogListener);
-                window_contents.Add(log_content.ID(), log_content);
-
 
                 // Initialize visualizations (prior to registration)
                 bool initilized = _vismanager.Initialize();
 
-                // Register visualizations as window content
+                // Create visualizations
                 var testvis = new TestVisualization();
+
+                _menubar.RegisterCloseCallback(this.Close);
+
+                // Register window content
+                window_contents.Add(log_content.ID(), log_content);
                 window_contents.Add(testvis.ID(), testvis);
 
                 Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + base.Title);
@@ -143,16 +145,12 @@ namespace Frontend
 
                 bool executed = _vismanager.Execute();
 
-                draw_window();
+                // Draw window content
+                _menubar.Create(_menubar_element);
+                _subwindows.CreateRoot(_subwindows_element, windows_available_content, windows_request_content);
 
                 _timer.Stop();
                 return true;
-            }
-
-
-            private void draw_window()
-            {
-                _windowtree.CreateRoot(_main_grid, windows_available_content, windows_request_content);
             }
 
 
@@ -170,7 +168,7 @@ namespace Frontend
 
             /// <summary>
             ///  Provide necessary information of available window content
-            /// Called by child leaf in _windowtree
+            /// >> Called by child leaf in _subwindows
             /// </summary>
             private ContentDataListType windows_available_content()
             {
@@ -190,14 +188,14 @@ namespace Frontend
 
 
             /// <summary>
-            /// Draw requested content to provided grid
-            /// Called by child leaf in _windowtree
+            /// Draw requested content to provided parent content element.
+            /// >> Called by child leaf in _subwindows
             /// </summary>
-            public bool windows_request_content(string content_id, Grid content_grid)
+            public bool windows_request_content(string content_id, Grid content_element)
             {
                 if (window_contents.ContainsKey(content_id))
                 {
-                    return window_contents[content_id].AttachContent(content_grid);
+                    return window_contents[content_id].AttachContent(content_element);
                 }
                 else
                 {
@@ -214,13 +212,14 @@ namespace Frontend
             private bool _soft_close = false;
 
             private VisualizationManager _vismanager = new VisualizationManager();
-            private ChildBranch _windowtree = new ChildBranch();
 
-            private ReloadFunctionCall _reload_func;
+            private ChildBranch _subwindows = new ChildBranch();
+            private MenuBar _menubar = new MenuBar();
+
+            private ReloadCallback _reload_func;
             private TimeBenchmark _timer = new TimeBenchmark();
 
             Dictionary<string, AbstractContent> window_contents = new Dictionary<string, AbstractContent>();
-
         }
     }
 }

@@ -6,7 +6,12 @@
         xmlns:local="clr-namespace:Frontend.Application"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid x:Name="_main_grid">
-        <!-- Do not change. Content is programmatically added... -->
-    </Grid>
+    <DockPanel x:Name="_main_element" LastChildFill="true">
+        <Menu x:Name="_menubar_element" DockPanel.Dock="Top">
+            <!-- Do not change. Menu bar is added programmatically  -->
+        </Menu>
+        <Grid x:Name="_subwindows_element">
+            <!-- Do not change. Sub windows are added programmatically  -->
+        </Grid>
+    </DockPanel>
 </Window>

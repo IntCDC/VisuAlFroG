@@ -74,7 +74,7 @@ namespace Interface
                 {
                     string app_name = base.Name + " (" + base.NickName + ")";
                     _window = new MainWindow(app_name, true);
-                    _window.ReloadComponentFunction(reload_instance);
+                    _window.RegisterReloadCallback(reload_instance);
                 }
                 // Open or restore invisible window
                 _window.Show();
@@ -143,7 +143,7 @@ namespace Interface
             /// You can add image files to your project resources and access them like this:
             /// return Resources.IconForThisComponent;
             /// </summary>
-            protected override System.Drawing.Bitmap Icon => new System.Drawing.Bitmap(@"visfrog.ico");
+            protected override System.Drawing.Bitmap Icon => new System.Drawing.Bitmap("resources/logo32.png");
 
             /// <summary>
             /// Each component must have a unique Guid to identify it. 

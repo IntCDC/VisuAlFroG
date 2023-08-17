@@ -28,10 +28,10 @@ namespace Core
             }
 
 
-            public override bool AttachContent(Grid content_grid)
+            public override bool AttachContent(Grid content_element)
             {
-                content_grid.Background = Brushes.Black;
-                content_grid.Children.Add(_content);
+                content_element.Background = Brushes.Black;
+                content_element.Children.Add(_content);
 
                 _attached = true;
                 return true;

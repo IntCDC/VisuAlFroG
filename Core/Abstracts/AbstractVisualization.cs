@@ -24,7 +24,7 @@ namespace Core
             {
             }
 
-            public override bool AttachContent(Grid content_grid) { return false; }
+            public override bool AttachContent(Grid content_element) { return false; }
 
         }
     }

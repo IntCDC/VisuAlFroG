@@ -178,7 +178,7 @@
   </Target>
   <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(SolutionDir)Visualizations\Templates\"* "$(ProjectDir)$(OutDir)"
-copy "$(SolutionDir)resources\"* "$(ProjectDir)$(OutDir)"</PostBuildEvent>
+    <PostBuildEvent>robocopy "$(SolutionDir)resources" "$(ProjectDir)$(OutDir)resources" /E
+if %25errorlevel%25 leq 3 exit 0 else exit %25errorlevel%25</PostBuildEvent>
   </PropertyGroup>
 </Project>
