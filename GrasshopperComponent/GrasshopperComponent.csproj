@@ -13,7 +13,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>   
+    <RunPostBuildEvent>Always</RunPostBuildEvent>   
   </PropertyGroup>
 
   <ItemGroup>

@@ -30,7 +30,7 @@ namespace Core
 
             public override bool AttachContent(Grid content_element)
             {
-                content_element.Background = Brushes.Black;
+                content_element.Background = ColorTheme.BackgroundBlack;
                 content_element.Children.Add(_content);
 
                 _attached = true;
@@ -45,20 +45,20 @@ namespace Core
                 string trace_line = "[" + msgdata.caller_line + "]";
 
                 // Default for Level.Info
-                var font_color = Brushes.White;
+                var font_color = ColorTheme.LogMessageInfo;
                 string level_prefix = "<INFO> ";
                 switch (msgdata.level)
                 {
                     case (Log.Level.Warn):
-                        font_color = Brushes.Yellow;
+                        font_color = ColorTheme.LogMessageWarn;
                         level_prefix = "<WARN>";
                         break;
                     case (Log.Level.Error):
-                        font_color = Brushes.Red;
+                        font_color = ColorTheme.LogMessageError;
                         level_prefix = "<ERROR>";
                         break;
                     case (Log.Level.Debug):
-                        font_color = Brushes.Gray;
+                        font_color = ColorTheme.LogMessageDebug;
                         level_prefix = "<DEBUG>";
                         break;
                 }

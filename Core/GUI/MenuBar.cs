@@ -2,6 +2,11 @@
 using System.Windows.Controls;
 using Core.Utilities;
 using Core.GUI;
+using System.Windows.Documents;
+using System;
+using System.Diagnostics;
+using System.Windows.Navigation;
+using System.Diagnostics.Tracing;
 
 
 
@@ -29,6 +34,10 @@ namespace Core
 
             public void Create(Menu content_element)
             {
+                content_element.Height = 20.0;
+                content_element.Style = ColorTheme.MenuStyle();
+
+
                 var item_file = new MenuItem();
                 item_file.Header = "File";
 
@@ -36,19 +45,27 @@ namespace Core
                 item_close.Header = "Close";
                 item_close.Name = _item_id_close;
                 item_close.Click += menuitem_click;
+                item_close.Style = ColorTheme.MenuItemStyle();
                 item_file.Items.Add(item_close);
 
-                /*
-                var item_help = new MenuItem();
-                item_help.Header = "Help";
-                item_help.Name = _item_id_help;
-                item_help.Click += menuitem_click;
-                item_file.Items.Add(item_help);
-                */
-
-                content_element.Height = 20.0;
-                content_element.Style = ColorTheme.MenuStyle();
                 content_element.Items.Add(item_file);
+
+
+                var item_info = new MenuItem();
+                item_info.Header = "Info";
+
+                var hyper_link = new Hyperlink();
+                hyper_link.NavigateUri = new Uri("https://github.com/IntCDC/VisFroG");
+                hyper_link.RequestNavigate += hyperlink_requestnavigate;
+                hyper_link.Inlines.Add("GitHub Repository");
+                hyper_link.Style = ColorTheme.HyperlinkStyle();
+
+                var item_github_link = new MenuItem();
+                item_github_link.Style = ColorTheme.MenuItemStyle("github.png");
+                item_github_link.Header = hyper_link;
+                item_info.Items.Add(item_github_link);
+
+                content_element.Items.Add(item_info);
             }
 
 
@@ -81,13 +98,14 @@ namespace Core
                         Log.Default.Msg(Log.Level.Warn, "Missing close callback");
                     }
                 }
-                else if (content_id == _item_id_help)
-                {
-
-
-                }
             }
 
+            private void hyperlink_requestnavigate(object sender, RequestNavigateEventArgs e)
+            {
+                Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+                e.Handled = true;
+                System.Diagnostics.Process.Start(e.Uri.ToString());
+            }
 
             /* ------------------------------------------------------------------*/
             // private variables
@@ -95,7 +113,6 @@ namespace Core
             private CloseCallback _close_callback = null;
 
             private readonly string _item_id_close = "item_close_" + UniqueStringID.Generate();
-            private readonly string _item_id_help = "item_help_" + UniqueStringID.Generate();
         }
     }
 }

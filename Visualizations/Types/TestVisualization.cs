@@ -31,7 +31,6 @@ namespace Visualizations
             {
                 _content.ChartModifier.IsAttached = true;
 
-                content_element.Background = Brushes.White;
                 content_element.Children.Add(_content);
 
                 _attached = true;

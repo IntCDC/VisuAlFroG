@@ -68,6 +68,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -92,12 +93,6 @@
     <Compile Include="Utilities\Log.cs" />
     <Compile Include="Utilities\TimeBenchmark.cs" />
     <Compile Include="Utilities\UniqueStringID.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\bhg.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\move-top.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
