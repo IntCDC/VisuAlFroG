@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using Core.Utilities;
 using Core.Abstracts;
+using EntityFrameworkDatabase;
+using Visualizations.SciChartInterface;
 
 
 
 /*
- * Abstract Service Manager
+ * Service Manager
  * 
  */
-namespace Core
+namespace Visualizations
 {
     namespace Management
     {
@@ -25,6 +27,16 @@ namespace Core
                 {
                     Terminate();
                 }
+
+                /// TODO Not needed so far
+                //_servicemanager.AddService(new WebAPIService());
+
+                /// TODO fix hard coded paths
+                // _servicemanager.AddService(new PythonInterfaceService());
+
+                AddService(new SciChartInterfaceService());
+                AddService(new DatabaseService());
+
                 bool initilized = true;
                 foreach (var m in _services)
                 {
@@ -68,7 +80,9 @@ namespace Core
 
             public void AddService(AbstractService service)
             {
-                _services.Add(service.GetType(), service);
+                Type service_type = service.GetType(); 
+                _services.Add(service_type, service);
+                Log.Default.Msg(Log.Level.Info, "Added Service: '" + service_type.FullName + "'");
             }
 
 
@@ -78,10 +92,7 @@ namespace Core
                 {
                     return (T)_services[typeof(T)];
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
 
 

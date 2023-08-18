@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
+using Core.Abstracts;
 using Core.GUI;
 
 
+
+// Parameters: <name, available, type>
+using AvailableContentList_Type = System.Collections.Generic.List<System.Tuple<string, bool, System.Type>>;
+
+using ContentCallbacks = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.RequestContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
 
 
 /*
  * Abstract Child Window
  * 
  */
-
-using ContentDataListType = System.Collections.Generic.List<System.Tuple<string, string, Core.Abstracts.AbstractContent.DetachContentCallback>>;
-
 namespace Core
 {
     namespace Abstracts
@@ -23,10 +26,11 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public delegates
 
-            // Provide 'id', 'header' and 'availability function' of content element
-            public delegate ContentDataListType AvailableContentCallback();
+            public delegate AvailableContentList_Type AvailableContents_Delegate();
 
-            public delegate bool RequestContentCallback(string content_name, Grid content_element);
+            public delegate string RequestContent_Delegate(string content_id, Type content_type, Grid content_element);
+
+            public delegate void DeleteContent_Delegate(string content_id);
 
 
             /* ------------------------------------------------------------------*/
@@ -52,8 +56,7 @@ namespace Core
             protected Grid _content = null;
             protected bool _parent_is_root = false;
             protected WindowBranch _parent_branch = null;
-            protected AvailableContentCallback _available_content = null;
-            protected RequestContentCallback _request_content = null;
+            protected ContentCallbacks _content_callbacks = null;
         }
     }
 }

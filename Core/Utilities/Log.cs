@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System;
+using Core.GUI;
+using System.IO;
 
 
 
@@ -31,14 +34,10 @@ namespace Core
             public struct MessageData
             {
                 public Level level;
-                public string caller_file;
-                public string caller_method;
-                public string caller_line;
                 public string message;
-
             }
 
-            public delegate void LogListenerCallback(MessageData msgdata);
+            public delegate void LogListener_Delegate(List<MessageData> msglist);
 
 
             /* ------------------------------------------------------------------*/
@@ -61,32 +60,60 @@ namespace Core
             }
 
 
-            public void Msg(Log.Level level, string message, StackTrace custom_stacktrace = null)
+            public void Msg(Log.Level level, string log, StackTrace custom_stacktrace = null)
             {
-                MessageData msgdata = new MessageData();
-
-                var stacktrace = custom_stacktrace;
-                if (stacktrace == null)
-                {
-                    stacktrace = new StackTrace(true);
-                }
 #if DEBUG
 #else
                 // Ignore debug messages on release build
                 if (level != Level.Debug) {
 #endif
-                msgdata.caller_file = stacktrace.GetFrame(1).GetFileName();
-                msgdata.caller_method = stacktrace.GetFrame(1).GetMethod().Name;
-                msgdata.caller_line = stacktrace.GetFrame(1).GetFileLineNumber().ToString();
+                var stacktrace = custom_stacktrace;
+                if (stacktrace == null)
+                {
+                    stacktrace = new StackTrace(true);
+                }
+
+                string caller_file = stacktrace.GetFrame(1).GetFileName();
+                string caller_method = stacktrace.GetFrame(1).GetMethod().Name;
+                string caller_line = stacktrace.GetFrame(1).GetFileLineNumber().ToString();
+
+                string trace_file = "[" + Path.GetFileName(caller_file) + "]";
+                string trace_method = "[" + caller_method + "]";
+                string trace_line = "[" + caller_line + "]";
+
+                string level_prefix = "<INFO> ";
+                switch (level)
+                {
+                    case (Log.Level.Warn):
+                        level_prefix = "<WARN>";
+                        break;
+                    case (Log.Level.Error):
+                        level_prefix = "<ERROR>";
+                        break;
+                    case (Log.Level.Debug):
+                        level_prefix = "<DEBUG>";
+                        break;
+                }
+
+                // Fixed padding
+                string trace_meta = level_prefix + " " + trace_file + trace_method + trace_line;
+                trace_meta = trace_meta.PadRight(60, ' ');
+                string message = (trace_meta + " > " + log);
+
+                MessageData msgdata = new MessageData();
                 msgdata.level = level;
                 msgdata.message = message;
                 _messages.Add(msgdata);
 
+                List<MessageData> listener_messages = new List<MessageData>();
+                listener_messages.Add(msgdata);
+
                 // Call listeners
                 foreach (var l in _listeners)
                 {
-                    l(msgdata);
+                    l(listener_messages);
                 }
+                Console.WriteLine(message);
 #if DEBUG
 #else
                 }
@@ -94,9 +121,10 @@ namespace Core
             }
 
 
-            public void RegisterListener(LogListenerCallback listener)
+            public void RegisterListener(LogListener_Delegate listener)
             {
                 _listeners.Add(listener);
+                listener(_messages);
             }
 
 
@@ -106,7 +134,7 @@ namespace Core
             private static Log _instance = null;
             private static readonly object _padlock = new object();
             private List<MessageData> _messages = new List<MessageData>();
-            private List<LogListenerCallback> _listeners = new List<LogListenerCallback>();
+            private List<LogListener_Delegate> _listeners = new List<LogListener_Delegate>();
         }
     }
 

@@ -19,26 +19,34 @@ namespace Visualizations
         {
 
             /* ------------------------------------------------------------------*/
+            // static variables
+
+            // Set for derived classes
+            public static new readonly string name = "Test Visualization";
+            public static new readonly bool multiple_instances = true;
+
+
+            /* ------------------------------------------------------------------*/
             // public functions
-
-            public TestVisualization() : base("Test Visualization")
-            {
-                setup_content();
-            }
-
 
             public override bool AttachContent(Grid content_element)
             {
-                _content.ChartModifier.IsAttached = true;
+                if (!_setup)
+                {
+                    setup_content();
+                }
 
+                _content.ChartModifier.IsAttached = true;
                 content_element.Children.Add(_content);
 
                 _attached = true;
                 return true;
             }
 
+
             public override bool DetachContent()
             {
+                // Required to release mouse handling
                 _content.ChartModifier.IsAttached = false;
 
                 _attached = false;
@@ -49,7 +57,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private functions
 
-            private void setup_content()
+            protected override void setup_content()
             {
                 // Create the chart surface
                 _content = new SciChartSurface();
@@ -73,13 +81,17 @@ namespace Visualizations
                     Y1 = 5.0
                 };
                 _content.Annotations.Add(textAnnotation);
+
+                _setup = true;
             }
+
 
             /* ------------------------------------------------------------------*/
             // private variables
 
             private SciChartSurface _content = null;
 
+            private readonly bool _multi = false;
         }
     }
 }

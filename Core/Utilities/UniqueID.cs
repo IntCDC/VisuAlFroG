@@ -1,14 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
+
+
+/*
+ * Generate unique ID string
+ */
 namespace Core
 {
     namespace Utilities
     {
-        public class UniqueStringID
+        public class UniqueID
         {
 
             /* ------------------------------------------------------------------*/
@@ -18,6 +19,9 @@ namespace Core
             {
                 return Guid.NewGuid().ToString("N");
             }
+
+            public static readonly string Invalid = "invalid";
+
         }
     }
 }

@@ -6,30 +6,45 @@ using Core.Utilities;
 using Core.Abstracts;
 using System.Windows.Media;
 using System.Windows.Documents;
+using System.Runtime.CompilerServices;
+using static Core.Utilities.Log;
+using System.Collections.Generic;
 
 
 
 /*
- * GUI Log Console
+ * Log Console
  * 
  */
 namespace Core
 {
     namespace GUI
     {
-        public sealed class LogContent : AbstractContent
+        public class LogContent : AbstractContent
         {
+            /* ------------------------------------------------------------------*/
+            // static variables
+
+            // Set for derived classes
+            public static new readonly string name = "Log Console";
+            public static new readonly bool multiple_instances = false;
+
+
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public LogContent() : base("Log Console")
+            public LogContent()
             {
-                setup_content();
+                Log.Default.RegisterListener(this.LogListener);
             }
 
 
             public override bool AttachContent(Grid content_element)
             {
+                if (!_setup)
+                {
+                    setup_content();
+                }
                 content_element.Background = ColorTheme.BackgroundBlack;
                 content_element.Children.Add(_content);
 
@@ -38,46 +53,39 @@ namespace Core
             }
 
 
-            public void LogListener(Log.MessageData msgdata)
+            public void LogListener(List<Log.MessageData> msglist)
             {
-                string trace_file = "[" + Path.GetFileName(msgdata.caller_file) + "]";
-                string trace_method = "[" + msgdata.caller_method + "]";
-                string trace_line = "[" + msgdata.caller_line + "]";
-
-                // Default for Level.Info
-                var font_color = ColorTheme.LogMessageInfo;
-                string level_prefix = "<INFO> ";
-                switch (msgdata.level)
+                if (!_setup)
                 {
-                    case (Log.Level.Warn):
-                        font_color = ColorTheme.LogMessageWarn;
-                        level_prefix = "<WARN>";
-                        break;
-                    case (Log.Level.Error):
-                        font_color = ColorTheme.LogMessageError;
-                        level_prefix = "<ERROR>";
-                        break;
-                    case (Log.Level.Debug):
-                        font_color = ColorTheme.LogMessageDebug;
-                        level_prefix = "<DEBUG>";
-                        break;
+                    setup_content();
                 }
-
-                // Fixed padding
-                string trace_meta = level_prefix + " " + trace_file + trace_method + trace_line;
-                trace_meta = trace_meta.PadRight(60, ' ');
-                string text = (trace_meta + " > " + msgdata.message + Environment.NewLine);
-
-                var run = new Run(text);
-                run.Foreground = font_color;
-                _textblock.Inlines.Add(run);
+                foreach (Log.MessageData msg in msglist)
+                {
+                    // Default for Level.Info
+                    var font_color = ColorTheme.LogMessageInfo;
+                    switch (msg.level)
+                    {
+                        case (Log.Level.Warn):
+                            font_color = ColorTheme.LogMessageWarn;
+                            break;
+                        case (Log.Level.Error):
+                            font_color = ColorTheme.LogMessageError;
+                            break;
+                        case (Log.Level.Debug):
+                            font_color = ColorTheme.LogMessageDebug;
+                            break;
+                    }
+                    var run = new Run(msg.message + Environment.NewLine);
+                    run.Foreground = font_color;
+                    _textblock.Inlines.Add(run);
+                }
             }
 
 
             /* ------------------------------------------------------------------*/
-            // private functions
+            // protected functions
 
-            private void setup_content()
+            protected override void setup_content()
             {
                 _content = new ScrollViewer();
                 _content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
@@ -90,6 +98,8 @@ namespace Core
                 _textblock.Height = Double.NaN; // = "Auto"
 
                 _content.Content = _textblock;
+
+                _setup = true;
             }
 
 
@@ -99,6 +109,5 @@ namespace Core
             private ScrollViewer _content = null;
             private TextBlock _textblock = null;
         }
-
     }
 }

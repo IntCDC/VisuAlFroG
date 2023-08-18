@@ -7,6 +7,7 @@ using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using Core.Utilities;
 using System.Windows.Documents;
+using static Core.Utilities.WorkingDirectory;
 
 
 
@@ -53,6 +54,7 @@ namespace Core
                 return style;
             }
 
+
             // LOG MESSAGES ---------------------------------------------------
 
             public static Brush LogMessageInfo { get { return Brushes.White; } }
@@ -94,7 +96,7 @@ namespace Core
             // MENU -----------------------------------------------------------
 
             public static Brush MenuBackground { get { return Brushes.SteelBlue; } }
-            public static Brush MenuForeground { get { return Brushes.GhostWhite; } }
+            public static Brush MenuForeground { get { return Brushes.White; } }
 
 
             public static Style MenuStyle()
@@ -120,35 +122,17 @@ namespace Core
             public static Brush MenuItemBackground { get { return Brushes.AliceBlue; } }
             public static Brush MenuItemForeground { get { return Brushes.Black; } }
 
-            public static Style MenuItemStyle(string icon_path = null)
+            public static Style MenuItemStyle(string icon_filename = null)
             {
                 var style = new Style();
                 style.TargetType = typeof(MenuItem);
 
-                if (!String.IsNullOrEmpty(icon_path))
+                if (!String.IsNullOrEmpty(icon_filename))
                 {
                     Setter setter_icon = new Setter();
                     setter_icon.Property = MenuItem.IconProperty;
-                    var image = new Image();
-                    string path = Artefacts.Path() + "/resources/menu/" + icon_path;
-                    try
-                    {
-                        image.Source = new BitmapImage(new Uri(path, UriKind.RelativeOrAbsolute));
-
-                        setter_icon.Value = image;
-                        style.Setters.Add(setter_icon);
-                    }
-                    catch (Exception exc)
-                    {
-                        if ((exc is System.Net.WebException) || (exc is System.IO.FileNotFoundException))
-                        {
-                            Log.Default.Msg(Log.Level.Error, exc.Message);
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
+                    setter_icon.Value = ImageHelper.ImageFromFile(Locations.MenuIcons, icon_filename);
+                    style.Setters.Add(setter_icon);
                 }
                 Setter setter_foreground = new Setter();
                 setter_foreground.Property = MenuItem.ForegroundProperty;
@@ -166,37 +150,6 @@ namespace Core
                 var style = new Style();
                 style.TargetType = typeof(ContextMenu);
 
-                /*
-                style.WindowColor = MenuColor;
-                style.ContentAreaColorLight = MenuColor;
-                style.ContentAreaColorDark = MenuColor;
-                style.DisabledControlLightColor = MenuColor;
-                style.DisabledControlDarkColor = MenuColor;
-                style.DisabledForegroundColor = MenuColor;
-                style.SelectedBackgroundColor = MenuColor;
-                style.SelectedUnfocusedColor = MenuColor;
-                style.ControlLightColor = MenuColor;
-                style.ControlMediumColor = MenuColor;
-                style.ControlDarkColor = MenuColor;
-                style.ControlMouseOverColor = MenuColor;
-                style.ControlPressedColor = MenuColor;
-                style.GlyphColor = MenuColor;
-                style.GlyphMouseOver = MenuColor
-                style.BorderLightColor = MenuColor;
-                style.BorderMediumColor = MenuColor;
-                style.BorderDarkColor = MenuColor;
-                style.PressedBorderLightColor = MenuColor;
-                style.PressedBorderDarkColor = MenuColor;
-                style.DisabledBorderLightColor = MenuColor;
-                style.DisabledBorderDarkColor = MenuColor;
-                style.DefaultBorderBrushDarkColor = MenuColor;
-                */
-                /*
-                Setter setter_background = new Setter();
-                setter_background.Property = MenuItem.BackgroundProperty;
-                setter_background.Value = ColorTheme.MenuItemBackground;
-                style.Setters.Add(setter_background);
-                */
                 return style;
             }
         }

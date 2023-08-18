@@ -3,20 +3,23 @@ using System.Runtime.Remoting.Contexts;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-
 using Core.Abstracts;
 using Core.Utilities;
+
+
+
+// Parameters: <name, available, type>
+using AvailableContentList_Type = System.Collections.Generic.List<System.Tuple<string, bool, System.Type>>;
+// Parameters: <id, type>
+using AttachedContent_Type = System.Tuple<string, System.Type>;
+
+using ContentCallbacks = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.RequestContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
+
+
 /*
  * Child Leaf
  * 
- * 
  */
-
-using ContentDataType = System.Tuple<string, string, Core.Abstracts.AbstractContent.DetachContentCallback>;
-
 namespace Core
 {
     namespace GUI
@@ -27,16 +30,25 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public WindowLeaf(WindowBranch parent_branch, bool parent_is_root, AvailableContentCallback available_content, RequestContentCallback request_content)
+            public WindowLeaf(WindowBranch parent_branch, bool parent_is_root, ContentCallbacks content_callbacks)
             {
                 _parent_branch = parent_branch;
                 _parent_is_root = parent_is_root;
-                _available_content = available_content;
-                _request_content = request_content;
+                _content_callbacks = content_callbacks;
+                if (_parent_branch == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Paramter parent_branch should not be null");
+                    return;
+                }
+                if (_content_callbacks == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Paramter content_callbacks should not be null");
+                    return;
+                }
 
                 _content = new Grid();
                 _content.Background = ColorTheme.GridBackground;
-                _content.Name = "grid_" + UniqueStringID.Generate();
+                _content.Name = "grid_" + UniqueID.Generate();
 
                 var info_text = new TextBlock();
                 info_text.Text = "  [Right-click for Context Menu]";
@@ -62,6 +74,12 @@ namespace Core
             {
                 _parent_branch = parent_branch;
                 _parent_is_root = parent_is_root;
+                if (_parent_branch == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Paramter parent_branch should not be null");
+                    return;
+                }
+
                 // Recreate context menu due to changed root
                 contextmenu_setup();
             }
@@ -153,13 +171,19 @@ namespace Core
                 var item_content_add = new MenuItem();
                 item_content_add.Style = ColorTheme.MenuItemStyle("add-content.png");
                 item_content_add.Header = "Add Content";
-                var available_child_content = _available_content();
+                // Call AvailableContents_Delegate
+                AvailableContentList_Type available_child_content = _content_callbacks.Item1();
                 foreach (var content_data in available_child_content)
                 {
+                    // Item index: 1=name, 2=available, 3=type
                     var content_item = new MenuItem();
                     content_item.Style = ColorTheme.MenuItemStyle();
-                    content_item.Header = content_data.Item2; // = Name
-                    content_item.Name = content_data.Item1; // = ID;
+
+                    // Repalcement of spaces is necessary for Name property
+                    string name = content_data.Item1.Replace(' ', '_'); // Hame
+                    content_item.Header = name;
+                    content_item.Name = name;
+                    content_item.IsEnabled = content_data.Item2; // Available
                     content_item.Click += menuitem_click;
                     item_content_add.Items.Add(content_item);
                 }
@@ -182,23 +206,10 @@ namespace Core
 
                 var item_content_dad = new MenuItem();
                 item_content_dad.Style = ColorTheme.MenuItemStyle("drag-and-drop.png");
-                item_content_dad.Header = "Drag & Drop Content [Middle Mouse Button]" + Environment.NewLine + "Target content will be replaced";
-                item_content_dad.IsEnabled = false;
+                item_content_dad.Header = "[Middle Mouse Button] Drag&Drop Content";
+                item_content_dad.ToolTip = "Target content will be replaced";
+                item_content_dad.IsEnabled = true;
                 contextmenu.Items.Add(item_content_dad);
-
-                /// DEBUG Template example for future reference ...
-                /*
-                var item_sep_temp = new Separator();
-                var sep_template = new ControlTemplate();
-                sep_template.TargetType = typeof(Separator);
-                var text = new FrameworkElementFactory(typeof(TextBlock));
-                text.SetValue(TextBlock.TextProperty, "Drag & Drop Content: Middle mouse button" + Environment.NewLine + "(Target content will be replaced)");
-                text.SetValue(TextBlock.ForegroundProperty, ColorTheme.TextDisabled);
-                text.SetValue(TextBlock.MarginProperty, new Thickness(35.0, 2.0, 2.0, 2.0)); // left,top,right,bottom
-                sep_template.VisualTree = text;
-                item_sep_temp.Template = sep_template;
-                contextmenu.Items.Add(item_sep_temp);
-                */
             }
 
 
@@ -238,34 +249,29 @@ namespace Core
                     content_detach();
                 }
 
-                var available_contents = _available_content();
-                foreach (var available_content in available_contents)
+                // Call AvailableContents_Delegate
+                AvailableContentList_Type available_contents = _content_callbacks.Item1();
+                foreach (var content_data in available_contents)
                 {
-                    if (content_id == available_content.Item1) // = ID
+                    // Repalcement of spaces is necessary for Name property
+                    string name = content_data.Item1.Replace(' ', '_'); // name
+                    if (content_id == name)
                     {
-                        content_detach();
-                        content_attach(available_content);
+                        content_attach(UniqueID.Invalid, content_data.Item3);
                     }
                 }
             }
 
 
-            private void content_attach(ContentDataType content_data)
+            private void content_attach(string content_id, Type content_type)
             {
-                if (content_data.Item3 == null) // DetachContentCall
+                content_detach();
+
+                // Call RequestContent_Delegate
+                string updated_content_id = _content_callbacks.Item2(content_id, content_type, _content);
+                if (updated_content_id != UniqueID.Invalid)
                 {
-                    Log.Default.Msg(Log.Level.Error, "DetachContentCall delegate is null");
-                    return;
-                }
-                // Request content to be added
-                if (_request_content(content_data.Item1, _content))
-                {
-                    // Save local copy of attached content data
-                    _attached_content = content_data;
-                }
-                else
-                {
-                    Log.Default.Msg(Log.Level.Warn, "Requested content could not be provided");
+                    _attached_content = new AttachedContent_Type(updated_content_id, content_type);
                 }
             }
 
@@ -274,16 +280,11 @@ namespace Core
             {
                 _content.Children.Clear();
                 _content.Background = ColorTheme.GridBackground;
-
-                if (_attached_content != null)
-                {
-                    if (_attached_content.Item3 != null)
+               if (_attached_content != null) {
+                    if (_attached_content.Item1 != UniqueID.Invalid)
                     {
-                        _attached_content.Item3(); // DetachContentCall
-                    }
-                    else
-                    {
-                        Log.Default.Msg(Log.Level.Error, "DetachContentCall delegate is null");
+                        // Call DeleteContent_Delegate
+                        _content_callbacks.Item3(_attached_content.Item1);
                     }
                     _attached_content = null;
                 }
@@ -314,7 +315,7 @@ namespace Core
                     return;
                 }
                 // Check for compatible data
-                var data_type = typeof(ContentDataType);
+                var data_type = typeof(AttachedContent_Type);
                 if (e.Data.GetDataPresent(data_type))
                 {
                     // Change mouse cursor
@@ -331,13 +332,12 @@ namespace Core
                     return;
                 }
                 // Check for compatible drop data
-                var data_type = typeof(ContentDataType);
+                var data_type = typeof(AttachedContent_Type);
                 if (e.Data.GetDataPresent(data_type))
                 {
-                    var content_data = (ContentDataType)e.Data.GetData(data_type);
+                    var content_data = (AttachedContent_Type)e.Data.GetData(data_type);
                     // Currently attached content is replaced
-                    content_detach();
-                    content_attach(content_data);
+                    content_attach(content_data.Item1, content_data.Item2);
                 }
             }
 
@@ -345,14 +345,14 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private ContentDataType _attached_content = null;
+            private AttachedContent_Type _attached_content = null;
 
-            private readonly string _item_id_hori_top = "item_horizontal_top_" + UniqueStringID.Generate();
-            private readonly string _item_id_hori_bottom = "item_horizontal_bottom_" + UniqueStringID.Generate();
-            private readonly string _item_id_vert_Left = "item_vertical_left_" + UniqueStringID.Generate();
-            private readonly string _item_id_vert_right = "item_vertical_right" + UniqueStringID.Generate();
-            private readonly string _item_id_window_delete = "item_window_delete" + UniqueStringID.Generate();
-            private readonly string _item_id_remove_content = "item_remove_content" + UniqueStringID.Generate();
+            private readonly string _item_id_hori_top = "item_horizontal_top_" + UniqueID.Generate();
+            private readonly string _item_id_hori_bottom = "item_horizontal_bottom_" + UniqueID.Generate();
+            private readonly string _item_id_vert_Left = "item_vertical_left_" + UniqueID.Generate();
+            private readonly string _item_id_vert_right = "item_vertical_right" + UniqueID.Generate();
+            private readonly string _item_id_window_delete = "item_window_delete" + UniqueID.Generate();
+            private readonly string _item_id_remove_content = "item_remove_content" + UniqueID.Generate();
         }
     }
 }

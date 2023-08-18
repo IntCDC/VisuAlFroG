@@ -6,13 +6,19 @@ using System.Threading.Tasks;
 using Visualizations.PythonInterface;
 using Visualizations.WebAPI;
 using Visualizations.SciChartInterface;
+using Visualizations.Management;
 using System.Net.Http;
 using Microsoft.Owin.Hosting;
 using Core.Utilities;
 using Core.Abstracts;
-using Core.Management;
 using EntityFrameworkDatabase;
+using System.Windows.Controls;
+using Core.GUI;
+using Visualizations.Types;
 
+
+
+using ContentCallbacks = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.RequestContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
 
 
 /*
@@ -27,17 +33,6 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         // public functions
 
-        public VisualizationManager()
-        {
-            /// TODO Not needed so far
-            //_servicemanager.AddService(new WebAPIService());
-            /// TODO fix hard coded paths
-            // _servicemanager.AddService(new PythonInterfaceService());
-            _servicemanager.AddService(new SciChartInterfaceService());
-            _servicemanager.AddService(new DatabaseService());
-        }
-
-
         public override bool Initialize()
         {
             if (_initilized)
@@ -46,6 +41,7 @@ namespace Visualizations
             }
 
             bool initilized = _servicemanager.Initialize();
+            initilized &= _contentmanager.Initialize();
 
             _initilized = initilized;
             return _initilized;
@@ -62,6 +58,7 @@ namespace Visualizations
             }
 
             bool executed = _servicemanager.Execute();
+            executed &= _contentmanager.Execute();
 
             return executed;
         }
@@ -73,15 +70,16 @@ namespace Visualizations
             if (_initilized)
             {
                 terminated &= _servicemanager.Terminate();
+                terminated &= _contentmanager.Terminate();
                 _initilized = false;
             }
             return terminated;
         }
 
 
-        public T GetService<T>() where T : AbstractService
+        public ContentCallbacks GetContentCallbacks()
         {
-            return _servicemanager.GetService<T>();
+            return new ContentCallbacks(_contentmanager.GetContentsCallback, _contentmanager.RequestContentCallback, _contentmanager.DeleteContentCallback);
         }
 
 
@@ -89,6 +87,7 @@ namespace Visualizations
         // private variables
 
         private ServiceManager _servicemanager = new ServiceManager();
+        private ContentManager _contentmanager = new ContentManager();
     }
 }
 

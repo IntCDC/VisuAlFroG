@@ -32,7 +32,7 @@ namespace EntityFrameworkDatabase
             /// => But App.config can not be used by Grasshopper component
             /// DataDirectory is defined in CTOR of Configuration
             /// </summary>
-            public DatabaseContext() : base("Data Source=(localdb)\\MSSQLLocalDB; Integrated Security=True; MultipleActiveResultSets=True; AttachDbFilename=|DataDirectory|" + Artefacts.FileName("database", "mdf"))
+            public DatabaseContext() : base("Data Source=(localdb)\\MSSQLLocalDB; Integrated Security=True; MultipleActiveResultSets=True; AttachDbFilename=|DataDirectory|" + WorkingDirectory.FileName("database", "mdf"))
             {
                 Database.SetInitializer(new MigrateDatabaseToLatestVersion<DatabaseContext, Configuration>());
             }

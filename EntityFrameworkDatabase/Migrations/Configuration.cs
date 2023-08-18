@@ -23,7 +23,7 @@ namespace EntityFrameworkDatabase
             public Configuration()
             {
                 // Set data directory variable given in connection string of DatabaseContext
-                AppDomain.CurrentDomain.SetData("DataDirectory", Artefacts.Path());
+                AppDomain.CurrentDomain.SetData("DataDirectory", WorkingDirectory.Path());
 
                 AutomaticMigrationsEnabled = false;
             }

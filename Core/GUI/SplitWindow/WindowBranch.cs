@@ -6,6 +6,9 @@ using Core.GUI;
 
 
 
+using ContentCallbacks = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.RequestContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
+
+
 /*
  * Child Branch
  * 
@@ -21,40 +24,40 @@ using Core.GUI;
  *                       |             |              | 
  *         ChildLeaf: canvas    ChildBranch: grid     ChildBranch: grid
  *                                    |                   |
- *                               ChildLeaf: canvas    ChildLeaf: canvas
- *                               
+ *                               ChildLeaf: canvas    ChildLeaf: canvas                           
  */
 namespace Core
 {
     namespace GUI
     {
-        public sealed class WindowBranch : AbstractWindow
+        public class WindowBranch : AbstractWindow
         {
 
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public void CreateRoot(Grid parent_element, AvailableContentCallback available_content, RequestContentCallback request_content)
+            public bool CreateRoot(Grid parent_element, ContentCallbacks content_callbacks)
             {
                 if (parent_element == null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Grid parameter must not be NULL");
-                    return;
+                    Log.Default.Msg(Log.Level.Error, "Grid parameter must not be null");
+                    return false;
                 }
 
                 _parent_is_root = true;
                 _parent_branch = null;
                 _child_branch_1 = null;
                 _child_branch_2 = null;
-                _available_content = available_content;
-                _request_content = request_content;
+                _content_callbacks = content_callbacks;
 
-                _child_leaf = new WindowLeaf(this, _parent_is_root, _available_content, _request_content);
+                _child_leaf = new WindowLeaf(this, _parent_is_root, _content_callbacks);
 
                 _content = new Grid();
                 _content.Name = "grid_parent_is_root";
                 _content.Children.Add(_child_leaf.GetContentElement());
                 parent_element.Children.Add(_content);
+
+                return true;
             }
 
 
@@ -74,7 +77,7 @@ namespace Core
                 _location = location;
 
                 var gridsplitter = new GridSplitter();
-                gridsplitter.Name = "gridplitter_" + UniqueStringID.Generate();
+                gridsplitter.Name = "gridplitter_" + UniqueID.Generate();
                 gridsplitter.HorizontalAlignment = HorizontalAlignment.Stretch;
                 gridsplitter.Style = ColorTheme.GridSplitterStyle();
 
@@ -82,14 +85,14 @@ namespace Core
                 if (grid_topleft == null)
                 {
                     grid_topleft = new Grid();
-                    grid_topleft.Name = "grid_" + UniqueStringID.Generate();
+                    grid_topleft.Name = "grid_" + UniqueID.Generate();
                 }
 
                 Grid grid_bottomright = (use_existing_childs) ? child_branch_2._content : null;
                 if (grid_bottomright == null)
                 {
                     grid_bottomright = new Grid();
-                    grid_bottomright.Name = "grid_" + UniqueStringID.Generate();
+                    grid_bottomright.Name = "grid_" + UniqueID.Generate();
                 }
 
                 switch (_orientation)
@@ -148,10 +151,10 @@ namespace Core
                     bool move_bottom_right = (_location == ChildLocation.Bottom_Right);
 
                     _child_branch_1 = new WindowBranch();
-                    _child_branch_1.add_leafchild(this, _available_content, _request_content, grid_topleft, (move_top_left ? _child_leaf : null));
+                    _child_branch_1.add_leafchild(this, _content_callbacks, grid_topleft, (move_top_left ? _child_leaf : null));
 
                     _child_branch_2 = new WindowBranch();
-                    _child_branch_2.add_leafchild(this, _available_content, _request_content, grid_bottomright, (move_bottom_right ? _child_leaf : null));
+                    _child_branch_2.add_leafchild(this, _content_callbacks, grid_bottomright, (move_bottom_right ? _child_leaf : null));
 
                     _child_leaf = null;
                 }
@@ -162,7 +165,7 @@ namespace Core
             {
                 if (_parent_branch == null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Parent should not be NULL");
+                    Log.Default.Msg(Log.Level.Error, "Parent should not be null");
                     return;
                 }
                 _parent_branch.delete_childbranch(this);
@@ -172,19 +175,18 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private functions
 
-            private void add_leafchild(WindowBranch parent_branch, AvailableContentCallback available_content, RequestContentCallback request_content, Grid grid, WindowLeaf child_leaf)
+            private void add_leafchild(WindowBranch parent_branch, ContentCallbacks content_callbacks, Grid grid, WindowLeaf child_leaf)
             {
                 _parent_is_root = false;
                 _parent_branch = parent_branch;
                 _child_branch_1 = null;
                 _child_branch_2 = null;
-                _available_content = available_content;
-                _request_content = request_content;
+                _content_callbacks = content_callbacks;
 
                 _child_leaf = child_leaf;
                 if (_child_leaf == null)
                 {
-                    _child_leaf = new WindowLeaf(this, _parent_is_root, _available_content, _request_content);
+                    _child_leaf = new WindowLeaf(this, _parent_is_root, _content_callbacks);
                 }
                 else
                 {

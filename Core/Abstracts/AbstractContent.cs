@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Controls;
-
 using Core.Utilities;
 
 
@@ -15,15 +14,23 @@ namespace Core
     {
         public abstract class AbstractContent
         {
+            /* ------------------------------------------------------------------*/
+            // static variables
+
+            // DECLARE IN DERIVED CLASS
+            // -> public static new readonly ...
+            public static readonly string name = "[uninitialized]";
+            public static readonly bool multiple_instances = true;
+
 
             /* ------------------------------------------------------------------*/
-            // public types
+            // public functions
 
-            public delegate bool DetachContentCallback();
+            public AbstractContent()
+            {
+                _id = UniqueID.Generate();
+            }
 
-
-            /* ------------------------------------------------------------------*/
-            // abstract functions
 
             /// <summary>
             /// Attach content to provided content_element.
@@ -32,34 +39,10 @@ namespace Core
             public abstract bool AttachContent(Grid content_element);
 
 
-            /* ------------------------------------------------------------------*/
-            // virtual functions
-
             public virtual bool DetachContent()
             {
                 _attached = false;
                 return true;
-            }
-
-
-            /* ------------------------------------------------------------------*/
-            // public functions
-
-            public AbstractContent(string header)
-            {
-                _header = header;
-                _id = header.Replace(" ", "_") + UniqueStringID.Generate(); ;
-            }
-
-
-            public string ID()
-            {
-                return _id;
-            }
-
-            public string Header()
-            {
-                return _header;
             }
 
 
@@ -68,18 +51,32 @@ namespace Core
                 return _attached;
             }
 
+            public string ID()
+            {
+                return _id;
+            }
+
+
             /* ------------------------------------------------------------------*/
-            // private variables
+            // protected functions
+
+            protected virtual void setup_content()
+            {
+                _setup = true;
+            }
+
+
+            /* ------------------------------------------------------------------*/
+            // protected variables
 
             protected bool _attached = false;
+            protected bool _setup = false;
 
 
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private readonly string _header;
-            private readonly string _id;
-            
+            private readonly string _id = UniqueID.Invalid;
         }
     }
 }

@@ -10,7 +10,6 @@ using Core.Abstracts;
 using Visualizations;
 using Core.GUI;
 using Visualizations.Types;
-using System.Windows.Media.Imaging;
 
 
 
@@ -21,10 +20,6 @@ using System.Windows.Media.Imaging;
  * Interaction logic for MainWindow.xaml
  * 
  */
-
-using ContentDataType = System.Tuple<string, string, Core.Abstracts.AbstractContent.DetachContentCallback>;
-using ContentDataListType = System.Collections.Generic.List<System.Tuple<string, string, Core.Abstracts.AbstractContent.DetachContentCallback>>;
-
 namespace Frontend
 {
     namespace Application
@@ -39,7 +34,7 @@ namespace Frontend
             /// <summary>
             /// Function provided by the interface (= Grasshopper) which allows to trigger relaoding of the interface
             /// </summary>
-            public delegate void ReloadCallback();
+            public delegate void ReloadInterface_Delegate();
 
 
             /* ------------------------------------------------------------------*/
@@ -63,7 +58,7 @@ namespace Frontend
             /// <summary>
             /// Get reload function call from Grasshopper
             /// </summary>
-            public void RegisterReloadCallback(ReloadCallback reloadCallback)
+            public void RegisterReloadCallback(ReloadInterface_Delegate reloadCallback)
             {
                 _reload_func = reloadCallback;
             }
@@ -100,34 +95,22 @@ namespace Frontend
                 _timer.Start();
 
 
+                // Window setup
                 InitializeComponent();
                 base.Title = app_name;
                 base.Width = 1280;
                 base.Height = 720;
-                base.Icon = new BitmapImage(new Uri("resources/logo64.png", UriKind.Relative));
+                base.Icon = ImageHelper.ImageSourceFromFile(WorkingDirectory.Locations.Resource, "logo64.png");
+                // base.Loaded += on_loaded;
+                // CompositionTarget.Rendering += once_per_frame;
 
-                // Callback additionally invoked on loading of main window
-                base.Loaded += on_loaded;
-                // Callback invoked once per frame
-                CompositionTarget.Rendering += once_per_frame;
 
-                // Start logging
-                var log_content = new LogContent();
-                Log.Default.RegisterListener(log_content.LogListener);
-
-                // Initialize visualizations (prior to registration)
                 bool initilized = _vismanager.Initialize();
-
-                // Create visualizations
-                var testvis = new TestVisualization();
 
                 _menubar.RegisterCloseCallback(this.Close);
 
-                // Register window content
-                window_contents.Add(log_content.ID(), log_content);
-                window_contents.Add(testvis.ID(), testvis);
+                Log.Default.Msg(Log.Level.Info, "Successfully initialized: '" + base.Title + "'");
 
-                Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + base.Title);
                 _timer.Stop();
                 _initilized = initilized;
                 return _initilized;
@@ -144,64 +127,29 @@ namespace Frontend
                 _timer.Start();
 
                 bool executed = _vismanager.Execute();
-
-                // Draw window content
-                _menubar.Create(_menubar_element);
-                _subwindows.CreateRoot(_subwindows_element, windows_available_content, windows_request_content);
+                executed &= _menubar.Create(_menubar_element);
+                executed &= _subwindows.CreateRoot(_subwindows_element, _vismanager.GetContentCallbacks());
 
                 _timer.Stop();
-                return true;
+                return executed;
             }
 
 
+            /// <summary>
+            /// Callback additionally invoked on loading of main window.
+            /// </summary>
             private void on_loaded(object sender, RoutedEventArgs routedEventArgs)
             {
                 // so far unused ...
             }
 
 
+            /// <summary>
+            /// Callback invoked once per frame
+            /// </summary>
             private void once_per_frame(object sender, EventArgs args)
             {
                 // so far unused ...
-            }
-
-
-            /// <summary>
-            ///  Provide necessary information of available window content
-            /// >> Called by child leaf in _subwindows
-            /// </summary>
-            private ContentDataListType windows_available_content()
-            {
-                var content_ids = new ContentDataListType();
-                foreach (var c in window_contents)
-                {
-                    if (!c.Value.IsAttached())
-                    {
-                        string id = c.Key;
-                        string name = c.Value.Header();
-                        // Provide info on content element: ID, Name, and delegate to set availability of content element
-                        content_ids.Add(new ContentDataType(id, name, c.Value.DetachContent));
-                    }
-                }
-                return content_ids;
-            }
-
-
-            /// <summary>
-            /// Draw requested content to provided parent content element.
-            /// >> Called by child leaf in _subwindows
-            /// </summary>
-            public bool windows_request_content(string content_id, Grid content_element)
-            {
-                if (window_contents.ContainsKey(content_id))
-                {
-                    return window_contents[content_id].AttachContent(content_element);
-                }
-                else
-                {
-                    Log.Default.Msg(Log.Level.Error, "Unknown content id");
-                }
-                return false;
             }
 
 
@@ -216,10 +164,8 @@ namespace Frontend
             private WindowBranch _subwindows = new WindowBranch();
             private MenuBar _menubar = new MenuBar();
 
-            private ReloadCallback _reload_func;
+            private ReloadInterface_Delegate _reload_func;
             private TimeBenchmark _timer = new TimeBenchmark();
-
-            Dictionary<string, AbstractContent> window_contents = new Dictionary<string, AbstractContent>();
         }
     }
 }

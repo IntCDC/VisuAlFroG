@@ -25,7 +25,7 @@ namespace Visualizations
 
             public static string GetBokehOutputFilePath()
             {
-                return Artefacts.FilePath("bokeh", "html");
+                return WorkingDirectory.FilePath("bokeh", "html");
             }
 
         }

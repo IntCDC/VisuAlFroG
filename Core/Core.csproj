@@ -86,13 +86,13 @@
     <Compile Include="GUI\SplitWindow\WindowLeaf.cs" />
     <Compile Include="GUI\WindowContent\LogContent.cs" />
     <Compile Include="GUI\ColorTheme.cs" />
-    <Compile Include="Management\ServiceManager.cs" />
     <Compile Include="Abstracts\AbstractVisualization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities\ArtefactPath.cs" />
+    <Compile Include="Utilities\WorkingDirectory.cs" />
+    <Compile Include="Utilities\GUIHelpers.cs" />
     <Compile Include="Utilities\Log.cs" />
     <Compile Include="Utilities\TimeBenchmark.cs" />
-    <Compile Include="Utilities\UniqueStringID.cs" />
+    <Compile Include="Utilities\UniqueID.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -26,13 +26,13 @@ namespace Core
             /// <summary>
             /// Function provided by the interface (= Grasshopper) which allows to trigger relaoding of the interface
             /// </summary>
-            public delegate void CloseCallback();
+            public delegate void WindowClose_Delegate();
 
 
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public void Create(Menu content_element)
+            public bool Create(Menu content_element)
             {
                 content_element.Height = 20.0;
                 content_element.Style = ColorTheme.MenuStyle();
@@ -66,10 +66,12 @@ namespace Core
                 item_info.Items.Add(item_github_link);
 
                 content_element.Items.Add(item_info);
+
+                return true;
             }
 
 
-            public void RegisterCloseCallback(CloseCallback close_callback)
+            public void RegisterCloseCallback(WindowClose_Delegate close_callback)
             {
                 _close_callback = close_callback;
             }
@@ -110,9 +112,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private CloseCallback _close_callback = null;
+            private WindowClose_Delegate _close_callback = null;
 
-            private readonly string _item_id_close = "item_close_" + UniqueStringID.Generate();
+            private readonly string _item_id_close = "item_close_" + UniqueID.Generate();
         }
     }
 }

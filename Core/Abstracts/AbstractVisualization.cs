@@ -20,11 +20,16 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public AbstractVisualization(string name) : base(name)
+            public AbstractVisualization() : base()
             {
+
             }
 
-            public override bool AttachContent(Grid content_element) { return false; }
+
+            public override bool AttachContent(Grid content_element)
+            {
+                return false;
+            }
 
         }
     }
