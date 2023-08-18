@@ -1,9 +1,12 @@
-﻿using SciChart.Charting.Visuals;
+﻿using System;
+using SciChart.Charting.Visuals;
 using SciChart.Charting.Visuals.Annotations;
 using SciChart.Charting.Visuals.Axes;
 using Core.Abstracts;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Collections.Generic;
+using Visualizations.SciChartInterface;
 
 
 
@@ -21,9 +24,8 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // static variables
 
-            // Set for derived classes
-            public static new readonly string name = "Test Visualization";
-            public static new readonly bool multiple_instances = true;
+            public static readonly string name = "Test Visualization";
+            public static readonly List<Type> depending_services = new List<Type>() { typeof(SciChartInterfaceService) };
 
 
             /* ------------------------------------------------------------------*/

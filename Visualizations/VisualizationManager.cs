@@ -40,12 +40,20 @@ namespace Visualizations
                 _servicemanager.Terminate();
             }
 
-            bool initilized = _servicemanager.Initialize();
-            initilized &= _contentmanager.Initialize();
+            bool initilized = _contentmanager.Initialize();
+
+            // Check for services the contents rely on
+            var depending_services = _contentmanager.GetDependingServices();
+            foreach (Type service_type in depending_services)
+            {
+                // Create new instance from type
+                var new_service = (AbstractService)Activator.CreateInstance(service_type);
+                _servicemanager.AddService(new_service);
+            }
+            initilized &= _servicemanager.Initialize();
 
             _initilized = initilized;
             return _initilized;
-
         }
 
 

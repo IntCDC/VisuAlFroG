@@ -14,10 +14,10 @@ using System.Windows;
 
 
 using ContentRegister_Type = System.Collections.Generic.List<System.Type>;
-// Parameters: <name, available, type>
-using AvailableContent_Type = System.Tuple<string, bool, System.Type>;
-// Parameters: <name, available, type>
-using AvailableContentList_Type = System.Collections.Generic.List<System.Tuple<string, bool, System.Type>>;
+// Parameters: <name, available, is-multi-instance, type>
+using AvailableContent_Type = System.Tuple<string, bool, bool, System.Type>;
+// Parameters: <name, available, is-multi-instance, type>
+using AvailableContentList_Type = System.Collections.Generic.List<System.Tuple<string, bool, bool, System.Type>>;
 
 
 /*
@@ -68,6 +68,8 @@ namespace Visualizations
                 bool terminated = true;
                 if (_initilized)
                 {
+                    _registerd_contents.Clear();
+                    _contents.Clear();
                     _initilized = false;
                 }
                 return terminated;
@@ -82,6 +84,29 @@ namespace Visualizations
             }
 
 
+            public List<Type> GetDependingServices()
+            {
+                var depending_services = new List<Type>();
+                foreach (Type content_type in _registerd_contents)
+                {
+                    // Get static member variable of type (= fields and not properties)
+                    string fieldname = "depending_services";
+                    FieldInfo property_depservices = content_type.GetField(fieldname, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                    if (property_depservices != null)
+                    {
+                        var service_types = (List<Type>)property_depservices.GetValue(null);
+                        depending_services.AddRange(service_types);
+                    } else 
+                    {
+                        Log.Default.Msg(Log.Level.Error, "Unable to find field: '" + fieldname + "' in type: '" + content_type.ToString() + "'");
+                    }
+                }
+                // Removing duplicates
+                depending_services = depending_services.Distinct().ToList();
+                return depending_services;
+            }
+
+
             /// <summary>
             ///  Provide necessary information of available window content
             /// >> Called by child leaf in _subwindows
@@ -91,32 +116,35 @@ namespace Visualizations
                 var content_ids = new AvailableContentList_Type();
                 foreach (Type content_type in _registerd_contents)
                 {
+                    // Get static member variables of type (= fields and not properties)
                     string fieldname = "name";
-                    FieldInfo property_header = content_type.GetField(fieldname);
+                    FieldInfo property_header = content_type.GetField(fieldname, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
                     if (property_header == null)
                     {
-                        Log.Default.Msg(Log.Level.Error, "Unable to find field: '" + fieldname + "'");
+                        Log.Default.Msg(Log.Level.Error, "Unable to find field: '" + fieldname + "' in type: '" + content_type.ToString() + "'");
                         break;
                     }
-                    fieldname = "multiple_instances";
-                    FieldInfo property_instances = content_type.GetField(fieldname);
-                    if (property_header == null)
-                    {
-                        Log.Default.Msg(Log.Level.Error, "Unable to find field: '" + fieldname + "'");
-                        break;
-                    }
-                    
                     string header = (string)property_header.GetValue(null);
-                    bool multi = (bool)property_instances.GetValue(null);
-                    bool available = true;
-                    foreach (var c in _contents)
+
+                    fieldname = "multiple_instances";
+                    FieldInfo property_instances = content_type.GetField(fieldname, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                    if (property_header == null)
                     {
-                        if ((c.Value.GetType() == content_type) && !multi)
+                        Log.Default.Msg(Log.Level.Error, "Unable to find field: '" + fieldname + "' in type: '" + content_type.ToString() + "'");
+                        break;
+                    }
+                    bool multi = (bool)property_instances.GetValue(null);
+
+                    // Content is only available if multiple instance are allowed or has not been instanciated yet
+                    bool available = true;
+                    foreach (var content_dict in _contents)
+                    {
+                        if ((content_dict.Value.GetType() == content_type) && !multi)
                         {
                             available = false;
                         }
                     }
-                    content_ids.Add(new AvailableContent_Type(header, available, content_type));
+                    content_ids.Add(new AvailableContent_Type(header, available, multi, content_type));
                 }
                 return content_ids;
             }
@@ -137,6 +165,7 @@ namespace Visualizations
                 }
                 else
                 {
+                    // Create new instance from type
                     var new_content = (AbstractContent)Activator.CreateInstance(content_type);
                     string new_id = new_content.ID();
                     _contents.Add(new_id, new_content);
@@ -164,7 +193,7 @@ namespace Visualizations
 
 
             /* ------------------------------------------------------------------*/
-                // private variables
+            // private variables
 
             private ContentRegister_Type _registerd_contents = new ContentRegister_Type();
             private Dictionary<string, AbstractContent> _contents = new Dictionary<string, AbstractContent>();

@@ -2,6 +2,7 @@
 using System.Runtime.Remoting.Contexts;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Collections.Generic;
 
 
 
@@ -16,20 +17,27 @@ namespace Core
         public abstract class AbstractVisualization : AbstractContent
         {
 
+            /* ------------------------------------------------------------------*/
+            // static variables
+
+            // DECLARE IN DERIVED CLASS
+            //public static readonly string name = "...";
+
+            public static readonly bool multiple_instances = true;
+
 
             /* ------------------------------------------------------------------*/
             // public functions
-
-            public AbstractVisualization() : base()
-            {
-
-            }
-
 
             public override bool AttachContent(Grid content_element)
             {
                 return false;
             }
+
+
+            /* ------------------------------------------------------------------*/
+            // protected variables
+
 
         }
     }

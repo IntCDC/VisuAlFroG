@@ -6,8 +6,8 @@ using Core.GUI;
 
 
 
-// Parameters: <name, available, type>
-using AvailableContentList_Type = System.Collections.Generic.List<System.Tuple<string, bool, System.Type>>;
+// Parameters: <name, available, is-multi-instance, type>
+using AvailableContentList_Type = System.Collections.Generic.List<System.Tuple<string, bool, bool, System.Type>>;
 
 using ContentCallbacks = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.RequestContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
 

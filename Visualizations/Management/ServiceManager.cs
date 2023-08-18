@@ -28,15 +28,6 @@ namespace Visualizations
                     Terminate();
                 }
 
-                /// TODO Not needed so far
-                //_servicemanager.AddService(new WebAPIService());
-
-                /// TODO fix hard coded paths
-                // _servicemanager.AddService(new PythonInterfaceService());
-
-                AddService(new SciChartInterfaceService());
-                AddService(new DatabaseService());
-
                 bool initilized = true;
                 foreach (var m in _services)
                 {

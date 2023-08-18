@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Controls;
+using System.Collections.Generic;
 using Core.Utilities;
 
 
@@ -17,10 +18,10 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // static variables
 
-            // DECLARE IN DERIVED CLASS
-            // -> public static new readonly ...
-            public static readonly string name = "[uninitialized]";
-            public static readonly bool multiple_instances = true;
+            // DECLARE IN DERIVED CLASSES
+            // public static readonly string name = "...";
+            // public static readonly bool multiple_instances = false;
+            // public static readonly List<Type> depending_services = new List<Type>() { typeof(<service>)};
 
 
             /* ------------------------------------------------------------------*/
@@ -35,6 +36,7 @@ namespace Core
             /// <summary>
             /// Attach content to provided content_element.
             ///  Set "_attached=true" when attached successfully.
+            ///  Only attach if "_setup=true" otherwise call setup_content()
             /// </summary>
             public abstract bool AttachContent(Grid content_element);
 
@@ -60,6 +62,10 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // protected functions
 
+            /// <summary>
+            /// Setup content_element.
+            ///  Set "_setup=true" when setup successfully.
+            /// </summary>
             protected virtual void setup_content()
             {
                 _setup = true;

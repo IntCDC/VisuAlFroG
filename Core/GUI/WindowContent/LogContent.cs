@@ -25,9 +25,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // static variables
 
-            // Set for derived classes
-            public static new readonly string name = "Log Console";
-            public static new readonly bool multiple_instances = false;
+            public static readonly string name = "Log Console";
+            public static readonly bool multiple_instances = false;
+            public static readonly List<Type> depending_services = new List<Type>(){ };
 
 
             /* ------------------------------------------------------------------*/

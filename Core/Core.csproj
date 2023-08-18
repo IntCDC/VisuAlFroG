@@ -81,7 +81,7 @@
     <Compile Include="Abstracts\AbstractWindow.cs" />
     <Compile Include="Abstracts\AbstractContent.cs" />
     <Compile Include="Abstracts\AbstractService.cs" />
-    <Compile Include="GUI\MenuBar.cs" />
+    <Compile Include="GUI\WindowContent\MenuBar.cs" />
     <Compile Include="GUI\SplitWindow\WindowBranch.cs" />
     <Compile Include="GUI\SplitWindow\WindowLeaf.cs" />
     <Compile Include="GUI\WindowContent\LogContent.cs" />

@@ -3,15 +3,14 @@ using System.Runtime.Remoting.Contexts;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+
 using Core.Abstracts;
 using Core.Utilities;
 
 
 
-// Parameters: <name, available, type>
-using AvailableContentList_Type = System.Collections.Generic.List<System.Tuple<string, bool, System.Type>>;
-// Parameters: <id, type>
-using AttachedContent_Type = System.Tuple<string, System.Type>;
+// Parameters: <name, available, is-multi-instance, type>
+using AvailableContentList_Type = System.Collections.Generic.List<System.Tuple<string, bool, bool, System.Type>>;
 
 using ContentCallbacks = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.RequestContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
 
@@ -175,7 +174,7 @@ namespace Core
                 AvailableContentList_Type available_child_content = _content_callbacks.Item1();
                 foreach (var content_data in available_child_content)
                 {
-                    // Item index: 1=name, 2=available, 3=type
+                    // Item index: 1=name, 2=available, 3=is-multi, 4=type
                     var content_item = new MenuItem();
                     content_item.Style = ColorTheme.MenuItemStyle();
 
@@ -184,6 +183,16 @@ namespace Core
                     content_item.Header = name;
                     content_item.Name = name;
                     content_item.IsEnabled = content_data.Item2; // Available
+                    if (content_data.Item3) // Is Multi Instance
+                    {
+                        content_item.Style = ColorTheme.MenuItemStyle("multi-instance.png");
+                        content_item.ToolTip = "Multiple instances";
+                    }
+                    else
+                    {
+                        content_item.Style = ColorTheme.MenuItemStyle("single-instance.png");
+                        content_item.ToolTip = "Only single instance";
+                    }
                     content_item.Click += menuitem_click;
                     item_content_add.Items.Add(content_item);
                 }
@@ -193,22 +202,21 @@ namespace Core
                 }
                 contextmenu.Items.Add(item_content_add);
 
-                var item_content_remove = new MenuItem();
-                item_content_remove.Style = ColorTheme.MenuItemStyle("remove-content.png");
-                item_content_remove.Header = "Remove Content";
-                item_content_remove.Name = _item_id_remove_content;
-                item_content_remove.Click += menuitem_click;
+                var item_content_delete = new MenuItem();
+                item_content_delete.Style = ColorTheme.MenuItemStyle("delete-content.png");
+                item_content_delete.Header = "Delete Content";
+                item_content_delete.Name = _item_id_delete_content;
+                item_content_delete.Click += menuitem_click;
                 if (_attached_content == null)
                 {
-                    item_content_remove.IsEnabled = false;
+                    item_content_delete.IsEnabled = false;
                 }
-                contextmenu.Items.Add(item_content_remove);
+                contextmenu.Items.Add(item_content_delete);
 
                 var item_content_dad = new MenuItem();
                 item_content_dad.Style = ColorTheme.MenuItemStyle("drag-and-drop.png");
-                item_content_dad.Header = "[Middle Mouse Button] Drag&Drop Content";
-                item_content_dad.ToolTip = "Target content will be replaced";
-                item_content_dad.IsEnabled = true;
+                item_content_dad.Header = "Content Swap: Drag&Drop [Middle Mouse Button]";
+                item_content_dad.IsEnabled = false;
                 contextmenu.Items.Add(item_content_dad);
             }
 
@@ -244,7 +252,7 @@ namespace Core
                     content_detach();
                     _parent_branch.DeleteLeaf();
                 }
-                else if (content_id == _item_id_remove_content)
+                else if (content_id == _item_id_delete_content)
                 {
                     content_detach();
                 }
@@ -257,7 +265,8 @@ namespace Core
                     string name = content_data.Item1.Replace(' ', '_'); // name
                     if (content_id == name)
                     {
-                        content_attach(UniqueID.Invalid, content_data.Item3);
+                        content_detach();
+                        content_attach(UniqueID.Invalid, content_data.Item4);
                     }
                 }
             }
@@ -265,13 +274,11 @@ namespace Core
 
             private void content_attach(string content_id, Type content_type)
             {
-                content_detach();
-
                 // Call RequestContent_Delegate
                 string updated_content_id = _content_callbacks.Item2(content_id, content_type, _content);
                 if (updated_content_id != UniqueID.Invalid)
                 {
-                    _attached_content = new AttachedContent_Type(updated_content_id, content_type);
+                    _attached_content = new System.Tuple<string, System.Type>(updated_content_id, content_type);
                 }
             }
 
@@ -280,7 +287,8 @@ namespace Core
             {
                 _content.Children.Clear();
                 _content.Background = ColorTheme.GridBackground;
-               if (_attached_content != null) {
+                if (_attached_content != null)
+                {
                     if (_attached_content.Item1 != UniqueID.Invalid)
                     {
                         // Call DeleteContent_Delegate
@@ -300,9 +308,9 @@ namespace Core
                 }
                 if ((_attached_content != null) && (e.MiddleButton == MouseButtonState.Pressed))
                 {
-                    var tmp_attached_content = _attached_content;
+                    var drag_and_drop_load = new Tuple<WindowLeaf, string, Type>(this, _attached_content.Item1, _attached_content.Item2);
                     content_detach();
-                    DragDrop.DoDragDrop(sender_grid, tmp_attached_content, DragDropEffects.All);
+                    DragDrop.DoDragDrop(sender_grid, drag_and_drop_load, DragDropEffects.All);
                 }
             }
 
@@ -315,7 +323,7 @@ namespace Core
                     return;
                 }
                 // Check for compatible data
-                var data_type = typeof(AttachedContent_Type);
+                var data_type = typeof(Tuple<WindowLeaf, string, Type>);
                 if (e.Data.GetDataPresent(data_type))
                 {
                     // Change mouse cursor
@@ -332,12 +340,22 @@ namespace Core
                     return;
                 }
                 // Check for compatible drop data
-                var data_type = typeof(AttachedContent_Type);
+                var data_type = typeof(Tuple<WindowLeaf, string, Type>);
                 if (e.Data.GetDataPresent(data_type))
                 {
-                    var content_data = (AttachedContent_Type)e.Data.GetData(data_type);
-                    // Currently attached content is replaced
-                    content_attach(content_data.Item1, content_data.Item2);
+                    var source_content = (Tuple<WindowLeaf, string, Type>)e.Data.GetData(data_type);
+                    // Move content from target to source (content in source is already detached)
+                    if ((source_content.Item1 != null) && (_attached_content != null))
+                    {
+                        var target_content = _attached_content;
+                        // Set _attached_content to null before detaching to prevent deletion of content
+                        _attached_content = null;
+                        content_detach();
+                        source_content.Item1.content_attach(target_content.Item1, target_content.Item2);
+                    }
+                    // Drop content from source in target
+                    content_detach();
+                    content_attach(source_content.Item2, source_content.Item3);
                 }
             }
 
@@ -345,14 +363,14 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private AttachedContent_Type _attached_content = null;
+            private System.Tuple<string, System.Type> _attached_content = null;
 
             private readonly string _item_id_hori_top = "item_horizontal_top_" + UniqueID.Generate();
             private readonly string _item_id_hori_bottom = "item_horizontal_bottom_" + UniqueID.Generate();
             private readonly string _item_id_vert_Left = "item_vertical_left_" + UniqueID.Generate();
             private readonly string _item_id_vert_right = "item_vertical_right" + UniqueID.Generate();
             private readonly string _item_id_window_delete = "item_window_delete" + UniqueID.Generate();
-            private readonly string _item_id_remove_content = "item_remove_content" + UniqueID.Generate();
+            private readonly string _item_id_delete_content = "item_delete_content" + UniqueID.Generate();
         }
     }
 }
