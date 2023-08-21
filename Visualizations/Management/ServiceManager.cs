@@ -63,6 +63,7 @@ namespace Visualizations
                     {
                         terminated &= m.Value.Terminate();
                     }
+                    _services.Clear();
                     _initilized = false;
                 }
                 return terminated;

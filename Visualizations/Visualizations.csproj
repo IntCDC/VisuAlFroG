@@ -83,6 +83,8 @@
     <Reference Include="SciChart.Charting, Version=7.0.2.27161, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
       <HintPath>..\packages\SciChart.7.0.2.27161\lib\net462\SciChart.Charting.dll</HintPath>
     </Reference>
+    <Reference Include="SciChart.Charting.DrawingTools, Version=7.0.1.27055, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL" />
+    <Reference Include="SciChart.Charting3D, Version=7.0.1.27055, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL" />
     <Reference Include="SciChart.Core, Version=7.0.2.27161, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
       <HintPath>..\packages\SciChart.7.0.2.27161\lib\net462\SciChart.Core.dll</HintPath>
     </Reference>
@@ -115,6 +117,7 @@
   <ItemGroup>
     <Compile Include="Management\ContentManager.cs" />
     <Compile Include="Management\ServiceManager.cs" />
+    <Compile Include="Management\WindowManager.cs" />
     <Compile Include="Types\TestVisualization.cs" />
     <Compile Include="VisualizationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

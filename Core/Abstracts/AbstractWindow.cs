@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Controls;
 using Core.Abstracts;
 using Core.GUI;
+using Core.Utilities;
 
 
 
@@ -54,6 +55,7 @@ namespace Core
             // protected variables
 
             protected Grid _content = null;
+
             protected bool _parent_is_root = false;
             protected WindowBranch _parent_branch = null;
             protected ContentCallbacks _content_callbacks = null;

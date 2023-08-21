@@ -4,6 +4,9 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+
+using Core.Utilities;
+
 using Grasshopper;
 using Grasshopper.Kernel;
 
@@ -13,64 +16,62 @@ using Grasshopper.Kernel;
  * Grasshopper Runtime Messages
  * 
  */
-namespace GrasshopperComponent.Utilities
+namespace GrasshopperComponent
 {
-
-    public enum MessageLevel
+    namespace Utilities
     {
-        Error,
-        Warning,
-        Info
-    }
-
-
-    public class RuntimeMessages
-    {
-
-        /* ------------------------------------------------------------------*/
-        // public functions
-
-        public RuntimeMessages(GH_Component ghcomponent)
+        public class RuntimeMessages
         {
-            _parent = ghcomponent;
-        }
 
+            /* ------------------------------------------------------------------*/
+            // public functions
 
-        public void Add(MessageLevel l, string m)
-        {
-            switch(l)
+            public RuntimeMessages(GH_Component ghcomponent)
             {
-                case (MessageLevel.Error):
-                    _messages.Add((GH_RuntimeMessageLevel.Error, m));
-                    break;
-                case (MessageLevel.Warning):
-                    _messages.Add((GH_RuntimeMessageLevel.Warning, m)); 
-                    break;
-                case (MessageLevel.Info):
-                    _messages.Add((GH_RuntimeMessageLevel.Remark, m)); 
-                    break;
+                _parent = ghcomponent;
             }
-        }
 
 
-        public void Show()
-        {
-            _parent.ClearRuntimeMessages();
-            if (_messages.Count != 0)
+            public void Add(Log.Level level, string message)
             {
-                foreach ((Grasshopper.Kernel.GH_RuntimeMessageLevel, string) m in _messages)
+                switch (level)
                 {
-                    _parent.AddRuntimeMessage(m.Item1, m.Item2);
+                    case (Log.Level.Error):
+                        _messages.Add((GH_RuntimeMessageLevel.Error, message));
+                        break;
+                    case (Log.Level.Warn):
+                        _messages.Add((GH_RuntimeMessageLevel.Warning, message));
+                        break;
+                    case (Log.Level.Info):
+                        _messages.Add((GH_RuntimeMessageLevel.Remark, message));
+                        break;
+                    case (Log.Level.Debug):
+                        _messages.Add((GH_RuntimeMessageLevel.Blank, message));
+                        break;
                 }
-                _messages.Clear();
+                //Log.Default.Msg(level, message);
             }
+
+
+            public void Show()
+            {
+                _parent.ClearRuntimeMessages();
+                if (_messages.Count != 0)
+                {
+                    foreach ((Grasshopper.Kernel.GH_RuntimeMessageLevel, string) m in _messages)
+                    {
+                        _parent.AddRuntimeMessage(m.Item1, m.Item2);
+                    }
+                    _messages.Clear();
+                }
+            }
+
+
+            /* ------------------------------------------------------------------*/
+            // private variables
+
+            private GH_Component _parent;
+            private List<(Grasshopper.Kernel.GH_RuntimeMessageLevel, string)> _messages = new List<(GH_RuntimeMessageLevel, string)>();
         }
-
-
-        /* ------------------------------------------------------------------*/
-        // private variables
-
-        private GH_Component _parent;
-        private List<(Grasshopper.Kernel.GH_RuntimeMessageLevel, string)> _messages = new List<(GH_RuntimeMessageLevel, string)>();
     }
 }

@@ -59,14 +59,15 @@ namespace Visualizations
                     return false;
                 }
                 bool executed = true;
-                // Contents are loaded via callbacks
+
+                /// Contents are loaded via callbacks
+
                 return executed;
             }
 
 
             public override bool Terminate()
             {
-                bool terminated = true;
                 if (_initilized)
                 {
                     foreach (var c_data in _contents)
@@ -80,38 +81,7 @@ namespace Visualizations
                     _contents.Clear();
                     _initilized = false;
                 }
-                return terminated;
-            }
-
-
-            public void RegisterContent(Type content_type)
-            {
-                // Check for required base type
-                Type base_name = content_type.BaseType;
-                string required_basetype = typeof(AbstractContent).Name;
-                bool valid_type = false;
-                while (!base_name.Name.StartsWith(typeof(object).Name))
-                {
-                    if (base_name.Name.StartsWith(required_basetype))
-                    {
-                        valid_type = true;
-                        break;
-                    }
-                    base_name = base_name.BaseType;
-                    if (base_name == null)
-                    {
-                        break;
-                    }
-                }
-                if (valid_type)
-                {
-                    _contents.Add(content_type, new Dictionary<string, AbstractContent>());
-                    Log.Default.Msg(Log.Level.Info, "Registered Content: " + content_type.Name);
-                }
-                else
-                {
-                    Log.Default.Msg(Log.Level.Error, "Wrong input type for content: " + base_name);
-                }
+                return true;
             }
 
 
@@ -119,17 +89,24 @@ namespace Visualizations
             {
                 var depending_services = new List<Type>();
 
-                // Loop over registered types
-                foreach (var c_data in _contents)
+                if (_initilized)
                 {
-                    Type c_type = c_data.Key;
+                    // Loop over registered types
+                    foreach (var c_data in _contents)
+                    {
+                        Type c_type = c_data.Key;
 
-                    // Create temporary instance of content
-                    var tmp_content = (AbstractContent)Activator.CreateInstance(c_type);
-                    depending_services.AddRange(tmp_content.DependingServices);
+                        // Create temporary instance of content
+                        var tmp_content = (AbstractContent)Activator.CreateInstance(c_type);
+                        depending_services.AddRange(tmp_content.DependingServices);
+                    }
+                    // Removing duplicates
+                    depending_services = depending_services.Distinct().ToList();
                 }
-                // Removing duplicates
-                depending_services = depending_services.Distinct().ToList();
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to requesting depending services");
+                }
 
                 return depending_services;
             }
@@ -137,7 +114,7 @@ namespace Visualizations
 
             /// <summary>
             ///  Provide necessary information of available window content
-            /// >> Called by child leaf in _subwindows
+            /// >> Called by WindowLeaf
             /// </summary>
             public AvailableContentList_Type ContentsCallback()
             {
@@ -165,7 +142,7 @@ namespace Visualizations
 
             /// <summary>
             /// Attach requested content to provided parent content element.
-            /// >> Called by child leaf in _subwindows
+            /// >> Called by WindowLeaf
             /// </summary>
             public string AttachContentCallback(string content_id, Type content_type, Grid content_element)
             {
@@ -198,20 +175,52 @@ namespace Visualizations
 
             /// <summary>
             /// Delete content.
-            /// >> Called by child leaf in _subwindows
+            /// >> Called by WindowLeaf
             /// </summary>
             public void DetachContentCallback(string content_id)
             {
                 // Loop over registered types
                 foreach (var c_data in _contents)
                 {
-                    Type c_type = c_data.Key;
-
                     if (c_data.Value.ContainsKey(content_id))
                     {
                         c_data.Value[content_id].Detach();
                         c_data.Value.Remove(content_id);
                     }
+                }
+            }
+
+
+            /* ------------------------------------------------------------------*/
+            // private variables
+
+            protected void RegisterContent(Type content_type)
+            {
+                // Check for required base type
+                Type base_name = content_type.BaseType;
+                string required_basetype = typeof(AbstractContent).Name;
+                bool valid_type = false;
+                while (!base_name.Name.StartsWith(typeof(object).Name))
+                {
+                    if (base_name.Name.StartsWith(required_basetype))
+                    {
+                        valid_type = true;
+                        break;
+                    }
+                    base_name = base_name.BaseType;
+                    if (base_name == null)
+                    {
+                        break;
+                    }
+                }
+                if (valid_type)
+                {
+                    _contents.Add(content_type, new Dictionary<string, AbstractContent>());
+                    Log.Default.Msg(Log.Level.Info, "Registered Content: " + content_type.Name);
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Incompatible content type: " + base_name);
                 }
             }
 

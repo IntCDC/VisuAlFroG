@@ -10,6 +10,7 @@ using Core.Abstracts;
 using Visualizations;
 using Core.GUI;
 using Visualizations.Types;
+using Visualizations.Management;
 
 
 
@@ -61,7 +62,7 @@ namespace Frontend
 
 
             /// <summary>
-            /// Get reload function call from Grasshopper
+            /// Callback to trigger reloading the interface (= Grasshopper).
             /// </summary>
             public void ReloadInterfaceCallback(ReloadInterface_Delegate reload_callback)
             {
@@ -70,7 +71,7 @@ namespace Frontend
 
 
             /// <summary>
-            /// Get reload function call from Grasshopper
+            /// Callback to pass output data to the interface (= Grasshopper).
             /// </summary>
             public void OutputDataCallback(OutputData_Delegate putput_data_callback)
             {
@@ -79,7 +80,7 @@ namespace Frontend
 
 
             /// <summary>
-            /// Get reload function call from Grasshopper
+            /// Get input data from interface (= Grasshopper).
             /// </summary>
             public void InputData()
             {
@@ -90,6 +91,9 @@ namespace Frontend
 
             }
 
+
+            /* ------------------------------------------------------------------*/
+            // protected functions
 
             /// <summary>
             /// Soft close is used when called from interface (= Grasshopper).
@@ -121,6 +125,7 @@ namespace Frontend
                 }
                 _timer.Start();
 
+                /// DEBUG get C# version, see compile output
                 // #error version
 
                 // Window setup
@@ -133,14 +138,25 @@ namespace Frontend
                 // CompositionTarget.Rendering += once_per_frame;
 
 
-                bool initilized = _vismanager.Initialize();
-
+                // Register required external data
                 _menubar.RegisterCloseCallback(this.Close);
+                _menubar.RegisterContentElement(_menubar_element);
 
-                Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + base.Title);
+                _winmanager.RegisterContentCallbacks(_vismanager.GetContentCallbacks());
+                _winmanager.RegisterContentElement(_subwindows_element);
+
+
+                // Initialize managers
+                bool initilized = _vismanager.Initialize();
+                initilized &= _winmanager.Initialize();
+
 
                 _timer.Stop();
                 _initilized = initilized;
+                if (_initilized)
+                {
+                    Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().Name);
+                }
                 return _initilized;
             }
 
@@ -155,8 +171,8 @@ namespace Frontend
                 _timer.Start();
 
                 bool executed = _vismanager.Execute();
-                executed &= _menubar.Create(_menubar_element);
-                executed &= _subwindows.CreateRoot(_subwindows_element, _vismanager.GetContentCallbacks());
+                executed &= _winmanager.Execute();
+                executed &= _menubar.Execute();
 
                 _timer.Stop();
                 return executed;
@@ -189,7 +205,7 @@ namespace Frontend
 
             private VisualizationManager _vismanager = new VisualizationManager();
 
-            private WindowBranch _subwindows = new WindowBranch();
+            private WindowManager _winmanager = new WindowManager();
             private MenuBar _menubar = new MenuBar();
 
             private ReloadInterface_Delegate _reloadinterface_callback = null;

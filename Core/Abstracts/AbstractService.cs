@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Windows.Controls;
+
 using Core.Utilities;
 
 
@@ -11,7 +14,24 @@ namespace Core
 {
     namespace Abstracts
     {
-        public abstract class AbstractService
+
+        // INTERFACE
+        public interface IAbstractService
+        {
+            /* ------------------------------------------------------------------*/
+            // interface functions
+
+            bool Initialize();
+
+            bool Execute();
+
+            bool Terminate();
+        }
+
+
+
+        // ABSTRACT CLASS
+        public abstract class AbstractService : IAbstractService 
         {
 
             /* ------------------------------------------------------------------*/
@@ -30,8 +50,9 @@ namespace Core
             // protected variables
 
             protected bool _initilized = false;
-            protected TimeBenchmark _timer = new TimeBenchmark();
 
+            /// DEBUG
+            protected TimeBenchmark _timer = new TimeBenchmark();
         }
     }
 }

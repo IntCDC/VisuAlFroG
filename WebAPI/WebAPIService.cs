@@ -44,6 +44,10 @@ namespace Visualizations
 
                 _timer.Stop();
                 _initilized = true;
+                if (_initilized)
+                {
+                    Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().Name);
+                }
                 return _initilized;
             }
 
@@ -57,6 +61,9 @@ namespace Visualizations
                 }
                 _timer.Start();
 
+
+
+                /// DEBUG
                 bool received_response = false;
                 var response = _client.GetAsync(_base_address + "api/request").Result;
                 if (response != null)
@@ -65,6 +72,8 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Debug, response.Content.ReadAsStringAsync().Result);
                     received_response = true;
                 }
+
+
 
                 _timer.Stop();
                 return received_response;

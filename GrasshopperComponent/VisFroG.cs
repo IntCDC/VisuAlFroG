@@ -6,6 +6,8 @@ using GrasshopperComponent.Utilities;
 using Frontend.Application;
 using Core.Utilities;
 using System.Resources;
+using System.Linq;
+using static GH_IO.VersionNumber;
 
 
 
@@ -55,8 +57,7 @@ namespace Interface
             /// </summary>
             protected override void RegisterOutputParams(GH_OutputParamManager pManager)
             {
-                pManager.AddGenericParameter("Generic Output Data", "Output Data", "Generic output data from interaction.", GH_ParamAccess.list);
-                pManager.AddTextParameter("Debug Output", "Debug", "Output of debug information.", GH_ParamAccess.item);
+                pManager.AddGenericParameter("Generic Output Data", "Output Data", "Generic output data from interaction.", GH_ParamAccess.tree);
             }
 
 
@@ -85,30 +86,66 @@ namespace Interface
                 /// TODO Callback: OnPingDocument().FilePathChanged += this.FilePathChangedEvent
 
 
-                // Access input paramter
+                // Access all input paramters
                 foreach (var input_param in Params.Input)
                 {
-                    _runtimemessages.Add(MessageLevel.Warning, "Input Paramter Name: " + input_param.Name + " | Type: " + input_param.Type.ToString());
+                    _runtimemessages.Add(Log.Level.Warn, "Input Paramter Name: " + input_param.Name + " | Type: " + input_param.Type.ToString());
                 }
+
+                // Read input paramter
                 var input_data = new Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.IGH_Goo>();
                 if (!DA.GetDataTree(0, out input_data))
                 {
-                    _runtimemessages.Add(MessageLevel.Error, "Can not get input data");
+                    _runtimemessages.Add(Log.Level.Error, "Missing input data");
                     return;
                 }
-                _runtimemessages.Add(MessageLevel.Info, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().ToString());
+                _runtimemessages.Add(Log.Level.Info, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().FullName);
 
+/*
+                int i = 0;
+                foreach (var branch in input_data.Branches)
+                {
+                    Log.Default.Msg(Log.Level.Error, i.ToString() + " Branch Type: " + branch.GetType().FullName);
+
+                    foreach (var leaf in branch)
+                    {
+                        var type = leaf.GetType();
+                        //Log.Default.Msg(Log.Level.Error, i.ToString() + " Leaf Type: " + type.FullName);
+
+                        string data_s;
+                        if (leaf.CastTo<string>(out data_s))
+                        {
+                            //Log.Default.Msg(Log.Level.Warn, i.ToString() + " Data String: " + data_s);
+                        }
+                        else {
+                            Log.Default.Msg(Log.Level.Error, i.ToString() + " Data String: " + data_s);
+                        }
+
+                        i++;
+                    }
+                }
+*/
+                //input_data.Flatten();
+                var flatten_data = input_data.FlattenData();
+                _runtimemessages.Add(Log.Level.Info, " Flatten Type: " + flatten_data.GetType().FullName + " - Count: " + flatten_data.Count().ToString());
+                
 
 
                 /// TODO
+                /// Convert data
                 _window.InputData();
 
 
 
 
-                // Debug stuff
+
+
+
+
+
+                // DEBUG
                 _exec_count++;
-                DA.SetData(1, "<DEBUG> Executions: " + _exec_count);
+                _runtimemessages.Add(Log.Level.Info, "<DEBUG> Executions: " + _exec_count);
 
                 // Show runtime messages in Grasshopper
                 _runtimemessages.Show();
@@ -140,10 +177,11 @@ namespace Interface
 
             private MainWindow _window = null;
             private RuntimeMessages _runtimemessages = null;
-            private TimeBenchmark _timer = new TimeBenchmark();
+
 
             /// DEBUG
             private int _exec_count = 0;
+            private TimeBenchmark _timer = new TimeBenchmark();
 
 
             /* ------------------------------------------------------------------*/
@@ -163,7 +201,7 @@ namespace Interface
             /// You can add image files to your project resources and access them like this:
             /// return Resources.IconForThisComponent;
             /// </summary>
-            protected override System.Drawing.Bitmap Icon => new System.Drawing.Bitmap("resources/logo32.png");
+            protected override System.Drawing.Bitmap Icon => new System.Drawing.Bitmap("resources/logo24.png");
 
             /// <summary>
             /// Each component must have a unique Guid to identify it. 

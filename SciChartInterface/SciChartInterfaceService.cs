@@ -35,6 +35,10 @@ namespace Visualizations
 
                 _timer.Stop();
                 _initilized = true;
+                if (_initilized)
+                {
+                    Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().Name);
+                }
                 return _initilized;
             }
 

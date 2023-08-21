@@ -3,6 +3,7 @@ using System.Threading;
 using Python.Runtime;
 using Core.Utilities;
 using Core.Abstracts;
+using Microsoft.Scripting.Runtime;
 
 
 
@@ -29,6 +30,8 @@ namespace Visualizations
                 }
                 _timer.Start();
 
+                bool initilized = false;
+
                 //Setup Python Environment
                 /// TODO Get path to Python DLL dynamically
                 string environment_path = @"C:\ProgramData\Anaconda3";
@@ -50,12 +53,18 @@ namespace Visualizations
                     _worker = new Thread(_script.Execute);
                     _worker.Name = "PythonScript";
 
-                    _initilized = true;
+                    initilized = true;
                 }
 
                 _timer.Stop();
+                _initilized = initilized;
+                if (_initilized)
+                {
+                    Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().Name);
+                }
                 return _initilized;
             }
+
 
 
             public override bool Execute()
@@ -67,7 +76,12 @@ namespace Visualizations
                 }
                 _timer.Start();
 
+
+
+                /// DEBUG
                 _worker.Start();
+
+
 
                 _timer.Stop();
                 return true;
@@ -76,11 +90,16 @@ namespace Visualizations
 
             public override bool Terminate()
             {
-                _worker.Join();
-                PythonEngine.EndAllowThreads(_python_threads);
-                PythonEngine.Shutdown();
+                if (_initilized)
+                {
+                    _worker.Join();
+                    _worker = null;
 
-                _initilized = false;
+                    PythonEngine.EndAllowThreads(_python_threads);
+                    PythonEngine.Shutdown();
+
+                    _initilized = false;
+                }
                 return true;
             }
 
@@ -88,9 +107,11 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private PythonScript _script = new PythonScript();
-            private Thread _worker;
+            private Thread _worker = null;
             private IntPtr _python_threads;
+
+            /// DEBUG
+            private PythonScript _script = new PythonScript();
 
         }
     }

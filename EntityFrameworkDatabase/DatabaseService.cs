@@ -42,11 +42,16 @@ namespace EntityFrameworkDatabase
             }
             _timer.Start();
 
+
+
+            /// TEST
             IQueryable<Entity> query = _database_context.Entites.Where(e => e.Id == 4);
             foreach (Entity obj in query)
             {
                 Log.Default.Msg(Log.Level.Debug, obj.Title);
             }
+
+
 
             _timer.Stop();
             return true;
@@ -55,18 +60,21 @@ namespace EntityFrameworkDatabase
 
         public override bool Terminate()
         {
-            _database_context.Dispose();
-            _database_context = null;
+            if (_initilized)
+            {
+                _database_context.Dispose();
+                _database_context = null;
 
-            _initilized = false;
+                _initilized = false;
+            }
             return true;
         }
 
 
         /* ------------------------------------------------------------------*/
-            // private variables
+        // private variables
 
-        private DatabaseContext _database_context;
+        private DatabaseContext _database_context = null;
 
     }
 }

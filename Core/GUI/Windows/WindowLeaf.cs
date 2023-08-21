@@ -14,9 +14,11 @@ using AvailableContentList_Type = System.Collections.Generic.List<System.Tuple<s
 
 using ContentCallbacks = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.RequestContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
 
+using AttachedContent_Type = System.Tuple<string, System.Type>;
+
 
 /*
- * Child Leaf
+ * Window Leaf
  * 
  */
 namespace Core
@@ -25,6 +27,13 @@ namespace Core
     {
         public class WindowLeaf : AbstractWindow
         {
+            /* ------------------------------------------------------------------*/
+            // public properties 
+
+            public AttachedContent_Type AttachedContent { get { return _attached_content; } }
+
+            public Grid ContentElement { get { return _content; } }
+
 
             /* ------------------------------------------------------------------*/
             // public functions
@@ -70,6 +79,24 @@ namespace Core
             }
 
 
+            /// <summary>
+            ///  Returns id of attached content
+            /// </summary>
+            public string AttachContent(string content_id, Type content_type)
+            {
+                detach_content();
+
+                // Call RequestContent_Delegate
+                string updated_content_id = _content_callbacks.Item2(content_id, content_type, _content);
+                if (updated_content_id != UniqueID.Invalid)
+                {
+                    _attached_content = new AttachedContent_Type(updated_content_id, content_type);
+                    return updated_content_id;
+                }
+                return UniqueID.Invalid;
+            }
+
+
             public void SetParent(WindowBranch parent_branch, bool parent_is_root)
             {
                 _parent_branch = parent_branch;
@@ -82,12 +109,6 @@ namespace Core
 
                 // Recreate context menu due to changed root
                 contextmenu_setup();
-            }
-
-
-            public Grid GetContentElement()
-            {
-                return _content;
             }
 
 
@@ -181,7 +202,7 @@ namespace Core
 
                     // Repalcement of spaces is necessary for Name property
                     content_item.Header = content_data.Item1;
-                    content_item.Name = wpf_conform_name(content_data.Item1); // Name
+                    content_item.Name = conform_name(content_data.Item1); // Name
                     content_item.IsEnabled = content_data.Item2; // Available
                     if (content_data.Item3) // Multiple instances allowed
                     {
@@ -249,12 +270,12 @@ namespace Core
                 }
                 else if (content_id == _item_id_window_delete)
                 {
-                    content_detach();
+                    detach_content();
                     _parent_branch.DeleteLeaf();
                 }
                 else if (content_id == _item_id_delete_content)
                 {
-                    content_detach();
+                    detach_content();
                 }
 
                 // Call AvailableContents_Delegate
@@ -262,28 +283,16 @@ namespace Core
                 foreach (var content_data in available_contents)
                 {
                     // Repalcement of spaces is necessary for Name property
-                    string name = wpf_conform_name(content_data.Item1);
+                    string name = conform_name(content_data.Item1);
                     if (content_id == name)
                     {
-                        content_detach();
-                        content_attach(UniqueID.Invalid, content_data.Item4);
+                        AttachContent(UniqueID.Invalid, content_data.Item4);
                     }
                 }
             }
 
 
-            private void content_attach(string content_id, Type content_type)
-            {
-                // Call RequestContent_Delegate
-                string updated_content_id = _content_callbacks.Item2(content_id, content_type, _content);
-                if (updated_content_id != UniqueID.Invalid)
-                {
-                    _attached_content = new System.Tuple<string, System.Type>(updated_content_id, content_type);
-                }
-            }
-
-
-            private void content_detach()
+            private void detach_content()
             {
                 _content.Children.Clear();
                 _content.Background = ColorTheme.GridBackground;
@@ -309,7 +318,7 @@ namespace Core
                 if ((_attached_content != null) && (e.MiddleButton == MouseButtonState.Pressed))
                 {
                     var drag_and_drop_load = new Tuple<WindowLeaf, string, Type>(this, _attached_content.Item1, _attached_content.Item2);
-                    content_detach();
+                    detach_content();
                     DragDrop.DoDragDrop(sender_grid, drag_and_drop_load, DragDropEffects.All);
                 }
             }
@@ -350,19 +359,17 @@ namespace Core
                         var target_content = _attached_content;
                         // Set _attached_content to null before detaching to prevent deletion of content
                         _attached_content = null;
-                        content_detach();
-                        source_content.Item1.content_attach(target_content.Item1, target_content.Item2);
+                        source_content.Item1.AttachContent(target_content.Item1, target_content.Item2);
                     }
                     // Drop content from source in target
-                    content_detach();
-                    content_attach(source_content.Item2, source_content.Item3);
+                    AttachContent(source_content.Item2, source_content.Item3);
                 }
             }
 
 
-            private string wpf_conform_name(string name)
+            private string conform_name(string name)
             {
-                // There are no spaces ' ' allowed
+                // There are no spaces ' ' allowed in Control.Name
                 return name.Replace(' ', '_');
             }
 
@@ -370,7 +377,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private System.Tuple<string, System.Type> _attached_content = null;
+            private AttachedContent_Type _attached_content = null;
 
             private readonly string _item_id_hori_top = "item_horizontal_top_" + UniqueID.Generate();
             private readonly string _item_id_hori_bottom = "item_horizontal_bottom_" + UniqueID.Generate();

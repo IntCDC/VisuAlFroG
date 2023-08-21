@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics;
 using System.Windows.Navigation;
 using System.Diagnostics.Tracing;
+using Core.Abstracts;
 
 
 
@@ -32,11 +33,30 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public bool Create(Menu content_element)
+            public void RegisterCloseCallback(WindowClose_Delegate close_callback)
             {
-                content_element.Height = 20.0;
-                content_element.Style = ColorTheme.MenuStyle();
+                _close_callback = close_callback;
+            }
 
+
+            public void RegisterContentElement(Menu parent_content)
+            {
+                _parent_content = parent_content;
+            }
+
+
+            public bool Execute()
+            {
+                if (_parent_content == null)
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Missing parent content element, call RegisterContentElement beforehand");
+                    return false;
+                }
+                if (_close_callback == null)
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Missing window close callback, call RegisterCloseCallback beforehand");
+                    return false;
+                }
 
                 var item_file = new MenuItem();
                 item_file.Header = "File";
@@ -47,8 +67,6 @@ namespace Core
                 item_close.Click += menuitem_click;
                 item_close.Style = ColorTheme.MenuItemStyle();
                 item_file.Items.Add(item_close);
-
-                content_element.Items.Add(item_file);
 
 
                 var item_info = new MenuItem();
@@ -65,15 +83,14 @@ namespace Core
                 item_github_link.Header = hyper_link;
                 item_info.Items.Add(item_github_link);
 
-                content_element.Items.Add(item_info);
+
+                _parent_content.Height = 20.0;
+                _parent_content.Style = ColorTheme.MenuStyle();
+
+                _parent_content.Items.Add(item_file);
+                _parent_content.Items.Add(item_info);
 
                 return true;
-            }
-
-
-            public void RegisterCloseCallback(WindowClose_Delegate close_callback)
-            {
-                _close_callback = close_callback;
             }
 
 
@@ -102,16 +119,19 @@ namespace Core
                 }
             }
 
+
             private void hyperlink_requestnavigate(object sender, RequestNavigateEventArgs e)
             {
                 Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
-                e.Handled = true;
                 System.Diagnostics.Process.Start(e.Uri.ToString());
+                e.Handled = true;
             }
+
 
             /* ------------------------------------------------------------------*/
             // private variables
 
+            private Menu _parent_content = null;
             private WindowClose_Delegate _close_callback = null;
 
             private readonly string _item_id_close = "item_close_" + UniqueID.Generate();

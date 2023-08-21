@@ -26,7 +26,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // properties
 
-            public override string Name { get { return "Log Output"; } }
+            public override string Name { get { return "Log"; } }
             public override bool MultipleIntances { get { return false; } }
             public override List<Type> DependingServices { get { return new List<Type>() { }; } }
 
@@ -44,6 +44,26 @@ namespace Core
                 Log.Default.UnRegisterListener(this.LogListener);
             }
 
+
+            public override bool Create()
+            {
+                _timer.Start();
+
+                _content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                _content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+
+                _textblock.TextWrapping = TextWrapping.Wrap;
+                _textblock.FontFamily = new FontFamily("Consolas");
+                _textblock.Width = Double.NaN; // = "Auto"
+                _textblock.Height = Double.NaN; // = "Auto"
+
+                _content.Content = _textblock;
+
+                _timer.Stop();
+
+                _created = true;
+                return _created;
+            }
 
 
             public override bool Attach(Grid content_element)
@@ -85,27 +105,6 @@ namespace Core
                     run.Foreground = font_color;
                     _textblock.Inlines.Add(run);
                 }
-            }
-
-
-            public override bool Create()
-            {
-                _timer.Start();
-
-                _content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-                _content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-
-                _textblock.TextWrapping = TextWrapping.Wrap;
-                _textblock.FontFamily = new FontFamily("Consolas");
-                _textblock.Width = Double.NaN; // = "Auto"
-                _textblock.Height = Double.NaN; // = "Auto"
-
-                _content.Content = _textblock;
-
-                _timer.Stop();
-
-                _created = true;
-                return _created;
             }
 
 
