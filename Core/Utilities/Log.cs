@@ -124,7 +124,14 @@ namespace Core
             public void RegisterListener(LogListener_Delegate listener)
             {
                 _listeners.Add(listener);
+                // Send all previous messages to newly registered listener
                 listener(_messages);
+            }
+
+
+            public bool UnRegisterListener(LogListener_Delegate listener)
+            {
+                return _listeners.Remove(listener);
             }
 
 

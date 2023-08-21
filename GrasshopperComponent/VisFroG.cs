@@ -74,7 +74,8 @@ namespace Interface
                 {
                     string app_name = base.Name + " (" + base.NickName + ")";
                     _window = new MainWindow(app_name, true);
-                    _window.RegisterReloadCallback(reload_instance);
+                    _window.ReloadInterfaceCallback(reload_instance);
+                    _window.OutputDataCallback(output_data);
                 }
                 // Open or restore invisible window
                 _window.Show();
@@ -90,8 +91,19 @@ namespace Interface
                     _runtimemessages.Add(MessageLevel.Warning, "Input Paramter Name: " + input_param.Name + " | Type: " + input_param.Type.ToString());
                 }
                 var input_data = new Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.IGH_Goo>();
-                DA.GetDataTree(0, out input_data);
+                if (!DA.GetDataTree(0, out input_data))
+                {
+                    _runtimemessages.Add(MessageLevel.Error, "Can not get input data");
+                    return;
+                }
                 _runtimemessages.Add(MessageLevel.Info, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().ToString());
+
+
+
+                /// TODO
+                _window.InputData();
+
+
 
 
                 // Debug stuff
@@ -100,7 +112,6 @@ namespace Interface
 
                 // Show runtime messages in Grasshopper
                 _runtimemessages.Show();
-
 
                 _timer.Stop();
             }
@@ -112,6 +123,15 @@ namespace Interface
             public void reload_instance()
             {
                 ExpireSolution(true);
+            }
+
+            public void output_data()
+            {
+
+
+                /// TODO
+
+
             }
 
 

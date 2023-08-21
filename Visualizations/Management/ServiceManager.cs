@@ -73,7 +73,7 @@ namespace Visualizations
             {
                 Type service_type = service.GetType(); 
                 _services.Add(service_type, service);
-                Log.Default.Msg(Log.Level.Info, "Added Service: '" + service_type.FullName + "'");
+                Log.Default.Msg(Log.Level.Info, "Added Service: " + service_type.FullName);
             }
 
 

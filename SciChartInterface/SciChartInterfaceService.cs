@@ -24,9 +24,13 @@ namespace Visualizations
 
             public override bool Initialize()
             {
+                if (_initilized)
+                {
+                    Terminate();
+                }
                 _timer.Start();
 
-                /// TODO Paste your SciChart runtime license key in SciChartInterface\SciChartRuntimeLicenseKey.cs
+                // Paste your SciChart runtime license key in SciChartInterface\SciChartRuntimeLicenseKey.cs
                 SciChartSurface.SetRuntimeLicenseKey(SciChartRuntimeLicense.Key);
 
                 _timer.Stop();
@@ -46,12 +50,17 @@ namespace Visualizations
 
 
 
-
-
-
                 _timer.Stop();
                 return true;
             }
+
+
+            public override bool Terminate()
+            {
+                _initilized = false;
+                return true;
+            }
+
 
             /* ------------------------------------------------------------------*/
             // private variables

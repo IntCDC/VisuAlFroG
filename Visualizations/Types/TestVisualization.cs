@@ -7,6 +7,9 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Collections.Generic;
 using Visualizations.SciChartInterface;
+using System.Windows;
+using Core.Utilities;
+using System.Runtime.Remoting.Contexts;
 
 
 
@@ -22,56 +25,48 @@ namespace Visualizations
         {
 
             /* ------------------------------------------------------------------*/
-            // static variables
+            // properties
 
-            public static readonly string name = "Test Visualization";
-            public static readonly List<Type> depending_services = new List<Type>() { typeof(SciChartInterfaceService) };
-
+            public override string Name { get { return "Test Visualization"; } }
+            public override List<Type> DependingServices { get { return new List<Type>() { typeof(SciChartInterfaceService) }; } }
+            
 
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public override bool AttachContent(Grid content_element)
+            public override bool Attach(Grid content_element)
             {
-                if (!_setup)
+                if (!_created)
                 {
-                    setup_content();
+                    Log.Default.Msg(Log.Level.Error, "Creation of content required prior to execution");
+                    return false;
                 }
 
                 _content.ChartModifier.IsAttached = true;
-                content_element.Children.Add(_content);
 
+                content_element.Children.Add(_content);
                 _attached = true;
                 return true;
             }
 
 
-            public override bool DetachContent()
+            public override bool Detach()
             {
                 // Required to release mouse handling
                 _content.ChartModifier.IsAttached = false;
-
-                _attached = false;
                 return true;
             }
 
 
-            /* ------------------------------------------------------------------*/
-            // private functions
-
-            protected override void setup_content()
+            public override bool Create()
             {
-                // Create the chart surface
-                _content = new SciChartSurface();
+                _timer.Start();
 
-                // Create the X and Y Axis
                 var xAxis = new NumericAxis() { AxisTitle = "Number of Samples (per series)" };
                 var yAxis = new NumericAxis() { AxisTitle = "Value" };
-
                 _content.XAxis = xAxis;
                 _content.YAxis = yAxis;
 
-                // Specify Interactivity Modifiers
                 _content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
                     new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier(), new SciChart.Charting.ChartModifiers.ZoomExtentsModifier());
 
@@ -84,16 +79,17 @@ namespace Visualizations
                 };
                 _content.Annotations.Add(textAnnotation);
 
-                _setup = true;
+                _timer.Stop();
+
+                _created = true;
+                return _created;
             }
 
 
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private SciChartSurface _content = null;
-
-            private readonly bool _multi = false;
+            private SciChartSurface _content = new SciChartSurface();
         }
     }
 }

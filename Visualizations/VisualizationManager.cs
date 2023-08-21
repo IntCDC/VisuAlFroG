@@ -37,13 +37,14 @@ namespace Visualizations
         {
             if (_initilized)
             {
-                _servicemanager.Terminate();
+                _servicemanager.Terminate(); 
+                _contentmanager.Terminate();
             }
 
             bool initilized = _contentmanager.Initialize();
 
             // Check for services the contents rely on
-            var depending_services = _contentmanager.GetDependingServices();
+            var depending_services = _contentmanager.DependingServices();
             foreach (Type service_type in depending_services)
             {
                 // Create new instance from type
@@ -87,7 +88,7 @@ namespace Visualizations
 
         public ContentCallbacks GetContentCallbacks()
         {
-            return new ContentCallbacks(_contentmanager.GetContentsCallback, _contentmanager.RequestContentCallback, _contentmanager.DeleteContentCallback);
+            return new ContentCallbacks(_contentmanager.ContentsCallback, _contentmanager.AttachContentCallback, _contentmanager.DetachContentCallback);
         }
 
 

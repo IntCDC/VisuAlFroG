@@ -9,11 +9,12 @@ using System.Windows.Documents;
 using System.Runtime.CompilerServices;
 using static Core.Utilities.Log;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Contexts;
 
 
 
 /*
- * Log Console
+ * Log Content
  * 
  */
 namespace Core
@@ -23,11 +24,11 @@ namespace Core
         public class LogContent : AbstractContent
         {
             /* ------------------------------------------------------------------*/
-            // static variables
+            // properties
 
-            public static readonly string name = "Log Console";
-            public static readonly bool multiple_instances = false;
-            public static readonly List<Type> depending_services = new List<Type>(){ };
+            public override string Name { get { return "Log Output"; } }
+            public override bool MultipleIntances { get { return false; } }
+            public override List<Type> DependingServices { get { return new List<Type>() { }; } }
 
 
             /* ------------------------------------------------------------------*/
@@ -38,16 +39,24 @@ namespace Core
                 Log.Default.RegisterListener(this.LogListener);
             }
 
-
-            public override bool AttachContent(Grid content_element)
+            ~LogContent()
             {
-                if (!_setup)
-                {
-                    setup_content();
-                }
-                content_element.Background = ColorTheme.BackgroundBlack;
-                content_element.Children.Add(_content);
+                Log.Default.UnRegisterListener(this.LogListener);
+            }
 
+
+
+            public override bool Attach(Grid content_element)
+            {
+                if (!_created)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Creation of content required prior to execution");
+                    return false;
+                }
+
+                content_element.Background = ColorTheme.BackgroundBlack;
+
+                content_element.Children.Add(_content);
                 _attached = true;
                 return true;
             }
@@ -55,10 +64,7 @@ namespace Core
 
             public void LogListener(List<Log.MessageData> msglist)
             {
-                if (!_setup)
-                {
-                    setup_content();
-                }
+                // Is called before Initialize() therefore _textblock needs to be not null
                 foreach (Log.MessageData msg in msglist)
                 {
                     // Default for Level.Info
@@ -82,16 +88,13 @@ namespace Core
             }
 
 
-            /* ------------------------------------------------------------------*/
-            // protected functions
-
-            protected override void setup_content()
+            public override bool Create()
             {
-                _content = new ScrollViewer();
+                _timer.Start();
+
                 _content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
                 _content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
 
-                _textblock = new TextBlock();
                 _textblock.TextWrapping = TextWrapping.Wrap;
                 _textblock.FontFamily = new FontFamily("Consolas");
                 _textblock.Width = Double.NaN; // = "Auto"
@@ -99,15 +102,18 @@ namespace Core
 
                 _content.Content = _textblock;
 
-                _setup = true;
+                _timer.Stop();
+
+                _created = true;
+                return _created;
             }
 
 
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private ScrollViewer _content = null;
-            private TextBlock _textblock = null;
+            private ScrollViewer _content = new ScrollViewer();
+            private TextBlock _textblock = new TextBlock();
         }
     }
 }

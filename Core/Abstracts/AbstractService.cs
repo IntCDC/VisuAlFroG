@@ -23,13 +23,7 @@ namespace Core
             public abstract bool Execute();
 
 
-            /* ------------------------------------------------------------------*/
-            // virtual functions
-
-            public virtual bool Terminate()
-            {
-                return true;
-            }
+            public abstract bool Terminate();
 
 
             /* ------------------------------------------------------------------*/

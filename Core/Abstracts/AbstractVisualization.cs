@@ -18,25 +18,23 @@ namespace Core
         {
 
             /* ------------------------------------------------------------------*/
-            // static variables
+            // properties
 
-            // DECLARE IN DERIVED CLASS
-            //public static readonly string name = "...";
-
-            public static readonly bool multiple_instances = true;
+            public override bool MultipleIntances
+            {
+                get { return true; }
+            }
 
 
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public override bool AttachContent(Grid content_element)
-            {
-                return false;
-            }
+
 
 
             /* ------------------------------------------------------------------*/
             // protected variables
+
 
 
         }

@@ -19,6 +19,10 @@ namespace EntityFrameworkDatabase
 
         public override bool Initialize()
         {
+            if (_initilized)
+            {
+                Terminate();
+            }
             _timer.Start();
 
             _database_context = new DatabaseContext();
@@ -49,8 +53,18 @@ namespace EntityFrameworkDatabase
         }
 
 
+        public override bool Terminate()
+        {
+            _database_context.Dispose();
+            _database_context = null;
+
+            _initilized = false;
+            return true;
+        }
+
+
         /* ------------------------------------------------------------------*/
-        // private variables
+            // private variables
 
         private DatabaseContext _database_context;
 

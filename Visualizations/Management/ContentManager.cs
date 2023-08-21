@@ -18,6 +18,8 @@ using ContentRegister_Type = System.Collections.Generic.List<System.Type>;
 using AvailableContent_Type = System.Tuple<string, bool, bool, System.Type>;
 // Parameters: <name, available, is-multi-instance, type>
 using AvailableContentList_Type = System.Collections.Generic.List<System.Tuple<string, bool, bool, System.Type>>;
+using SciChart.Core.Extensions;
+using SciChart.Charting.Visuals;
 
 
 /*
@@ -41,8 +43,8 @@ namespace Visualizations
                     Terminate();
                 }
 
-                RegisterContent<LogContent>();
-                RegisterContent<TestVisualization>();
+                RegisterContent(typeof(LogContent));
+                RegisterContent(typeof(TestVisualization));
 
                 _initilized = true;
                 return _initilized;
@@ -56,9 +58,8 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return false;
                 }
-
                 bool executed = true;
-
+                // Contents are loaded via callbacks
                 return executed;
             }
 
@@ -68,7 +69,14 @@ namespace Visualizations
                 bool terminated = true;
                 if (_initilized)
                 {
-                    _registerd_contents.Clear();
+                    foreach (var c_data in _contents)
+                    {
+                        foreach (var c in c_data.Value)
+                        {
+                            c.Value.Detach();
+                        }
+                        c_data.Value.Clear();
+                    }
                     _contents.Clear();
                     _initilized = false;
                 }
@@ -76,33 +84,53 @@ namespace Visualizations
             }
 
 
-            public void RegisterContent<T>() where T : AbstractContent
+            public void RegisterContent(Type content_type)
             {
-                Type content_type = typeof(T);
-                _registerd_contents.Add(content_type);
-                Log.Default.Msg(Log.Level.Info, "Registered Content: '" + content_type.FullName + "'");
+                // Check for required base type
+                Type base_name = content_type.BaseType;
+                string required_basetype = typeof(AbstractContent).Name;
+                bool valid_type = false;
+                while (!base_name.Name.StartsWith(typeof(object).Name))
+                {
+                    if (base_name.Name.StartsWith(required_basetype))
+                    {
+                        valid_type = true;
+                        break;
+                    }
+                    base_name = base_name.BaseType;
+                    if (base_name == null)
+                    {
+                        break;
+                    }
+                }
+                if (valid_type)
+                {
+                    _contents.Add(content_type, new Dictionary<string, AbstractContent>());
+                    Log.Default.Msg(Log.Level.Info, "Registered Content: " + content_type.Name);
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Wrong input type for content: " + base_name);
+                }
             }
 
 
-            public List<Type> GetDependingServices()
+            public List<Type> DependingServices()
             {
                 var depending_services = new List<Type>();
-                foreach (Type content_type in _registerd_contents)
+
+                // Loop over registered types
+                foreach (var c_data in _contents)
                 {
-                    // Get static member variable of type (= fields and not properties)
-                    string fieldname = "depending_services";
-                    FieldInfo property_depservices = content_type.GetField(fieldname, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-                    if (property_depservices != null)
-                    {
-                        var service_types = (List<Type>)property_depservices.GetValue(null);
-                        depending_services.AddRange(service_types);
-                    } else 
-                    {
-                        Log.Default.Msg(Log.Level.Error, "Unable to find field: '" + fieldname + "' in type: '" + content_type.ToString() + "'");
-                    }
+                    Type c_type = c_data.Key;
+
+                    // Create temporary instance of content
+                    var tmp_content = (AbstractContent)Activator.CreateInstance(c_type);
+                    depending_services.AddRange(tmp_content.DependingServices);
                 }
                 // Removing duplicates
                 depending_services = depending_services.Distinct().ToList();
+
                 return depending_services;
             }
 
@@ -111,41 +139,26 @@ namespace Visualizations
             ///  Provide necessary information of available window content
             /// >> Called by child leaf in _subwindows
             /// </summary>
-            public AvailableContentList_Type GetContentsCallback()
+            public AvailableContentList_Type ContentsCallback()
             {
                 var content_ids = new AvailableContentList_Type();
-                foreach (Type content_type in _registerd_contents)
-                {
-                    // Get static member variables of type (= fields and not properties)
-                    string fieldname = "name";
-                    FieldInfo property_header = content_type.GetField(fieldname, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-                    if (property_header == null)
-                    {
-                        Log.Default.Msg(Log.Level.Error, "Unable to find field: '" + fieldname + "' in type: '" + content_type.ToString() + "'");
-                        break;
-                    }
-                    string header = (string)property_header.GetValue(null);
 
-                    fieldname = "multiple_instances";
-                    FieldInfo property_instances = content_type.GetField(fieldname, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-                    if (property_header == null)
-                    {
-                        Log.Default.Msg(Log.Level.Error, "Unable to find field: '" + fieldname + "' in type: '" + content_type.ToString() + "'");
-                        break;
-                    }
-                    bool multi = (bool)property_instances.GetValue(null);
+                // Loop over registered types
+                foreach (var c_data in _contents)
+                {
+                    Type c_type = c_data.Key;
+
+                    // Create temporary instance of content
+                    var tmp_content = (AbstractContent)Activator.CreateInstance(c_type);
+                    string header = tmp_content.Name;
+                    bool multiple_instances = tmp_content.MultipleIntances;
 
                     // Content is only available if multiple instance are allowed or has not been instanciated yet
-                    bool available = true;
-                    foreach (var content_dict in _contents)
-                    {
-                        if ((content_dict.Value.GetType() == content_type) && !multi)
-                        {
-                            available = false;
-                        }
-                    }
-                    content_ids.Add(new AvailableContent_Type(header, available, multi, content_type));
+                    bool available = (multiple_instances || (c_data.Value.IsEmpty() && !multiple_instances));
+
+                    content_ids.Add(new AvailableContent_Type(header, available, multiple_instances, c_type));
                 }
+
                 return content_ids;
             }
 
@@ -154,25 +167,30 @@ namespace Visualizations
             /// Attach requested content to provided parent content element.
             /// >> Called by child leaf in _subwindows
             /// </summary>
-            public string RequestContentCallback(string content_id, Type content_type, Grid content_element)
+            public string AttachContentCallback(string content_id, Type content_type, Grid content_element)
             {
-                if (_contents.ContainsKey(content_id))
+                // Loop over registered types
+                if (_contents.ContainsKey(content_type))
                 {
-                    if (_contents[content_id].AttachContent(content_element))
+                    string id = content_id;
+                    if (!_contents[content_type].ContainsKey(id))
                     {
-                        return content_id;
+                        // Create new instance from type
+                        var new_content = (AbstractContent)Activator.CreateInstance(content_type);
+                        new_content.Create();
+
+                        id = new_content.ID;
+                        _contents[content_type].Add(id, new_content);
+                    }
+
+                    if (_contents[content_type][id].Attach(content_element))
+                    {
+                        return id;
                     }
                 }
                 else
                 {
-                    // Create new instance from type
-                    var new_content = (AbstractContent)Activator.CreateInstance(content_type);
-                    string new_id = new_content.ID();
-                    _contents.Add(new_id, new_content);
-                    if (_contents[new_id].AttachContent(content_element))
-                    {
-                        return new_id;
-                    }
+                    Log.Default.Msg(Log.Level.Error, "Unregistered content type: " + content_type.ToString());
                 }
                 return UniqueID.Invalid;
             }
@@ -182,12 +200,18 @@ namespace Visualizations
             /// Delete content.
             /// >> Called by child leaf in _subwindows
             /// </summary>
-            public void DeleteContentCallback(string content_id)
+            public void DetachContentCallback(string content_id)
             {
-                if (_contents.ContainsKey(content_id))
+                // Loop over registered types
+                foreach (var c_data in _contents)
                 {
-                    _contents[content_id].DetachContent();
-                    _contents.Remove(content_id);
+                    Type c_type = c_data.Key;
+
+                    if (c_data.Value.ContainsKey(content_id))
+                    {
+                        c_data.Value[content_id].Detach();
+                        c_data.Value.Remove(content_id);
+                    }
                 }
             }
 
@@ -195,8 +219,9 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private ContentRegister_Type _registerd_contents = new ContentRegister_Type();
-            private Dictionary<string, AbstractContent> _contents = new Dictionary<string, AbstractContent>();
+            // separate dict for each content type
+            private Dictionary<Type, Dictionary<string, AbstractContent>> _contents = new Dictionary<Type, Dictionary<string, AbstractContent>>();
+
         }
     }
 

@@ -36,6 +36,11 @@ namespace Frontend
             /// </summary>
             public delegate void ReloadInterface_Delegate();
 
+            /// <summary>
+            /// Function provided by the interface (= Grasshopper) which allows pass output data to the interface
+            /// </summary>
+            public delegate void OutputData_Delegate();
+
 
             /* ------------------------------------------------------------------*/
             // public functions
@@ -58,9 +63,31 @@ namespace Frontend
             /// <summary>
             /// Get reload function call from Grasshopper
             /// </summary>
-            public void RegisterReloadCallback(ReloadInterface_Delegate reloadCallback)
+            public void ReloadInterfaceCallback(ReloadInterface_Delegate reload_callback)
             {
-                _reload_func = reloadCallback;
+                _reloadinterface_callback = reload_callback;
+            }
+
+
+            /// <summary>
+            /// Get reload function call from Grasshopper
+            /// </summary>
+            public void OutputDataCallback(OutputData_Delegate putput_data_callback)
+            {
+                _outputdata_callback = putput_data_callback;
+            }
+
+
+            /// <summary>
+            /// Get reload function call from Grasshopper
+            /// </summary>
+            public void InputData()
+            {
+
+
+                /// TODO
+
+
             }
 
 
@@ -94,6 +121,7 @@ namespace Frontend
                 }
                 _timer.Start();
 
+                // #error version
 
                 // Window setup
                 InitializeComponent();
@@ -109,7 +137,7 @@ namespace Frontend
 
                 _menubar.RegisterCloseCallback(this.Close);
 
-                Log.Default.Msg(Log.Level.Info, "Successfully initialized: '" + base.Title + "'");
+                Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + base.Title);
 
                 _timer.Stop();
                 _initilized = initilized;
@@ -164,7 +192,9 @@ namespace Frontend
             private WindowBranch _subwindows = new WindowBranch();
             private MenuBar _menubar = new MenuBar();
 
-            private ReloadInterface_Delegate _reload_func;
+            private ReloadInterface_Delegate _reloadinterface_callback = null;
+            private OutputData_Delegate _outputdata_callback = null;
+
             private TimeBenchmark _timer = new TimeBenchmark();
         }
     }

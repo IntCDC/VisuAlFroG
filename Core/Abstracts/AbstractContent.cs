@@ -2,6 +2,8 @@
 using System.Windows.Controls;
 using System.Collections.Generic;
 using Core.Utilities;
+using System.Runtime.Remoting.Contexts;
+using Core.GUI;
 
 
 
@@ -13,15 +15,22 @@ namespace Core
 {
     namespace Abstracts
     {
+
+
+
         public abstract class AbstractContent
         {
-            /* ------------------------------------------------------------------*/
-            // static variables
 
-            // DECLARE IN DERIVED CLASSES
-            // public static readonly string name = "...";
-            // public static readonly bool multiple_instances = false;
-            // public static readonly List<Type> depending_services = new List<Type>() { typeof(<service>)};
+            /* ------------------------------------------------------------------*/
+            // public properties
+
+            public abstract string Name { get; }
+            public abstract bool MultipleIntances { get; }
+            public abstract List<Type> DependingServices { get; }
+
+
+            public bool IsAttached { get { return _attached; } }
+            public string ID { get { return _id; } }
 
 
             /* ------------------------------------------------------------------*/
@@ -35,40 +44,31 @@ namespace Core
 
             /// <summary>
             /// Attach content to provided content_element.
-            ///  Set "_attached=true" when attached successfully.
-            ///  Only attach if "_setup=true" otherwise call setup_content()
             /// </summary>
-            public abstract bool AttachContent(Grid content_element);
+            public virtual bool Attach(Grid content_element)
+            {
+                if (!_created)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Creation of content required prior to execution");
+                    return false;
+                }
 
+                //content_element.Children.Add(_content);
+                _attached = true;
+                return true;
+            }
 
-            public virtual bool DetachContent()
+            public virtual bool Detach()
             {
                 _attached = false;
                 return true;
             }
 
 
-            public bool IsAttached()
+            public virtual bool Create()
             {
-                return _attached;
-            }
-
-            public string ID()
-            {
-                return _id;
-            }
-
-
-            /* ------------------------------------------------------------------*/
-            // protected functions
-
-            /// <summary>
-            /// Setup content_element.
-            ///  Set "_setup=true" when setup successfully.
-            /// </summary>
-            protected virtual void setup_content()
-            {
-                _setup = true;
+                _created = true;
+                return true;
             }
 
 
@@ -76,13 +76,14 @@ namespace Core
             // protected variables
 
             protected bool _attached = false;
-            protected bool _setup = false;
+            protected bool _created = false;
 
 
             /* ------------------------------------------------------------------*/
             // private variables
 
             private readonly string _id = UniqueID.Invalid;
+            protected TimeBenchmark _timer = new TimeBenchmark();
         }
     }
 }

@@ -59,6 +59,7 @@ namespace Core
                 _content.AllowDrop = true;
                 _content.DragOver += content_dragover;
                 _content.Drop += content_drop;
+
                 /// DEBUG background color
                  /*
                 var generator = new Random();
@@ -179,11 +180,10 @@ namespace Core
                     content_item.Style = ColorTheme.MenuItemStyle();
 
                     // Repalcement of spaces is necessary for Name property
-                    string name = content_data.Item1.Replace(' ', '_'); // Hame
-                    content_item.Header = name;
-                    content_item.Name = name;
+                    content_item.Header = content_data.Item1;
+                    content_item.Name = wpf_conform_name(content_data.Item1); // Name
                     content_item.IsEnabled = content_data.Item2; // Available
-                    if (content_data.Item3) // Is Multi Instance
+                    if (content_data.Item3) // Multiple instances allowed
                     {
                         content_item.Style = ColorTheme.MenuItemStyle("multi-instance.png");
                         content_item.ToolTip = "Multiple instances";
@@ -262,7 +262,7 @@ namespace Core
                 foreach (var content_data in available_contents)
                 {
                     // Repalcement of spaces is necessary for Name property
-                    string name = content_data.Item1.Replace(' ', '_'); // name
+                    string name = wpf_conform_name(content_data.Item1);
                     if (content_id == name)
                     {
                         content_detach();
@@ -357,6 +357,13 @@ namespace Core
                     content_detach();
                     content_attach(source_content.Item2, source_content.Item3);
                 }
+            }
+
+
+            private string wpf_conform_name(string name)
+            {
+                // There are no spaces ' ' allowed
+                return name.Replace(' ', '_');
             }
 
 
