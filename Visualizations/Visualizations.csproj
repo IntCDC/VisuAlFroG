@@ -116,6 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Management\ContentManager.cs" />
+    <Compile Include="Management\DataManager.cs" />
     <Compile Include="Management\ServiceManager.cs" />
     <Compile Include="Management\WindowManager.cs" />
     <Compile Include="Types\TestVisualization.cs" />

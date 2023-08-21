@@ -1,22 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
-using Core.Utilities;
-using Core.Abstracts;
-using EntityFrameworkDatabase;
-using Visualizations.SciChartInterface;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
+using Core.Abstracts;
+using Core.Utilities;
+
+
+
+using AbstractData_Type = System.Collections.Generic.List<System.Collections.Generic.List<double>>;
 
 
 /*
- * Service Manager
+ * Data Manager
  * 
  */
 namespace Visualizations
 {
     namespace Management
     {
-        public class ServiceManager : AbstractService
+        public class DataManager : AbstractService
         {
+
+            /* ------------------------------------------------------------------*/
+            // public delegates
+
+            /// <summary>
+            /// Function provided by the data manager for passng on the inpout data to the visualizations
+            /// </summary>
+            public delegate void InputData_Delegate(ref AbstractData_Type input_data);
+
+            /// <summary>
+            /// Function provided by the interface (= Grasshopper) which allows pass output data to the interface
+            /// </summary>
+            public delegate void OutputData_Delegate(ref AbstractData_Type ouput_data);
+
 
             /* ------------------------------------------------------------------*/
             // public functions
@@ -29,10 +48,7 @@ namespace Visualizations
                 }
                 bool initilized = true;
 
-                foreach (var m in _services)
-                {
-                    initilized &= m.Value.Initialize();
-                }
+
 
                 _initilized = initilized;
                 return _initilized;
@@ -47,10 +63,9 @@ namespace Visualizations
                     return false;
                 }
                 bool executed = true;
-                foreach (var m in _services)
-                {
-                    executed &= m.Value.Execute();
-                }
+
+
+
                 return executed;
             }
 
@@ -60,39 +75,32 @@ namespace Visualizations
                 bool terminated = true;
                 if (_initilized)
                 {
-                    foreach (var m in _services)
-                    {
-                        terminated &= m.Value.Terminate();
-                    }
-                    _services.Clear();
+
+
+
                     _initilized = false;
                 }
                 return terminated;
             }
 
 
-            public void AddService(AbstractService service)
+            public void InputDataCallback(ref AbstractData_Type input_data)
             {
-                Type service_type = service.GetType(); 
-                _services.Add(service_type, service);
-                Log.Default.Msg(Log.Level.Info, "Added Service: " + service_type.FullName);
+                Log.Default.Msg(Log.Level.Debug, " DEBUG I have been called ....: ");
             }
 
 
-            public T GetService<T>() where T : AbstractService
+            public void RegisterOutputDataCallback(OutputData_Delegate outputdata_callback)
             {
-                if (_services.ContainsKey(typeof(T)))
-                {
-                    return (T)_services[typeof(T)];
-                }
-                return null;
+                _outputdata_callback = outputdata_callback;
             }
+
 
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            // private functions
 
-            private Dictionary<Type, AbstractService> _services = new Dictionary<Type, AbstractService>();
+            private OutputData_Delegate _outputdata_callback = null;
         }
     }
 }

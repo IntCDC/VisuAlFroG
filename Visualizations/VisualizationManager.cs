@@ -19,6 +19,7 @@ using Visualizations.Types;
 
 
 using ContentCallbacks = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.RequestContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
+using static Visualizations.Management.DataManager;
 
 
 /*
@@ -37,11 +38,13 @@ namespace Visualizations
         {
             if (_initilized)
             {
-                _servicemanager.Terminate(); 
+                _servicemanager.Terminate();
                 _contentmanager.Terminate();
+                _datamanager.Terminate();
             }
 
             bool initilized = _contentmanager.Initialize();
+            initilized &= _datamanager.Initialize();
 
             // Check for services the contents rely on
             var depending_services = _contentmanager.DependingServices();
@@ -67,6 +70,7 @@ namespace Visualizations
             }
 
             bool executed = _servicemanager.Execute();
+            executed &= _datamanager.Execute();
             executed &= _contentmanager.Execute();
 
             return executed;
@@ -79,6 +83,7 @@ namespace Visualizations
             if (_initilized)
             {
                 terminated &= _servicemanager.Terminate();
+                terminated &= _datamanager.Terminate();
                 terminated &= _contentmanager.Terminate();
                 _initilized = false;
             }
@@ -92,11 +97,24 @@ namespace Visualizations
         }
 
 
+        public InputData_Delegate GetInputDataCallback()
+        {
+            return _datamanager.InputDataCallback;
+        }
+
+
+        public void RegisterOutputDataCallback(DataManager.OutputData_Delegate _outputdata_callback)
+        {
+            _datamanager.RegisterOutputDataCallback(_outputdata_callback);
+        }
+
+
         /* ------------------------------------------------------------------*/
         // private variables
 
         private ServiceManager _servicemanager = new ServiceManager();
         private ContentManager _contentmanager = new ContentManager();
+        private DataManager _datamanager = new DataManager();
     }
 }
 

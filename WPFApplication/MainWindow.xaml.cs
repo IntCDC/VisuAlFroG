@@ -14,6 +14,9 @@ using Visualizations.Management;
 
 
 
+using AbstractData_Type = System.Collections.Generic.List<System.Collections.Generic.List<double>>;
+
+
 /*
  * Main WPF Application
  * 
@@ -28,7 +31,6 @@ namespace Frontend
 
         public partial class MainWindow : Window
         {
-
             /* ------------------------------------------------------------------*/
             // public delegates
 
@@ -36,11 +38,6 @@ namespace Frontend
             /// Function provided by the interface (= Grasshopper) which allows to trigger relaoding of the interface
             /// </summary>
             public delegate void ReloadInterface_Delegate();
-
-            /// <summary>
-            /// Function provided by the interface (= Grasshopper) which allows pass output data to the interface
-            /// </summary>
-            public delegate void OutputData_Delegate();
 
 
             /* ------------------------------------------------------------------*/
@@ -73,22 +70,25 @@ namespace Frontend
             /// <summary>
             /// Callback to pass output data to the interface (= Grasshopper).
             /// </summary>
-            public void OutputDataCallback(OutputData_Delegate putput_data_callback)
+            public void OutputDataCallback(DataManager.OutputData_Delegate output_data_callback)
             {
-                _outputdata_callback = putput_data_callback;
+                _vismanager.RegisterOutputDataCallback(output_data_callback);
             }
 
 
             /// <summary>
             /// Get input data from interface (= Grasshopper).
             /// </summary>
-            public void InputData()
+            public void InputData(ref AbstractData_Type input_data)
             {
-
-
-                /// TODO
-
-
+                if (_inputdata_callback != null)
+                {
+                    _inputdata_callback(ref input_data);
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Mising input data callback");
+                }
             }
 
 
@@ -138,12 +138,14 @@ namespace Frontend
                 // CompositionTarget.Rendering += once_per_frame;
 
 
-                // Register required external data
+                // Get and/or register required external data
                 _menubar.RegisterCloseCallback(this.Close);
                 _menubar.RegisterContentElement(_menubar_element);
 
                 _winmanager.RegisterContentCallbacks(_vismanager.GetContentCallbacks());
                 _winmanager.RegisterContentElement(_subwindows_element);
+
+                _inputdata_callback = _vismanager.GetInputDataCallback();
 
 
                 // Initialize managers
@@ -204,12 +206,13 @@ namespace Frontend
             private bool _soft_close = false;
 
             private VisualizationManager _vismanager = new VisualizationManager();
-
             private WindowManager _winmanager = new WindowManager();
-            private MenuBar _menubar = new MenuBar();
 
             private ReloadInterface_Delegate _reloadinterface_callback = null;
-            private OutputData_Delegate _outputdata_callback = null;
+            private DataManager.OutputData_Delegate _outputdata_callback = null;
+            private DataManager.InputData_Delegate _inputdata_callback = null;
+
+            private MenuBar _menubar = new MenuBar();
 
             private TimeBenchmark _timer = new TimeBenchmark();
         }

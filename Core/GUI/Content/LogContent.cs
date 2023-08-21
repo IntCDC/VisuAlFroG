@@ -104,6 +104,7 @@ namespace Core
                     var run = new Run(msg.message + Environment.NewLine);
                     run.Foreground = font_color;
                     _textblock.Inlines.Add(run);
+                    _content.ScrollToBottom();
                 }
             }
 

@@ -8,7 +8,12 @@ using Core.Utilities;
 using System.Resources;
 using System.Linq;
 using static GH_IO.VersionNumber;
+using System.Collections.Generic;
 
+
+
+using AbstractData_Type = System.Collections.Generic.List<System.Collections.Generic.List<double>>;
+using GHData_Type = Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.IGH_Goo>;
 
 
 /*
@@ -21,7 +26,6 @@ namespace Interface
     {
         public class VisFroG : GH_Component
         {
-
             /* ------------------------------------------------------------------*/
             // public functions
 
@@ -76,70 +80,33 @@ namespace Interface
                     string app_name = base.Name + " (" + base.NickName + ")";
                     _window = new MainWindow(app_name, true);
                     _window.ReloadInterfaceCallback(reload_instance);
-                    _window.OutputDataCallback(output_data);
+                    _window.OutputDataCallback(retrieve_output_data);
                 }
                 // Open or restore invisible window
                 _window.Show();
 
 
-                string gh_document_filepath = OnPingDocument().FilePath;
-                /// TODO Callback: OnPingDocument().FilePathChanged += this.FilePathChangedEvent
 
-
-                // Access all input paramters
-                foreach (var input_param in Params.Input)
-                {
-                    _runtimemessages.Add(Log.Level.Warn, "Input Paramter Name: " + input_param.Name + " | Type: " + input_param.Type.ToString());
-                }
-
-                // Read input paramter
-                var input_data = new Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.IGH_Goo>();
+                // Read input data
+                var input_data = new GHData_Type();
                 if (!DA.GetDataTree(0, out input_data))
                 {
                     _runtimemessages.Add(Log.Level.Error, "Missing input data");
                     return;
                 }
                 _runtimemessages.Add(Log.Level.Info, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().FullName);
+                // Convert and pass on input data 
+                var input_data_converted = ConvertData.GH_to_List(ref input_data);
+                _window.InputData(ref input_data_converted);
 
-/*
-                int i = 0;
-                foreach (var branch in input_data.Branches)
+
+
+                // Write output data
+                if (output_data != null)
                 {
-                    Log.Default.Msg(Log.Level.Error, i.ToString() + " Branch Type: " + branch.GetType().FullName);
-
-                    foreach (var leaf in branch)
-                    {
-                        var type = leaf.GetType();
-                        //Log.Default.Msg(Log.Level.Error, i.ToString() + " Leaf Type: " + type.FullName);
-
-                        string data_s;
-                        if (leaf.CastTo<string>(out data_s))
-                        {
-                            //Log.Default.Msg(Log.Level.Warn, i.ToString() + " Data String: " + data_s);
-                        }
-                        else {
-                            Log.Default.Msg(Log.Level.Error, i.ToString() + " Data String: " + data_s);
-                        }
-
-                        i++;
-                    }
+                    DA.SetData(0, output_data);
+                    output_data = null;
                 }
-*/
-                //input_data.Flatten();
-                var flatten_data = input_data.FlattenData();
-                _runtimemessages.Add(Log.Level.Info, " Flatten Type: " + flatten_data.GetType().FullName + " - Count: " + flatten_data.Count().ToString());
-                
-
-
-                /// TODO
-                /// Convert data
-                _window.InputData();
-
-
-
-
-
-
 
 
 
@@ -162,13 +129,13 @@ namespace Interface
                 ExpireSolution(true);
             }
 
-            public void output_data()
+
+            public void retrieve_output_data(ref AbstractData_Type ouput_data)
             {
+                Log.Default.Msg(Log.Level.Debug, " DEBUG I have been called ....: ");
 
-
-                /// TODO
-
-
+                output_data = ConvertData.list_to_gh(ref ouput_data);
+                reload_instance();
             }
 
 
@@ -176,8 +143,8 @@ namespace Interface
             // private variables
 
             private MainWindow _window = null;
+            private GHData_Type output_data = null;
             private RuntimeMessages _runtimemessages = null;
-
 
             /// DEBUG
             private int _exec_count = 0;

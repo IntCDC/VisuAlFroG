@@ -4,9 +4,8 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
-
 using Core.Utilities;
-
+using System.Diagnostics;
 using Grasshopper;
 using Grasshopper.Kernel;
 
@@ -49,7 +48,7 @@ namespace GrasshopperComponent
                         _messages.Add((GH_RuntimeMessageLevel.Blank, message));
                         break;
                 }
-                //Log.Default.Msg(level, message);
+                Log.Default.Msg(level, message, new StackTrace(true));
             }
 
 

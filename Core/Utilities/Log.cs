@@ -76,28 +76,29 @@ namespace Core
                 string caller_file = stacktrace.GetFrame(1).GetFileName();
                 string caller_method = stacktrace.GetFrame(1).GetMethod().Name;
                 string caller_line = stacktrace.GetFrame(1).GetFileLineNumber().ToString();
+                string timestamp = "[" + DateTime.Now.ToString() + "]";
 
                 string trace_file = "[" + Path.GetFileName(caller_file) + "]";
                 string trace_method = "[" + caller_method + "]";
                 string trace_line = "[" + caller_line + "]";
 
-                string level_prefix = "<INFO> ";
+                string level_prefix = " <INFO>  ";
                 switch (level)
                 {
                     case (Log.Level.Warn):
-                        level_prefix = "<WARN>";
+                        level_prefix = " <WARN> ";
                         break;
                     case (Log.Level.Error):
-                        level_prefix = "<ERROR>";
+                        level_prefix = " <ERROR> ";
                         break;
                     case (Log.Level.Debug):
-                        level_prefix = "<DEBUG>";
+                        level_prefix = " <DEBUG> ";
                         break;
                 }
 
                 // Fixed padding
-                string trace_meta = level_prefix + " " + trace_file + trace_method + trace_line;
-                trace_meta = trace_meta.PadRight(60, ' ');
+                string trace_meta = timestamp + level_prefix + trace_file + trace_method + trace_line;
+                trace_meta = trace_meta.PadRight(75, ' ');
                 string message = (trace_meta + " > " + log);
 
                 MessageData msgdata = new MessageData();

@@ -103,9 +103,9 @@ namespace Visualizations
                 return terminated;
             }
 
+
             /* ------------------------------------------------------------------*/
             // private functions
-
 
             /// <summary>
             /// DEBUG Load initial content tree
