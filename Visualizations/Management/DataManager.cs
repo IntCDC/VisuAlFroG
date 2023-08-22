@@ -86,7 +86,7 @@ namespace Visualizations
 
             public void InputDataCallback(ref AbstractData_Type input_data)
             {
-                Log.Default.Msg(Log.Level.Debug, " DEBUG I have been called ....: ");
+                _input_data = input_data;
             }
 
 
@@ -101,6 +101,7 @@ namespace Visualizations
             // private functions
 
             private OutputData_Delegate _outputdata_callback = null;
+            private AbstractData_Type _input_data = null;
         }
     }
 }

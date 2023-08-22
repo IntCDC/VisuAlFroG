@@ -94,7 +94,7 @@ namespace Interface
                     _runtimemessages.Add(Log.Level.Error, "Missing input data");
                     return;
                 }
-                _runtimemessages.Add(Log.Level.Info, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().FullName);
+                _runtimemessages.Add(Log.Level.Debug, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().FullName);
                 // Convert and pass on input data 
                 var input_data_converted = ConvertData.GH_to_List(ref input_data);
                 _window.InputData(ref input_data_converted);
@@ -102,9 +102,10 @@ namespace Interface
 
 
                 // Write output data
+                /// TODO Do not read input data if output data triggers reloading?
                 if (output_data != null)
                 {
-                    DA.SetData(0, output_data);
+                    DA.SetDataTree(0, output_data);
                     output_data = null;
                 }
 
@@ -112,7 +113,7 @@ namespace Interface
 
                 // DEBUG
                 _exec_count++;
-                _runtimemessages.Add(Log.Level.Info, "<DEBUG> Executions: " + _exec_count);
+                _runtimemessages.Add(Log.Level.Debug, "Executions: " + _exec_count);
 
                 // Show runtime messages in Grasshopper
                 _runtimemessages.Show();
@@ -132,8 +133,6 @@ namespace Interface
 
             public void retrieve_output_data(ref AbstractData_Type ouput_data)
             {
-                Log.Default.Msg(Log.Level.Debug, " DEBUG I have been called ....: ");
-
                 output_data = ConvertData.list_to_gh(ref ouput_data);
                 reload_instance();
             }

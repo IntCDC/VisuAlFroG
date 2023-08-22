@@ -86,6 +86,17 @@ namespace Visualizations
                     new SciChart.Charting.ChartModifiers.ZoomExtentsModifier());
 
 
+                var textAnnotation = new TextAnnotation()
+                {
+                    Text = "TEST DUMMY...",
+                    X1 = 5.0,
+                    Y1 = 5.0
+
+                };
+                _content.Annotations.Add(textAnnotation);
+
+                // Add test data
+
                 var dataSeries = new UniformXyDataSeries<double> { SeriesName = "Histogram" };
                 var yValues = new[] { 0.1, 0.2, 0.4, 0.8, 1.1, 1.5, 2.4, 4.6, 8.1, 11.7, 14.4, 16.0, 13.7, 10.1, 6.4, 3.5, 2.5, 1.4, 0.4, 0.1 };
 

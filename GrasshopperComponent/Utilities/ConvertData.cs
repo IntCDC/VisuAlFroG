@@ -5,11 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
 using Grasshopper.Kernel.Special;
+using Core.Utilities;
 
 
 
 using AbstractData_Type = System.Collections.Generic.List<System.Collections.Generic.List<double>>;
 using GHData_Type = Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.IGH_Goo>;
+using Grasshopper.Kernel.Types;
+using System.Globalization;
+using Grasshopper.Kernel.Data;
 
 
 /*
@@ -27,33 +31,35 @@ namespace GrasshopperComponent
             {
                 var output = new AbstractData_Type();
 
-
-                /*
-                int i = 0;
-                foreach (var branch in input_data.Branches)
+                foreach (var branch in input.Branches)
                 {
-                Log.Default.Msg(Log.Level.Error, i.ToString() + " Branch Type: " + branch.GetType().FullName);
-
-                foreach (var leaf in branch)
-                {
-                var type = leaf.GetType();
-                //Log.Default.Msg(Log.Level.Error, i.ToString() + " Leaf Type: " + type.FullName);
-
-                string data_s;
-                if (leaf.CastTo<string>(out data_s))
-                {
-                    //Log.Default.Msg(Log.Level.Warn, i.ToString() + " Data String: " + data_s);
+                    List<double> list = new List<double>();
+                    foreach (var leaf in branch)
+                    {
+                        var type = leaf.GetType();
+                        if (type == typeof(GH_String))
+                        {
+                            string value_str;
+                            if (leaf.CastTo<string>(out value_str))
+                            {
+                                try
+                                {
+                                    double value = Convert.ToDouble(value_str, CultureInfo.InvariantCulture);
+                                    list.Add(value);
+                                }
+                                catch (Exception exc)
+                                {
+                                    Log.Default.Msg(Log.Level.Error, exc.Message);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Log.Default.Msg(Log.Level.Error, "Can not convert data from: " + type.Name);
+                        }
+                    }
+                    output.Add(list);
                 }
-                else {
-                    Log.Default.Msg(Log.Level.Error, i.ToString() + " Data String: " + data_s);
-                }
-
-                i++;
-                }
-                }
-                */
-
-
                 return output;
             }
 
@@ -62,15 +68,19 @@ namespace GrasshopperComponent
             {
                 var ouptut = new GHData_Type();
 
-
-
-
-
+                int branch_index = 0;
+                foreach (var branch in input)
+                {
+                    GH_Path path = new GH_Path(branch_index);
+                    foreach (var leaf in branch)
+                    {
+                        ouptut.Append(new GH_String(leaf.ToString()), path);
+                    }
+                    ouptut.EnsurePath(path);
+                    branch_index++;
+                }
                 return ouptut;
             }
-
-
-
         }
     }
 }
