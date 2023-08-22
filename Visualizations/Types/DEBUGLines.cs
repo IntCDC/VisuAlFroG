@@ -21,7 +21,6 @@ using SciChart.Charting.Model.ChartSeries;
 using System.ComponentModel;
 using System.Linq;
 using SciChart.Charting.Visuals.PointMarkers;
-using SciChart.Charting3D.PointMarkers;
 using System.Windows.Input;
 using Visualizations.Abstracts;
 
