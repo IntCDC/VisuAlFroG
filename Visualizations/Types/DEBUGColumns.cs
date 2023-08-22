@@ -36,8 +36,6 @@ namespace Visualizations
 {
     namespace Types
     {
-
-
         public class SelectedStrokePaletteProvider : IStrokePaletteProvider
         {
             readonly Color _selected_stroke = Colors.Red;

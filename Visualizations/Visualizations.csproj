@@ -121,8 +121,8 @@
     <Compile Include="Management\ServiceManager.cs" />
     <Compile Include="Management\WindowManager.cs" />
     <Compile Include="Types\AbstractVisualization.cs" />
-    <Compile Include="Types\DEBUG\DEBUGColumns.cs" />
-    <Compile Include="Types\DEBUG\DEBUGLines.cs" />
+    <Compile Include="Types\DEBUGColumns.cs" />
+    <Compile Include="Types\DEBUGLines.cs" />
     <Compile Include="VisualizationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

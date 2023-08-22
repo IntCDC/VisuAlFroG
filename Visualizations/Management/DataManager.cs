@@ -151,7 +151,6 @@ namespace Visualizations
                     return;
                 }
                 string property_name = e.PropertyName;
-                Log.Default.Msg(Log.Level.Debug, "Property Changed: " + property_name);
 
                 using (_data_series.SuspendUpdates())
                 {
@@ -161,7 +160,6 @@ namespace Visualizations
                         _data_series.Update(i, _data_series[i], _data_series.Metadata[i]);
                     }
                 }
-
             }
 
 
