@@ -70,9 +70,11 @@ namespace Interface
             /// </summary>
             /// <param name="DA"> The DA object can be used to retrieve data from input parameters and 
             /// to store data in output parameters.</param>
-            protected override void SolveInstance(IGH_DataAccess DA)
+            protected override void SolveInstance(IGH_DataAccess DataAccess)
             {
                 _timer.Start();
+
+                // Window -----------------------------------------------------
 
                 // Lazy init required!
                 if (_window == null)
@@ -86,10 +88,11 @@ namespace Interface
                 _window.Show();
 
 
+                // Data -------------------------------------------------------
 
                 // Read input data
                 var input_data = new GHData_Type();
-                if (!DA.GetDataTree(0, out input_data))
+                if (!DataAccess.GetDataTree(0, out input_data))
                 {
                     _runtimemessages.Add(Log.Level.Error, "Missing input data");
                     return;
@@ -100,16 +103,39 @@ namespace Interface
                 _window.InputData(ref input_data_converted);
 
 
-
                 // Write output data
                 /// TODO Do not read input data if output data triggers reloading?
                 if (output_data != null)
                 {
-                    DA.SetDataTree(0, output_data);
+                    DataAccess.SetDataTree(0, output_data);
                     output_data = null;
                 }
 
 
+                // Misc -------------------------------------------------------
+
+                /*
+                // Provide wrappers for DataAccess.S/GetDataTree, DataAccess.S/GetDataList, and DataAccess.S/GetData
+                // Access all input paramters
+                foreach (var input_param in Params.Input)
+                {
+                    _runtimemessages.Add(Log.Level.Warn, "Input Paramter Name: " + input_param.Name + " | Type: " + input_param.Type.ToString());
+                    Tuple<DataType, Get-Delegate>
+                }
+                // Access all ouput paramters
+                foreach (var output_param in Params.Output)
+                {
+                    _runtimemessages.Add(Log.Level.Warn, "Input Paramter Name: " + output_param.Name + " | Type: " + output_param.Type.ToString());
+                    Tuple<DataType, Set-Delegate>
+                }
+
+
+                // string gh_document_filepath = OnPingDocument().FilePath;
+                // OnPingDocument().FilePathChanged += this.FilePathChangedEvent
+                */
+
+
+                // Log --------------------------------------------------------
 
                 // DEBUG
                 _exec_count++;

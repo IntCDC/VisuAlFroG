@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using Core.Utilities;
 using Core.Abstracts;
-using Core.GUI;
 using Visualizations.Types;
 using System.Reflection;
 using System.Windows;
+using SciChart.Core.Extensions;
+using SciChart.Charting.Visuals;
+using Core.GUI;
 
 
 
@@ -18,8 +20,8 @@ using ContentRegister_Type = System.Collections.Generic.List<System.Type>;
 using AvailableContent_Type = System.Tuple<string, bool, bool, System.Type>;
 // Parameters: <name, available, is-multi-instance, type>
 using AvailableContentList_Type = System.Collections.Generic.List<System.Tuple<string, bool, bool, System.Type>>;
-using SciChart.Core.Extensions;
-using SciChart.Charting.Visuals;
+using static Visualizations.Management.DataManager;
+using Visualizations.Abstracts;
 
 
 /*
@@ -36,15 +38,24 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public override bool Initialize()
+            public bool Initialize(RequestDataCallback_Delegate request_data_callback)
             {
                 if (_initilized)
                 {
                     Terminate();
                 }
+                if (request_data_callback == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing request data callback");
+                    return false;
+                }
+                _request_data_callback = request_data_callback;
 
-                RegisterContent(typeof(LogContent));
-                RegisterContent(typeof(TestVisualization));
+
+                register_content(typeof(LogContent));
+                register_content(typeof(DEBUGLines));
+                register_content(typeof(DEBUGColumns));
+
 
                 _initilized = true;
                 return _initilized;
@@ -120,6 +131,12 @@ namespace Visualizations
             {
                 var content_ids = new AvailableContentList_Type();
 
+                if (!_initilized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return content_ids;
+                }
+
                 // Loop over registered types
                 foreach (var c_data in _contents)
                 {
@@ -146,6 +163,12 @@ namespace Visualizations
             /// </summary>
             public string AttachContentCallback(string content_id, Type content_type, Grid content_element)
             {
+                if (!_initilized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return UniqueID.Invalid;
+                }
+
                 // Loop over registered types
                 if (_contents.ContainsKey(content_type))
                 {
@@ -154,8 +177,11 @@ namespace Visualizations
                     {
                         // Create new instance from type
                         var new_content = (AbstractContent)Activator.CreateInstance(content_type);
+                        if (new_content.GetType().BaseType.Name.StartsWith(typeof(AbstractVisualization).Name))
+                        {
+                            ((AbstractVisualization)new_content).SetRequestDataCallback(_request_data_callback);
+                        }
                         new_content.Create();
-
                         id = new_content.ID;
                         _contents[content_type].Add(id, new_content);
                     }
@@ -191,10 +217,11 @@ namespace Visualizations
             }
 
 
-            /* ------------------------------------------------------------------*/
-            // private variables
 
-            protected void RegisterContent(Type content_type)
+            /* ------------------------------------------------------------------*/
+            // private functions
+
+            private void register_content(Type content_type)
             {
                 // Check for required base type
                 Type base_name = content_type.BaseType;
@@ -230,6 +257,8 @@ namespace Visualizations
 
             // separate dict for each content type
             private Dictionary<Type, Dictionary<string, AbstractContent>> _contents = new Dictionary<Type, Dictionary<string, AbstractContent>>();
+
+            private DataManager.RequestDataCallback_Delegate _request_data_callback = null;
 
         }
     }

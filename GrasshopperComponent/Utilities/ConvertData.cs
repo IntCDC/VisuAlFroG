@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 using System.Windows.Media.Animation;
 using Grasshopper.Kernel.Special;
 using Core.Utilities;
-
-
-
-using AbstractData_Type = System.Collections.Generic.List<System.Collections.Generic.List<double>>;
-using GHData_Type = Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.IGH_Goo>;
 using Grasshopper.Kernel.Types;
 using System.Globalization;
 using Grasshopper.Kernel.Data;
 
 
+
+using AbstractData_Type = System.Collections.Generic.List<System.Collections.Generic.List<double>>;
+using GHData_Type = Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.IGH_Goo>;
+
+
 /*
- * Global Messages Buffer 
+ * Convert Data from and to Grasshopper data format 
  * 
  */
 namespace GrasshopperComponent

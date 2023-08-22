@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Windows.Controls;
 using Core.Abstracts;
-using Core.GUI;
 using Core.Utilities;
+using Core.GUI;
 
 
 

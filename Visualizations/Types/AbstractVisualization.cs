@@ -3,6 +3,8 @@ using System.Runtime.Remoting.Contexts;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Collections.Generic;
+using Core.Abstracts;
+using Visualizations.Management;
 
 
 
@@ -10,7 +12,7 @@ using System.Collections.Generic;
  * Abstract Visualization 
  * 
  */
-namespace Core
+namespace Visualizations
 {
     namespace Abstracts
     {
@@ -29,14 +31,17 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
+            public void SetRequestDataCallback(DataManager.RequestDataCallback_Delegate request_data_callback)
+            {
+                _request_data_callback = request_data_callback;
+            }
 
 
 
             /* ------------------------------------------------------------------*/
-            // protected variables
+            // private variables
 
-
-
+            protected DataManager.RequestDataCallback_Delegate _request_data_callback = null;
         }
     }
 }

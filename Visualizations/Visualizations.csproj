@@ -115,11 +115,14 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interaction\Selection\PointSelection.cs" />
     <Compile Include="Management\ContentManager.cs" />
     <Compile Include="Management\DataManager.cs" />
     <Compile Include="Management\ServiceManager.cs" />
     <Compile Include="Management\WindowManager.cs" />
-    <Compile Include="Types\TestVisualization.cs" />
+    <Compile Include="Types\AbstractVisualization.cs" />
+    <Compile Include="Types\DEBUG\DEBUGColumns.cs" />
+    <Compile Include="Types\DEBUG\DEBUGLines.cs" />
     <Compile Include="VisualizationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -128,6 +131,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Interaction\Filtering\" />
     <Folder Include="Types\Histrogram\" />
     <Folder Include="Types\ParallelCoordinatesPlot%28PCP%29\" />
     <Folder Include="Types\ScatterPlotMatrices%28SPLOM%29\" />

@@ -13,7 +13,6 @@ using Core.Utilities;
 using Core.Abstracts;
 using EntityFrameworkDatabase;
 using System.Windows.Controls;
-using Core.GUI;
 using Visualizations.Types;
 
 
@@ -43,8 +42,8 @@ namespace Visualizations
                 _datamanager.Terminate();
             }
 
-            bool initilized = _contentmanager.Initialize();
-            initilized &= _datamanager.Initialize();
+            bool initilized = _datamanager.Initialize();
+            initilized &= _contentmanager.Initialize(_datamanager.RequestDataCallback());
 
             // Check for services the contents rely on
             var depending_services = _contentmanager.DependingServices();

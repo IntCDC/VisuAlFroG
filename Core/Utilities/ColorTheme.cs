@@ -5,9 +5,8 @@ using System.Windows.Media.Imaging;
 using System;
 using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
-using Core.Utilities;
 using System.Windows.Documents;
-using static Core.Utilities.WorkingDirectory;
+using Core.Utilities;
 
 
 
@@ -17,7 +16,7 @@ using static Core.Utilities.WorkingDirectory;
  */
 namespace Core
 {
-    namespace GUI
+    namespace Utilities
     {
         public class ColorTheme
         {
@@ -131,7 +130,7 @@ namespace Core
                 {
                     Setter setter_icon = new Setter();
                     setter_icon.Property = MenuItem.IconProperty;
-                    setter_icon.Value = ImageHelper.ImageFromFile(Locations.MenuIcons, icon_filename);
+                    setter_icon.Value = ImageHelper.ImageFromFile(WorkingDirectory.Locations.MenuIcons, icon_filename);
                     style.Setters.Add(setter_icon);
                 }
                 Setter setter_foreground = new Setter();

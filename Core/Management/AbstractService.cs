@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
-
 using Core.Utilities;
 
 
@@ -31,13 +30,20 @@ namespace Core
 
 
         // ABSTRACT CLASS
-        public abstract class AbstractService : IAbstractService 
+        public abstract class AbstractService : IAbstractService
         {
 
             /* ------------------------------------------------------------------*/
             // abstract functions
 
-            public abstract bool Initialize();
+            /// <summary>
+            /// If derived class requires additional data on initialization (declaring Initialize taking parameter(s)), 
+            /// throw error when method of base class is called instead.
+            /// </summary>
+            public virtual bool Initialize()
+            {
+                throw new InvalidOperationException("Call Initialize method of derived class");
+            }
 
 
             public abstract bool Execute();

@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Core.Utilities;
-using Core.GUI;
 using System.Windows.Documents;
 using System;
 using System.Diagnostics;

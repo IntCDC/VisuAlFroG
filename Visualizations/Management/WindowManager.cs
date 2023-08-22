@@ -11,6 +11,7 @@ using System.Runtime.Remoting.Contexts;
 using Visualizations.Types;
 
 
+
 using ContentCallbacks = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.RequestContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
 
 
@@ -29,44 +30,31 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public override bool Initialize()
+            public bool Initialize(ContentCallbacks content_callbacks, Grid parent_content)
             {
                 if (_initilized)
                 {
                     Terminate();
                 }
-                if (_parent_content == null)
+                if (content_callbacks == null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Missing parent content element, call RegisterContentElement beforehand");
+                    Log.Default.Msg(Log.Level.Error, "Missing content callbacks");
                     return false;
                 }
-                if (_content_callbacks == null)
+                if (parent_content == null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Missing content callbacks, call RegisterContentCallbacks beforehand");
+                    Log.Default.Msg(Log.Level.Error, "Missing parent content element");
                     return false;
                 }
-
-                bool initilized = true;
+                _content_callbacks = content_callbacks;
+                _parent_content = parent_content;
 
                 _window_root = new WindowBranch();
                 _content_root = _window_root.CreateRoot(_content_callbacks);
-                initilized &= (_content_root != null);
-
+                bool initilized = (_content_root != null);
 
                 _initilized = initilized;
                 return _initilized;
-            }
-
-
-            public void RegisterContentCallbacks(ContentCallbacks content_callbacks)
-            {
-                _content_callbacks = content_callbacks;
-            }
-
-
-            public void RegisterContentElement(Grid parent_content)
-            {
-                _parent_content = parent_content;
             }
 
 
@@ -119,17 +107,17 @@ namespace Visualizations
                         var child1 = _window_root.Children.Item1;
                         if (child1 != null)
                         {
-                            if (child1.Split(AbstractWindow.SplitOrientation.Vertical, AbstractWindow.ChildLocation.Top_Left, 0.75))
+                            if (child1.Split(AbstractWindow.SplitOrientation.Vertical, AbstractWindow.ChildLocation.Top_Left, 0.5))
                             {
                                 var child11 = child1.Children.Item1;
                                 if (child11 != null)
                                 {
-                                    child11.Leaf.AttachContent(UniqueID.Invalid, typeof(TestVisualization));
+                                    child11.Leaf.AttachContent(UniqueID.Invalid, typeof(DEBUGLines));
                                 }
                                 var child12 = child1.Children.Item2;
                                 if (child12 != null)
                                 {
-                                    // leave empty ...
+                                    child12.Leaf.AttachContent(UniqueID.Invalid, typeof(DEBUGColumns));
                                 }
                             }
                         }

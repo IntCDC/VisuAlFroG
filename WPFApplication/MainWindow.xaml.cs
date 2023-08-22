@@ -49,7 +49,6 @@ namespace Frontend
             /// </summary>
             public MainWindow() : this("[detached] Visualization Framework for Grasshopper (VisFroG)", false) { }
 
-
             public MainWindow(string app_name, bool soft_close)
             {
                 _soft_close = soft_close;
@@ -87,7 +86,7 @@ namespace Frontend
                 }
                 else
                 {
-                    Log.Default.Msg(Log.Level.Error, "Mising input data callback");
+                    Log.Default.Msg(Log.Level.Error, "Missing input data callback");
                 }
             }
 
@@ -96,7 +95,7 @@ namespace Frontend
             // protected functions
 
             /// <summary>
-            /// Soft close is used when called from interface (= Grasshopper).
+            /// Soft close is used when called from interface (= Grasshopper), see CTOR
             /// Only change visibility and abort closing for being able to restore closed window
             /// </summary>
             protected override void OnClosing(CancelEventArgs cancel_args)
@@ -138,19 +137,17 @@ namespace Frontend
                 // CompositionTarget.Rendering += once_per_frame;
 
 
+                // Initialize managers
+                bool initilized = _vismanager.Initialize();
+                initilized &= _winmanager.Initialize(_vismanager.GetContentCallbacks(), _subwindows_element);
+
+
                 // Get and/or register required external data
                 _menubar.RegisterCloseCallback(this.Close);
                 _menubar.RegisterContentElement(_menubar_element);
 
-                _winmanager.RegisterContentCallbacks(_vismanager.GetContentCallbacks());
-                _winmanager.RegisterContentElement(_subwindows_element);
-
                 _inputdata_callback = _vismanager.GetInputDataCallback();
 
-
-                // Initialize managers
-                bool initilized = _vismanager.Initialize();
-                initilized &= _winmanager.Initialize();
 
 
                 _timer.Stop();

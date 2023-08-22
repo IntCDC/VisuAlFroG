@@ -3,8 +3,8 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using Core.Utilities;
 using System.Runtime.Remoting.Contexts;
-using Core.GUI;
 using System.Security.Cryptography;
+using System.Windows.Data;
 
 
 

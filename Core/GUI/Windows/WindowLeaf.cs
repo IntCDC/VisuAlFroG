@@ -3,7 +3,6 @@ using System.Runtime.Remoting.Contexts;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-
 using Core.Abstracts;
 using Core.Utilities;
 
