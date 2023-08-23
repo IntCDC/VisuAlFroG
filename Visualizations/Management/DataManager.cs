@@ -73,7 +73,7 @@ namespace Visualizations
                 for (int i = 0; i < yValues.Length; i++)
                 {
                     // DataSeries for appending data
-                    var selector = new SelectedPointMetadata() { IsSelected = false };
+                    var selector = new SelectedPointMetadata() { Index = i, IsSelected = false };
                     selector.PropertyChanged += SelectionChanged;
                     _data_series.Append(yValues[i], selector);
                 }
@@ -146,19 +146,16 @@ namespace Visualizations
             protected void SelectionChanged(object sender, PropertyChangedEventArgs e)
             {
                 var sender_selection = sender as SelectedPointMetadata;
-                if (sender_selection != null)
+                if (sender_selection == null)
                 {
                     return;
                 }
                 string property_name = e.PropertyName;
 
+                int i = sender_selection.Index;
                 using (_data_series.SuspendUpdates())
                 {
-                    var data_count = _data_series.Count;
-                    for (int i = 0; i < data_count; i++)
-                    {
-                        _data_series.Update(i, _data_series[i], _data_series.Metadata[i]);
-                    }
+                    _data_series.Update(i, _data_series[i], _data_series.Metadata[i]);
                 }
             }
 

@@ -13,6 +13,8 @@ namespace Visualizations
         {
             public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
+            public int Index { get; set; }
+
             public bool IsSelected
             {
                 get
@@ -25,7 +27,7 @@ namespace Visualizations
                     _selected = value;
                     if (call_property_change)
                     {
-                        PropertyChanged(IsSelected, new System.ComponentModel.PropertyChangedEventArgs("IsSelected"));
+                        PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("IsSelected"));
                     }
                 }
             }
