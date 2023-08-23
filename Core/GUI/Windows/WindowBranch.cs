@@ -6,10 +6,6 @@ using Core.Abstracts;
 
 
 
-using ContentCallbacks = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.RequestContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
-using System.Diagnostics.Eventing.Reader;
-
-
 /*
  * Window Branch
  * 
@@ -29,7 +25,7 @@ using System.Diagnostics.Eventing.Reader;
  */
 namespace Core
 {
-    namespace GUI
+    namespace Utilities
     {
         public class WindowBranch : AbstractWindow
         {
@@ -68,7 +64,7 @@ namespace Core
             /// <summary>
             ///  Content callbacks are piped to each leaf where they are used
             /// </summary>
-            public Grid CreateRoot(ContentCallbacks content_callbacks)
+            public Grid CreateRoot(ContentCallbacks_Type content_callbacks)
             {
                 if (content_callbacks == null)
                 {
@@ -211,7 +207,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private functions
 
-            private void add_leafchild(WindowBranch parent_branch, ContentCallbacks content_callbacks, Grid grid, WindowLeaf child_leaf)
+            private void add_leafchild(WindowBranch parent_branch, ContentCallbacks_Type content_callbacks, Grid grid, WindowLeaf child_leaf)
             {
                 _parent_is_root = false;
                 _parent_branch = parent_branch;

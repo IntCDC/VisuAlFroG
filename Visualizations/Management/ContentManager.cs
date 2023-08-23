@@ -12,16 +12,9 @@ using System.Windows;
 using SciChart.Core.Extensions;
 using SciChart.Charting.Visuals;
 using Core.GUI;
-
-
-
-using ContentRegister_Type = System.Collections.Generic.List<System.Type>;
-// Parameters: <name, available, is-multi-instance, type>
-using AvailableContent_Type = System.Tuple<string, bool, bool, System.Type>;
-// Parameters: <name, available, is-multi-instance, type>
-using AvailableContentList_Type = System.Collections.Generic.List<System.Tuple<string, bool, bool, System.Type>>;
-using static Visualizations.Management.DataManager;
 using Visualizations.Abstracts;
+using Visualizations.Management;
+
 
 
 /*
@@ -38,7 +31,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public bool Initialize(RequestDataCallback_Delegate request_data_callback)
+            public bool Initialize(DataManager.RequestDataCallback_Delegate request_data_callback)
             {
                 if (_initilized)
                 {
@@ -96,6 +89,9 @@ namespace Visualizations
             }
 
 
+            /// <summary>
+            ///  Returns distinct list of vaild services required by the registered contents
+            /// </summary>
             public List<Type> DependingServices()
             {
                 var depending_services = new List<Type>();
@@ -109,9 +105,17 @@ namespace Visualizations
 
                         // Create temporary instance of content
                         var tmp_content = (AbstractContent)Activator.CreateInstance(c_type);
-                        depending_services.AddRange(tmp_content.DependingServices);
+                        var lservice_types = tmp_content.DependingServices;
+                        foreach (Type lservice_type in lservice_types)
+                        {
+                            // Only consider valid services
+                            if ((lservice_type != null) && has_basetype(lservice_type, typeof(AbstractService)))
+                            {
+                                depending_services.Add(lservice_type);
+                            }
+                        }
                     }
-                    // Removing duplicates
+                    // Remove duplicates
                     depending_services = depending_services.Distinct().ToList();
                 }
                 else
@@ -177,7 +181,7 @@ namespace Visualizations
                     {
                         // Create new instance from type
                         var new_content = (AbstractContent)Activator.CreateInstance(content_type);
-                        if (new_content.GetType().BaseType.Name.StartsWith(typeof(AbstractVisualization).Name))
+                        if (has_basetype(new_content.GetType(), typeof(AbstractVisualization)))
                         {
                             ((AbstractVisualization)new_content).SetRequestDataCallback(_request_data_callback);
                         }
@@ -224,18 +228,18 @@ namespace Visualizations
             private void register_content(Type content_type)
             {
                 // Check for required base type
-                Type base_name = content_type.BaseType;
-                string required_basetype = typeof(AbstractContent).Name;
+                Type type = content_type;
+                Type required_basetype = typeof(AbstractContent);
                 bool valid_type = false;
-                while (!base_name.Name.StartsWith(typeof(object).Name))
+                while (!has_basetype(type, typeof(object)))
                 {
-                    if (base_name.Name.StartsWith(required_basetype))
+                    if (has_basetype(type, required_basetype))
                     {
                         valid_type = true;
                         break;
                     }
-                    base_name = base_name.BaseType;
-                    if (base_name == null)
+                    type = type.BaseType;
+                    if (type == null)
                     {
                         break;
                     }
@@ -243,12 +247,18 @@ namespace Visualizations
                 if (valid_type)
                 {
                     _contents.Add(content_type, new Dictionary<string, AbstractContent>());
-                    Log.Default.Msg(Log.Level.Info, "Registered Content: " + content_type.Name);
+                    Log.Default.Msg(Log.Level.Info, "Registered content type: " + content_type.Name);
                 }
                 else
                 {
-                    Log.Default.Msg(Log.Level.Error, "Incompatible content type: " + base_name);
+                    Log.Default.Msg(Log.Level.Error, "Incompatible content type: " + content_type.Name);
                 }
+            }
+
+
+            bool has_basetype(Type check_type, Type reference_base_type)
+            {
+                return (check_type.BaseType == reference_base_type);
             }
 
 

@@ -12,9 +12,6 @@ using Visualizations.Types;
 
 
 
-using ContentCallbacks = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.RequestContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
-
-
 /*
  * Window Manager
  * 
@@ -30,7 +27,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public bool Initialize(ContentCallbacks content_callbacks, Grid parent_content)
+            public bool Initialize(ContentCallbacks_Type content_callbacks, Grid parent_content)
             {
                 if (_initilized)
                 {
@@ -68,8 +65,8 @@ namespace Visualizations
 
                 _parent_content.Children.Add(_content_root);
 
-                load_inital_tree();
-                traverse_windows(_window_root, 0);
+                default_window_tree();
+                // traverse_windows(_window_root, 0);
 
                 return true;
             }
@@ -81,10 +78,8 @@ namespace Visualizations
                 if (_initilized)
                 {
                     _window_root = null;
-
-                    /// TODO Should be set in initialize
-                    //_content_callbacks = null;
-                    //_parent_content = null;
+                    _content_callbacks = null;
+                    _parent_content = null;
 
                     _initilized = false;
                 }
@@ -96,9 +91,9 @@ namespace Visualizations
             // private functions
 
             /// <summary>
-            /// DEBUG Load initial content tree
+            /// Load initial window tree
             /// </summary>
-            void load_inital_tree()
+            void default_window_tree()
             {
                 if (_window_root.Split(AbstractWindow.SplitOrientation.Horizontal, AbstractWindow.ChildLocation.Top_Left, 0.75))
                 {
@@ -147,7 +142,7 @@ namespace Visualizations
                 var position = branch.Position;
                 // Restore:
                 ///branch.Split(orientation, location, position);
-                Log.Default.Msg(Log.Level.Debug, "[" + depth.ToString() + "] Orientation: " + orientation.ToString() + " | Location: " + location.ToString() + " | Position: " + position.ToString());
+                //Log.Default.Msg(Log.Level.Debug, "[" + depth.ToString() + "] Orientation: " + orientation.ToString() + " | Location: " + location.ToString() + " | Position: " + position.ToString());
 
                 var leaf = branch.Leaf;
                 if (leaf != null)
@@ -155,7 +150,7 @@ namespace Visualizations
                     var attached_content = leaf.AttachedContent;
                     if (attached_content != null)
                     {
-                        Log.Default.Msg(Log.Level.Debug, "[" + depth.ToString() + "] Attached Content - ID: " + attached_content.Item1 + " | Type: " + attached_content.Item2.ToString());
+                        //Log.Default.Msg(Log.Level.Debug, "[" + depth.ToString() + "] Attached Content - ID: " + attached_content.Item1 + " | Type: " + attached_content.Item2.ToString());
                     }
                     // Restore: 
                     ///leaf.AttachContent(content_id, content_type);
@@ -178,7 +173,7 @@ namespace Visualizations
             private WindowBranch _window_root = null;
             private Grid _content_root = null;
 
-            private ContentCallbacks _content_callbacks = null;
+            private ContentCallbacks_Type _content_callbacks = null;
             private Grid _parent_content = null;
         }
     }

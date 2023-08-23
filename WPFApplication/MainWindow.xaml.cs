@@ -14,9 +14,6 @@ using Visualizations.Management;
 
 
 
-using AbstractData_Type = System.Collections.Generic.List<System.Collections.Generic.List<double>>;
-
-
 /*
  * Main WPF Application
  * 

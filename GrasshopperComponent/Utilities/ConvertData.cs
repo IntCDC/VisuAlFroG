@@ -9,11 +9,8 @@ using Core.Utilities;
 using Grasshopper.Kernel.Types;
 using System.Globalization;
 using Grasshopper.Kernel.Data;
+using GrasshopperComponent.Utilities;
 
-
-
-using AbstractData_Type = System.Collections.Generic.List<System.Collections.Generic.List<double>>;
-using GHData_Type = Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.IGH_Goo>;
 
 
 /*
@@ -27,7 +24,10 @@ namespace GrasshopperComponent
         public class ConvertData
         {
 
-            public static AbstractData_Type GH_to_List(ref GHData_Type input)
+            /* ------------------------------------------------------------------*/
+            // static functions
+
+            public static AbstractData_Type GH_to_List(ref GH_Structure<IGH_Goo> input)
             {
                 var output = new AbstractData_Type();
 
@@ -64,9 +64,9 @@ namespace GrasshopperComponent
             }
 
 
-            public static GHData_Type list_to_gh(ref AbstractData_Type input)
+            public static GH_Structure<IGH_Goo> list_to_gh(ref AbstractData_Type input)
             {
-                var ouptut = new GHData_Type();
+                var ouptut = new GH_Structure<IGH_Goo>();
 
                 int branch_index = 0;
                 foreach (var branch in input)

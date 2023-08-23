@@ -17,10 +17,6 @@ using Visualizations.Types;
 
 
 
-using ContentCallbacks = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.RequestContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
-using static Visualizations.Management.DataManager;
-
-
 /*
  * Visualization Management
  * 
@@ -42,18 +38,22 @@ namespace Visualizations
                 _datamanager.Terminate();
             }
 
-            bool initilized = _datamanager.Initialize();
-            initilized &= _contentmanager.Initialize(_datamanager.RequestDataCallback());
 
-            // Check for services the contents rely on
-            var depending_services = _contentmanager.DependingServices();
-            foreach (Type service_type in depending_services)
+            // Content Manager
+            bool initilized = _contentmanager.Initialize(_datamanager.RequestDataCallback());
+            var required_services = _contentmanager.DependingServices();
+
+            // Data Manager
+            initilized &= _datamanager.Initialize();
+
+            // Service Manager
+            foreach (Type service_type in required_services)
             {
-                // Create new instance from type
                 var new_service = (AbstractService)Activator.CreateInstance(service_type);
                 _servicemanager.AddService(new_service);
             }
             initilized &= _servicemanager.Initialize();
+
 
             _initilized = initilized;
             return _initilized;
@@ -90,13 +90,13 @@ namespace Visualizations
         }
 
 
-        public ContentCallbacks GetContentCallbacks()
+        public ContentCallbacks_Type GetContentCallbacks()
         {
-            return new ContentCallbacks(_contentmanager.ContentsCallback, _contentmanager.AttachContentCallback, _contentmanager.DetachContentCallback);
+            return new ContentCallbacks_Type(_contentmanager.ContentsCallback, _contentmanager.AttachContentCallback, _contentmanager.DetachContentCallback);
         }
 
 
-        public InputData_Delegate GetInputDataCallback()
+        public DataManager.InputData_Delegate GetInputDataCallback()
         {
             return _datamanager.InputDataCallback;
         }

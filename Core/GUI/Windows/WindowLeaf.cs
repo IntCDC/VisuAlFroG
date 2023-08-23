@@ -8,21 +8,13 @@ using Core.Utilities;
 
 
 
-// Parameters: <name, available, is-multi-instance, type>
-using AvailableContentList_Type = System.Collections.Generic.List<System.Tuple<string, bool, bool, System.Type>>;
-
-using ContentCallbacks = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.RequestContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
-
-using AttachedContent_Type = System.Tuple<string, System.Type>;
-
-
 /*
  * Window Leaf
  * 
  */
 namespace Core
 {
-    namespace GUI
+    namespace Utilities
     {
         public class WindowLeaf : AbstractWindow
         {
@@ -37,7 +29,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public WindowLeaf(WindowBranch parent_branch, bool parent_is_root, ContentCallbacks content_callbacks)
+            public WindowLeaf(WindowBranch parent_branch, bool parent_is_root, ContentCallbacks_Type content_callbacks)
             {
                 _parent_branch = parent_branch;
                 _parent_is_root = parent_is_root;

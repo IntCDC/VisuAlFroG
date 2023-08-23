@@ -87,6 +87,7 @@
     <Compile Include="Management\AbstractService.cs" />
     <Compile Include="Utilities\ColorTheme.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\TypeAliases.cs" />
     <Compile Include="Utilities\WorkingDirectory.cs" />
     <Compile Include="Utilities\GUIHelpers.cs" />
     <Compile Include="Utilities\Log.cs" />

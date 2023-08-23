@@ -23,7 +23,12 @@ using System.Linq;
 using SciChart.Charting.Visuals.PointMarkers;
 using System.Windows.Input;
 using Visualizations.Abstracts;
+using Visualizations.Interaction;
+using Visualizations.Management;
 
+
+
+using SciChartData_Type = SciChart.Charting.Model.DataSeries.UniformXyDataSeries<double>;
 
 
 /*
@@ -73,24 +78,11 @@ namespace Visualizations
                 wa.PointDurationFraction = 0.2;
                 render_series.SeriesAnimation = wa;
 
-                render_series.PointMarker = new EllipsePointMarker()
-                {
-                    Fill = Colors.Aquamarine,
-                    Width = 5.0,
-                    Height = 5.0
-                };
-
-                render_series.SelectedPointMarker = new EllipsePointMarker()
-                {
-                    Stroke = Colors.Red,
-                    StrokeThickness = 5,
-                    Fill = Color.FromArgb(0x00, 0x00, 0x00, 0x00),
-                    Width = 15.0,
-                    Height = 15.0
-                };
-
+                render_series.PointMarker = Selection_PointMarker.Default;
+                render_series.SelectedPointMarker = Selection_PointMarker.Selected;
 
                 _content.RenderableSeries.Add(render_series);
+
 
                 var xAxis = new NumericAxis() { AxisTitle = "Sample No", DrawMajorBands = false };
                 _content.XAxis = xAxis;
@@ -138,7 +130,7 @@ namespace Visualizations
 
 
 
-                render_series.DataSeries = _request_data_callback();
+                render_series.DataSeries = (SciChartData_Type)_request_data_callback(DataManager.Libraries.SciChart);
 
 
 

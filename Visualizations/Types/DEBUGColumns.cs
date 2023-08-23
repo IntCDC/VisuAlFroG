@@ -24,7 +24,12 @@ using SciChart.Charting.Visuals.PointMarkers;
 using System.Windows.Input;
 using SciChart.Charting.Visuals.PaletteProviders;
 using Visualizations.Abstracts;
+using Visualizations.Interaction;
+using Visualizations.Management;
 
+
+
+using SciChartData_Type = SciChart.Charting.Model.DataSeries.UniformXyDataSeries<double>;
 
 
 /*
@@ -35,22 +40,6 @@ namespace Visualizations
 {
     namespace Types
     {
-        public class SelectedStrokePaletteProvider : IStrokePaletteProvider
-        {
-            readonly Color _selected_stroke = Colors.Red;
-            readonly Color _default_stroke = Colors.White;
-
-            public void OnBeginSeriesDraw(IRenderableSeries rSeries) { }
-
-
-            public Color? OverrideStrokeColor(IRenderableSeries rSeries, int index, IPointMetadata metadata) {
-
-                return ((metadata != null) && (metadata.IsSelected)) ? _selected_stroke : _default_stroke;
-            }
-        }
-
-
-
         public class DEBUGColumns: AbstractVisualization
         {
 
@@ -92,7 +81,7 @@ namespace Visualizations
                 gradient.GradientStops.Add(gs2);
                 render_series.Fill = gradient;
 
-                render_series.PaletteProvider = new SelectedStrokePaletteProvider();
+                render_series.PaletteProvider = new Selection_StrokePaletteProvider();
                 render_series.StrokeThickness = 2;
 
                 var wa = new WaveAnimation();
@@ -148,7 +137,7 @@ namespace Visualizations
                 _content.Annotations.Add(textAnnotation);
 
 
-                render_series.DataSeries = _request_data_callback();
+                render_series.DataSeries = (SciChartData_Type)_request_data_callback(DataManager.Libraries.SciChart);
 
 
                 _content.ZoomExtents();

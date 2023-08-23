@@ -73,18 +73,26 @@ namespace Visualizations
 
             public void AddService(AbstractService service)
             {
-                Type service_type = service.GetType(); 
-                _services.Add(service_type, service);
-                Log.Default.Msg(Log.Level.Info, "Added Service: " + service_type.FullName);
+                Type service_type = service.GetType();
+                if (!_services.ContainsKey(service_type)) {
+                    _services.Add(service_type, service);
+                    Log.Default.Msg(Log.Level.Info, "Added Service: " + service_type.FullName);
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Service was already added: " + service_type.FullName);
+                }
             }
 
 
             public T GetService<T>() where T : AbstractService
             {
-                if (_services.ContainsKey(typeof(T)))
+                Type service_type = typeof(T);
+                if (_services.ContainsKey(service_type))
                 {
-                    return (T)_services[typeof(T)];
+                    return (T)_services[service_type];
                 }
+                Log.Default.Msg(Log.Level.Warn, "Unable to find service: " + service_type.FullName);
                 return null;
             }
 

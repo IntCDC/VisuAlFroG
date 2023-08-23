@@ -3,14 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Controls;
 using Core.Abstracts;
 using Core.Utilities;
-using Core.GUI;
 
-
-
-// Parameters: <name, available, is-multi-instance, type>
-using AvailableContentList_Type = System.Collections.Generic.List<System.Tuple<string, bool, bool, System.Type>>;
-
-using ContentCallbacks = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.RequestContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
 
 
 /*
@@ -58,7 +51,7 @@ namespace Core
 
             protected bool _parent_is_root = false;
             protected WindowBranch _parent_branch = null;
-            protected ContentCallbacks _content_callbacks = null;
+            protected ContentCallbacks_Type _content_callbacks = null;
         }
     }
 }

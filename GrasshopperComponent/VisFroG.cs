@@ -9,11 +9,9 @@ using System.Resources;
 using System.Linq;
 using static GH_IO.VersionNumber;
 using System.Collections.Generic;
+using Grasshopper.Kernel.Data;
+using Grasshopper.Kernel.Types;
 
-
-
-using AbstractData_Type = System.Collections.Generic.List<System.Collections.Generic.List<double>>;
-using GHData_Type = Grasshopper.Kernel.Data.GH_Structure<Grasshopper.Kernel.Types.IGH_Goo>;
 
 
 /*
@@ -91,7 +89,7 @@ namespace Interface
                 // Data -------------------------------------------------------
 
                 // Read input data
-                var input_data = new GHData_Type();
+                var input_data = new GH_Structure<IGH_Goo>();
                 if (!DataAccess.GetDataTree(0, out input_data))
                 {
                     _runtimemessages.Add(Log.Level.Error, "Missing input data");
@@ -168,7 +166,7 @@ namespace Interface
             // private variables
 
             private MainWindow _window = null;
-            private GHData_Type output_data = null;
+            private GH_Structure<IGH_Goo> output_data = null;
             private RuntimeMessages _runtimemessages = null;
 
             /// DEBUG
