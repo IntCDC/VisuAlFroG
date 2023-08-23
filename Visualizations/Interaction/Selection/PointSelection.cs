@@ -16,46 +16,9 @@ namespace Visualizations
 {
     namespace Interaction
     {
-        public class Selection_PointMetadata : SciChart.Charting.Model.DataSeries.IPointMetadata
-        {
-
-            /* ------------------------------------------------------------------*/
-            // public events
-
-            public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-
-
-            /* ------------------------------------------------------------------*/
-            // public properties
-
-            public int Index { get; set; }
-
-            public bool IsSelected
-            {
-                get
-                {
-                    return _selected;
-                }
-                set
-                {
-                    bool call_property_change = (_selected != value);
-                    _selected = value;
-                    if (call_property_change)
-                    {
-                        PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("IsSelected"));
-                    }
-                }
-            }
-
-
-            /* ------------------------------------------------------------------*/
-            // private variables
-
-            private bool _selected = false;
-        }
-
-
-
+        /// <summary>
+        /// SciChart specific
+        /// </summary>
         public class Selection_StrokePaletteProvider : IStrokePaletteProvider
         {
 
@@ -79,6 +42,9 @@ namespace Visualizations
 
 
 
+        /// <summary>
+        /// SciChart specific
+        /// </summary>
         public class Selection_PointMarker
         {
             /* ------------------------------------------------------------------*/

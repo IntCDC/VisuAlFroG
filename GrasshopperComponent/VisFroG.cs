@@ -78,7 +78,7 @@ namespace Interface
                 if (_window == null)
                 {
                     string app_name = base.Name + " (" + base.NickName + ")";
-                    _window = new MainWindow(app_name, true);
+                    _window = new MainWindow(app_name);
                     _window.ReloadInterfaceCallback(reload_instance);
                     _window.OutputDataCallback(retrieve_output_data);
                 }
@@ -88,25 +88,25 @@ namespace Interface
 
                 // Data -------------------------------------------------------
 
-                // Read input data
-                var input_data = new GH_Structure<IGH_Goo>();
-                if (!DataAccess.GetDataTree(0, out input_data))
+                if (_output_data != null)
                 {
-                    _runtimemessages.Add(Log.Level.Error, "Missing input data");
-                    return;
+                    // Write output data
+                    DataAccess.SetDataTree(0, _output_data);
+                    _output_data = null;
                 }
-                _runtimemessages.Add(Log.Level.Debug, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().FullName);
-                // Convert and pass on input data 
-                var input_data_converted = ConvertData.GH_to_List(ref input_data);
-                _window.InputData(ref input_data_converted);
-
-
-                // Write output data
-                /// TODO Do not read input data if output data triggers reloading?
-                if (output_data != null)
+                else
                 {
-                    DataAccess.SetDataTree(0, output_data);
-                    output_data = null;
+                    // Read input data
+                    var input_data = new GH_Structure<IGH_Goo>();
+                    if (!DataAccess.GetDataTree(0, out input_data))
+                    {
+                        _runtimemessages.Add(Log.Level.Error, "Missing input data");
+                        return;
+                    }
+                    _runtimemessages.Add(Log.Level.Debug, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().FullName);
+                    // Convert and pass on input data 
+                    var input_data_converted = ConvertData.GH_to_List(ref input_data);
+                    _window.InputData(ref input_data_converted);
                 }
 
 
@@ -155,9 +155,9 @@ namespace Interface
             }
 
 
-            public void retrieve_output_data(ref AbstractData_Type ouput_data)
+            public void retrieve_output_data(ref XYData_Type ouput_data)
             {
-                output_data = ConvertData.list_to_gh(ref ouput_data);
+                _output_data = ConvertData.list_to_gh(ref ouput_data);
                 reload_instance();
             }
 
@@ -166,7 +166,7 @@ namespace Interface
             // private variables
 
             private MainWindow _window = null;
-            private GH_Structure<IGH_Goo> output_data = null;
+            private GH_Structure<IGH_Goo> _output_data = null;
             private RuntimeMessages _runtimemessages = null;
 
             /// DEBUG

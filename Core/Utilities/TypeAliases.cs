@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using Core.Abstracts;
 
 
@@ -40,7 +41,7 @@ namespace Core
         }
 
 
-        public class AbstractData_Type : List<List<double>>
+        public class XYData_Type : List<List<double>>
         {
         }
     }

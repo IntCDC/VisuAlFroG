@@ -44,11 +44,12 @@ namespace Frontend
             /// Used for detached execution
             /// that use the old ID will partially fail during loading.
             /// </summary>
-            public MainWindow() : this("[detached] Visualization Framework for Grasshopper (VisFroG)", false) { }
+            public MainWindow() : this("[detached] Visualization Framework for Grasshopper (VisFroG)", true) { }
 
-            public MainWindow(string app_name, bool soft_close)
+            public MainWindow(string app_name, bool detached = false)
             {
-                _soft_close = soft_close;
+                _soft_close = !detached;
+                _detached = detached;
                 initialize(app_name);
                 execute();
             }
@@ -75,7 +76,7 @@ namespace Frontend
             /// <summary>
             /// Get input data from interface (= Grasshopper).
             /// </summary>
-            public void InputData(ref AbstractData_Type input_data)
+            public void InputData(ref XYData_Type input_data)
             {
                 if (_inputdata_callback != null)
                 {
@@ -142,9 +143,7 @@ namespace Frontend
                 // Get and/or register required external data
                 _menubar.RegisterCloseCallback(this.Close);
                 _menubar.RegisterContentElement(_menubar_element);
-
                 _inputdata_callback = _vismanager.GetInputDataCallback();
-
 
 
                 _timer.Stop();
@@ -169,6 +168,16 @@ namespace Frontend
                 bool executed = _vismanager.Execute();
                 executed &= _winmanager.Execute();
                 executed &= _menubar.Execute();
+
+
+                /// DEBUG Load sample data in detached mode ...
+                if (_detached)
+                {
+                    var sample_data = new XYData_Type();
+                    sample_data.Add(new List<double>() {1.0, 2.0, 5.0, 9.0, 6.0, 8.0, 2.0, 3.0, 3.0, 1.0, 5.0, 4.0, 6.0, 8.0, 7.0, 7.0, 2.0 });
+                    InputData(ref sample_data);
+                }
+
 
                 _timer.Stop();
                 return executed;
@@ -198,6 +207,7 @@ namespace Frontend
 
             private bool _initilized = false;
             private bool _soft_close = false;
+            private bool _detached = false;
 
             private VisualizationManager _vismanager = new VisualizationManager();
             private WindowManager _winmanager = new WindowManager();

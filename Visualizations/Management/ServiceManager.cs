@@ -28,12 +28,14 @@ namespace Visualizations
                     Terminate();
                 }
                 bool initilized = true;
+                _timer.Start();
 
                 foreach (var m in _services)
                 {
                     initilized &= m.Value.Initialize();
                 }
 
+                _timer.Stop();
                 _initilized = initilized;
                 return _initilized;
             }
@@ -46,11 +48,16 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return false;
                 }
+                _timer.Start();
+
                 bool executed = true;
+
                 foreach (var m in _services)
                 {
                     executed &= m.Value.Execute();
                 }
+
+                _timer.Stop();
                 return executed;
             }
 

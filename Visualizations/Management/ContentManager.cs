@@ -42,14 +42,15 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
                 }
-                _request_data_callback = request_data_callback;
+                _timer.Start();
 
+                _request_data_callback = request_data_callback;
 
                 register_content(typeof(LogContent));
                 register_content(typeof(DEBUGLines));
                 register_content(typeof(DEBUGColumns));
 
-
+                _timer.Stop();
                 _initilized = true;
                 return _initilized;
             }

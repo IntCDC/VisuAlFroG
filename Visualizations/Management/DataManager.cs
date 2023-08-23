@@ -8,6 +8,8 @@ using Visualizations.Interaction;
 using Visualizations.SciChartInterface;
 using Visualizations.WebAPI;
 using Visualizations.PythonInterface;
+using System.Windows.Markup;
+using SciChart.Data.Model;
 
 
 
@@ -40,12 +42,12 @@ namespace Visualizations
             /// <summary>
             /// Function provided by the data manager for passng on the inpout data to the visualizations
             /// </summary>
-            public delegate void InputData_Delegate(ref AbstractData_Type input_data);
+            public delegate void InputData_Delegate(ref XYData_Type input_data);
 
             /// <summary>
             /// Function provided by the interface (= Grasshopper) which allows pass output data to the interface
             /// </summary>
-            public delegate void OutputData_Delegate(ref AbstractData_Type ouput_data);
+            public delegate void OutputData_Delegate(ref XYData_Type ouput_data);
 
             /// <summary>
             /// Callback for visualizations to request suitable data
@@ -63,24 +65,16 @@ namespace Visualizations
                 {
                     Terminate();
                 }
+                _timer.Start();
+
                 bool initilized = true;
-
-
-                var y_values = new[] { 0.1, 0.2, 0.4, 0.8, 1.1, 1.5, 2.4, 4.6, 8.1, 11.7, 14.4, 16.0, 13.7, 10.1, 6.4, 3.5, 2.5, 1.4, 0.4, 0.1 };
-
 
                 // SciChart
                 var data = new SciChartData_Type();
                 data.SeriesName = "data_series";
-                for (int i = 0; i < y_values.Length; i++)
-                {
-                    var selector = new Selection_PointMetadata() { Index = i, IsSelected = false };
-                    selector.PropertyChanged += scichart_metadata_selection_changed;
-                    data.Append(y_values[i], selector);
-                }
-                _data_series.Add(Libraries.SciChart, data);
+                _library_data.Add(Libraries.SciChart, data);
 
-
+                _timer.Stop();
                 _initilized = initilized;
                 return _initilized;
             }
@@ -106,7 +100,7 @@ namespace Visualizations
                 bool terminated = true;
                 if (_initilized)
                 {
-                    foreach (var data in _data_series)
+                    foreach (var data in _library_data)
                     {
                         switch (data.Key)
                         {
@@ -119,7 +113,7 @@ namespace Visualizations
                                 ; break;
                         }
                     }
-                    _data_series.Clear();
+                    _library_data.Clear();
 
                     _initilized = false;
                 }
@@ -127,9 +121,52 @@ namespace Visualizations
             }
 
 
-            public void InputDataCallback(ref AbstractData_Type input_data)
+            public void InputDataCallback(ref XYData_Type input_data)
             {
-                _input_data = input_data;
+                _data_x.Clear();
+                _data_y.Clear();
+                _data_meta.Clear();
+
+
+                /// DEBUG Taking only first value row
+                var count_x = input_data.Count;
+                if (count_x == 0)
+                {
+                    return;
+                }
+                ///for (int x = 0; x < count_x; x++)
+                ///{
+                int x = 0;
+                var count_y = input_data[x].Count;
+                for (int y = 0; y < count_y; y++)
+                {
+                    _data_x.Add(y);
+                    _data_y.Add(input_data[x][y]);
+
+                    var metadata = new Metadata() { Index = y, IsSelected = false };
+                    metadata.PropertyChanged += metadata_changed;
+                    _data_meta.Add(metadata);
+                }
+                ///}
+
+                foreach (var data in _library_data)
+                {
+                    switch (data.Key)
+                    {
+                        case (Libraries.SciChart):
+                            var data_series = (SciChartData_Type)data.Value;
+                            data_series.Clear();
+                            for (int i = 0; i < _data_y.Count; i++)
+                            {
+                                data_series.Append(_data_y[i], _data_meta[i]); // _data_x[i], for XyDataSeries<double, double>
+                            }
+                            break;
+                        case (Libraries.d3):
+                            break;
+                        case (Libraries.Bokeh):
+                            ; break;
+                    }
+                }
             }
 
 
@@ -153,22 +190,21 @@ namespace Visualizations
                     return null;
                 }
 
-                if (_data_series.ContainsKey(library))
+                if (_library_data.ContainsKey(library))
                 {
-                    return _data_series[library];
+                    return _library_data[library];
                 }
                 else
                 {
                     Log.Default.Msg(Log.Level.Warn, "Requested data not available for library: " + library.ToString());
                 }
-
                 return null;
             }
 
 
-            private void scichart_metadata_selection_changed(object sender, PropertyChangedEventArgs e)
+            private void metadata_changed(object sender, PropertyChangedEventArgs e)
             {
-                var sender_selection = sender as Selection_PointMetadata;
+                var sender_selection = sender as Metadata;
                 if (sender_selection == null)
                 {
                     return;
@@ -176,10 +212,23 @@ namespace Visualizations
                 //string property_name = e.PropertyName; // == "IsSelected"
 
                 int i = sender_selection.Index;
-                var dataseries = (SciChartData_Type)_data_series[Libraries.SciChart];
+                var dataseries = (SciChartData_Type)_library_data[Libraries.SciChart];
                 using (dataseries.SuspendUpdates())
                 {
-                    dataseries.Update(i, dataseries[i], dataseries.Metadata[i]);
+                    dataseries.Update(i, _data_y[i], dataseries.Metadata[i]);
+                }
+
+
+                if (_outputdata_callback != null)
+                {
+                    var out_data = new XYData_Type();
+                    var list = new List<double>();
+                    foreach (var metadata in _data_meta)
+                    {
+                        list.Add(metadata.IsSelected ? 1.0 : 0.0);
+                    }
+                    out_data.Add(list);
+                    _outputdata_callback(ref out_data);
                 }
             }
 
@@ -189,9 +238,11 @@ namespace Visualizations
 
             private OutputData_Delegate _outputdata_callback = null;
 
-            private AbstractData_Type _input_data = null;
+            private List<double> _data_x = new List<double>();
+            private List<double> _data_y = new List<double>();
+            private List<Metadata> _data_meta = new List<Metadata>();
 
-            Dictionary<Libraries, object> _data_series = new Dictionary<Libraries, object>();
+            Dictionary<Libraries, object> _library_data = new Dictionary<Libraries, object>();
         }
     }
 }

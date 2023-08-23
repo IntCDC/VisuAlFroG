@@ -43,6 +43,8 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Error, "Missing parent content element");
                     return false;
                 }
+                _timer.Start();
+
                 _content_callbacks = content_callbacks;
                 _parent_content = parent_content;
 
@@ -50,6 +52,7 @@ namespace Visualizations
                 _content_root = _window_root.CreateRoot(_content_callbacks);
                 bool initilized = (_content_root != null);
 
+                _timer.Stop();
                 _initilized = initilized;
                 return _initilized;
             }

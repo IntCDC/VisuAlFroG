@@ -27,9 +27,9 @@ namespace GrasshopperComponent
             /* ------------------------------------------------------------------*/
             // static functions
 
-            public static AbstractData_Type GH_to_List(ref GH_Structure<IGH_Goo> input)
+            public static XYData_Type GH_to_List(ref GH_Structure<IGH_Goo> input)
             {
-                var output = new AbstractData_Type();
+                var output = new XYData_Type();
 
                 foreach (var branch in input.Branches)
                 {
@@ -64,7 +64,7 @@ namespace GrasshopperComponent
             }
 
 
-            public static GH_Structure<IGH_Goo> list_to_gh(ref AbstractData_Type input)
+            public static GH_Structure<IGH_Goo> list_to_gh(ref XYData_Type input)
             {
                 var ouptut = new GH_Structure<IGH_Goo>();
 

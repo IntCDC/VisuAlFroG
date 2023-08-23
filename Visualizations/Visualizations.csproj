@@ -116,6 +116,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interaction\Metadata.cs" />
     <Compile Include="Interaction\Selection\PointSelection.cs" />
     <Compile Include="Management\ContentManager.cs" />
     <Compile Include="Management\DataManager.cs" />

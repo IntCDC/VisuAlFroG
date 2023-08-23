@@ -37,7 +37,7 @@ namespace Visualizations
                 _contentmanager.Terminate();
                 _datamanager.Terminate();
             }
-
+            _timer.Start();
 
             // Content Manager
             bool initilized = _contentmanager.Initialize(_datamanager.RequestDataCallback());
@@ -54,7 +54,7 @@ namespace Visualizations
             }
             initilized &= _servicemanager.Initialize();
 
-
+            _timer.Stop();
             _initilized = initilized;
             return _initilized;
         }
@@ -67,11 +67,13 @@ namespace Visualizations
                 Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                 return false;
             }
+            _timer.Start();
 
             bool executed = _servicemanager.Execute();
             executed &= _datamanager.Execute();
             executed &= _contentmanager.Execute();
 
+            _timer.Stop();
             return executed;
         }
 
