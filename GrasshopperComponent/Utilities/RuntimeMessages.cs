@@ -8,6 +8,7 @@ using Core.Utilities;
 using System.Diagnostics;
 using Grasshopper;
 using Grasshopper.Kernel;
+using static Core.Utilities.Log;
 
 
 
@@ -28,6 +29,7 @@ namespace GrasshopperComponent
             public RuntimeMessages(GH_Component ghcomponent)
             {
                 _parent = ghcomponent;
+                _messages = new List<(GH_RuntimeMessageLevel, string)>();
             }
 
 
@@ -55,6 +57,12 @@ namespace GrasshopperComponent
 
             public void Show()
             {
+                if (_parent == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing parent grasshopper component", new StackTrace(true));
+                    return;
+                }
+
                 _parent.ClearRuntimeMessages();
                 if (_messages.Count != 0)
                 {
@@ -70,8 +78,8 @@ namespace GrasshopperComponent
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private GH_Component _parent;
-            private List<(Grasshopper.Kernel.GH_RuntimeMessageLevel, string)> _messages = new List<(GH_RuntimeMessageLevel, string)>();
+            private GH_Component _parent = null;
+            private List<(Grasshopper.Kernel.GH_RuntimeMessageLevel, string)> _messages = null;
         }
     }
 }

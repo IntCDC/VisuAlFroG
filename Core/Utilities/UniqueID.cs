@@ -20,8 +20,8 @@ namespace Core
                 return Guid.NewGuid().ToString("N");
             }
 
-            public static readonly string Invalid = "invalid";
 
+            public static readonly string Invalid = "invalid";
         }
     }
 }

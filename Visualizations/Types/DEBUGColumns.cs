@@ -30,6 +30,8 @@ using Visualizations.Management;
 
 
 using SciChartData_Type = SciChart.Charting.Model.DataSeries.UniformXyDataSeries<double>;
+using SciChart.Charting3D.Model;
+using SciChart.Data.Model;
 
 
 /*
@@ -40,7 +42,7 @@ namespace Visualizations
 {
     namespace Types
     {
-        public class DEBUGColumns: AbstractVisualization
+        public class DEBUGColumns : AbstractVisualization
         {
 
             /* ------------------------------------------------------------------*/
@@ -60,16 +62,24 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
                 }
-
                 _timer.Start();
+
+                // Loading SciChartSurface for the first time takes some time ...
+                Log.Default.Msg(Log.Level.Debug, "Loading SciChartSurface ...");
+                _content = new SciChartSurface();
 
                 _content.Name = "SciChart_Columns_Test" + ID; // no spaces allowed
                 _content.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
                 _content.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
+                _content.ZoomExtents();
 
+
+                // Data Series -------------------------------------
                 var render_series = new FastColumnRenderableSeries();
                 render_series.Name = "column_series";
                 render_series.DataPointWidth = 0.5;
+                render_series.PaletteProvider = new Selection_StrokePaletteProvider();
+                render_series.StrokeThickness = 2;
 
                 var gradient = new LinearGradientBrush();
                 gradient.StartPoint = new Point(0.0, 0.0);
@@ -81,24 +91,37 @@ namespace Visualizations
                 gradient.GradientStops.Add(gs2);
                 render_series.Fill = gradient;
 
-                render_series.PaletteProvider = new Selection_StrokePaletteProvider();
-                render_series.StrokeThickness = 2;
-
+                /*
                 var wa = new WaveAnimation();
                 wa.AnimationDelay = new TimeSpan(0, 0, 0, 0, 200);
                 wa.Duration = new TimeSpan(0, 0, 1);
                 wa.PointDurationFraction = 0.2;
                 render_series.SeriesAnimation = wa;
+                */
+
+                render_series.DataSeries = (SciChartData_Type)_request_data_callback(DataManager.Libraries.SciChart);
 
                 _content.RenderableSeries.Add(render_series);
 
-                var xAxis = new NumericAxis() { AxisTitle = "Sample No", DrawMajorBands = false };
+
+                // Axis --------------------------------------------
+                var xAxis = new NumericAxis()
+                {
+                    AxisTitle = "Sample No",
+                    DrawMajorBands = false
+                };
                 _content.XAxis = xAxis;
 
-                var yAxis = new NumericAxis() { AxisTitle = "Value", GrowBy = new SciChart.Data.Model.DoubleRange(0, 0.1), DrawMajorBands = false };
+                var yAxis = new NumericAxis()
+                {
+                    AxisTitle = "Value",
+                    GrowBy = new SciChart.Data.Model.DoubleRange(0.2, 0.2),
+                    DrawMajorBands = false,
+                };
                 _content.YAxis = yAxis;
 
 
+                // Modifiers ---------------------------------------
                 var data_selection = new SciChart.Charting.ChartModifiers.DataPointSelectionModifier()
                 {
                     Name = "PointMarkersSelectionModifier",
@@ -124,23 +147,18 @@ namespace Visualizations
                     );
 
 
+                // Annotation --------------------------------------
                 var textAnnotation = new TextAnnotation()
                 {
                     Text = "Interaction:" + Environment.NewLine +
                             " Left Mouse -> Select / Box-Select" + Environment.NewLine +
                             "Mouse Wheel -> Zoom" + Environment.NewLine +
                             "Right Mouse -> Pan",
-                    X1 = 1.0,
+                    X1 = 6.0,
                     Y1 = 9.0
-
                 };
                 _content.Annotations.Add(textAnnotation);
 
-
-                render_series.DataSeries = (SciChartData_Type)_request_data_callback(DataManager.Libraries.SciChart);
-
-
-                _content.ZoomExtents();
 
                 _timer.Stop();
                 _created = true;
@@ -176,7 +194,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private SciChartSurface _content = new SciChartSurface();
+            private SciChartSurface _content = null;
         }
     }
 }

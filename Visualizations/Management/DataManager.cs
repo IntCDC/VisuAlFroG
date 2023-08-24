@@ -59,6 +59,15 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
+            public DataManager()
+            {
+                _data_x = new List<double>();
+                _data_y = new List<double>();
+                _data_meta = new List<Metadata>();
+                _library_data = new Dictionary<Libraries, object>();
+            }
+
+
             public override bool Initialize()
             {
                 if (_initilized)
@@ -210,7 +219,6 @@ namespace Visualizations
                     return;
                 }
                 //string property_name = e.PropertyName; // == "IsSelected"
-
                 int i = sender_selection.Index;
                 var dataseries = (SciChartData_Type)_library_data[Libraries.SciChart];
                 using (dataseries.SuspendUpdates())
@@ -218,7 +226,7 @@ namespace Visualizations
                     dataseries.Update(i, _data_y[i], dataseries.Metadata[i]);
                 }
 
-
+                // Send changed output data
                 if (_outputdata_callback != null)
                 {
                     var out_data = new XYData_Type();
@@ -234,15 +242,13 @@ namespace Visualizations
 
 
             /* ------------------------------------------------------------------*/
-            // private functions
+            // private variables
 
             private OutputData_Delegate _outputdata_callback = null;
-
-            private List<double> _data_x = new List<double>();
-            private List<double> _data_y = new List<double>();
-            private List<Metadata> _data_meta = new List<Metadata>();
-
-            Dictionary<Libraries, object> _library_data = new Dictionary<Libraries, object>();
+            private List<double> _data_x = null;
+            private List<double> _data_y = null;
+            private List<Metadata> _data_meta = null;
+            private Dictionary<Libraries, object> _library_data = null;
         }
     }
 }

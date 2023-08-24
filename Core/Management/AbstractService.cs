@@ -32,6 +32,14 @@ namespace Core
         // ABSTRACT CLASS
         public abstract class AbstractService : IAbstractService
         {
+            /* ------------------------------------------------------------------*/
+            // public functions
+
+            protected AbstractService()
+            {
+                _timer = new TimeBenchmark();
+            }
+
 
             /* ------------------------------------------------------------------*/
             // abstract functions
@@ -58,7 +66,7 @@ namespace Core
             protected bool _initilized = false;
 
             /// DEBUG
-            protected TimeBenchmark _timer = new TimeBenchmark();
+            protected TimeBenchmark _timer = null;
         }
     }
 }

@@ -20,13 +20,11 @@ namespace Core
     {
         public class ImageHelper
         {
-
             /* ------------------------------------------------------------------*/
             // static functions
 
             /// <summary>
             /// Returns ImageSource
-            /// (for Image return value see below)
             /// </summary>
             public static ImageSource ImageSourceFromFile(WorkingDirectory.Locations resource_location, string filename)
             {

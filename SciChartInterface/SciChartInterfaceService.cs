@@ -64,12 +64,6 @@ namespace Visualizations
                 _initilized = false;
                 return true;
             }
-
-
-            /* ------------------------------------------------------------------*/
-            // private variables
-
-
         }
     }
 }

@@ -48,7 +48,6 @@ namespace Core
             // protected variables
 
             protected Grid _content = null;
-
             protected bool _parent_is_root = false;
             protected WindowBranch _parent_branch = null;
             protected ContentCallbacks_Type _content_callbacks = null;

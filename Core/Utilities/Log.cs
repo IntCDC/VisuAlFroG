@@ -43,6 +43,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
+            // Create singelton when Log.Default is called frist
             public static Log Default
             {
                 get
@@ -57,6 +58,13 @@ namespace Core
                         return _instance;
                     }
                 }
+            }
+
+
+            public Log()
+            {
+                _messages = new List<MessageData>();
+                _listeners = new List<LogListener_Delegate>();
             }
 
 
@@ -141,8 +149,9 @@ namespace Core
 
             private static Log _instance = null;
             private static readonly object _padlock = new object();
-            private List<MessageData> _messages = new List<MessageData>();
-            private List<LogListener_Delegate> _listeners = new List<LogListener_Delegate>();
+
+            private List<MessageData> _messages = null;
+            private List<LogListener_Delegate> _listeners = null;
         }
     }
 

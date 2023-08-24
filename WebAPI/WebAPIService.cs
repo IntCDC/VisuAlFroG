@@ -83,6 +83,7 @@ namespace Visualizations
             public override bool Terminate()
             {
                 _client.Dispose();
+                _client = null;
 
                 _initilized = false;
                 return true;
@@ -92,9 +93,8 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private HttpClient _client = new HttpClient();
-            private string _base_address = "";
-
+            private HttpClient _client = null;
+            private string _base_address = null;
         }
     }
 }

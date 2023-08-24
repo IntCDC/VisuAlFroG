@@ -24,7 +24,15 @@ namespace Visualizations
                 /* ------------------------------------------------------------------*/
                 // public functions
 
-                public RequestController() { }
+                public RequestController()
+                {
+                    _requests = new Request[]
+                                    {
+                    new Request { Id = 1, Name = "r1" },
+                    new Request { Id = 2, Name = "r2" },
+                    new Request { Id = 3, Name = "r3" }
+                                    };
+                }
 
 
                 [Route("")]
@@ -68,15 +76,9 @@ namespace Visualizations
                 /* ------------------------------------------------------------------*/
                 // private varaiables
 
-                ///  DEBUG request data
-                private Request[] _requests = new Request[]
-                {
-                    new Request { Id = 1, Name = "r1" },
-                    new Request { Id = 2, Name = "r2" },
-                    new Request { Id = 3, Name = "r3" }
-                };
+                /// DEBUG 
+                private Request[] _requests = null;
             }
-
         }
     }
 }

@@ -21,6 +21,12 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
+            public ServiceManager()
+            {
+                _services = new Dictionary<Type, AbstractService>();
+            }
+
+
             public override bool Initialize()
             {
                 if (_initilized)
@@ -81,7 +87,8 @@ namespace Visualizations
             public void AddService(AbstractService service)
             {
                 Type service_type = service.GetType();
-                if (!_services.ContainsKey(service_type)) {
+                if (!_services.ContainsKey(service_type))
+                {
                     _services.Add(service_type, service);
                     Log.Default.Msg(Log.Level.Info, "Added Service: " + service_type.FullName);
                 }
@@ -107,7 +114,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private Dictionary<Type, AbstractService> _services = new Dictionary<Type, AbstractService>();
+            private Dictionary<Type, AbstractService> _services = null;
         }
     }
 }

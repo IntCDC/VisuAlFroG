@@ -40,6 +40,8 @@ namespace Interface
                 "Visual Analysis", "VisFroG")
             {
                 _runtimemessages = new RuntimeMessages(this);
+                _timer = new TimeBenchmark();
+                _exec_count = 0;
             }
 
 
@@ -171,7 +173,7 @@ namespace Interface
 
             /// DEBUG
             private int _exec_count = 0;
-            private TimeBenchmark _timer = new TimeBenchmark();
+            private TimeBenchmark _timer = null;
 
 
             /* ------------------------------------------------------------------*/

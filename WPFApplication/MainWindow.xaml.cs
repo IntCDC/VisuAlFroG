@@ -48,6 +48,9 @@ namespace Frontend
 
             public MainWindow(string app_name, bool detached = false)
             {
+                /// DEBUG get C# version, see compile output (C# Language Version 7.3)
+                // #error version
+
                 _soft_close = !detached;
                 _detached = detached;
                 initialize(app_name);
@@ -120,10 +123,12 @@ namespace Frontend
                     Log.Default.Msg(Log.Level.Warn, "Initialization should only be called once");
                     return false;
                 }
+                _timer = new TimeBenchmark();
                 _timer.Start();
 
-                /// DEBUG get C# version, see compile output
-                // #error version
+                _vismanager = new VisualizationManager();
+                _winmanager = new WindowManager();
+                _menubar = new MenuBar();
 
                 // Window setup
                 InitializeComponent();
@@ -174,7 +179,7 @@ namespace Frontend
                 if (_detached)
                 {
                     var sample_data = new XYData_Type();
-                    sample_data.Add(new List<double>() {1.0, 2.0, 5.0, 9.0, 6.0, 8.0, 2.0, 3.0, 3.0, 1.0, 5.0, 4.0, 6.0, 8.0, 7.0, 7.0, 2.0 });
+                    sample_data.Add(new List<double>() { 1.0, 2.0, 5.0, 9.0, 6.0, 8.0, 2.0, 3.0, 3.0, 1.0, 5.0, 4.0, 6.0, 8.0, 7.0, 7.0, 2.0 });
                     InputData(ref sample_data);
                 }
 
@@ -209,16 +214,16 @@ namespace Frontend
             private bool _soft_close = false;
             private bool _detached = false;
 
-            private VisualizationManager _vismanager = new VisualizationManager();
-            private WindowManager _winmanager = new WindowManager();
+            private VisualizationManager _vismanager = null;
+            private WindowManager _winmanager = null;
+            private MenuBar _menubar = null;
 
             private ReloadInterface_Delegate _reloadinterface_callback = null;
             private DataManager.OutputData_Delegate _outputdata_callback = null;
             private DataManager.InputData_Delegate _inputdata_callback = null;
 
-            private MenuBar _menubar = new MenuBar();
-
-            private TimeBenchmark _timer = new TimeBenchmark();
+            /// DEBUG
+            private TimeBenchmark _timer = null;
         }
     }
 }

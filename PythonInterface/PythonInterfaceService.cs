@@ -47,6 +47,7 @@ namespace Visualizations
                 PythonEngine.Initialize();
                 _python_threads = PythonEngine.BeginAllowThreads();
 
+                _script = new PythonScript();
                 if (_script.Initialize())
                 {
                     _script._StringID = DateTime.Now.ToLongTimeString();
@@ -98,6 +99,8 @@ namespace Visualizations
                     PythonEngine.EndAllowThreads(_python_threads);
                     PythonEngine.Shutdown();
 
+                    _script = null;
+
                     _initilized = false;
                 }
                 return true;
@@ -111,8 +114,7 @@ namespace Visualizations
             private IntPtr _python_threads;
 
             /// DEBUG
-            private PythonScript _script = new PythonScript();
-
+            private PythonScript _script = null;
         }
     }
 }

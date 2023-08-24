@@ -29,6 +29,14 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         // public functions
 
+        public VisualizationManager()
+        {
+            _servicemanager = new ServiceManager();
+            _contentmanager = new ContentManager();
+            _datamanager = new DataManager();
+        }
+
+
         public override bool Initialize()
         {
             if (_initilized)
@@ -113,9 +121,9 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         // private variables
 
-        private ServiceManager _servicemanager = new ServiceManager();
-        private ContentManager _contentmanager = new ContentManager();
-        private DataManager _datamanager = new DataManager();
+        private ServiceManager _servicemanager = null;
+        private ContentManager _contentmanager = null;
+        private DataManager _datamanager = null;
     }
 }
 

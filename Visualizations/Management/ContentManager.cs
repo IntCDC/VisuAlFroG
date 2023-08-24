@@ -31,6 +31,12 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
+            public ContentManager()
+            {
+                _contents = new Dictionary<Type, Dictionary<string, AbstractContent>>();
+            }
+
+
             public bool Initialize(DataManager.RequestDataCallback_Delegate request_data_callback)
             {
                 if (_initilized)
@@ -104,6 +110,8 @@ namespace Visualizations
                     {
                         Type c_type = c_data.Key;
 
+                        _timer.Start();
+
                         // Create temporary instance of content
                         var tmp_content = (AbstractContent)Activator.CreateInstance(c_type);
                         var lservice_types = tmp_content.DependingServices;
@@ -115,6 +123,8 @@ namespace Visualizations
                                 depending_services.Add(lservice_type);
                             }
                         }
+
+                        _timer.Stop();
                     }
                     // Remove duplicates
                     depending_services = depending_services.Distinct().ToList();
@@ -123,7 +133,6 @@ namespace Visualizations
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to requesting depending services");
                 }
-
                 return depending_services;
             }
 
@@ -267,11 +276,8 @@ namespace Visualizations
             // private variables
 
             // separate dict for each content type
-            private Dictionary<Type, Dictionary<string, AbstractContent>> _contents = new Dictionary<Type, Dictionary<string, AbstractContent>>();
-
+            private Dictionary<Type, Dictionary<string, AbstractContent>> _contents = null;
             private DataManager.RequestDataCallback_Delegate _request_data_callback = null;
-
         }
     }
-
 }

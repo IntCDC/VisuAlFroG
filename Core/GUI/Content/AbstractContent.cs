@@ -66,6 +66,7 @@ namespace Core
             public AbstractContent()
             {
                 _id = UniqueID.Generate();
+                _timer = new TimeBenchmark();
             }
 
 
@@ -110,8 +111,8 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private readonly string _id = UniqueID.Invalid;
-            protected TimeBenchmark _timer = new TimeBenchmark();
+            private readonly string _id = null;
+            protected TimeBenchmark _timer = null;
         }
     }
 }

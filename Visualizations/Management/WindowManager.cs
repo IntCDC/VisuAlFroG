@@ -175,7 +175,6 @@ namespace Visualizations
 
             private WindowBranch _window_root = null;
             private Grid _content_root = null;
-
             private ContentCallbacks_Type _content_callbacks = null;
             private Grid _parent_content = null;
         }

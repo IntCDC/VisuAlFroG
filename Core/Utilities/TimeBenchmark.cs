@@ -17,6 +17,13 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
+            public TimeBenchmark()
+            {
+                _started = false;
+                _watch = new System.Diagnostics.Stopwatch();
+            }
+
+
             public void Start()
             {
 #if DEBUG
@@ -46,8 +53,7 @@ namespace Core
             // private variables
 
             private bool _started = false;
-            private System.Diagnostics.Stopwatch _watch = new System.Diagnostics.Stopwatch();
-
+            private System.Diagnostics.Stopwatch _watch = null;
         }
     }
 }

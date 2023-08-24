@@ -76,8 +76,7 @@ namespace Visualizations
             // private variables
 
             private bool _initilized = false;
-            private string _source = "";
-
+            private string _source = null;
         }
 
     }

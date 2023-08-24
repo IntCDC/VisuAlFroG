@@ -292,7 +292,6 @@ namespace Core
 
             private Tuple<WindowBranch, WindowBranch> _children = null;
             private WindowLeaf _child_leaf = null;
-
             private SplitOrientation _orientation = SplitOrientation.None;
             private ChildLocation _location = ChildLocation.None;
         }

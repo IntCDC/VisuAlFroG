@@ -36,8 +36,12 @@ namespace Core
 
             public LogContent()
             {
+                _content = new ScrollViewer();
+                _textblock = new TextBlock();
+
                 Log.Default.RegisterListener(this.LogListener);
             }
+
 
             ~LogContent()
             {
@@ -112,8 +116,8 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private ScrollViewer _content = new ScrollViewer();
-            private TextBlock _textblock = new TextBlock();
+            private ScrollViewer _content = null;
+            private TextBlock _textblock = null;
         }
     }
 }

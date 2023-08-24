@@ -11,6 +11,16 @@ namespace Core
     {
         public class WorkingDirectory
         {
+            /* ------------------------------------------------------------------*/
+            // public types
+
+            public enum Locations
+            {
+                WorkingDirectory,
+                Resource,
+                MenuIcons,
+            }
+
 
             /* ------------------------------------------------------------------*/
             // static functions
@@ -39,13 +49,6 @@ namespace Core
                 return System.IO.Path.Combine(Utilities.WorkingDirectory.Path(), Utilities.WorkingDirectory.FileName(body, extension));
             }
 
-
-            public enum Locations
-            {
-                WorkingDirectory,
-                Resource,
-                MenuIcons,
-            }
 
             public static string ResourcePath(Locations resource, string filename)
             {
