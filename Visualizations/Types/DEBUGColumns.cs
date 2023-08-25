@@ -29,11 +29,6 @@ using Visualizations.Management;
 
 
 
-using SciChartData_Type = SciChart.Charting.Model.DataSeries.UniformXyDataSeries<double>;
-using SciChart.Charting3D.Model;
-using SciChart.Data.Model;
-
-
 /*
  * Test Visualization
  * 
@@ -42,21 +37,26 @@ namespace Visualizations
 {
     namespace Types
     {
-        public class DEBUGColumns : AbstractVisualization
+        public class DEBUGColumns : AbstractSciChartVisualization
         {
 
             /* ------------------------------------------------------------------*/
             // properties
 
             public override string Name { get { return "DEBUG Columns"; } }
-            public override List<Type> DependingServices { get { return new List<Type>() { typeof(SciChartInterfaceService) }; } }
 
 
             /* ------------------------------------------------------------------*/
             // public functions
 
+
             public override bool Create()
             {
+                if (_created)
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Content already created");
+                    return false;
+                }
                 if (_request_data_callback == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing request data callback");
@@ -64,15 +64,9 @@ namespace Visualizations
                 }
                 _timer.Start();
 
-                // Loading SciChartSurface for the first time takes some time ...
-                Log.Default.Msg(Log.Level.Debug, "Loading SciChartSurface ...");
-                _content = new SciChartSurface();
-
-                _content.Name = "SciChart_Columns_Test" + ID; // no spaces allowed
                 _content.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
                 _content.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
                 _content.ZoomExtents();
-
 
                 // Data Series -------------------------------------
                 var render_series = new FastColumnRenderableSeries();
@@ -100,8 +94,9 @@ namespace Visualizations
                 */
 
                 render_series.DataSeries = (SciChartData_Type)_request_data_callback(DataManager.Libraries.SciChart);
-
                 _content.RenderableSeries.Add(render_series);
+
+                _content.ZoomExtents();
 
 
                 // Axis --------------------------------------------
@@ -164,37 +159,11 @@ namespace Visualizations
                 _created = true;
                 return _created;
             }
-
-
-            public override bool Attach(Grid content_element)
-            {
-                if (!_created)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Creation of content required prior to execution");
-                    return false;
-                }
-
-                _content.ChartModifier.IsAttached = true;
-                content_element.Children.Add(_content);
-
-                _attached = true;
-                return true;
-            }
-
-
-            public override bool Detach()
-            {
-                // Required to release mouse handling
-                _content.ChartModifier.IsAttached = false;
-
-                return true;
-            }
-
-
-            /* ------------------------------------------------------------------*/
-            // private variables
-
-            private SciChartSurface _content = null;
         }
+
+
+        /* ------------------------------------------------------------------*/
+        // private variables
+
     }
 }

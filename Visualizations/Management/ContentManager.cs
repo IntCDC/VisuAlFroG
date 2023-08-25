@@ -175,12 +175,12 @@ namespace Visualizations
             /// Attach requested content to provided parent content element.
             /// >> Called by WindowLeaf
             /// </summary>
-            public string AttachContentCallback(string content_id, Type content_type, Grid content_element)
+            public Control AttachContentCallback(string content_id, Type content_type)
             {
                 if (!_initilized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return UniqueID.Invalid;
+                    return null;
                 }
 
                 // Loop over registered types
@@ -200,16 +200,14 @@ namespace Visualizations
                         _contents[content_type].Add(id, new_content);
                     }
 
-                    if (_contents[content_type][id].Attach(content_element))
-                    {
-                        return id;
-                    }
+                    return _contents[content_type][id].Attach();
+
                 }
                 else
                 {
                     Log.Default.Msg(Log.Level.Error, "Unregistered content type: " + content_type.ToString());
                 }
-                return UniqueID.Invalid;
+                return null;
             }
 
 
@@ -268,7 +266,22 @@ namespace Visualizations
 
             bool has_basetype(Type check_type, Type reference_base_type)
             {
-                return (check_type.BaseType == reference_base_type);
+                Type base_type = check_type;
+                bool valid_base_type = false;
+                while (base_type != typeof(object))
+                {
+                    if (base_type == reference_base_type)
+                    {
+                        valid_base_type = true;
+                        break;
+                    }
+                    base_type = base_type.BaseType;
+                    if (base_type == null)
+                    {
+                        break;
+                    }
+                }
+                return valid_base_type;
             }
 
 

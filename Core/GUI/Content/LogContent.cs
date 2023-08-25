@@ -37,6 +37,8 @@ namespace Core
             public LogContent()
             {
                 _content = new ScrollViewer();
+                _content.Name = ID;
+
                 _textblock = new TextBlock();
 
                 Log.Default.RegisterListener(this.LogListener);
@@ -51,6 +53,11 @@ namespace Core
 
             public override bool Create()
             {
+                if (_created)
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Content already created");
+                    return false;
+                }
                 _timer.Start();
 
                 _content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
@@ -70,19 +77,18 @@ namespace Core
             }
 
 
-            public override bool Attach(Grid content_element)
+            public override Control Attach()
             {
                 if (!_created)
                 {
                     Log.Default.Msg(Log.Level.Error, "Creation of content required prior to execution");
-                    return false;
+                    return null;
                 }
 
-                content_element.Background = ColorTheme.BackgroundBlack;
+                _content.Background = ColorTheme.BackgroundBlack;
 
-                content_element.Children.Add(_content);
                 _attached = true;
-                return true;
+                return _content;
             }
 
 

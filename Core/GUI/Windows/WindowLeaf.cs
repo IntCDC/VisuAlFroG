@@ -3,6 +3,7 @@ using System.Runtime.Remoting.Contexts;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+
 using Core.Abstracts;
 using Core.Utilities;
 
@@ -78,11 +79,24 @@ namespace Core
                 detach_content();
 
                 // Call RequestContent_Delegate
-                string updated_content_id = _content_callbacks.Item2(content_id, content_type, _content);
-                if (updated_content_id != UniqueID.Invalid)
+                var content_element = _content_callbacks.Item2(content_id, content_type);
+                if (content_element != null)
                 {
-                    _attached_content = new AttachedContent_Type(updated_content_id, content_type);
-                    return updated_content_id;
+                    var updated_content_id = content_element.Name;
+                    if (updated_content_id != UniqueID.Invalid)
+                    {
+                        _content.Children.Add(content_element);
+                        _attached_content = new AttachedContent_Type(updated_content_id, content_type);
+                        return updated_content_id;
+                    }
+                    else
+                    {
+                        Log.Default.Msg(Log.Level.Error, "Missing valid id of attached content element");
+                    }
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing content element to attach");
                 }
                 return UniqueID.Invalid;
             }

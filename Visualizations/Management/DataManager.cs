@@ -79,9 +79,9 @@ namespace Visualizations
                 bool initilized = true;
 
                 // SciChart
-                var data = new SciChartData_Type();
-                data.SeriesName = "data_series";
-                _library_data.Add(Libraries.SciChart, data);
+                var scichart_data = new SciChartData_Type();
+                scichart_data.SeriesName = "scichart_data-series";
+                _library_data.Add(Libraries.SciChart, scichart_data);
 
                 _timer.Stop();
                 _initilized = initilized;

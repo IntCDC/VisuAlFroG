@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Contexts;
 using System.Windows.Controls;
 
 using Core.Utilities;
@@ -37,7 +38,7 @@ namespace Core
 
             bool Create();
 
-            bool Attach(Grid content_element);
+            Control Attach();
 
             bool Detach();
         }
@@ -72,6 +73,16 @@ namespace Core
 
             public virtual bool Create()
             {
+                if (_created)
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Content already created");
+                    return false;
+                }
+                _timer.Start();
+                //_content.Name = ID;
+
+
+                _timer.Stop();
                 _created = true;
                 return true;
             }
@@ -80,17 +91,16 @@ namespace Core
             /// <summary>
             /// Attach content to provided content_element.
             /// </summary>
-            public virtual bool Attach(Grid content_element)
+            public virtual Control Attach()
             {
                 if (!_created)
                 {
                     Log.Default.Msg(Log.Level.Error, "Creation of content required prior to execution");
-                    return false;
+                    return null;
                 }
 
-                //content_element.Children.Add(_content);
-                _attached = true;
-                return true;
+                //_attached = true;
+                return null;
             }
 
 

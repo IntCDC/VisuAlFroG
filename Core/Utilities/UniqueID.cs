@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Windows.Markup;
 
 
 
@@ -17,11 +19,16 @@ namespace Core
 
             public static string Generate()
             {
-                return Guid.NewGuid().ToString("N");
+                var random = new Random();
+                string id = Guid.NewGuid().ToString("N");
+                const string letters = "abcdefghijklmnopqrstuvwxyz";
+                // Prepend letter to get valid WPF names
+                id = letters[random.Next(letters.Length)] + id;
+                return id;
             }
 
 
-            public static readonly string Invalid = "invalid";
+            public static string Invalid { get { return "invalid"; } }
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // properties
 
-            public override bool MultipleIntances
+            public sealed override bool MultipleIntances
             {
                 get { return true; }
             }

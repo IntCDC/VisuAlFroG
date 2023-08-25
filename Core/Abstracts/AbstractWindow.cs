@@ -22,7 +22,7 @@ namespace Core
 
             public delegate AvailableContentList_Type AvailableContents_Delegate();
 
-            public delegate string RequestContent_Delegate(string content_id, Type content_type, Grid content_element);
+            public delegate Control RequestContent_Delegate(string content_id, Type content_type);
 
             public delegate void DeleteContent_Delegate(string content_id);
 
