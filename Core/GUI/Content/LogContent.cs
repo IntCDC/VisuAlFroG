@@ -34,28 +34,39 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public LogContent()
+            public override bool Initialize()
             {
-                _content = new ScrollViewer();
-                _content.Name = ID;
+                if (_initilized)
+                {
+                    Terminate();
+                }
+                _timer.Start();
 
                 _textblock = new TextBlock();
-
+                _content = new ScrollViewer();
+                _content.Name = ID;
                 Log.Default.RegisterListener(this.LogListener);
-            }
 
-
-            ~LogContent()
-            {
-                Log.Default.UnRegisterListener(this.LogListener);
+                _timer.Stop();
+                _initilized = true;
+                if (_initilized)
+                {
+                    Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().Name);
+                }
+                return _initilized;
             }
 
 
             public override bool Create()
             {
+                if (!_initilized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return false;
+                }
                 if (_created)
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Content already created");
+                    Log.Default.Msg(Log.Level.Warn, "Content already created, skipping...");
                     return false;
                 }
                 _timer.Start();
@@ -79,6 +90,11 @@ namespace Core
 
             public override Control Attach()
             {
+                if (!_initilized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return null;
+                }
                 if (!_created)
                 {
                     Log.Default.Msg(Log.Level.Error, "Creation of content required prior to execution");
@@ -89,6 +105,20 @@ namespace Core
 
                 _attached = true;
                 return _content;
+            }
+
+
+            public override bool Terminate()
+            {
+                if (_initilized)
+                {
+                    _content = null;
+                    _textblock = null;
+                    Log.Default.UnRegisterListener(this.LogListener);
+
+                    _initilized = false;
+                }
+                return true;
             }
 
 

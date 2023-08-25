@@ -80,6 +80,8 @@
   <ItemGroup>
     <Compile Include="Abstracts\AbstractWindow.cs" />
     <Compile Include="Abstracts\AbstractContent.cs" />
+    <Compile Include="Abstracts\IAbstractContent.cs" />
+    <Compile Include="Abstracts\IAbstractService.cs" />
     <Compile Include="GUI\Content\MenuBar.cs" />
     <Compile Include="GUI\Windows\WindowBranch.cs" />
     <Compile Include="GUI\Windows\WindowLeaf.cs" />

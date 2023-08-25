@@ -10,6 +10,18 @@ using Core.Abstracts;
  * Web API Manager
  * 
  */
+/* TEST
+Execute:
+
+    bool received_response = false;
+    var response = _client.GetAsync(_base_address + "api/request").Result;
+    if (response != null)
+    {
+        Log.Default.Msg(Log.Level.Debug, response.ToString());
+        Log.Default.Msg(Log.Level.Debug, response.Content.ReadAsStringAsync().Result);
+        received_response = true;
+    }
+*/
 namespace Visualizations
 {
     namespace WebAPI
@@ -52,40 +64,15 @@ namespace Visualizations
             }
 
 
-            public override bool Execute()
-            {
-                if (!_initilized)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return false;
-                }
-                _timer.Start();
-
-
-
-                /// DEBUG
-                bool received_response = false;
-                var response = _client.GetAsync(_base_address + "api/request").Result;
-                if (response != null)
-                {
-                    Log.Default.Msg(Log.Level.Debug, response.ToString());
-                    Log.Default.Msg(Log.Level.Debug, response.Content.ReadAsStringAsync().Result);
-                    received_response = true;
-                }
-
-
-
-                _timer.Stop();
-                return received_response;
-            }
-
-
             public override bool Terminate()
             {
-                _client.Dispose();
-                _client = null;
+                if (_initilized)
+                {
+                    _client.Dispose();
+                    _client = null;
 
-                _initilized = false;
+                    _initilized = false;
+                }
                 return true;
             }
 

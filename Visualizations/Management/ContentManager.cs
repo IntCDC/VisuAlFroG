@@ -31,12 +31,6 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public ContentManager()
-            {
-                _contents = new Dictionary<Type, Dictionary<string, AbstractContent>>();
-            }
-
-
             public bool Initialize(DataManager.RequestDataCallback_Delegate request_data_callback)
             {
                 if (_initilized)
@@ -52,6 +46,8 @@ namespace Visualizations
 
                 _request_data_callback = request_data_callback;
 
+                _contents = new Dictionary<Type, Dictionary<string, AbstractContent>>();
+
                 register_content(typeof(LogContent));
                 register_content(typeof(DEBUGLines));
                 register_content(typeof(DEBUGColumns));
@@ -59,21 +55,6 @@ namespace Visualizations
                 _timer.Stop();
                 _initilized = true;
                 return _initilized;
-            }
-
-
-            public override bool Execute()
-            {
-                if (!_initilized)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return false;
-                }
-                bool executed = true;
-
-                /// Contents are loaded via callbacks
-
-                return executed;
             }
 
 
@@ -85,7 +66,7 @@ namespace Visualizations
                     {
                         foreach (var c in c_data.Value)
                         {
-                            c.Value.Detach();
+                            c.Value.Terminate();
                         }
                         c_data.Value.Clear();
                     }
@@ -118,7 +99,7 @@ namespace Visualizations
                         foreach (Type lservice_type in lservice_types)
                         {
                             // Only consider valid services
-                            if ((lservice_type != null) && has_basetype(lservice_type, typeof(AbstractService)))
+                            if ((lservice_type != null) && recursive_basetype(lservice_type, typeof(AbstractService)))
                             {
                                 depending_services.Add(lservice_type);
                             }
@@ -191,10 +172,11 @@ namespace Visualizations
                     {
                         // Create new instance from type
                         var new_content = (AbstractContent)Activator.CreateInstance(content_type);
-                        if (has_basetype(new_content.GetType(), typeof(AbstractVisualization)))
+                        if (recursive_basetype(new_content.GetType(), typeof(AbstractVisualization)))
                         {
                             ((AbstractVisualization)new_content).SetRequestDataCallback(_request_data_callback);
                         }
+                        new_content.Initialize();
                         new_content.Create();
                         id = new_content.ID;
                         _contents[content_type].Add(id, new_content);
@@ -229,7 +211,6 @@ namespace Visualizations
             }
 
 
-
             /* ------------------------------------------------------------------*/
             // private functions
 
@@ -239,9 +220,9 @@ namespace Visualizations
                 Type type = content_type;
                 Type required_basetype = typeof(AbstractContent);
                 bool valid_type = false;
-                while (!has_basetype(type, typeof(object)))
+                while (!recursive_basetype(type, typeof(object)))
                 {
-                    if (has_basetype(type, required_basetype))
+                    if (recursive_basetype(type, required_basetype))
                     {
                         valid_type = true;
                         break;
@@ -264,7 +245,7 @@ namespace Visualizations
             }
 
 
-            bool has_basetype(Type check_type, Type reference_base_type)
+            bool recursive_basetype(Type check_type, Type reference_base_type)
             {
                 Type base_type = check_type;
                 bool valid_base_type = false;

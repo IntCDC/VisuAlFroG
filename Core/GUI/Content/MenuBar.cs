@@ -7,6 +7,8 @@ using System.Diagnostics;
 using System.Windows.Navigation;
 using System.Diagnostics.Tracing;
 using Core.Abstracts;
+using System.Text;
+using System.Runtime.Remoting.Contexts;
 
 
 
@@ -18,7 +20,7 @@ namespace Core
 {
     namespace GUI
     {
-        public class MenuBar
+        public class MenuBar : AbstractService
         {
             /* ------------------------------------------------------------------*/
             // public delegates
@@ -32,29 +34,34 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public void RegisterCloseCallback(WindowClose_Delegate close_callback)
+            public bool Initialize(WindowClose_Delegate close_callback)
             {
-                _close_callback = close_callback;
-            }
-
-
-            public void RegisterContentElement(Menu parent_content)
-            {
-                _parent_content = parent_content;
-            }
-
-
-            public bool Execute()
-            {
-                if (_parent_content == null)
+                if (_initilized)
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Missing parent content element, call RegisterContentElement beforehand");
+                    Terminate();
+                }
+                if (close_callback == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing content callbacks");
                     return false;
                 }
-                if (_close_callback == null)
+                _timer.Start();
+
+                _close_callback = close_callback;
+                _content = new Menu();
+
+                _timer.Stop();
+                _initilized = true;
+                return _initilized;
+            }
+
+
+            public Control Attach()
+            {
+                if (!_initilized)
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Missing window close callback, call RegisterCloseCallback beforehand");
-                    return false;
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return null;
                 }
 
                 var item_file = new MenuItem();
@@ -63,10 +70,19 @@ namespace Core
                 var item_close = new MenuItem();
                 item_close.Header = "Close";
                 item_close.Name = _item_id_close;
-                item_close.Click += menuitem_click;
+
                 item_close.Style = ColorTheme.MenuItemStyle();
                 item_file.Items.Add(item_close);
 
+                if (_close_callback == null)
+                {
+                    item_close.IsEnabled = false;
+                    Log.Default.Msg(Log.Level.Warn, "Missing window close callback, call RegisterCloseCallback beforehand");
+                }
+                else
+                {
+                    item_close.Click += menuitem_click;
+                }
 
                 var item_info = new MenuItem();
                 item_info.Header = "Info";
@@ -83,12 +99,25 @@ namespace Core
                 item_info.Items.Add(item_github_link);
 
 
-                _parent_content.Height = 20.0;
-                _parent_content.Style = ColorTheme.MenuStyle();
+                _content.Height = 20.0;
+                _content.Style = ColorTheme.MenuStyle();
 
-                _parent_content.Items.Add(item_file);
-                _parent_content.Items.Add(item_info);
+                _content.Items.Add(item_file);
+                _content.Items.Add(item_info);
 
+                return _content;
+            }
+
+
+            public override bool Terminate()
+            {
+                if (_initilized)
+                {
+                    _content = null;
+                    _close_callback = null;
+
+                    _initilized = false;
+                }
                 return true;
             }
 
@@ -111,10 +140,6 @@ namespace Core
                     {
                         _close_callback();
                     }
-                    else
-                    {
-                        Log.Default.Msg(Log.Level.Warn, "Missing close callback");
-                    }
                 }
             }
 
@@ -130,7 +155,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private Menu _parent_content = null;
+            private Menu _content = null;
             private WindowClose_Delegate _close_callback = null;
 
             private readonly string _item_id_close = "item_close_" + UniqueID.Generate();

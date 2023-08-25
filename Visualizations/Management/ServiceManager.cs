@@ -21,71 +21,14 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public ServiceManager()
-            {
-                _services = new Dictionary<Type, AbstractService>();
-            }
-
-
-            public override bool Initialize()
-            {
-                if (_initilized)
-                {
-                    Terminate();
-                }
-                bool initilized = true;
-                _timer.Start();
-
-                foreach (var m in _services)
-                {
-                    initilized &= m.Value.Initialize();
-                }
-
-                _timer.Stop();
-                _initilized = initilized;
-                return _initilized;
-            }
-
-
-            public override bool Execute()
-            {
-                if (!_initilized)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return false;
-                }
-                _timer.Start();
-
-                bool executed = true;
-
-                foreach (var m in _services)
-                {
-                    executed &= m.Value.Execute();
-                }
-
-                _timer.Stop();
-                return executed;
-            }
-
-
-            public override bool Terminate()
-            {
-                bool terminated = true;
-                if (_initilized)
-                {
-                    foreach (var m in _services)
-                    {
-                        terminated &= m.Value.Terminate();
-                    }
-                    _services.Clear();
-                    _initilized = false;
-                }
-                return terminated;
-            }
-
 
             public void AddService(AbstractService service)
             {
+                if (_services == null)
+                {
+                    _services = new Dictionary<Type, AbstractService>();
+                }
+
                 Type service_type = service.GetType();
                 if (!_services.ContainsKey(service_type))
                 {
@@ -99,6 +42,50 @@ namespace Visualizations
             }
 
 
+            public override bool Initialize()
+            {
+                if (_initilized)
+                {
+                    Terminate();
+                }
+                bool initilized = true;
+                _timer.Start();
+
+                if (_services != null)
+                {
+                    foreach (var m in _services)
+                    {
+                        initilized &= m.Value.Initialize();
+                    }
+                }
+
+                _timer.Stop();
+                _initilized = initilized;
+                return _initilized;
+            }
+
+
+            public override bool Terminate()
+            {
+                bool terminated = true;
+                if (_initilized)
+                {
+                    if (_services != null)
+                    {
+                        foreach (var m in _services)
+                        {
+                            terminated &= m.Value.Terminate();
+                        }
+                        _services.Clear();
+                        _services = null;
+                    }
+                    _initilized = false;
+                }
+                return terminated;
+            }
+
+
+            /* unused
             public T GetService<T>() where T : AbstractService
             {
                 Type service_type = typeof(T);
@@ -109,6 +96,7 @@ namespace Visualizations
                 Log.Default.Msg(Log.Level.Warn, "Unable to find service: " + service_type.FullName);
                 return null;
             }
+            */
 
 
             /* ------------------------------------------------------------------*/

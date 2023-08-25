@@ -27,7 +27,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public bool Initialize(ContentCallbacks_Type content_callbacks, Grid parent_content)
+            public bool Initialize(ContentCallbacks_Type content_callbacks)
             {
                 if (_initilized)
                 {
@@ -38,19 +38,14 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Error, "Missing content callbacks");
                     return false;
                 }
-                if (parent_content == null)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Missing parent content element");
-                    return false;
-                }
+
                 _timer.Start();
 
                 _content_callbacks = content_callbacks;
-                _parent_content = parent_content;
 
                 _window_root = new WindowBranch();
-                _content_root = _window_root.CreateRoot(_content_callbacks);
-                bool initilized = (_content_root != null);
+                _content = _window_root.CreateRoot(_content_callbacks);
+                bool initilized = (_content != null);
 
                 _timer.Stop();
                 _initilized = initilized;
@@ -58,20 +53,18 @@ namespace Visualizations
             }
 
 
-            public override bool Execute()
+            public Panel Attach()
             {
                 if (!_initilized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return false;
+                    return null;
                 }
 
-                _parent_content.Children.Add(_content_root);
-
-                default_window_tree();
+                create_startup_default();
                 // traverse_windows(_window_root, 0);
 
-                return true;
+                return _content;
             }
 
 
@@ -82,7 +75,6 @@ namespace Visualizations
                 {
                     _window_root = null;
                     _content_callbacks = null;
-                    _parent_content = null;
 
                     _initilized = false;
                 }
@@ -96,7 +88,7 @@ namespace Visualizations
             /// <summary>
             /// Load initial window tree
             /// </summary>
-            void default_window_tree()
+            void create_startup_default()
             {
                 if (_window_root.Split(AbstractWindow.SplitOrientation.Horizontal, AbstractWindow.ChildLocation.Top_Left, 0.75))
                 {
@@ -133,7 +125,7 @@ namespace Visualizations
             /// <summary>
             /// DEBUG Traverse window tree in breadth first order
             /// </summary>
-            void traverse_windows(WindowBranch branch, int depth)
+            void traverse_window_tree(WindowBranch branch, int depth)
             {
                 if (branch == null)
                 {
@@ -164,8 +156,8 @@ namespace Visualizations
                     var child1 = branch.Children.Item1;
                     var child2 = branch.Children.Item2;
 
-                    traverse_windows(child1, (depth + 1));
-                    traverse_windows(child2, (depth + 1));
+                    traverse_window_tree(child1, (depth + 1));
+                    traverse_window_tree(child2, (depth + 1));
                 }
             }
 
@@ -173,10 +165,9 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private variables
 
+            private Grid _content = null;
             private WindowBranch _window_root = null;
-            private Grid _content_root = null;
             private ContentCallbacks_Type _content_callbacks = null;
-            private Grid _parent_content = null;
         }
     }
 

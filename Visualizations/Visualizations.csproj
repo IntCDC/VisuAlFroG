@@ -123,7 +123,7 @@
     <Compile Include="Management\DataManager.cs" />
     <Compile Include="Management\ServiceManager.cs" />
     <Compile Include="Management\WindowManager.cs" />
-    <Compile Include="Abstracts\AbstractSciChartVisualization.cs" />
+    <Compile Include="Abstracts\AbstractSciChart.cs" />
     <Compile Include="Types\DEBUGColumns.cs" />
     <Compile Include="Types\DEBUGLines.cs" />
     <Compile Include="VisualizationManager.cs" />

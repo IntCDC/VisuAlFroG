@@ -68,24 +68,6 @@ namespace Visualizations
         }
 
 
-        public override bool Execute()
-        {
-            if (!_initilized)
-            {
-                Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                return false;
-            }
-            _timer.Start();
-
-            bool executed = _servicemanager.Execute();
-            executed &= _datamanager.Execute();
-            executed &= _contentmanager.Execute();
-
-            _timer.Stop();
-            return executed;
-        }
-
-
         public override bool Terminate()
         {
             bool terminated = true;

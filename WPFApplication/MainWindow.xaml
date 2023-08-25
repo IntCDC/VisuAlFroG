@@ -7,9 +7,9 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <DockPanel x:Name="_main_element" LastChildFill="true">
-        <Menu x:Name="_menubar_element" DockPanel.Dock="Top">
+        <StackPanel x:Name="_menubar_element" DockPanel.Dock="Top">
             <!-- Do not change. Menu bar is added programmatically  -->
-        </Menu>
+        </StackPanel>
         <Grid x:Name="_subwindows_element">
             <!-- Do not change. Sub windows are added programmatically  -->
         </Grid>

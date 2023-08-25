@@ -54,7 +54,15 @@ namespace Frontend
                 _soft_close = !detached;
                 _detached = detached;
                 initialize(app_name);
-                execute();
+                create();
+            }
+
+
+            ~MainWindow()
+            {
+                _vismanager.Terminate();
+                _winmanager.Terminate();
+                _menubar.Terminate();
             }
 
 
@@ -126,9 +134,6 @@ namespace Frontend
                 _timer = new TimeBenchmark();
                 _timer.Start();
 
-                _vismanager = new VisualizationManager();
-                _winmanager = new WindowManager();
-                _menubar = new MenuBar();
 
                 // Window setup
                 InitializeComponent();
@@ -141,13 +146,14 @@ namespace Frontend
 
 
                 // Initialize managers
+                _vismanager = new VisualizationManager();
+                _winmanager = new WindowManager();
+                _menubar = new MenuBar();
                 bool initilized = _vismanager.Initialize();
-                initilized &= _winmanager.Initialize(_vismanager.GetContentCallbacks(), _subwindows_element);
+                initilized &= _winmanager.Initialize(_vismanager.GetContentCallbacks());
+                initilized &= _menubar.Initialize(this.Close);
 
-
-                // Get and/or register required external data
-                _menubar.RegisterCloseCallback(this.Close);
-                _menubar.RegisterContentElement(_menubar_element);
+                // Get callbacks
                 _inputdata_callback = _vismanager.GetInputDataCallback();
 
 
@@ -161,7 +167,7 @@ namespace Frontend
             }
 
 
-            public bool execute()
+            public bool create()
             {
                 if (!_initilized)
                 {
@@ -170,9 +176,19 @@ namespace Frontend
                 }
                 _timer.Start();
 
-                bool executed = _vismanager.Execute();
-                executed &= _winmanager.Execute();
-                executed &= _menubar.Execute();
+                var menubar_content = _menubar.Attach();
+                if (menubar_content == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Invalid menu bar content");
+                }
+                _menubar_element.Children.Add(menubar_content);
+
+                var winmanager_content = _winmanager.Attach();
+                if (winmanager_content == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Invalid menu bar content");
+                }
+                _subwindows_element.Children.Add(winmanager_content);
 
 
                 /// DEBUG Load sample data in detached mode ...
@@ -185,7 +201,7 @@ namespace Frontend
 
 
                 _timer.Stop();
-                return executed;
+                return true;
             }
 
 

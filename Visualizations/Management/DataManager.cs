@@ -22,20 +22,13 @@ namespace Visualizations
     namespace Management
     {
 
+        // data types
+        public class SciChartUniformData_Type : SciChart.Charting.Model.DataSeries.UniformXyDataSeries<double> { }
+        public class SciChartData_Type : SciChart.Charting.Model.DataSeries.XyDataSeries<double, double> { }
+
+
         public class DataManager : AbstractService
         {
-
-            /* ------------------------------------------------------------------*/
-            // public types
-
-            public enum Libraries
-            {
-                SciChart,
-                d3,
-                Bokeh
-            }
-
-
             /* ------------------------------------------------------------------*/
             // public delegates
 
@@ -52,21 +45,12 @@ namespace Visualizations
             /// <summary>
             /// Callback for visualizations to request suitable data
             /// </summary>
-            public delegate object RequestDataCallback_Delegate(Libraries library);
+            public delegate object RequestDataCallback_Delegate(Type t);
 
 
 
             /* ------------------------------------------------------------------*/
             // public functions
-
-            public DataManager()
-            {
-                _data_x = new List<double>();
-                _data_y = new List<double>();
-                _data_meta = new List<Metadata>();
-                _library_data = new Dictionary<Libraries, object>();
-            }
-
 
             public override bool Initialize()
             {
@@ -78,29 +62,26 @@ namespace Visualizations
 
                 bool initilized = true;
 
+                _data_x = new List<double>();
+                _data_y = new List<double>();
+                _data_meta = new List<Metadata>();
+                _library_data = new Dictionary<Type, object>();
+
                 // SciChart
-                var scichart_data = new SciChartData_Type();
-                scichart_data.SeriesName = "scichart_data-series";
-                _library_data.Add(Libraries.SciChart, scichart_data);
+                var scichart_uniformxy = new SciChartUniformData_Type();
+                scichart_uniformxy.SeriesName = "SciChartUniformData_Type";
+                _library_data.Add(typeof(SciChartUniformData_Type), scichart_uniformxy);
+
+                var scichart_xy = new SciChartData_Type();
+                scichart_xy.SeriesName = "SciChartData_Type";
+                _library_data.Add(typeof(SciChartData_Type), scichart_xy);
+
+                /// TODO Add more library data formats here ...
+
 
                 _timer.Stop();
                 _initilized = initilized;
                 return _initilized;
-            }
-
-
-            public override bool Execute()
-            {
-                if (!_initilized)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return false;
-                }
-                bool executed = true;
-
-                // never called ...
-
-                return executed;
             }
 
 
@@ -109,17 +90,20 @@ namespace Visualizations
                 bool terminated = true;
                 if (_initilized)
                 {
-                    foreach (var data in _library_data)
+                    foreach (var data_type in _library_data)
                     {
-                        switch (data.Key)
+                        if (data_type.Key == typeof(SciChartUniformData_Type))
                         {
-                            case (Libraries.SciChart):
-                                ((SciChartData_Type)data.Value).Clear();
-                                break;
-                            case (Libraries.d3):
-                                break;
-                            case (Libraries.Bokeh):
-                                ; break;
+                            ((SciChartUniformData_Type)data_type.Value).Clear();
+                        }
+                        else if (data_type.Key == typeof(SciChartData_Type))
+                        {
+                            ((SciChartData_Type)data_type.Value).Clear();
+                        }
+                        else
+                        {
+                            /// TODO Add more library data formats here ...
+                            Log.Default.Msg(Log.Level.Warn, "Unknown data type: " + data_type.Key.Name);
                         }
                     }
                     _library_data.Clear();
@@ -135,16 +119,19 @@ namespace Visualizations
                 _data_x.Clear();
                 _data_y.Clear();
                 _data_meta.Clear();
-
-
-                /// DEBUG Taking only first value row
-                var count_x = input_data.Count;
-                if (count_x == 0)
+                if (input_data.Count == 0)
                 {
+                    Log.Default.Msg(Log.Level.Warn, "No input data available");
                     return;
                 }
-                ///for (int x = 0; x < count_x; x++)
-                ///{
+                _timer.Start();
+                Log.Default.Msg(Log.Level.Debug, "Reading input data ...");
+
+                // Copy input data
+
+                //for (int x = 0; x < count_x; x++)
+                //{
+                /// DEBUG Taking only first value row
                 int x = 0;
                 var count_y = input_data[x].Count;
                 for (int y = 0; y < count_y; y++)
@@ -156,26 +143,46 @@ namespace Visualizations
                     metadata.PropertyChanged += metadata_changed;
                     _data_meta.Add(metadata);
                 }
-                ///}
-
-                foreach (var data in _library_data)
+                //}
+                if ((_data_x.Count != _data_y.Count) || (_data_x.Count != _data_meta.Count) || (_data_y.Count != _data_meta.Count))
                 {
-                    switch (data.Key)
+                    Log.Default.Msg(Log.Level.Warn, "Data count does not match");
+                    return;
+                }
+
+
+                // Create library dependent data
+                foreach (var data_type in _library_data)
+                {
+                    Log.Default.Msg(Log.Level.Debug, data_type.Key.Name);
+
+                    if (data_type.Key == typeof(SciChartUniformData_Type))
                     {
-                        case (Libraries.SciChart):
-                            var data_series = (SciChartData_Type)data.Value;
-                            data_series.Clear();
-                            for (int i = 0; i < _data_y.Count; i++)
-                            {
-                                data_series.Append(_data_y[i], _data_meta[i]); // _data_x[i], for XyDataSeries<double, double>
-                            }
-                            break;
-                        case (Libraries.d3):
-                            break;
-                        case (Libraries.Bokeh):
-                            ; break;
+                        var data_series = (SciChartUniformData_Type)data_type.Value;
+                        data_series.Clear();
+                        for (int i = 0; i < _data_x.Count; i++)
+                        {
+                            data_series.Append(_data_y[i], _data_meta[i]);
+                        }
+                    }
+                    else if (data_type.Key == typeof(SciChartData_Type))
+                    {
+                        var data_series = (SciChartData_Type)data_type.Value;
+                        data_series.Clear();
+                        for (int i = 0; i < _data_x.Count; i++)
+                        {
+                            data_series.Append(_data_x[i], _data_y[i], _data_meta[i]);
+                        }
+                    }
+                    else
+                    {
+                        /// TODO Add more library data formats here ...
+                        Log.Default.Msg(Log.Level.Warn, "Unknown data type: " + data_type.Key.Name);
                     }
                 }
+
+                _timer.Stop();
+                Log.Default.Msg(Log.Level.Debug, "... done.");
             }
 
 
@@ -191,7 +198,7 @@ namespace Visualizations
             }
 
 
-            private object request_data(Libraries library)
+            private object request_data(Type t)
             {
                 if (!_initilized)
                 {
@@ -199,13 +206,13 @@ namespace Visualizations
                     return null;
                 }
 
-                if (_library_data.ContainsKey(library))
+                if (_library_data.ContainsKey(t))
                 {
-                    return _library_data[library];
+                    return _library_data[t];
                 }
                 else
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Requested data not available for library: " + library.ToString());
+                    Log.Default.Msg(Log.Level.Warn, "Requested data not available for given data type: " + t.Name);
                 }
                 return null;
             }
@@ -214,16 +221,35 @@ namespace Visualizations
             private void metadata_changed(object sender, PropertyChangedEventArgs e)
             {
                 var sender_selection = sender as Metadata;
-                if (sender_selection == null)
+                if ((sender_selection == null) || (e.PropertyName != "IsSelected"))
                 {
                     return;
                 }
-                //string property_name = e.PropertyName; // == "IsSelected"
                 int i = sender_selection.Index;
-                var dataseries = (SciChartData_Type)_library_data[Libraries.SciChart];
-                using (dataseries.SuspendUpdates())
+
+                foreach (var data_type in _library_data)
                 {
-                    dataseries.Update(i, _data_y[i], dataseries.Metadata[i]);
+                    if (data_type.Key == typeof(SciChartUniformData_Type))
+                    {
+                        var dataseries = (SciChartUniformData_Type)_library_data[data_type.Key];
+                        using (dataseries.SuspendUpdates())
+                        {
+                            dataseries.Update(i, _data_y[i], dataseries.Metadata[i]);
+                        }
+                    }
+                    else if (data_type.Key == typeof(SciChartData_Type))
+                    {
+                        var dataseries = (SciChartData_Type)_library_data[data_type.Key];
+                        using (dataseries.SuspendUpdates())
+                        {
+                            dataseries.Update(i, _data_y[i], dataseries.Metadata[i]);
+                        }
+                    }
+                    else
+                    {
+                        /// TODO Add more library data formats here ...
+                        Log.Default.Msg(Log.Level.Warn, "Unknown data type: " + data_type.Key.Name);
+                    }
                 }
 
                 // Send changed output data
@@ -248,7 +274,7 @@ namespace Visualizations
             private List<double> _data_x = null;
             private List<double> _data_y = null;
             private List<Metadata> _data_meta = null;
-            private Dictionary<Libraries, object> _library_data = null;
+            private Dictionary<Type, object> _library_data = null;
         }
     }
 }

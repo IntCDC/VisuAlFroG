@@ -25,6 +25,8 @@ using System.Windows.Input;
 using Visualizations.Abstracts;
 using Visualizations.Interaction;
 using Visualizations.Management;
+using SciChart.Charting.ChartModifiers;
+using SciChart.Core.Utility.Mouse;
 
 
 
@@ -36,7 +38,7 @@ namespace Visualizations
 {
     namespace Types
     {
-        public class DEBUGLines : AbstractSciChartVisualization
+        public class DEBUGLines : AbstractSciChart
         {
 
             /* ------------------------------------------------------------------*/
@@ -48,12 +50,16 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-
             public override bool Create()
             {
+                if (!_initilized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return false;
+                }
                 if (_created)
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Content already created");
+                    Log.Default.Msg(Log.Level.Warn, "Content already created, skipping...");
                     return false;
                 }
                 if (_request_data_callback == null)
@@ -68,7 +74,7 @@ namespace Visualizations
 
                 // Data Series -------------------------------------
                 var render_series = new FastLineRenderableSeries();
-                render_series.Name = "line_series";
+                render_series.Name = "line_series_" + ID;
                 render_series.Stroke = Colors.Aquamarine;
                 render_series.StrokeThickness = 2;
                 render_series.PointMarker = Selection_PointMarker.Default;
@@ -82,8 +88,11 @@ namespace Visualizations
                 render_series.SeriesAnimation = wa;
                 */
 
-                render_series.DataSeries = (SciChartData_Type)_request_data_callback(DataManager.Libraries.SciChart);
-                render_series.DataSeries.ParentSurface = _content;
+                var data = (SciChartUniformData_Type)_request_data_callback(typeof(SciChartUniformData_Type));
+                if (data != null)
+                {
+                    render_series.DataSeries = data;
+                }
                 _content.RenderableSeries.Add(render_series);
 
                 _content.ZoomExtents();
@@ -107,52 +116,50 @@ namespace Visualizations
 
 
                 // Modifiers ---------------------------------------
-                var data_selection = new SciChart.Charting.ChartModifiers.DataPointSelectionModifier()
-                {
-                    Name = "PointMarkersSelectionModifier",
-                    IsEnabled = true
-                };
-                var wheel_zoom = new SciChart.Charting.ChartModifiers.MouseWheelZoomModifier()
-                {
-                    ActionType = SciChart.Charting.ActionType.Zoom,
-                    XyDirection = SciChart.Charting.XyDirection.XYDirection
-                };
-                var right_pan = new SciChart.Charting.ChartModifiers.ZoomPanModifier()
-                {
-                    ExecuteOn = SciChart.Charting.ChartModifiers.ExecuteOn.MouseRightButton,
-                    ClipModeX = SciChart.Charting.ClipMode.None
-                };
-
                 _content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
-                    //new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier(),
-                    //new SciChart.Charting.ChartModifiers.ZoomExtentsModifier(),
-                    data_selection,
-                    wheel_zoom,
-                    right_pan
-                    );
+                    new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier()
+                    {
+                        IsEnabled = false
+                    },
+                    new SciChart.Charting.ChartModifiers.ZoomExtentsModifier()
+                    {
+                        IsEnabled = false
+                    },
+                    new SciChart.Charting.ChartModifiers.ZoomPanModifier()
+                    {
+                        IsEnabled = true,
+                        ExecuteOn = SciChart.Charting.ChartModifiers.ExecuteOn.MouseRightButton,
+                        ClipModeX = SciChart.Charting.ClipMode.None
+                    },
+                    new SciChart.Charting.ChartModifiers.MouseWheelZoomModifier()
+                    {
+                        IsEnabled = true,
+                        ActionType = SciChart.Charting.ActionType.Zoom,
+                        XyDirection = SciChart.Charting.XyDirection.XYDirection
+                    },
+                    new SciChart.Charting.ChartModifiers.DataPointSelectionModifier()
+                    {
+                        IsEnabled = true,
+                    }
+                );
 
 
                 // Annotation --------------------------------------
                 var textAnnotation = new TextAnnotation()
                 {
-                    Text = "Interaction:" + Environment.NewLine +
-                            " Left Mouse -> Select / Box-Select" + Environment.NewLine +
-                            "Mouse Wheel -> Zoom" + Environment.NewLine +
-                            "Right Mouse -> Pan",
+                    Text = "|----------[Interaction]----------|" + Environment.NewLine +
+                            "Left Mouse:  Select/Box-Select" + Environment.NewLine +
+                            "Mouse Wheel: Zoom" + Environment.NewLine +
+                            "Right Mouse: Pan",
                     X1 = 2.0,
-                    Y1 = 3.0
+                    Y1 = 2.0
                 };
                 _content.Annotations.Add(textAnnotation);
-
 
                 _timer.Stop();
                 _created = true;
                 return _created;
             }
         }
-
-        /* ------------------------------------------------------------------*/
-        // private variables
-
     }
 }

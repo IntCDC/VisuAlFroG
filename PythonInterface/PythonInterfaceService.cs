@@ -11,6 +11,11 @@ using Microsoft.Scripting.Runtime;
  * Python.NET API
  * 
  */
+/* TEST
+Execute:
+
+    _worker.Start();
+*/
 namespace Visualizations
 {
     namespace PythonInterface
@@ -64,28 +69,6 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().Name);
                 }
                 return _initilized;
-            }
-
-
-
-            public override bool Execute()
-            {
-                if (!_initilized)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return false;
-                }
-                _timer.Start();
-
-
-
-                /// DEBUG
-                _worker.Start();
-
-
-
-                _timer.Stop();
-                return true;
             }
 
 

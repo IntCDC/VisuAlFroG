@@ -8,6 +8,7 @@ using Visualizations.Management;
 using Visualizations.SciChartInterface;
 using Core.Utilities;
 using SciChart.Charting.Visuals;
+using SciChart.Charting.Model.DataSeries;
 
 
 
@@ -19,7 +20,7 @@ namespace Visualizations
 {
     namespace Abstracts
     {
-        public abstract class AbstractSciChartVisualization : AbstractVisualization
+        public abstract class AbstractSciChart : AbstractVisualization
         {
 
             /* ------------------------------------------------------------------*/
@@ -31,17 +32,24 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            protected AbstractSciChartVisualization()
+            public sealed override bool Initialize()
             {
-                // Loading SciChartSurface for the first time takes some time ...
-                Log.Default.Msg(Log.Level.Debug, "Loading SciChartSurface ...");
+                if (_initilized)
+                {
+                    Terminate();
+                }
                 _timer.Start();
 
                 _content = new SciChartSurface();
                 _content.Name = ID;
 
                 _timer.Stop();
-                Log.Default.Msg(Log.Level.Debug, "done.");
+                _initilized = true;
+                if (_initilized)
+                {
+                    Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().Name);
+                }
+                return _initilized;
             }
 
 
@@ -65,6 +73,19 @@ namespace Visualizations
                 // Required to release mouse handling
                 _content.ChartModifier.IsAttached = false;
 
+                return true;
+            }
+
+
+            public sealed override bool Terminate()
+            {
+                if (_initilized)
+                {
+                    _content.Dispose();
+                    _content = null;
+
+                    _initilized = false;
+                }
                 return true;
             }
 

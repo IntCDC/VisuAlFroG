@@ -9,6 +9,14 @@ using Core.Abstracts;
  * Entity Framework Database
  * 
  */
+/* TEST
+Execute:
+    IQueryable<Entity> query = _database_context.Entites.Where(e => e.Id == 4);
+    foreach (Entity obj in query)
+    {
+        Log.Default.Msg(Log.Level.Debug, obj.Title);
+    }
+*/
 namespace EntityFrameworkDatabase
 {
     public class DatabaseService : AbstractService
@@ -29,32 +37,11 @@ namespace EntityFrameworkDatabase
 
             _timer.Stop();
             _initilized = true;
+            if (_initilized)
+            {
+                Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().Name);
+            }
             return _initilized;
-        }
-
-
-        public override bool Execute()
-        {
-            if (!_initilized)
-            {
-                Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                return false;
-            }
-            _timer.Start();
-
-
-
-            /// TEST
-            IQueryable<Entity> query = _database_context.Entites.Where(e => e.Id == 4);
-            foreach (Entity obj in query)
-            {
-                Log.Default.Msg(Log.Level.Debug, obj.Title);
-            }
-
-
-
-            _timer.Stop();
-            return true;
         }
 
 
