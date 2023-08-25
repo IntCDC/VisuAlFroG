@@ -249,7 +249,7 @@ namespace Core
                 clear_content(_content);
                 clear_content(kept_child._content);
 
-                if ((kept_child._children.Item1 != null) && (kept_child._children.Item2 != null))
+                if ((kept_child._children != null) && (kept_child._children.Item1 != null) && (kept_child._children.Item2 != null))
                 {
                     _children = new Tuple<WindowBranch, WindowBranch>(kept_child._children.Item1, kept_child._children.Item2);
 

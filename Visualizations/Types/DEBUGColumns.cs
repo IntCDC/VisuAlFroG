@@ -28,7 +28,6 @@ using Visualizations.Interaction;
 using Visualizations.Management;
 using SciChart.Core.Utility.Mouse;
 using SciChart.Charting.ChartModifiers;
-using SciChart.Charting3D.Model;
 
 
 
