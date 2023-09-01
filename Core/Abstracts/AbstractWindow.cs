@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
-using Core.Abstracts;
 using Core.Utilities;
 using Core.GUI;
 
@@ -23,7 +22,7 @@ namespace Core
 
             public delegate AvailableContentList_Type AvailableContents_Delegate();
 
-            public delegate Control CreateContent_Delegate(string content_id, Type content_type);
+            public delegate Control CreateContent_Delegate(string content_id, string content_type);
 
             public delegate void DeleteContent_Delegate(string content_id);
 

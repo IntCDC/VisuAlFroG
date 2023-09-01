@@ -22,14 +22,6 @@ namespace Core
         public class WindowManager : AbstractService
         {
             /* ------------------------------------------------------------------*/
-            // public delegates
-
-            public delegate bool SettingsSave_Delegate();
-
-            public delegate bool SettingsLoad_Delegate();
-
-
-            /* ------------------------------------------------------------------*/
             // public functions
 
             public bool Initialize(ContentCallbacks_Type content_callbacks)
@@ -37,7 +29,6 @@ namespace Core
                 if (_initilized)
                 {
                     Terminate();
-                    _settingsservice.Terminate();
                 }
                 if (content_callbacks == null)
                 {
@@ -53,8 +44,6 @@ namespace Core
                 _content = _window_root.CreateRoot(_content_callbacks);
                 bool initilized = (_content != null);
 
-                _settingsservice = new SettingsService();
-
                 _timer.Stop();
                 _initilized = initilized;
                 return _initilized;
@@ -68,9 +57,6 @@ namespace Core
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return null;
                 }
-
-
-
                 return _content;
             }
 
@@ -84,28 +70,26 @@ namespace Core
                     _window_root = null;
                     _content_callbacks = null;
 
-                    terminated &= _settingsservice.Terminate();
-
                     _initilized = false;
                 }
                 return terminated;
             }
 
 
-            public bool SaveSettings()
+            public string CollectSettings()
             {
-                WindowBranch.Settings settings = new WindowBranch.Settings();
+                var settings = new WindowBranch.Settings();
                 collect_settings(_window_root, settings);
-                return _settingsservice.Save<WindowBranch.Settings>(settings); ;
+                return SettingsService.Serialize<WindowBranch.Settings>(settings);
             }
 
 
-            public bool LoadSettings()
+            public bool ApplySettings(string settings)
             {
-                WindowBranch.Settings settings = _settingsservice.Load<WindowBranch.Settings>();
-                if (settings != null)
+                var windowbranch_settings = SettingsService.Deserialize<WindowBranch.Settings>(settings);
+                if (windowbranch_settings != null)
                 {
-                    apply_settings(_window_root, settings);
+                    apply_settings(_window_root, windowbranch_settings);
                     return true;
                 }
                 return false;
@@ -140,7 +124,7 @@ namespace Core
                         settings.Leaf = new WindowLeaf.Settings()
                         {
                             ContentID = attached_content.Item1,
-                            ContentType = attached_content.Item2.FullName,
+                            ContentType = attached_content.Item2,
                         };
                     }
                 }
@@ -169,15 +153,7 @@ namespace Core
 
                 if (settings.Leaf != null)
                 {
-                    try
-                    {
-                        Type content_type = Type.GetType(settings.Leaf.ContentType, true);
-                        branch.Leaf.CreateContent(settings.Leaf.ContentID, content_type);
-                    }
-                    catch (TypeLoadException e)
-                    {
-                        Log.Default.Msg(Log.Level.Error, e.Message);
-                    }
+                    branch.Leaf.CreateContent(settings.Leaf.ContentID, settings.Leaf.ContentType);
                 }
                 else if (settings.Children != null)
                 {
@@ -195,8 +171,6 @@ namespace Core
             private Grid _content = null;
             private WindowBranch _window_root = null;
             private ContentCallbacks_Type _content_callbacks = null;
-
-            private SettingsService _settingsservice = null;
         }
     }
 

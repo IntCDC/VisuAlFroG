@@ -62,6 +62,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -69,7 +70,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL" />
-    <Reference Include="System.Text.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -85,8 +85,9 @@
     <Compile Include="Abstracts\AbstractContent.cs" />
     <Compile Include="Abstracts\IAbstractContent.cs" />
     <Compile Include="Abstracts\IAbstractService.cs" />
-    <Compile Include="GUI\Content\MenuBar.cs" />
-    <Compile Include="GUI\Windows\SettingsService.cs" />
+    <Compile Include="Abstracts\IAbstractSettings.cs" />
+    <Compile Include="GUI\MenuBar.cs" />
+    <Compile Include="GUI\SettingsService.cs" />
     <Compile Include="GUI\Windows\WindowBranch.cs" />
     <Compile Include="GUI\Windows\WindowLeaf.cs" />
     <Compile Include="GUI\Content\LogContent.cs" />

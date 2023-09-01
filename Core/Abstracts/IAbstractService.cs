@@ -14,7 +14,6 @@ namespace Core
     namespace Abstracts
     {
 
-        // INTERFACE
         public interface IAbstractService
         {
             /* ------------------------------------------------------------------*/

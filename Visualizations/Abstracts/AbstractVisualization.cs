@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Collections.Generic;
 using Core.Abstracts;
 using Visualizations.Management;
+using Core.GUI;
 
 
 

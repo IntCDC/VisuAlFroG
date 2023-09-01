@@ -15,6 +15,7 @@ using EntityFrameworkDatabase;
 using System.Windows.Controls;
 using Visualizations.Types;
 using Core.GUI;
+using Visualizations.Abstracts;
 
 
 
@@ -26,7 +27,6 @@ namespace Visualizations
 {
     public class VisualizationManager : AbstractService
     {
-
         /* ------------------------------------------------------------------*/
         // public functions
 
@@ -49,7 +49,7 @@ namespace Visualizations
             _timer.Start();
 
             // Content Manager
-            bool initilized = _contentmanager.Initialize(_datamanager.RequestDataCallback());
+            bool initilized = _contentmanager.Initialize(_datamanager.GetRequestDataCallback());
             var required_services = _contentmanager.DependingServices();
 
             // Data Manager
@@ -83,19 +83,31 @@ namespace Visualizations
         }
 
 
-        public ContentCallbacks_Type ContentCallbacks()
+        public string CollectSettings()
         {
-            return new ContentCallbacks_Type(_contentmanager.ContentsCallback, _contentmanager.CreateContentCallback, _contentmanager.DeleteContentCallback);
+            return _contentmanager.CollectSettings();
+        }
+
+
+        public bool ApplySettings(string settings)
+        {
+            return _contentmanager.ApplySettings(settings);
+        }
+
+
+        public ContentCallbacks_Type GetContentCallbacks()
+        {
+            return new ContentCallbacks_Type(_contentmanager.AvailableContents, _contentmanager.CreateContent, _contentmanager.DeleteContent);
         }
 
         public DataManager.InputData_Delegate GetInputDataCallback()
         {
-            return _datamanager.InputDataCallback;
+            return _datamanager.InputData;
         }
 
-        public void RegisterOutputDataCallback(DataManager.OutputData_Delegate _outputdata_callback)
+        public void SetOutputDataCallback(DataManager.OutputData_Delegate _outputdata_callback)
         {
-            _datamanager.RegisterOutputDataCallback(_outputdata_callback);
+            _datamanager.SetOutputDataCallback(_outputdata_callback);
         }
 
 

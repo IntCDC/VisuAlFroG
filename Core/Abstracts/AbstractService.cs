@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
+
 using Core.Utilities;
 
 
@@ -15,6 +16,13 @@ namespace Core
     {
         public abstract class AbstractService : IAbstractService
         {
+
+            /* ------------------------------------------------------------------*/
+            // public properties
+
+            public string Name { get { return GetType().FullName; } }
+
+
             /* ------------------------------------------------------------------*/
             // public functions
 

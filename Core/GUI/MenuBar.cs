@@ -35,7 +35,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public bool Initialize(WindowClose_Delegate close_callback, WindowManager.SettingsSave_Delegate save_callback, WindowManager.SettingsLoad_Delegate load_callback)
+            public bool Initialize(WindowClose_Delegate close_callback, SettingsService.Save_Delegate save_callback, SettingsService.Load_Delegate load_callback)
             {
                 if (_initilized)
                 {
@@ -189,8 +189,8 @@ namespace Core
 
             private Menu _content = null;
             private WindowClose_Delegate _close_callback = null;
-            private WindowManager.SettingsSave_Delegate _save_callback = null;
-            private WindowManager.SettingsLoad_Delegate _load_callback = null;
+            private SettingsService.Save_Delegate _save_callback = null;
+            private SettingsService.Load_Delegate _load_callback = null;
 
             private readonly string _item_id_close = "item_close_" + UniqueID.Generate();
             private readonly string _item_id_save = "item_save_" + UniqueID.Generate();

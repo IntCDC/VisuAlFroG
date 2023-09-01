@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Core.Abstracts;
 using Core.Utilities;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
+using Newtonsoft.Json;
+using Newtonsoft.Json.Schema;
+using System.Collections;
 
 
 /*
@@ -22,6 +22,36 @@ namespace Core
     {
         public class SettingsService : AbstractService
         {
+
+            /* ------------------------------------------------------------------*/
+            // public delegates
+
+            public delegate bool Save_Delegate();
+
+            public delegate bool Load_Delegate();
+
+            public delegate string RegisterCollect_Delegate();
+
+            public delegate bool RegisterApply_Delegate(string settings);
+
+
+            /* ------------------------------------------------------------------*/
+            // static functions
+
+            public static string Serialize<T>(T window_data)
+            {
+                string settings = JsonConvert.SerializeObject(window_data); //, Formatting.Indented);
+                return settings;
+            }
+
+
+            public static T Deserialize<T>(string content)
+            {
+                T settings = JsonConvert.DeserializeObject<T>(content);
+                return settings;
+            }
+
+
             /* ------------------------------------------------------------------*/
             // public functions
 
@@ -33,8 +63,8 @@ namespace Core
                 }
                 _timer.Start();
 
-
-
+                _collect_callbacks = new Dictionary<string, RegisterCollect_Delegate>();
+                _apply_callbacks = new Dictionary<string, RegisterApply_Delegate>();
 
                 _timer.Stop();
                 _initilized = true;
@@ -51,8 +81,11 @@ namespace Core
             {
                 if (_initilized)
                 {
+                    _collect_callbacks.Clear();
+                    _collect_callbacks = new Dictionary<string, RegisterCollect_Delegate>();
 
-
+                    _apply_callbacks.Clear();
+                    _apply_callbacks = new Dictionary<string, RegisterApply_Delegate>();
 
                     _initilized = false;
                 }
@@ -60,45 +93,59 @@ namespace Core
             }
 
 
-            public bool Save<T>(T settings)
+            /// <summary>
+            /// Unique name of requesting caller is required in order to create separate JSON entries
+            /// </summary>
+            public void RegisterSettings(string name, RegisterCollect_Delegate collect_callback, RegisterApply_Delegate apply_callback)
             {
-                string content = serialize<T>(settings);
-                if (content != string.Empty)
+                if (!_initilized)
                 {
-                    savefile_dialog(content);
-                    return true;
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to registration of callbacks");
+                    return;
+                }
+                if ((collect_callback == null) || (apply_callback == null))
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing callback(s)");
+                    return;
+                }
+
+                _collect_callbacks.Add(name, collect_callback);
+                _apply_callbacks.Add(name, apply_callback);
+            }
+
+
+            public bool Save()
+            {
+                var _serialize_strucutre = new Dictionary<string, string>();
+                foreach (var collect_callback in _collect_callbacks)
+                {
+                    // Call Collect Settings
+                    _serialize_strucutre.Add(collect_callback.Key, collect_callback.Value());
+                }
+                string settings = Serialize<Dictionary<string, string>>(_serialize_strucutre);
+                savefile_dialog(settings);
+                return true;
+            }
+
+
+            public bool Load()
+            {
+                string settings = openfile_dialog();
+                var _deserialize_structure = Deserialize<Dictionary<string, string>>(settings);
+
+                foreach (var apply_callback in _deserialize_structure)
+                {
+                    if (_apply_callbacks.ContainsKey(apply_callback.Key))
+                    {
+                        _apply_callbacks[apply_callback.Key](apply_callback.Value);
+                    }
                 }
                 return false;
             }
 
 
-            public T Load<T>()
-            {
-                T settings = default(T);
-                string content = openfile_dialog();
-                if (content != string.Empty)
-                {
-                    settings = deserialize<T>(content);
-                }
-                return settings;
-            }
-
-
             /* ------------------------------------------------------------------*/
             // private functions
-
-            private string serialize<T>(T window_data)
-            {
-                var options = new JsonSerializerOptions { WriteIndented = true };
-                return JsonSerializer.Serialize<T>(window_data, options);
-            }
-
-
-            private T deserialize<T>(string content)
-            {
-                return JsonSerializer.Deserialize<T>(content);
-            }
-
 
             private void savefile_dialog(string output_content)
             {
@@ -156,6 +203,12 @@ namespace Core
                 return input_content;
             }
 
+            /* ------------------------------------------------------------------*/
+            // public variables
+
+
+            private Dictionary<string, RegisterCollect_Delegate> _collect_callbacks = null;
+            private Dictionary<string, RegisterApply_Delegate> _apply_callbacks = null;
         }
     }
 }

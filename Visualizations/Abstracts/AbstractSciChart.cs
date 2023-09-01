@@ -47,7 +47,7 @@ namespace Visualizations
                 _initilized = true;
                 if (_initilized)
                 {
-                    Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().Name);
+                    Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
                 }
                 return _initilized;
             }

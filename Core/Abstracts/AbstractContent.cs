@@ -18,6 +18,16 @@ namespace Core
         {
 
             /* ------------------------------------------------------------------*/
+            // public classes
+
+            public class Settings : IAbstractSettings
+            {
+                               public string ContentID { get; set; }
+                public string ContentType { get; set; }
+            }
+
+
+            /* ------------------------------------------------------------------*/
             // public properties
 
             public abstract string Name { get; }
@@ -26,7 +36,7 @@ namespace Core
 
 
             public bool IsAttached { get { return _attached; } }
-            public string ID { get { return _id; } }
+            public string ID { get { return _id; } set { _id = value; } }
 
 
             /* ------------------------------------------------------------------*/
@@ -35,12 +45,6 @@ namespace Core
             public AbstractContent()
             {
                 _id = UniqueID.Generate();
-                _timer = new TimeBenchmark();
-            }
-
-            public AbstractContent(string ID)
-            {
-                _id = ID;
                 _timer = new TimeBenchmark();
             }
 
@@ -166,7 +170,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private readonly string _id = null;
+            private string _id = null;
             /// DEBUG
             protected TimeBenchmark _timer = null;
         }

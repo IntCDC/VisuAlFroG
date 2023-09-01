@@ -55,7 +55,7 @@ namespace GrasshopperComponent
                         }
                         else
                         {
-                            Log.Default.Msg(Log.Level.Error, "Can not convert data from: " + type.Name);
+                            Log.Default.Msg(Log.Level.Error, "Can not convert data from: " + type.FullName);
                         }
                     }
                     output.Add(list);

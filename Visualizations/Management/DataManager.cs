@@ -103,7 +103,7 @@ namespace Visualizations
                         else
                         {
                             /// TODO Add more library data formats here ...
-                            Log.Default.Msg(Log.Level.Warn, "Unknown data type: " + data_type.Key.Name);
+                            Log.Default.Msg(Log.Level.Warn, "Unknown data type: " + data_type.Key.FullName);
                         }
                     }
                     _library_data.Clear();
@@ -114,7 +114,7 @@ namespace Visualizations
             }
 
 
-            public void InputDataCallback(ref XYData_Type input_data)
+            public void InputData(ref XYData_Type input_data)
             {
                 _data_x.Clear();
                 _data_y.Clear();
@@ -154,7 +154,7 @@ namespace Visualizations
                 // Create library dependent data
                 foreach (var data_type in _library_data)
                 {
-                    Log.Default.Msg(Log.Level.Debug, data_type.Key.Name);
+                    Log.Default.Msg(Log.Level.Debug, data_type.Key.FullName);
 
                     if (data_type.Key == typeof(SciChartUniformData_Type))
                     {
@@ -177,7 +177,7 @@ namespace Visualizations
                     else
                     {
                         /// TODO Add more library data formats here ...
-                        Log.Default.Msg(Log.Level.Warn, "Unknown data type: " + data_type.Key.Name);
+                        Log.Default.Msg(Log.Level.Warn, "Unknown data type: " + data_type.Key.FullName);
                     }
                 }
 
@@ -186,13 +186,13 @@ namespace Visualizations
             }
 
 
-            public void RegisterOutputDataCallback(OutputData_Delegate outputdata_callback)
+            public void SetOutputDataCallback(OutputData_Delegate outputdata_callback)
             {
                 _outputdata_callback = outputdata_callback;
             }
 
 
-            public RequestDataCallback_Delegate RequestDataCallback()
+            public RequestDataCallback_Delegate GetRequestDataCallback()
             {
                 return request_data;
             }
@@ -212,7 +212,7 @@ namespace Visualizations
                 }
                 else
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Requested data not available for given data type: " + t.Name);
+                    Log.Default.Msg(Log.Level.Warn, "Requested data not available for given data type: " + t.FullName);
                 }
                 return null;
             }
@@ -248,7 +248,7 @@ namespace Visualizations
                     else
                     {
                         /// TODO Add more library data formats here ...
-                        Log.Default.Msg(Log.Level.Warn, "Unknown data type: " + data_type.Key.Name);
+                        Log.Default.Msg(Log.Level.Warn, "Unknown data type: " + data_type.Key.FullName);
                     }
                 }
 

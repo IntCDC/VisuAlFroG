@@ -14,6 +14,7 @@ using SciChart.Charting.Visuals;
 using Core.GUI;
 using Visualizations.Abstracts;
 using Visualizations.Management;
+using System.Runtime.InteropServices;
 
 
 
@@ -62,18 +63,76 @@ namespace Visualizations
             {
                 if (_initilized)
                 {
-                    foreach (var c_data in _contents)
+                    foreach (var content_types in _contents)
                     {
-                        foreach (var c in c_data.Value)
+                        foreach (var content_data in content_types.Value)
                         {
-                            c.Value.Terminate();
+                            content_data.Value.Terminate();
                         }
-                        c_data.Value.Clear();
+                        content_types.Value.Clear();
                     }
                     _contents.Clear();
                     _initilized = false;
                 }
                 return true;
+            }
+
+            public string CollectSettings()
+            {
+                var settings = new List<AbstractContent.Settings>();
+                foreach (var content_types in _contents)
+                {
+                    foreach (var content_data in content_types.Value)
+                    {
+                        settings.Add(new AbstractContent.Settings() { ContentID = content_data.Value.ID, ContentType = content_types.Key.FullName });
+                    }
+                }
+                return SettingsService.Serialize<List<AbstractContent.Settings>>(settings);
+            }
+
+
+            public bool ApplySettings(string settings)
+            {
+                var visualizations_settings = SettingsService.Deserialize<List<AbstractContent.Settings>>(settings);
+                if (visualizations_settings != null)
+                {
+                    foreach (var content_settings in visualizations_settings)
+                    {
+                        var type = get_type(content_settings.ContentType);
+                        if (_contents.ContainsKey(type))
+                        {
+                            var id = content_settings.ContentID;
+                            if (id == UniqueID.Invalid)
+                            {
+                                Log.Default.Msg(Log.Level.Warn, "Invalid content id: " + id);
+                            }
+
+                            if (!_contents[type].ContainsKey(id))
+                            {
+                                // Create new instance from type
+                                var new_content = (AbstractContent)Activator.CreateInstance(type);
+                                if (recursive_basetype(new_content.GetType(), typeof(AbstractVisualization)))
+                                {
+                                    ((AbstractVisualization)new_content).SetRequestDataCallback(_request_data_callback);
+                                }
+                                new_content.ID = id;
+                                new_content.Initialize();
+                                new_content.Create();
+                                _contents[type].Add(id, new_content);
+                            }
+                            else
+                            {
+                                Log.Default.Msg(Log.Level.Error, "Content " + content_settings.ContentType + " with ID " + id + " already exists");
+                            }
+                        }
+                        else
+                        {
+                            Log.Default.Msg(Log.Level.Error, "Unregistered content type: " + type.ToString());
+                        }
+                    }
+                    return true;
+                }
+                return false;
             }
 
 
@@ -87,14 +146,13 @@ namespace Visualizations
                 if (_initilized)
                 {
                     // Loop over registered types
-                    foreach (var c_data in _contents)
+                    foreach (var content_types in _contents)
                     {
-                        Type c_type = c_data.Key;
-
                         _timer.Start();
 
                         // Create temporary instance of content
-                        var tmp_content = (AbstractContent)Activator.CreateInstance(c_type);
+                        Type content_type = content_types.Key;
+                        var tmp_content = (AbstractContent)Activator.CreateInstance(content_type);
                         var lservice_types = tmp_content.DependingServices;
                         foreach (Type lservice_type in lservice_types)
                         {
@@ -122,7 +180,7 @@ namespace Visualizations
             ///  Provide necessary information of available window content
             /// >> Called by WindowLeaf
             /// </summary>
-            public AvailableContentList_Type ContentsCallback()
+            public AvailableContentList_Type AvailableContents()
             {
                 var content_ids = new AvailableContentList_Type();
 
@@ -133,19 +191,19 @@ namespace Visualizations
                 }
 
                 // Loop over registered types
-                foreach (var c_data in _contents)
+                foreach (var content_types in _contents)
                 {
-                    Type c_type = c_data.Key;
+                    var content_type = content_types.Key;
 
                     // Create temporary instance of content
-                    var tmp_content = (AbstractContent)Activator.CreateInstance(c_type);
+                    var tmp_content = (AbstractContent)Activator.CreateInstance(content_type);
                     string header = tmp_content.Name;
                     bool multiple_instances = tmp_content.MultipleIntances;
 
                     // Content is only available if multiple instance are allowed or has not been instanciated yet
-                    bool available = (multiple_instances || (c_data.Value.IsEmpty() && !multiple_instances));
+                    bool available = (multiple_instances || (content_types.Value.IsEmpty() && !multiple_instances));
 
-                    content_ids.Add(new AvailableContent_Type(header, available, multiple_instances, c_type));
+                    content_ids.Add(new AvailableContent_Type(header, available, multiple_instances, content_type.FullName));
                 }
 
                 return content_ids;
@@ -156,7 +214,7 @@ namespace Visualizations
             /// Attach requested content to provided parent content element.
             /// >> Called by WindowLeaf
             /// </summary>
-            public Control CreateContentCallback(string content_id, Type content_type)
+            public Control CreateContent(string content_id, string content_type)
             {
                 if (!_initilized)
                 {
@@ -164,26 +222,32 @@ namespace Visualizations
                     return null;
                 }
 
-                // Loop over registered types
-                if (_contents.ContainsKey(content_type))
+                var type = get_type(content_type);
+                if (_contents.ContainsKey(type))
                 {
                     string id = content_id;
-                    if (!_contents[content_type].ContainsKey(id))
+                    if (!_contents[type].ContainsKey(id))
                     {
-                        // Create new instance from type
-                        var new_content = (AbstractContent)Activator.CreateInstance(content_type);
-                        if (recursive_basetype(new_content.GetType(), typeof(AbstractVisualization)))
+                        if (content_id != UniqueID.Invalid)
                         {
-                            ((AbstractVisualization)new_content).SetRequestDataCallback(_request_data_callback);
+                            Log.Default.Msg(Log.Level.Warn, "Could not find requested content " + content_type + " with ID " + id);
                         }
-                        new_content.Initialize();
-                        new_content.Create();
-                        id = new_content.ID;
-                        _contents[content_type].Add(id, new_content);
+                        else
+                        {
+                            // Create new instance from type
+                            var new_content = (AbstractContent)Activator.CreateInstance(type);
+                            if (recursive_basetype(new_content.GetType(), typeof(AbstractVisualization)))
+                            {
+                                ((AbstractVisualization)new_content).SetRequestDataCallback(_request_data_callback);
+                            }
+                            new_content.Initialize();
+                            new_content.Create();
+                            id = new_content.ID;
+                            _contents[type].Add(id, new_content);
+                        }
                     }
 
-                    return _contents[content_type][id].Attach();
-
+                    return _contents[type][id].Attach();
                 }
                 else
                 {
@@ -197,15 +261,15 @@ namespace Visualizations
             /// Delete content.
             /// >> Called by WindowLeaf
             /// </summary>
-            public void DeleteContentCallback(string content_id)
+            public void DeleteContent(string content_id)
             {
                 // Loop over registered types
-                foreach (var c_data in _contents)
+                foreach (var content_types in _contents)
                 {
-                    if (c_data.Value.ContainsKey(content_id))
+                    if (content_types.Value.ContainsKey(content_id))
                     {
-                        c_data.Value[content_id].Detach();
-                        c_data.Value.Remove(content_id);
+                        content_types.Value[content_id].Detach();
+                        content_types.Value.Remove(content_id);
                     }
                 }
             }
@@ -236,11 +300,11 @@ namespace Visualizations
                 if (valid_type)
                 {
                     _contents.Add(content_type, new Dictionary<string, AbstractContent>());
-                    Log.Default.Msg(Log.Level.Info, "Registered content type: " + content_type.Name);
+                    Log.Default.Msg(Log.Level.Info, "Registered content type: " + content_type.FullName);
                 }
                 else
                 {
-                    Log.Default.Msg(Log.Level.Error, "Incompatible content type: " + content_type.Name);
+                    Log.Default.Msg(Log.Level.Error, "Incompatible content type: " + content_type.FullName);
                 }
             }
 
@@ -263,6 +327,30 @@ namespace Visualizations
                     }
                 }
                 return valid_base_type;
+            }
+
+
+            /// <summary>
+            /// Convert type from string
+            /// </summary>
+            public Type get_type(string type_string)
+            {
+                Type type = default(Type);
+                try
+                {
+                    // Try to load type from current assmebly (supress errors -> return null on error)
+                    type = Type.GetType(type_string);
+                    if (type == null)
+                    {
+                        // Try to load type from Core assembly - trow error if this is also not possible
+                        type = Assembly.Load("Core").GetType(type_string, true);
+                    }
+                }
+                catch (TypeLoadException e)
+                {
+                    Log.Default.Msg(Log.Level.Error, e.Message);
+                }
+                return type;
             }
 
 

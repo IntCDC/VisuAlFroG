@@ -11,6 +11,7 @@ using Visualizations;
 using Core.GUI;
 using Visualizations.Types;
 using Visualizations.Management;
+using static Core.GUI.SettingsService;
 
 
 
@@ -60,6 +61,7 @@ namespace Frontend
 
             ~MainWindow()
             {
+                _settingsservice.Terminate();
                 _vismanager.Terminate();
                 _winmanager.Terminate();
                 _menubar.Terminate();
@@ -69,7 +71,7 @@ namespace Frontend
             /// <summary>
             /// Callback to trigger reloading the interface (= Grasshopper).
             /// </summary>
-            public void ReloadInterfaceCallback(ReloadInterface_Delegate reload_callback)
+            public void SetReloadInterface(ReloadInterface_Delegate reload_callback)
             {
                 _reloadinterface_callback = reload_callback;
             }
@@ -78,9 +80,9 @@ namespace Frontend
             /// <summary>
             /// Callback to pass output data to the interface (= Grasshopper).
             /// </summary>
-            public void OutputDataCallback(DataManager.OutputData_Delegate output_data_callback)
+            public void SetOutputDataCallback(DataManager.OutputData_Delegate output_data_callback)
             {
-                _vismanager.RegisterOutputDataCallback(output_data_callback);
+                _vismanager.SetOutputDataCallback(output_data_callback);
             }
 
 
@@ -145,13 +147,22 @@ namespace Frontend
                 // CompositionTarget.Rendering += once_per_frame;
 
 
-                // Initialize managers
+                // Initialize managers and services
+                _settingsservice = new SettingsService();
                 _vismanager = new VisualizationManager();
                 _winmanager = new WindowManager();
                 _menubar = new MenuBar();
-                bool initilized = _vismanager.Initialize();
-                initilized &= _winmanager.Initialize(_vismanager.ContentCallbacks());
-                initilized &= _menubar.Initialize(this.Close, _winmanager.SaveSettings, _winmanager.LoadSettings);
+
+                bool initilized = _settingsservice.Initialize();
+                initilized &= _vismanager.Initialize();
+                initilized &= _winmanager.Initialize(_vismanager.GetContentCallbacks());
+                initilized &= _menubar.Initialize(this.Close, _settingsservice.Save, _settingsservice.Load);
+
+
+                // Register additional callbacks
+                _settingsservice.RegisterSettings(_vismanager.Name, _vismanager.CollectSettings, _vismanager.ApplySettings);
+                _settingsservice.RegisterSettings(_winmanager.Name, _winmanager.CollectSettings, _winmanager.ApplySettings);
+
 
                 // Get callbacks
                 _inputdata_callback = _vismanager.GetInputDataCallback();
@@ -160,7 +171,7 @@ namespace Frontend
                 _initilized = initilized;
                 if (_initilized)
                 {
-                    Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().Name);
+                    Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
                 }
                 return _initilized;
             }
@@ -229,6 +240,7 @@ namespace Frontend
             private bool _soft_close = false;
             private bool _detached = false;
 
+            private SettingsService _settingsservice = null;
             private VisualizationManager _vismanager = null;
             private WindowManager _winmanager = null;
             private MenuBar _menubar = null;

@@ -80,8 +80,8 @@ namespace Interface
                 {
                     string app_name = base.Name + " (" + base.NickName + ")";
                     _window = new MainWindow(app_name);
-                    _window.ReloadInterfaceCallback(reload_instance);
-                    _window.OutputDataCallback(retrieve_output_data);
+                    _window.SetReloadInterface(reload_instance);
+                    _window.SetOutputDataCallback(retrieve_output_data);
                 }
                 // Open or restore invisible window
                 _window.Show();

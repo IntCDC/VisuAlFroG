@@ -31,9 +31,9 @@ namespace Core
         {
 
             /* ------------------------------------------------------------------*/
-            // public properties 
+            // public classes 
 
-            public class Settings
+            public class Settings : IAbstractSettings
             {
                 public WindowBranch.SplitOrientation Orientation { get; set; }
                 public WindowBranch.ChildLocation Location { get; set; }
@@ -42,6 +42,9 @@ namespace Core
                 public Tuple<WindowBranch.Settings, WindowBranch.Settings> Children { get; set; }
             }
 
+
+            /* ------------------------------------------------------------------*/
+            // public properties 
 
             public Tuple<WindowBranch, WindowBranch> Children { get { return _children; } }
 

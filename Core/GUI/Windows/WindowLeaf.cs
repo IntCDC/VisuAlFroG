@@ -20,14 +20,17 @@ namespace Core
         public class WindowLeaf : AbstractWindow
         {
             /* ------------------------------------------------------------------*/
-            // public properties 
+            // public classes 
 
-            public class Settings
+            public class Settings : IAbstractSettings
             {
                 public string ContentID { get; set; }
                 public string ContentType { get; set; }
             }
 
+
+            /* ------------------------------------------------------------------*/
+            // public properties 
 
             public AttachedContent_Type AttachedContent { get { return _attached_content; } }
 
@@ -78,9 +81,9 @@ namespace Core
             }
 
 
-            public string CreateContent(string content_id, Type content_type)
+            public string CreateContent(string content_id, string content_type)
             {
-                // Call RequestContent_Delegate
+                // Call Create Content
                 var content_element = _content_callbacks.Item2(content_id, content_type);
                 if (content_element != null)
                 {
@@ -199,7 +202,7 @@ namespace Core
                 var item_content_add = new MenuItem();
                 item_content_add.Style = ColorTheme.MenuItemStyle("add-content.png");
                 item_content_add.Header = "Add Content";
-                // Call AvailableContents_Delegate
+                // Call Available Contents
                 AvailableContentList_Type available_child_content = _content_callbacks.Item1();
                 foreach (var content_data in available_child_content)
                 {
@@ -285,7 +288,7 @@ namespace Core
                     delete_content();
                 }
 
-                // Call AvailableContents_Delegate
+                // Call Available Contents
                 AvailableContentList_Type available_contents = _content_callbacks.Item1();
                 foreach (var content_data in available_contents)
                 {
@@ -308,7 +311,7 @@ namespace Core
                 {
                     if (_attached_content.Item1 != UniqueID.Invalid)
                     {
-                        // Call DeleteContent_Delegate
+                        // Call Delete Content
                         _content_callbacks.Item3(_attached_content.Item1);
                     }
                     _attached_content = null;
@@ -325,7 +328,7 @@ namespace Core
                 }
                 if ((_attached_content != null) && (e.MiddleButton == MouseButtonState.Pressed))
                 {
-                    var drag_and_drop_load = new Tuple<WindowLeaf, string, Type>(this, _attached_content.Item1, _attached_content.Item2);
+                    var drag_and_drop_load = new Tuple<WindowLeaf, string, string>(this, _attached_content.Item1, _attached_content.Item2);
                     delete_content();
                     DragDrop.DoDragDrop(sender_grid, drag_and_drop_load, DragDropEffects.All);
                 }
@@ -360,7 +363,7 @@ namespace Core
                 var data_type = typeof(Tuple<WindowLeaf, string, Type>);
                 if (e.Data.GetDataPresent(data_type))
                 {
-                    var source_content = (Tuple<WindowLeaf, string, Type>)e.Data.GetData(data_type);
+                    var source_content = (Tuple<WindowLeaf, string, string>)e.Data.GetData(data_type);
                     // Move content from target to source (content in source is already detached)
                     if ((source_content.Item1 != null) && (_attached_content != null))
                     {
