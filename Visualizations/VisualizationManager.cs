@@ -14,6 +14,7 @@ using Core.Abstracts;
 using EntityFrameworkDatabase;
 using System.Windows.Controls;
 using Visualizations.Types;
+using Core.GUI;
 
 
 
@@ -82,17 +83,15 @@ namespace Visualizations
         }
 
 
-        public ContentCallbacks_Type GetContentCallbacks()
+        public ContentCallbacks_Type ContentCallbacks()
         {
-            return new ContentCallbacks_Type(_contentmanager.ContentsCallback, _contentmanager.AttachContentCallback, _contentmanager.DetachContentCallback);
+            return new ContentCallbacks_Type(_contentmanager.ContentsCallback, _contentmanager.CreateContentCallback, _contentmanager.DeleteContentCallback);
         }
-
 
         public DataManager.InputData_Delegate GetInputDataCallback()
         {
             return _datamanager.InputDataCallback;
         }
-
 
         public void RegisterOutputDataCallback(DataManager.OutputData_Delegate _outputdata_callback)
         {

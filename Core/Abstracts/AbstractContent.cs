@@ -38,6 +38,12 @@ namespace Core
                 _timer = new TimeBenchmark();
             }
 
+            public AbstractContent(string ID)
+            {
+                _id = ID;
+                _timer = new TimeBenchmark();
+            }
+
 
             /// <summary>
             /// If derived class might requires additional data on initialization (declaring Initialize taking parameter(s)), 

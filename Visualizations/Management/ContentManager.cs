@@ -156,7 +156,7 @@ namespace Visualizations
             /// Attach requested content to provided parent content element.
             /// >> Called by WindowLeaf
             /// </summary>
-            public Control AttachContentCallback(string content_id, Type content_type)
+            public Control CreateContentCallback(string content_id, Type content_type)
             {
                 if (!_initilized)
                 {
@@ -197,7 +197,7 @@ namespace Visualizations
             /// Delete content.
             /// >> Called by WindowLeaf
             /// </summary>
-            public void DetachContentCallback(string content_id)
+            public void DeleteContentCallback(string content_id)
             {
                 // Loop over registered types
                 foreach (var c_data in _contents)

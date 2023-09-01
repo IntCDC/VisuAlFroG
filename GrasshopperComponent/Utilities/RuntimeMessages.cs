@@ -8,7 +8,6 @@ using Core.Utilities;
 using System.Diagnostics;
 using Grasshopper;
 using Grasshopper.Kernel;
-using static Core.Utilities.Log;
 
 
 

@@ -15,9 +15,9 @@ namespace Core
 {
     namespace Utilities
     {
-        public class ContentCallbacks_Type : Tuple<AbstractWindow.AvailableContents_Delegate, AbstractWindow.RequestContent_Delegate, AbstractWindow.DeleteContent_Delegate>
+        public class ContentCallbacks_Type : Tuple<AbstractWindow.AvailableContents_Delegate, AbstractWindow.CreateContent_Delegate, AbstractWindow.DeleteContent_Delegate>
         {
-            public ContentCallbacks_Type(AbstractWindow.AvailableContents_Delegate a1, AbstractWindow.RequestContent_Delegate a2, AbstractWindow.DeleteContent_Delegate a3) : base(a1, a2, a3) { }
+            public ContentCallbacks_Type(AbstractWindow.AvailableContents_Delegate a1, AbstractWindow.CreateContent_Delegate a2, AbstractWindow.DeleteContent_Delegate a3) : base(a1, a2, a3) { }
         }
 
         public class AvailableContent_Type : Tuple<string, bool, bool, Type>

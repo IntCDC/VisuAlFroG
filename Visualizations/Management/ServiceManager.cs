@@ -85,20 +85,6 @@ namespace Visualizations
             }
 
 
-            /* unused
-            public T GetService<T>() where T : AbstractService
-            {
-                Type service_type = typeof(T);
-                if (_services.ContainsKey(service_type))
-                {
-                    return (T)_services[service_type];
-                }
-                Log.Default.Msg(Log.Level.Warn, "Unable to find service: " + service_type.FullName);
-                return null;
-            }
-            */
-
-
             /* ------------------------------------------------------------------*/
             // private variables
 

@@ -7,7 +7,6 @@ using Frontend.Application;
 using Core.Utilities;
 using System.Resources;
 using System.Linq;
-using static GH_IO.VersionNumber;
 using System.Collections.Generic;
 using Grasshopper.Kernel.Data;
 using Grasshopper.Kernel.Types;

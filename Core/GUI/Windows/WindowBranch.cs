@@ -25,13 +25,23 @@ using Core.Abstracts;
  */
 namespace Core
 {
-    namespace Utilities
+    namespace GUI
     {
         public class WindowBranch : AbstractWindow
         {
 
             /* ------------------------------------------------------------------*/
             // public properties 
+
+            public class Settings
+            {
+                public WindowBranch.SplitOrientation Orientation { get; set; }
+                public WindowBranch.ChildLocation Location { get; set; }
+                public double Position { get; set; }
+                public WindowLeaf.Settings Leaf { get; set; }
+                public Tuple<WindowBranch.Settings, WindowBranch.Settings> Children { get; set; }
+            }
+
 
             public Tuple<WindowBranch, WindowBranch> Children { get { return _children; } }
 
@@ -41,21 +51,7 @@ namespace Core
 
             public ChildLocation Location { get { return _location; } }
 
-            public double Position
-            {
-                get
-                {
-                    switch (_orientation)
-                    {
-                        case (SplitOrientation.Horizontal):
-                            return _content.RowDefinitions[0].Height.Value;
-                        case (SplitOrientation.Vertical):
-                            return _content.ColumnDefinitions[0].Width.Value;
-                        default: return 0.5;
-                    }
-                }
-            }
-
+            public double Position { get { return calculate_position(); } }
 
 
             /* ------------------------------------------------------------------*/
@@ -284,6 +280,48 @@ namespace Core
                 cotent_element.RowDefinitions.Clear();
                 cotent_element.ColumnDefinitions.Clear();
                 cotent_element.UpdateLayout();
+            }
+
+
+            private double calculate_position()
+            {
+                /// NOTE: GridUnitType is fixed and always Star independant of the actual value, 
+                /// so we have to check for the actual value to determine whenter the value is absolute or relative.
+                double value = 0.0;
+                switch (_orientation)
+                {
+                    case (SplitOrientation.Horizontal):
+                        value = _content.RowDefinitions[0].Height.Value;
+                        if (value > 1.0) // Absolute value (in Pixel)
+                        {
+                            double total_height = 0;
+                            foreach (var rowdef in _content.RowDefinitions)
+                            {
+                                total_height += rowdef.Height.Value;
+                            }
+                            return ((total_height > 0.0) ? (value / total_height) : (0.0));
+                        }
+                        else // Relative value (Star)
+                        {
+                            return value;
+                        }
+                    case (SplitOrientation.Vertical):
+                        value = _content.ColumnDefinitions[0].Width.Value;
+                        if (value > 1.0)
+                        {
+                            double total_width = 0;
+                            foreach (var coldef in _content.ColumnDefinitions)
+                            {
+                                total_width += coldef.Width.Value;
+                            }
+                            return ((total_width > 0.0) ? (value / total_width) : (0.0));
+                        }
+                        else
+                        {
+                            return value;
+                        }
+                }
+                return value;
             }
 
 

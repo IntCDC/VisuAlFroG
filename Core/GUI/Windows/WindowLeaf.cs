@@ -15,12 +15,19 @@ using Core.Utilities;
  */
 namespace Core
 {
-    namespace Utilities
+    namespace GUI
     {
         public class WindowLeaf : AbstractWindow
         {
             /* ------------------------------------------------------------------*/
             // public properties 
+
+            public class Settings
+            {
+                public string ContentID { get; set; }
+                public string ContentType { get; set; }
+            }
+
 
             public AttachedContent_Type AttachedContent { get { return _attached_content; } }
 
@@ -71,13 +78,8 @@ namespace Core
             }
 
 
-            /// <summary>
-            ///  Returns id of attached content
-            /// </summary>
-            public string AttachContent(string content_id, Type content_type)
+            public string CreateContent(string content_id, Type content_type)
             {
-                detach_content();
-
                 // Call RequestContent_Delegate
                 var content_element = _content_callbacks.Item2(content_id, content_type);
                 if (content_element != null)
@@ -275,12 +277,12 @@ namespace Core
                 }
                 else if (content_id == _item_id_window_delete)
                 {
-                    detach_content();
+                    delete_content();
                     _parent_branch.DeleteLeaf();
                 }
                 else if (content_id == _item_id_delete_content)
                 {
-                    detach_content();
+                    delete_content();
                 }
 
                 // Call AvailableContents_Delegate
@@ -291,13 +293,14 @@ namespace Core
                     string name = conform_name(content_data.Item1);
                     if (content_id == name)
                     {
-                        AttachContent(UniqueID.Invalid, content_data.Item4);
+                        delete_content();
+                        CreateContent(UniqueID.Invalid, content_data.Item4);
                     }
                 }
             }
 
 
-            private void detach_content()
+            private void delete_content()
             {
                 _content.Children.Clear();
                 _content.Background = ColorTheme.GridBackground;
@@ -323,7 +326,7 @@ namespace Core
                 if ((_attached_content != null) && (e.MiddleButton == MouseButtonState.Pressed))
                 {
                     var drag_and_drop_load = new Tuple<WindowLeaf, string, Type>(this, _attached_content.Item1, _attached_content.Item2);
-                    detach_content();
+                    delete_content();
                     DragDrop.DoDragDrop(sender_grid, drag_and_drop_load, DragDropEffects.All);
                 }
             }
@@ -364,10 +367,12 @@ namespace Core
                         var target_content = _attached_content;
                         // Set _attached_content to null before detaching to prevent deletion of content
                         _attached_content = null;
-                        source_content.Item1.AttachContent(target_content.Item1, target_content.Item2);
+                        delete_content();
+                        source_content.Item1.CreateContent(target_content.Item1, target_content.Item2);
                     }
                     // Drop content from source in target
-                    AttachContent(source_content.Item2, source_content.Item3);
+                    delete_content();
+                    CreateContent(source_content.Item2, source_content.Item3);
                 }
             }
 

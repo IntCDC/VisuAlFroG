@@ -7,14 +7,13 @@ using Core.Abstracts;
 using System.Windows.Media;
 using System.Windows.Documents;
 using System.Runtime.CompilerServices;
-using static Core.Utilities.Log;
 using System.Collections.Generic;
 using System.Runtime.Remoting.Contexts;
 
 
 
 /*
- * Log Content
+ * Log Window Content
  * 
  */
 namespace Core

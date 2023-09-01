@@ -150,12 +150,11 @@ namespace Frontend
                 _winmanager = new WindowManager();
                 _menubar = new MenuBar();
                 bool initilized = _vismanager.Initialize();
-                initilized &= _winmanager.Initialize(_vismanager.GetContentCallbacks());
-                initilized &= _menubar.Initialize(this.Close);
+                initilized &= _winmanager.Initialize(_vismanager.ContentCallbacks());
+                initilized &= _menubar.Initialize(this.Close, _winmanager.SaveSettings, _winmanager.LoadSettings);
 
                 // Get callbacks
                 _inputdata_callback = _vismanager.GetInputDataCallback();
-
 
                 _timer.Stop();
                 _initilized = initilized;
