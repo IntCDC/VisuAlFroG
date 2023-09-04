@@ -22,29 +22,29 @@ using System.ComponentModel;
 using System.Linq;
 using SciChart.Charting.Visuals.PointMarkers;
 using System.Windows.Input;
+using SciChart.Charting.Visuals.PaletteProviders;
 using Visualizations.Abstracts;
 using Visualizations.Interaction;
 using Visualizations.Management;
-using SciChart.Charting.ChartModifiers;
 using SciChart.Core.Utility.Mouse;
+using SciChart.Charting.ChartModifiers;
 
 
 
 /*
- * Test Visualization
+ * Visualization: Columns (Bar Chart) (2D)
  * 
  */
 namespace Visualizations
 {
     namespace Types
     {
-        public class DEBUGLines : AbstractSciChart
+        public class ColumnsVisualization : AbstractSciChart
         {
-
             /* ------------------------------------------------------------------*/
             // properties
 
-            public override string Name { get { return "DEBUG Lines"; } }
+            public override string Name { get { return "Columns (2D)"; } }
 
 
             /* ------------------------------------------------------------------*/
@@ -52,7 +52,7 @@ namespace Visualizations
 
             public override bool Create()
             {
-                if (!_initilized)
+                if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return false;
@@ -69,16 +69,27 @@ namespace Visualizations
                 }
                 _timer.Start();
 
+
                 _content.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
                 _content.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
 
+
                 // Data Series -------------------------------------
-                var render_series = new FastLineRenderableSeries();
-                render_series.Name = "line_series_" + ID;
-                render_series.Stroke = Colors.Aquamarine;
+                var render_series = new FastColumnRenderableSeries();
+                render_series.Name = "column_series_" + ID;
+                render_series.DataPointWidth = 0.5;
+                render_series.PaletteProvider = new Selection_StrokePaletteProvider();
                 render_series.StrokeThickness = 2;
-                render_series.PointMarker = Selection_PointMarker.Default;
-                render_series.SelectedPointMarker = Selection_PointMarker.Selected;
+
+                var gradient = new LinearGradientBrush();
+                gradient.StartPoint = new Point(0.0, 0.0);
+                gradient.EndPoint = new Point(1.0, 1.0);
+                gradient.GradientStops = new GradientStopCollection();
+                var gs1 = new GradientStop() { Color = Colors.Blue, Offset = 0.2 };
+                gradient.GradientStops.Add(gs1);
+                var gs2 = new GradientStop() { Color = Colors.Green, Offset = 0.8 };
+                gradient.GradientStops.Add(gs2);
+                render_series.Fill = gradient;
 
                 /*
                 var wa = new WaveAnimation();
@@ -94,7 +105,6 @@ namespace Visualizations
                     render_series.DataSeries = data;
                 }
                 _content.RenderableSeries.Add(render_series);
-
                 _content.ZoomExtents();
 
 
@@ -139,7 +149,7 @@ namespace Visualizations
                     },
                     new SciChart.Charting.ChartModifiers.DataPointSelectionModifier()
                     {
-                        IsEnabled = true,
+                        IsEnabled = true
                     }
                 );
 
@@ -148,13 +158,14 @@ namespace Visualizations
                 var textAnnotation = new TextAnnotation()
                 {
                     Text = "|----------[Interaction]----------|" + Environment.NewLine +
-                            "Left Mouse:  Select/Box-Select" + Environment.NewLine +
-                            "Mouse Wheel: Zoom" + Environment.NewLine +
-                            "Right Mouse: Pan",
-                    X1 = 2.0,
-                    Y1 = 2.0
+                        "Left Mouse:  Select/Box-Select" + Environment.NewLine +
+                        "Mouse Wheel: Zoom" + Environment.NewLine +
+                        "Right Mouse: Pan",
+                    X1 = 6.0,
+                    Y1 = 9.0
                 };
                 _content.Annotations.Add(textAnnotation);
+
 
                 _timer.Stop();
                 _created = true;

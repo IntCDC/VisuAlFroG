@@ -16,7 +16,6 @@ namespace Visualizations
     {
         namespace Controllers
         {
-
             [RoutePrefix("api/request")]
             public class RequestController : ApiController
             {
@@ -24,6 +23,9 @@ namespace Visualizations
                 /* ------------------------------------------------------------------*/
                 // public functions
 
+                /// <summary>
+                /// Ctor.
+                /// </summary>
                 public RequestController()
                 {
                     _requests = new Request[]
@@ -34,14 +36,21 @@ namespace Visualizations
                                     };
                 }
 
-
+                /// <summary>
+                /// Answer all available requests.
+                /// </summary>
+                /// <returns>Enumerated requests.</returns>
                 [Route("")]
                 public IEnumerable<Request> GetAllRequests()
                 {
                     return _requests;
                 }
 
-
+                /// <summary>
+                /// Answer request by ID.
+                /// </summary>
+                /// <param name="id">The ID of the request.</param>
+                /// <returns>The requested request.</returns>
                 [Route("{id:int}")]
                 [ResponseType(typeof(Request))]
                 public IHttpActionResult GetRequest(int id)
@@ -54,19 +63,29 @@ namespace Visualizations
                     return Ok(request);
                 }
 
-
+                /// <summary>
+                /// Post request.
+                /// </summary>
+                /// <param name="value"></param>
                 // POST api/request 
                 public void Post([FromBody] string value)
                 {
                 }
 
-
+                /// <summary>
+                /// Put request.
+                /// </summary>
+                /// <param name="id"></param>
+                /// <param name="value"></param>
                 // PUT api/values/5 
                 public void Put(int id, [FromBody] string value)
                 {
                 }
 
-
+                /// <summary>
+                /// Delete request.
+                /// </summary>
+                /// <param name="id"></param>
                 // DELETE api/values/5 
                 public void Delete(int id)
                 {
@@ -74,7 +93,7 @@ namespace Visualizations
 
 
                 /* ------------------------------------------------------------------*/
-                // private varaiables
+                // private variables
 
                 /// DEBUG 
                 private Request[] _requests = null;

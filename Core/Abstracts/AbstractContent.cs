@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Remoting.Contexts;
 using System.Windows.Controls;
+
 using Core.Utilities;
 
 
@@ -20,10 +21,14 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public classes
 
-            public class Settings : IAbstractSettings
+            /// <summary>
+            /// Class defining the settings required for restoring content.
+            /// </summary>
+            public class Settings : IAbstractSettingData
             {
-                               public string ContentID { get; set; }
-                public string ContentType { get; set; }
+                public string ID { get; set; }
+                public string Type { get; set; }
+                /// TODO Add additional settings that should be saved here...
             }
 
 
@@ -31,10 +36,8 @@ namespace Core
             // public properties
 
             public abstract string Name { get; }
-            public abstract bool MultipleIntances { get; }
+            public abstract bool MultipleInstances { get; }
             public abstract List<Type> DependingServices { get; }
-
-
             public bool IsAttached { get { return _attached; } }
             public string ID { get { return _id; } set { _id = value; } }
 
@@ -42,17 +45,20 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
+            /// <summary>
+            /// Ctor.
+            /// </summary>
             public AbstractContent()
             {
                 _id = UniqueID.Generate();
                 _timer = new TimeBenchmark();
             }
 
-
             /// <summary>
-            /// If derived class might requires additional data on initialization (declaring Initialize taking parameter(s)), 
-            /// throw error when method of base class is called instead.
+            /// If derived class might requires additional data on initialization (declaring Initialize taking parameter(s)) ...
             /// </summary>
+            /// <returns>True on success, false otherwise.</returns>
+            /// <exception cref="InvalidOperationException">...throw error when method of base class is called instead.</exception>
             public virtual bool Initialize()
             {
                 throw new InvalidOperationException("Call Initialize method of derived class");
@@ -83,7 +89,10 @@ namespace Core
             }
             */
 
-
+            /// <summary>
+            /// Called to actually create the WPF content.
+            /// </summary>
+            /// <returns>True on success, false otherwise.</returns>
             public abstract bool Create();
             /*
             {
@@ -107,10 +116,10 @@ namespace Core
             }
             */
 
-
             /// <summary>
-            /// Attach content to provided content_element.
+            /// Called when content element is being attached to a parent element.
             /// </summary>
+            /// <returns>The WPF control element holding the content.</returns>
             public abstract Control Attach();
             /* TEMPLATE
             {
@@ -132,7 +141,10 @@ namespace Core
             }
             */
 
-
+            /// <summary>
+            /// Called when content has been detached. 
+            /// </summary>
+            /// <returns>True on success, false otherwise.</returns>
             public virtual bool Detach()
             {
                 if (!_attached)
@@ -144,7 +156,10 @@ namespace Core
                 return true;
             }
 
-
+            /// <summary>
+            /// Called when content should be terminated. Should implement counterpart to Initialize().
+            /// </summary>
+            /// <returns>True on success, false otherwise.</returns>
             public abstract bool Terminate();
             /* TEMPLATE
             {
@@ -162,7 +177,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // protected variables
 
-            protected bool _initilized = false;
+            protected bool _initialized = false;
             protected bool _created = false;
             protected bool _attached = false;
 

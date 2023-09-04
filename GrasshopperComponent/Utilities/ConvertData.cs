@@ -27,6 +27,11 @@ namespace GrasshopperComponent
             /* ------------------------------------------------------------------*/
             // static functions
 
+            /// <summary>
+            /// [STATIC] Convert data provided by the interface to data type not depending on interface specific type. 
+            /// </summary>
+            /// <param name="input">Reference to the data.</param>
+            /// <returns>The converted data.</returns>
             public static XYData_Type GH_to_List(ref GH_Structure<IGH_Goo> input)
             {
                 var output = new XYData_Type();
@@ -63,7 +68,11 @@ namespace GrasshopperComponent
                 return output;
             }
 
-
+            /// <summary>
+            /// [STATIC] Convert data provided by the application to interface specific data type. 
+            /// </summary>
+            /// <param name="input">Reference to the data.</param>
+            /// <returns>The converted data.</returns>
             public static GH_Structure<IGH_Goo> list_to_gh(ref XYData_Type input)
             {
                 var ouptut = new GH_Structure<IGH_Goo>();

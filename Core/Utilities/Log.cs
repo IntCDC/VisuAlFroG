@@ -43,7 +43,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            // Create singelton when Log.Default is called frist
+            /// <summary>
+            /// [STATIC] Create singelton when Log.Default is called the first time.
+            /// </summary>
             public static Log Default
             {
                 get
@@ -60,14 +62,21 @@ namespace Core
                 }
             }
 
-
+            /// <summary>
+            /// Ctor.
+            /// </summary>
             public Log()
             {
                 _messages = new List<MessageData>();
                 _listeners = new List<LogListener_Delegate>();
             }
 
-
+            /// <summary>
+            /// Log new message.
+            /// </summary>
+            /// <param name="level">Log level of message.</param>
+            /// <param name="log">The actual log message.</param>
+            /// <param name="custom_stacktrace">Pass separate stack trace instance.</param>
             public void Msg(Log.Level level, string log, StackTrace custom_stacktrace = null)
             {
 #if DEBUG
@@ -129,7 +138,10 @@ namespace Core
 #endif
             }
 
-
+            /// <summary>
+            /// Register new log message listener.
+            /// </summary>
+            /// <param name="listener">The log listener to register.</param>
             public void RegisterListener(LogListener_Delegate listener)
             {
                 _listeners.Add(listener);
@@ -137,7 +149,11 @@ namespace Core
                 listener(_messages);
             }
 
-
+            /// <summary>
+            /// Unregister log listener.
+            /// </summary>
+            /// <param name="listener">The listener that should be removed.</param>
+            /// <returns>True on success, false otherwise.</returns>
             public bool UnRegisterListener(LogListener_Delegate listener)
             {
                 return _listeners.Remove(listener);

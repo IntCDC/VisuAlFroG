@@ -17,21 +17,31 @@ namespace Visualizations
     namespace Interaction
     {
         /// <summary>
-        /// SciChart specific
+        /// SciChart specific stroke palette for column plots.
         /// </summary>
         public class Selection_StrokePaletteProvider : IStrokePaletteProvider
         {
-
             /* ------------------------------------------------------------------*/
             // public functions
 
+            /// <summary>
+            /// Callback called when drawing of series begins.
+            /// </summary>
+            /// <param name="rSeries">The renderable series.</param>
             public void OnBeginSeriesDraw(IRenderableSeries rSeries) { }
 
-
-            public Color? OverrideStrokeColor(IRenderableSeries rSeries, int index, IPointMetadata metadata)
+            /// <summary>
+            /// Callback called when strike color should be overridden.
+            /// </summary>
+            /// <param name="rSeries">The renderable series.</param>
+            /// <param name="index">The index of the data point.</param>
+            /// <param name="meta_data">The meta data of the data point.</param>
+            /// <returns></returns>
+            public Color? OverrideStrokeColor(IRenderableSeries rSeries, int index, IPointMetadata meta_data)
             {
-                return ((metadata != null) && (metadata.IsSelected)) ? _selected_stroke : _default_stroke;
+                return ((meta_data != null) && (meta_data.IsSelected)) ? _selected_stroke : _default_stroke;
             }
+
 
             /* ------------------------------------------------------------------*/
             // private variables
@@ -41,15 +51,17 @@ namespace Visualizations
         }
 
 
-
         /// <summary>
-        /// SciChart specific
+        /// SciChart specific Point Marker.
         /// </summary>
         public class Selection_PointMarker
         {
             /* ------------------------------------------------------------------*/
             // static properties
 
+            /// <summary>
+            /// [STATIC] Default point marker for lines series.
+            /// </summary>
             public static SciChart.Charting.Visuals.PointMarkers.EllipsePointMarker Default
             {
                 get
@@ -63,17 +75,20 @@ namespace Visualizations
                 }
             }
 
+            /// <summary>
+            /// [STATIC] Point marker for selected data points for lines series.
+            /// </summary>
             public static SciChart.Charting.Visuals.PointMarkers.EllipsePointMarker Selected
             {
                 get
                 {
                     return new EllipsePointMarker()
                     {
-                        Stroke = Colors.Red,
+                        Stroke = Colors.SteelBlue,
                         StrokeThickness = 5,
-                        Fill = Color.FromArgb(0x00, 0x00, 0x00, 0x00),
-                        Width = 15.0,
-                        Height = 15.0
+                        Fill = Colors.LightSteelBlue, // Color.FromArgb(0x00, 0x00, 0x00, 0x00),
+                        Width = 10.0,
+                        Height = 10.0
                     };
                 }
             }

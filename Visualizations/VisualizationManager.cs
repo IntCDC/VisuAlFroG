@@ -11,7 +11,6 @@ using System.Net.Http;
 using Microsoft.Owin.Hosting;
 using Core.Utilities;
 using Core.Abstracts;
-using EntityFrameworkDatabase;
 using System.Windows.Controls;
 using Visualizations.Types;
 using Core.GUI;
@@ -36,7 +35,6 @@ namespace Visualizations
             _contentmanager = new ContentManager();
             _datamanager = new DataManager();
         }
-
 
         public override bool Initialize()
         {
@@ -68,7 +66,6 @@ namespace Visualizations
             return _initilized;
         }
 
-
         public override bool Terminate()
         {
             bool terminated = true;
@@ -82,18 +79,15 @@ namespace Visualizations
             return terminated;
         }
 
-
         public string CollectSettings()
         {
             return _contentmanager.CollectSettings();
         }
 
-
         public bool ApplySettings(string settings)
         {
             return _contentmanager.ApplySettings(settings);
         }
-
 
         public ContentCallbacks_Type GetContentCallbacks()
         {

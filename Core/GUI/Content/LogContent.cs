@@ -25,8 +25,8 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // properties
 
-            public override string Name { get { return "Log"; } }
-            public override bool MultipleIntances { get { return false; } }
+            public override string Name { get { return "Log Console"; } }
+            public override bool MultipleInstances { get { return false; } }
             public override List<Type> DependingServices { get { return new List<Type>() { }; } }
 
 
@@ -35,7 +35,7 @@ namespace Core
 
             public override bool Initialize()
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     Terminate();
                 }
@@ -47,18 +47,17 @@ namespace Core
                 Log.Default.RegisterListener(this.LogListener);
 
                 _timer.Stop();
-                _initilized = true;
-                if (_initilized)
+                _initialized = true;
+                if (_initialized)
                 {
                     Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().Name);
                 }
-                return _initilized;
+                return _initialized;
             }
-
 
             public override bool Create()
             {
-                if (!_initilized)
+                if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return false;
@@ -86,10 +85,9 @@ namespace Core
                 return _created;
             }
 
-
             public override Control Attach()
             {
-                if (!_initilized)
+                if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return null;
@@ -106,21 +104,23 @@ namespace Core
                 return _content;
             }
 
-
             public override bool Terminate()
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     _content = null;
                     _textblock = null;
                     Log.Default.UnRegisterListener(this.LogListener);
 
-                    _initilized = false;
+                    _initialized = false;
                 }
                 return true;
             }
 
-
+            /// <summary>
+            /// Log listener callback which should be called whenever new messages are available.
+            /// </summary>
+            /// <param name="msglist">provide only the new log messages</param>
             public void LogListener(List<Log.MessageData> msglist)
             {
                 // Is called before Initialize() therefore _textblock needs to be not null

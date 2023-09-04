@@ -12,7 +12,6 @@ using Core.Abstracts;
  */
 /* TEST
 Execute:
-
     bool received_response = false;
     var response = _client.GetAsync(_base_address + "api/request").Result;
     if (response != null)
@@ -62,7 +61,6 @@ namespace Visualizations
                 }
                 return _initilized;
             }
-
 
             public override bool Terminate()
             {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using SciChart.Charting.Model.DataSeries;
 
 
@@ -13,24 +14,32 @@ using SciChart.Charting.Model.DataSeries;
  */
 namespace Visualizations
 {
-
     namespace Interaction
     {
 
-        public class Metadata : SciChart.Charting.Model.DataSeries.IPointMetadata
+        public class MetaData : SciChart.Charting.Model.DataSeries.IPointMetadata
         {
 
             /* ------------------------------------------------------------------*/
             // public events
 
+            /// <summary>
+            /// Event to indicated changed properties.
+            /// </summary>
             public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
 
             /* ------------------------------------------------------------------*/
             // public properties
 
+            /// <summary>
+            /// Index of the data point.
+            /// </summary>
             public int Index { get; set; }
 
+            /// <summary>
+            /// Flag indicating whether data point is selected or not.
+            /// </summary>
             public bool IsSelected
             {
                 get
@@ -55,5 +64,4 @@ namespace Visualizations
             private bool _selected = false;
         }
     }
-
 }

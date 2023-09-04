@@ -19,7 +19,7 @@ namespace Core
 {
     namespace GUI
     {
-        public class WindowManager : AbstractService
+        public class WindowManager : AbstractService, IAbstractSettingData
         {
             /* ------------------------------------------------------------------*/
             // public functions
@@ -49,7 +49,6 @@ namespace Core
                 return _initilized;
             }
 
-
             public Panel Attach()
             {
                 if (!_initilized)
@@ -59,7 +58,6 @@ namespace Core
                 }
                 return _content;
             }
-
 
             public override bool Terminate()
             {
@@ -75,14 +73,12 @@ namespace Core
                 return terminated;
             }
 
-
             public string CollectSettings()
             {
                 var settings = new WindowBranch.Settings();
                 collect_settings(_window_root, settings);
                 return SettingsService.Serialize<WindowBranch.Settings>(settings);
             }
-
 
             public bool ApplySettings(string settings)
             {
@@ -100,8 +96,10 @@ namespace Core
             // private functions
 
             /// <summary>
-            /// Traverse window tree in breadth first order to gather all settings
+            /// Traverse window tree in breadth first order to gather all settings recursively.
             /// </summary>
+            /// <param name="branch">The current branch object</param>
+            /// <param name="settings">The settings are appended according to the branch settings.</param>
             void collect_settings(WindowBranch branch, WindowBranch.Settings settings)
             {
                 if (branch == null)
@@ -142,8 +140,10 @@ namespace Core
 
 
             /// <summary>
-            /// Traverse window tree in breadth first order to set branch settings
+            /// Traverse window tree in breadth first order and set branch settings recursively.
             /// </summary>
+            /// <param name="branch">The initial branch object.</param>
+            /// <param name="settings">The settings object.</param>
             void apply_settings(WindowBranch branch, WindowBranch.Settings settings)
             {
                 if (settings == null)
@@ -173,5 +173,4 @@ namespace Core
             private ContentCallbacks_Type _content_callbacks = null;
         }
     }
-
 }

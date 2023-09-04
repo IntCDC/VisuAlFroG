@@ -22,7 +22,7 @@ namespace Visualizations
     namespace Management
     {
 
-        // data types
+        // Data Types
         public class SciChartUniformData_Type : SciChart.Charting.Model.DataSeries.UniformXyDataSeries<double> { }
         public class SciChartData_Type : SciChart.Charting.Model.DataSeries.XyDataSeries<double, double> { }
 
@@ -33,7 +33,7 @@ namespace Visualizations
             // public delegates
 
             /// <summary>
-            /// Function provided by the data manager for passng on the inpout data to the visualizations
+            /// Function provided by the data manager for passing on the input data to the visualizations
             /// </summary>
             public delegate void InputData_Delegate(ref XYData_Type input_data);
 
@@ -46,7 +46,6 @@ namespace Visualizations
             /// Callback for visualizations to request suitable data
             /// </summary>
             public delegate object RequestDataCallback_Delegate(Type t);
-
 
 
             /* ------------------------------------------------------------------*/
@@ -64,7 +63,7 @@ namespace Visualizations
 
                 _data_x = new List<double>();
                 _data_y = new List<double>();
-                _data_meta = new List<Metadata>();
+                _data_meta = new List<MetaData>();
                 _library_data = new Dictionary<Type, object>();
 
                 // SciChart
@@ -83,7 +82,6 @@ namespace Visualizations
                 _initilized = initilized;
                 return _initilized;
             }
-
 
             public override bool Terminate()
             {
@@ -113,7 +111,10 @@ namespace Visualizations
                 return terminated;
             }
 
-
+            /// <summary>
+            /// Callback for new input data.
+            /// </summary>
+            /// <param name="input_data">Reference to the new input data.</param>
             public void InputData(ref XYData_Type input_data)
             {
                 _data_x.Clear();
@@ -139,9 +140,9 @@ namespace Visualizations
                     _data_x.Add(y);
                     _data_y.Add(input_data[x][y]);
 
-                    var metadata = new Metadata() { Index = y, IsSelected = false };
-                    metadata.PropertyChanged += metadata_changed;
-                    _data_meta.Add(metadata);
+                    var meta_data = new MetaData() { Index = y, IsSelected = false };
+                    meta_data.PropertyChanged += metadata_changed;
+                    _data_meta.Add(meta_data);
                 }
                 //}
                 if ((_data_x.Count != _data_y.Count) || (_data_x.Count != _data_meta.Count) || (_data_y.Count != _data_meta.Count))
@@ -149,7 +150,6 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Warn, "Data count does not match");
                     return;
                 }
-
 
                 // Create library dependent data
                 foreach (var data_type in _library_data)
@@ -185,19 +185,29 @@ namespace Visualizations
                 Log.Default.Msg(Log.Level.Debug, "... done.");
             }
 
-
+            /// <summary>
+            /// Set the callback to provide new output data to the interface. 
+            /// </summary>
+            /// <param name="outputdata_callback"></param>
             public void SetOutputDataCallback(OutputData_Delegate outputdata_callback)
             {
                 _outputdata_callback = outputdata_callback;
             }
 
-
+            /// <summary>
+            /// Callback for visualizations to ask for library specific data.
+            /// </summary>
+            /// <returns>The callback for requesting data.</returns>
             public RequestDataCallback_Delegate GetRequestDataCallback()
             {
                 return request_data;
             }
 
-
+            /// <summary>
+            /// Return the data for the requested type.
+            /// </summary>
+            /// <param name="t">The type the data would be required.</param>
+            /// <returns>The data as generic object. Cast to requested type manually.</returns>
             private object request_data(Type t)
             {
                 if (!_initilized)
@@ -217,10 +227,14 @@ namespace Visualizations
                 return null;
             }
 
-
+            /// <summary>
+            /// Callback provided for getting notified on changed meta data 
+            /// </summary>
+            /// <param name="sender">The sender object.</param>
+            /// <param name="e">The property changed event arguments.</param>
             private void metadata_changed(object sender, PropertyChangedEventArgs e)
             {
-                var sender_selection = sender as Metadata;
+                var sender_selection = sender as MetaData;
                 if ((sender_selection == null) || (e.PropertyName != "IsSelected"))
                 {
                     return;
@@ -273,7 +287,7 @@ namespace Visualizations
             private OutputData_Delegate _outputdata_callback = null;
             private List<double> _data_x = null;
             private List<double> _data_y = null;
-            private List<Metadata> _data_meta = null;
+            private List<MetaData> _data_meta = null;
             private Dictionary<Type, object> _library_data = null;
         }
     }

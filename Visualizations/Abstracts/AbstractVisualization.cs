@@ -23,20 +23,23 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // properties
 
-            public sealed override bool MultipleIntances
-            {
-                get { return true; }
-            }
+            /// <summary>
+            /// All visualizations should be able to be used multiple times.
+            /// </summary>
+            public sealed override bool MultipleInstances { get { return true; } }
 
 
             /* ------------------------------------------------------------------*/
             // public functions
 
+            /// <summary>
+            /// Visualizations need access to data of specific type.
+            /// </summary>
+            /// <param name="request_data_callback">Callback from data manager to request data of specific type.</param>
             public void SetRequestDataCallback(DataManager.RequestDataCallback_Delegate request_data_callback)
             {
                 _request_data_callback = request_data_callback;
             }
-
 
 
             /* ------------------------------------------------------------------*/

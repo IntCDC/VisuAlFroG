@@ -17,11 +17,20 @@ namespace Visualizations
         {
 
             /* ------------------------------------------------------------------*/
+            // public property
+
+            public string _StringID { get; set; }
+
+
+            /* ------------------------------------------------------------------*/
             // public functions
 
+            /// <summary>
+            /// Load script from file (DEBUG).
+            /// </summary>
+            /// <returns></returns>
             public bool Initialize()
             {
-                /// DEBUG Load script from file
                 try
                 {
                     _source = File.ReadAllText(@"bokeh-template.py");
@@ -37,7 +46,9 @@ namespace Visualizations
                 return _initilized;
             }
 
-
+            /// <summary>
+            /// Execute script.
+            /// </summary>
             public void Execute()
             {
                 // Global Interpreter Lock 
@@ -55,7 +66,7 @@ namespace Visualizations
 
                         scope.Exec(_source);
 
-                        /// DEBUG Get 'Start' fuction as PyObject 
+                        /// DEBUG Get 'Start' function as PyObject 
                         dynamic start = scope.Get("Start");
                         start();
                     }
@@ -67,17 +78,10 @@ namespace Visualizations
 
 
             /* ------------------------------------------------------------------*/
-            // public variables
-
-            public string _StringID { get; set; }
-
-
-            /* ------------------------------------------------------------------*/
             // private variables
 
             private bool _initilized = false;
             private string _source = null;
         }
-
     }
 }

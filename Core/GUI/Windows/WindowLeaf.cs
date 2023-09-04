@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Remoting.Contexts;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -22,7 +23,10 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public classes 
 
-            public class Settings : IAbstractSettings
+            /// <summary>
+            /// Settings data.
+            /// </summary>
+            public class Settings : IAbstractSettingData
             {
                 public string ContentID { get; set; }
                 public string ContentType { get; set; }
@@ -33,13 +37,18 @@ namespace Core
             // public properties 
 
             public AttachedContent_Type AttachedContent { get { return _attached_content; } }
-
             public Grid ContentElement { get { return _content; } }
 
 
             /* ------------------------------------------------------------------*/
             // public functions
 
+            /// <summary>
+            /// Ctor.
+            /// </summary>
+            /// <param name="parent_branch">The parent window branch.</param>
+            /// <param name="parent_is_root">Flag indicating whether branch is root.</param>
+            /// <param name="content_callbacks">The content callbacks required in the window leaf.</param>
             public WindowLeaf(WindowBranch parent_branch, bool parent_is_root, ContentCallbacks_Type content_callbacks)
             {
                 _parent_branch = parent_branch;
@@ -47,12 +56,12 @@ namespace Core
                 _content_callbacks = content_callbacks;
                 if (_parent_branch == null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Paramter parent_branch should not be null");
+                    Log.Default.Msg(Log.Level.Error, "Parameter parent_branch should not be null");
                     return;
                 }
                 if (_content_callbacks == null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Paramter content_callbacks should not be null");
+                    Log.Default.Msg(Log.Level.Error, "Parameter content_callbacks should not be null");
                     return;
                 }
 
@@ -80,7 +89,12 @@ namespace Core
                 contextmenu_setup();
             }
 
-
+            /// <summary>
+            /// Request creation of new content.
+            /// </summary>
+            /// <param name="content_id">Provide ID of existing content or invalid id otherwise.</param>
+            /// <param name="content_type">The type of the content as string.</param>
+            /// <returns>The id of the attached content.</returns>
             public string CreateContent(string content_id, string content_type)
             {
                 // Call Create Content
@@ -106,25 +120,32 @@ namespace Core
                 return UniqueID.Invalid;
             }
 
-
+            /// <summary>
+            /// Set new parent branch.
+            /// </summary>
+            /// <param name="parent_branch">The new parent branch.</param>
+            /// <param name="parent_is_root">Flag indicating if parent is root (required to prevent window deletion on top most level).</param>
             public void SetParent(WindowBranch parent_branch, bool parent_is_root)
             {
                 _parent_branch = parent_branch;
                 _parent_is_root = parent_is_root;
                 if (_parent_branch == null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Paramter parent_branch should not be null");
+                    Log.Default.Msg(Log.Level.Error, "Parameter parent_branch should not be null");
                     return;
                 }
 
                 // Recreate context menu due to changed root
-                contextmenu_setup();
+                ///contextmenu_setup();
             }
 
 
             /* ------------------------------------------------------------------*/
             // private functions
 
+            /// <summary>
+            /// Used to setup the context menu once.
+            /// </summary>
             private void contextmenu_setup()
             {
                 ContextMenu contextmenu = new ContextMenu();
@@ -134,7 +155,11 @@ namespace Core
                 _content.ContextMenu = contextmenu;
             }
 
-
+            /// <summary>
+            /// Callback called whenever context menu is opened.
+            /// </summary>
+            /// <param name="sender">The sender object.</param>
+            /// <param name="e">The routed event arguments.</param>
             private void contextmenu_loaded(object sender, RoutedEventArgs e)
             {
                 var contextmenu = sender as ContextMenu;
@@ -210,7 +235,7 @@ namespace Core
                     var content_item = new MenuItem();
                     content_item.Style = ColorTheme.MenuItemStyle();
 
-                    // Repalcement of spaces is necessary for Name property
+                    // Replacement of spaces is necessary for Name property
                     content_item.Header = content_data.Item1;
                     content_item.Name = conform_name(content_data.Item1); // Name
                     content_item.IsEnabled = content_data.Item2; // Available
@@ -251,7 +276,11 @@ namespace Core
                 contextmenu.Items.Add(item_content_dad);
             }
 
-
+            /// <summary>
+            /// Called when a menu item in the context menu is clicked.
+            /// </summary>
+            /// <param name="sender">The sender object.</param>
+            /// <param name="e">The routed event arguments.</param>
             private void menuitem_click(object sender, RoutedEventArgs e)
             {
                 var sender_content = sender as MenuItem;
@@ -292,7 +321,7 @@ namespace Core
                 AvailableContentList_Type available_contents = _content_callbacks.Item1();
                 foreach (var content_data in available_contents)
                 {
-                    // Repalcement of spaces is necessary for Name property
+                    // Replacement of spaces is necessary for Name property
                     string name = conform_name(content_data.Item1);
                     if (content_id == name)
                     {
@@ -302,7 +331,9 @@ namespace Core
                 }
             }
 
-
+            /// <summary>
+            /// Delete attached content permanently.
+            /// </summary>
             private void delete_content()
             {
                 _content.Children.Clear();
@@ -318,7 +349,11 @@ namespace Core
                 }
             }
 
-
+            /// <summary>
+            /// Callback called when middle mouse button is pressed and mouse is moved.
+            /// </summary>
+            /// <param name="sender">The sender object.</param>
+            /// <param name="e">The mouse event arguments.</param>
             private void content_mousemove(object sender, MouseEventArgs e)
             {
                 var sender_grid = sender as Grid;
@@ -334,7 +369,11 @@ namespace Core
                 }
             }
 
-
+            /// <summary>
+            /// Callback called when content is started to be dragged.
+            /// </summary>
+            /// <param name="sender">The sender object.</param>
+            /// <param name="e">The drag event arguments.</param>
             private void content_dragover(object sender, DragEventArgs e)
             {
                 var sender_grid = sender as Grid;
@@ -351,7 +390,11 @@ namespace Core
                 }
             }
 
-
+            /// <summary>
+            /// Callback called when dragged content is dropped.
+            /// </summary>
+            /// <param name="sender">The sender object.</param>
+            /// <param name="e">The drag event arguments.</param>
             private void content_drop(object sender, DragEventArgs e)
             {
                 var sender_grid = sender as Grid;
@@ -379,11 +422,18 @@ namespace Core
                 }
             }
 
-
+            /// <summary>
+            /// Convert string to WPF conform 'Name'
+            /// </summary>
+            /// <param name="name">The input name.</param>
+            /// <returns>The conform output name.</returns>
             private string conform_name(string name)
             {
-                // There are no spaces ' ' allowed in Control.Name
-                return name.Replace(' ', '_');
+                var conform_name = name.Replace(" ", ""); ;
+                conform_name = conform_name.Replace("(", "");
+                conform_name = conform_name.Replace(")", "");
+                conform_name = Regex.Replace(conform_name, "[0-9]", "");
+                return conform_name;
             }
 
 

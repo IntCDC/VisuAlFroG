@@ -13,14 +13,14 @@ using SciChart.Charting.Model.DataSeries;
 
 
 /*
- * Abstract Visualization for SciChart based visualizations relying on the SciChartSurface.
+ * Abstract Visualization for SciChart based visualizations relying on the SciChartParallelCoordinateSurface.
  * 
  */
 namespace Visualizations
 {
     namespace Abstracts
     {
-        public abstract class AbstractSciChart : AbstractVisualization
+        public abstract class AbstractSciChartParallel : AbstractVisualization
         {
 
             /* ------------------------------------------------------------------*/
@@ -40,7 +40,7 @@ namespace Visualizations
                 }
                 _timer.Start();
 
-                _content = new SciChartSurface();
+                _content = new SciChartParallelCoordinateSurface();
                 _content.Name = ID;
 
                 _timer.Stop();
@@ -90,7 +90,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // protected variables
 
-            protected SciChartSurface _content = null;
+            protected SciChartParallelCoordinateSurface _content = null;
         }
     }
 }

@@ -11,15 +11,11 @@ using Visualizations;
 using Core.GUI;
 using Visualizations.Types;
 using Visualizations.Management;
-using static Core.GUI.SettingsService;
 
 
 
 /*
  * Main WPF Application
- * 
- * 
- * Interaction logic for MainWindow.xaml
  * 
  */
 namespace Frontend
@@ -33,7 +29,7 @@ namespace Frontend
             // public delegates
 
             /// <summary>
-            /// Function provided by the interface (= Grasshopper) which allows to trigger relaoding of the interface
+            /// Function provided by the interface (= Grasshopper) which allows to trigger reloading of the interface
             /// </summary>
             public delegate void ReloadInterface_Delegate();
 
@@ -42,11 +38,15 @@ namespace Frontend
             // public functions
 
             /// <summary>
-            /// Used for detached execution
-            /// that use the old ID will partially fail during loading.
+            /// Ctor. Used for detached execution.
             /// </summary>
             public MainWindow() : this("[detached] Visualization Framework for Grasshopper (VisFroG)", true) { }
 
+            /// <summary>
+            /// Ctor.
+            /// </summary>
+            /// <param name="app_name"></param>
+            /// <param name="detached"></param>
             public MainWindow(string app_name, bool detached = false)
             {
                 /// DEBUG get C# version, see compile output (C# Language Version 7.3)
@@ -58,7 +58,9 @@ namespace Frontend
                 create();
             }
 
-
+            /// <summary>
+            /// Dtor.
+            /// </summary>
             ~MainWindow()
             {
                 _settingsservice.Terminate();
@@ -67,28 +69,28 @@ namespace Frontend
                 _menubar.Terminate();
             }
 
-
             /// <summary>
             /// Callback to trigger reloading the interface (= Grasshopper).
             /// </summary>
+            /// <param name="reload_callback">Reload callback provided by the interface.</param>
             public void SetReloadInterface(ReloadInterface_Delegate reload_callback)
             {
                 _reloadinterface_callback = reload_callback;
             }
 
-
             /// <summary>
             /// Callback to pass output data to the interface (= Grasshopper).
             /// </summary>
+            /// <param name="output_data_callback">callback from the DataManager to pipe new output data to the interface.</param>
             public void SetOutputDataCallback(DataManager.OutputData_Delegate output_data_callback)
             {
                 _vismanager.SetOutputDataCallback(output_data_callback);
             }
 
-
             /// <summary>
             /// Get input data from interface (= Grasshopper).
             /// </summary>
+            /// <param name="input_data">Reference to the input data hold by the interface.</param>
             public void InputData(ref XYData_Type input_data)
             {
                 if (_inputdata_callback != null)
@@ -109,6 +111,7 @@ namespace Frontend
             /// Soft close is used when called from interface (= Grasshopper), see CTOR
             /// Only change visibility and abort closing for being able to restore closed window
             /// </summary>
+            /// <param name="cancel_args">Cancel event arguments</param>
             protected override void OnClosing(CancelEventArgs cancel_args)
             {
                 if (_soft_close)
@@ -126,6 +129,11 @@ namespace Frontend
             /* ------------------------------------------------------------------*/
             // private functions
 
+            /// <summary>
+            /// Initialize the main WPF window, the services and the managers...
+            /// </summary>
+            /// <param name="app_name">The name of the WPF application.</param>
+            /// <returns>True on successful initialization, false otherwise.</returns>
             public bool initialize(string app_name)
             {
                 if (_initilized)
@@ -160,12 +168,14 @@ namespace Frontend
 
 
                 // Register additional callbacks
+                ///  Do not reorder since applying settings might be order dependent!
                 _settingsservice.RegisterSettings(_vismanager.Name, _vismanager.CollectSettings, _vismanager.ApplySettings);
                 _settingsservice.RegisterSettings(_winmanager.Name, _winmanager.CollectSettings, _winmanager.ApplySettings);
 
 
                 // Get callbacks
                 _inputdata_callback = _vismanager.GetInputDataCallback();
+
 
                 _timer.Stop();
                 _initilized = initilized;
@@ -176,7 +186,10 @@ namespace Frontend
                 return _initilized;
             }
 
-
+            /// <summary>
+            /// Create the WPF content of the application.
+            /// </summary>
+            /// <returns>True on successful creation of the content, false otherwise</returns>
             public bool create()
             {
                 if (!_initilized)
@@ -214,19 +227,21 @@ namespace Frontend
                 return true;
             }
 
-
             /// <summary>
             /// Callback additionally invoked on loading of main window.
             /// </summary>
+            /// <param name="sender">Sender object.</param>
+            /// <param name="routedEventArgs">Routed event arguments.</param>
             private void on_loaded(object sender, RoutedEventArgs routedEventArgs)
             {
                 // so far unused ...
             }
 
-
             /// <summary>
-            /// Callback invoked once per frame
+            /// Callback invoked once per frame.
             /// </summary>
+            /// <param name="sender">Sender object.</param>
+            /// <param name="args">Event arguments.</param>
             private void once_per_frame(object sender, EventArgs args)
             {
                 // so far unused ...

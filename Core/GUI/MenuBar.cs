@@ -27,7 +27,7 @@ namespace Core
             // public delegates
 
             /// <summary>
-            /// Function provided by the interface (= Grasshopper) which allows to trigger relaoding of the interface
+            /// Callback provided by the main WPF application on closing. 
             /// </summary>
             public delegate void WindowClose_Delegate();
 
@@ -58,7 +58,6 @@ namespace Core
                 _initilized = true;
                 return _initilized;
             }
-
 
             public Control Attach()
             {
@@ -124,7 +123,6 @@ namespace Core
                 return _content;
             }
 
-
             public override bool Terminate()
             {
                 if (_initilized)
@@ -143,6 +141,11 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private functions
 
+            /// <summary>
+            /// Called when menu item is clicked. Same for all menu items.
+            /// </summary>
+            /// <param name="sender">The sender object.</param>
+            /// <param name="e">The routed event arguments.</param>
             private void menuitem_click(object sender, RoutedEventArgs e)
             {
                 var sender_content = sender as MenuItem;
@@ -175,11 +178,15 @@ namespace Core
                 }
             }
 
-
+            /// <summary>
+            /// Called to open URL in new browser tab.
+            /// </summary>
+            /// <param name="sender">The sender object.</param>
+            /// <param name="e">The request navigate event arguments.</param>
             private void hyperlink_requestnavigate(object sender, RequestNavigateEventArgs e)
             {
-                Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
                 System.Diagnostics.Process.Start(e.Uri.ToString());
+                /// or Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
                 e.Handled = true;
             }
 

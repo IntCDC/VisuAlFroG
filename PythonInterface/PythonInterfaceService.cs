@@ -13,7 +13,6 @@ using Microsoft.Scripting.Runtime;
  */
 /* TEST
 Execute:
-
     _worker.Start();
 */
 namespace Visualizations
@@ -70,7 +69,6 @@ namespace Visualizations
                 }
                 return _initilized;
             }
-
 
             public override bool Terminate()
             {

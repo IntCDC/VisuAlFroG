@@ -43,7 +43,6 @@ namespace Interface
                 _exec_count = 0;
             }
 
-
             /// <summary>
             /// Registers all the input parameters for this component.
             /// </summary>
@@ -54,7 +53,6 @@ namespace Interface
                 pManager[0].Optional = true;
             }
 
-
             /// <summary>
             /// Registers all the output parameters for this component.
             /// </summary>
@@ -62,7 +60,6 @@ namespace Interface
             {
                 pManager.AddGenericParameter("Generic Output Data", "Output Data", "Generic output data from interaction.", GH_ParamAccess.tree);
             }
-
 
             /// <summary>
             /// This is the method that actually does the work.
@@ -115,16 +112,16 @@ namespace Interface
 
                 /*
                 // Provide wrappers for DataAccess.S/GetDataTree, DataAccess.S/GetDataList, and DataAccess.S/GetData
-                // Access all input paramters
+                // Access all input parameters
                 foreach (var input_param in Params.Input)
                 {
-                    _runtimemessages.Add(Log.Level.Warn, "Input Paramter Name: " + input_param.Name + " | Type: " + input_param.Type.ToString());
+                    _runtimemessages.Add(Log.Level.Warn, "Input Parameter Name: " + input_param.Name + " | Type: " + input_param.Type.ToString());
                     Tuple<DataType, Get-Delegate>
                 }
-                // Access all ouput paramters
+                // Access all output parameters
                 foreach (var output_param in Params.Output)
                 {
-                    _runtimemessages.Add(Log.Level.Warn, "Input Paramter Name: " + output_param.Name + " | Type: " + output_param.Type.ToString());
+                    _runtimemessages.Add(Log.Level.Warn, "Input Parameter Name: " + output_param.Name + " | Type: " + output_param.Type.ToString());
                     Tuple<DataType, Set-Delegate>
                 }
 
@@ -150,12 +147,18 @@ namespace Interface
             /* ------------------------------------------------------------------*/
             // private functions
 
+            /// <summary>
+            /// Callback to trigger reloading of the Grasshopper solution.
+            /// </summary>
             public void reload_instance()
             {
                 ExpireSolution(true);
             }
 
-
+            /// <summary>
+            /// Callback for retrieving new output data.
+            /// </summary>
+            /// <param name="ouput_data">Reference to the new output data.</param>
             public void retrieve_output_data(ref XYData_Type ouput_data)
             {
                 _output_data = ConvertData.list_to_gh(ref ouput_data);

@@ -24,8 +24,11 @@ namespace Core
             // static functions
 
             /// <summary>
-            /// Returns ImageSource
+            /// [STATIC] Create WPF __ImageSource__ for given resource location and file name.
             /// </summary>
+            /// <param name="resource_location">One of the predefined resource locations.</param>
+            /// <param name="filename">The file name of the image.</param>
+            /// <returns>The image source.</returns>
             public static ImageSource ImageSourceFromFile(WorkingDirectory.Locations resource_location, string filename)
             {
                 var file_path = WorkingDirectory.ResourcePath(resource_location, filename);
@@ -44,10 +47,12 @@ namespace Core
                 return null;
             }
 
-
             /// <summary>
-            /// Returns Image
+            /// [STATIC] Create WPF __Image__ for given resource location and file name.
             /// </summary>
+            /// <param name="resource_location">One of the predefined resource locations.</param>
+            /// <param name="filename">The file name of the image.</param>
+            /// <returns>The image.</returns>
             public static Image ImageFromFile(WorkingDirectory.Locations resource_location, string filename)
             {
                 var image = new Image();

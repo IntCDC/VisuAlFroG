@@ -25,13 +25,21 @@ namespace GrasshopperComponent
             /* ------------------------------------------------------------------*/
             // public functions
 
+            /// <summary>
+            /// Ctor.
+            /// </summary>
+            /// <param name="ghcomponent">The parent Grasshopper component to access the runtime message interface.</param>
             public RuntimeMessages(GH_Component ghcomponent)
             {
                 _parent = ghcomponent;
                 _messages = new List<(GH_RuntimeMessageLevel, string)>();
             }
 
-
+            /// <summary>
+            /// Add new message to the Grasshopper specific log.
+            /// </summary>
+            /// <param name="level">The log level.</param>
+            /// <param name="message">The actual log message.</param>
             public void Add(Log.Level level, string message)
             {
                 switch (level)
@@ -53,7 +61,9 @@ namespace GrasshopperComponent
                 Log.Default.Msg(level, message, new StackTrace(true));
             }
 
-
+            /// <summary>
+            /// Send all messages to the Grasshopper component.
+            /// </summary>
             public void Show()
             {
                 if (_parent == null)

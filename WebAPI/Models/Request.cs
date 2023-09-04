@@ -18,10 +18,15 @@ namespace Visualizations
                 /* ------------------------------------------------------------------*/
                 // public variables
 
+                /// <summary>
+                /// Request ID (DEBUG)
+                /// </summary>
                 public int Id { get; set; }
 
+                /// <summary>
+                /// Request name (DEBUG)
+                /// </summary>
                 public string Name { get; set; }
-
             }
         }
     }

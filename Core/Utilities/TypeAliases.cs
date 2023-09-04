@@ -9,7 +9,7 @@ using Core.GUI;
 
 
 /*
- * Type Aliases
+ * Globally available type aliases
  * 
  */
 namespace Core

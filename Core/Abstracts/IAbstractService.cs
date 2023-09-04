@@ -19,8 +19,16 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // interface functions
 
+            /// <summary>
+            /// Initialize the service.
+            /// </summary>
+            /// <returns>True on success, false otherwise.</returns>
             bool Initialize();
 
+            /// <summary>
+            /// Terminate the service. Should implement counterpart to Initialize().
+            /// </summary>
+            /// <returns>True on success, false otherwise.</returns>
             bool Terminate();
         }
     }

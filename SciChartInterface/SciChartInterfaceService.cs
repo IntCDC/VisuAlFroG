@@ -19,7 +19,6 @@ namespace Visualizations
     {
         public class SciChartInterfaceService : AbstractService
         {
-
             /* ------------------------------------------------------------------*/
             // public functions
 
@@ -55,7 +54,6 @@ namespace Visualizations
                 }
                 return _initilized;
             }
-
 
             public override bool Terminate()
             {

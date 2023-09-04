@@ -11,7 +11,7 @@ using Core.Utilities;
 
 
 /*
- * Global GUI Color Theme
+ * Global GUI Color Theme for WPF
  * 
  */
 namespace Core
@@ -22,6 +22,7 @@ namespace Core
         {
             /* ------------------------------------------------------------------*/
             // static functions
+
 
             // BACKGROUND -----------------------------------------------------
 
@@ -37,7 +38,6 @@ namespace Core
             // GRID -----------------------------------------------------------
 
             public static Brush GridBackground { get { return Brushes.AliceBlue; } }
-
 
 
             //  HYPER LINK ----------------------------------------------------

@@ -9,19 +9,15 @@ using Core.Abstracts;
 /*
  * Window Branch
  * 
- * 
- * NOTE:
- * The canvas actually contains the content and is passed on to sub grids
- * 
- *                          main_grid
- *                              |
- *                     ChildBranch: grid (= Root)
- *                       |                 |
- *         ChildBranch: grid           ChildBranch: grid
- *                       |             |              | 
- *         ChildLeaf: canvas    ChildBranch: grid     ChildBranch: grid
- *                                    |                   |
- *                               ChildLeaf: canvas    ChildLeaf: canvas                           
+ *                         main_grid
+ *                             |
+ *                     Branch: grid (= Root)
+ *                       |              |
+ *              Branch: grid          Branch: grid
+ *                  |                 |          | 
+ *            Leaf: grid     Branch: grid      Branch: grid
+ *                                    |            |
+ *                              Leaf: grid    Leaf: grid                           
  */
 namespace Core
 {
@@ -33,7 +29,10 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public classes 
 
-            public class Settings : IAbstractSettings
+            /// <summary>
+            /// Settings data.
+            /// </summary>
+            public class Settings : IAbstractSettingData
             {
                 public WindowBranch.SplitOrientation Orientation { get; set; }
                 public WindowBranch.ChildLocation Location { get; set; }
@@ -47,13 +46,9 @@ namespace Core
             // public properties 
 
             public Tuple<WindowBranch, WindowBranch> Children { get { return _children; } }
-
             public WindowLeaf Leaf { get { return _child_leaf; } }
-
             public SplitOrientation Orientation { get { return _orientation; } }
-
             public ChildLocation Location { get { return _location; } }
-
             public double Position { get { return calculate_position(); } }
 
 
@@ -61,8 +56,10 @@ namespace Core
             // public functions
 
             /// <summary>
-            ///  Content callbacks are piped to each leaf where they are used
+            /// Ctor.
             /// </summary>
+            /// <param name="content_callbacks">Content callbacks are piped to each window leaf.</param>
+            /// <returns>Content element of root window.</returns>
             public Grid CreateRoot(ContentCallbacks_Type content_callbacks)
             {
                 if (content_callbacks == null)
@@ -85,14 +82,22 @@ namespace Core
                 return _content;
             }
 
-
+            /// <summary>
+            /// Split branch and attach two new branches.
+            /// </summary>
+            /// <param name="orientation">The orientation the window should be split.</param>
+            /// <param name="location">The location the existing window should be moved to.</param>
+            /// <param name="position">The relative position of the splitter.</param>
+            /// <param name="child_branch_1">The first child branch if present.</param>
+            /// <param name="child_branch_2">The second child branch if present.</param>
+            /// <returns></returns>
             public bool Split(SplitOrientation orientation, ChildLocation location, double position = 0.5, WindowBranch child_branch_1 = null, WindowBranch child_branch_2 = null)
             {
                 bool create_new_childs = ((child_branch_1 == null) && (child_branch_2 == null));
                 bool use_existing_childs = ((child_branch_1 != null) && (child_branch_2 != null));
                 if (!create_new_childs && !use_existing_childs)
                 {
-                    Log.Default.Msg(Log.Level.Error, "No valid child paramter set");
+                    Log.Default.Msg(Log.Level.Error, "No valid child parameter set");
                     return false;
                 }
 
@@ -206,6 +211,13 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private functions
 
+            /// <summary>
+            /// Add window leaf to this branch.
+            /// </summary>
+            /// <param name="parent_branch">The parent branch.</param>
+            /// <param name="content_callbacks">The content callbacks.</param>
+            /// <param name="grid">The content element the child is located in.</param>
+            /// <param name="child_leaf">The actual child leaf object if present.</param>
             private void add_leafchild(WindowBranch parent_branch, ContentCallbacks_Type content_callbacks, Grid grid, WindowLeaf child_leaf)
             {
                 _parent_is_root = false;
@@ -285,11 +297,14 @@ namespace Core
                 cotent_element.UpdateLayout();
             }
 
-
+            /// <summary>
+            /// Calculate the relative position of the splitter.
+            /// </summary>
+            /// <returns>The relative position of the splitter.</returns>
             private double calculate_position()
             {
-                /// NOTE: GridUnitType is fixed and always Star independant of the actual value, 
-                /// so we have to check for the actual value to determine whenter the value is absolute or relative.
+                /// NOTE: GridUnitType is fixed and always Star independent of the actual value, 
+                /// so we have to check for the actual value to determine whether the value is absolute or relative.
                 double value = 0.0;
                 switch (_orientation)
                 {

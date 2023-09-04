@@ -38,13 +38,24 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // static functions
 
+            /// <summary>
+            /// [STATIC] Provides static serialization of settings to JSON string.
+            /// </summary>
+            /// <typeparam name="T">The settings type.</typeparam>
+            /// <param name="window_data">The actual settings object.</param>
+            /// <returns>The serialized settings.</returns>
             public static string Serialize<T>(T window_data)
             {
                 string settings = JsonConvert.SerializeObject(window_data); //, Formatting.Indented);
                 return settings;
             }
 
-
+            /// <summary>
+            /// [STATIC] Provides static deserialization contained in JSON string.
+            /// </summary>
+            /// <typeparam name="T">The settings type.</typeparam>
+            /// <param name="content">The JSON string.</param>
+            /// <returns>The settings object.</returns>
             public static T Deserialize<T>(string content)
             {
                 T settings = JsonConvert.DeserializeObject<T>(content);
@@ -75,8 +86,6 @@ namespace Core
                 return _initilized;
             }
 
-
-
             public override bool Terminate()
             {
                 if (_initilized)
@@ -92,10 +101,12 @@ namespace Core
                 return true;
             }
 
-
             /// <summary>
-            /// Unique name of requesting caller is required in order to create separate JSON entries
+            /// Register object that provides settings. Unique name of requesting caller is required in order to create separate JSON entries.
             /// </summary>
+            /// <param name="name">Unique name of the caller.</param>
+            /// <param name="collect_callback">Callback for collecting all settings.</param>
+            /// <param name="apply_callback">callback for applying all settings.</param>
             public void RegisterSettings(string name, RegisterCollect_Delegate collect_callback, RegisterApply_Delegate apply_callback)
             {
                 if (!_initilized)
@@ -113,13 +124,16 @@ namespace Core
                 _apply_callbacks.Add(name, apply_callback);
             }
 
-
+            /// <summary>
+            /// Request saving all settings to a JSON file.
+            /// </summary>
+            /// <returns>True on success, false otherwise.</returns>
             public bool Save()
             {
                 var _serialize_strucutre = new Dictionary<string, string>();
                 foreach (var collect_callback in _collect_callbacks)
                 {
-                    // Call Collect Settings
+                    // Call callback for collecting all settings
                     _serialize_strucutre.Add(collect_callback.Key, collect_callback.Value());
                 }
                 string settings = Serialize<Dictionary<string, string>>(_serialize_strucutre);
@@ -127,7 +141,10 @@ namespace Core
                 return true;
             }
 
-
+            /// <summary>
+            /// Request loading of settings from a JSON file.
+            /// </summary>
+            /// <returns>True on success, false otherwise.</returns>
             public bool Load()
             {
                 string settings = openfile_dialog();
@@ -137,6 +154,7 @@ namespace Core
                 {
                     if (_apply_callbacks.ContainsKey(apply_callback.Key))
                     {
+                        // Call callback for applying settings
                         _apply_callbacks[apply_callback.Key](apply_callback.Value);
                     }
                 }
@@ -147,6 +165,10 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private functions
 
+            /// <summary>
+            /// File dialog for saving provided string to a JSON file.
+            /// </summary>
+            /// <param name="output_content">The content of the file as string.</param>
             private void savefile_dialog(string output_content)
             {
                 Stream ouput_stream;
@@ -173,7 +195,10 @@ namespace Core
                 }
             }
 
-
+            /// <summary>
+            /// File dialog for loading content from a JSON file.
+            /// </summary>
+            /// <returns>The content of the file as string.</returns>
             private string openfile_dialog()
             {
                 var input_content = string.Empty;
@@ -199,7 +224,6 @@ namespace Core
                         }
                     }
                 }
-
                 return input_content;
             }
 

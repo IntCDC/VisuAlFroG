@@ -5,7 +5,7 @@
 /*
  * Benchmark Timer
  * 
- * >>> Only executed in DEBUG build
+ * Only executed in DEBUG build
  */
 namespace Core
 {
@@ -17,13 +17,18 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
+            /// <summary>
+            /// Ctor.
+            /// </summary>
             public TimeBenchmark()
             {
                 _started = false;
                 _watch = new System.Diagnostics.Stopwatch();
             }
 
-
+            /// <summary>
+            /// Start benchmark timer.
+            /// </summary>
             public void Start()
             {
 #if DEBUG
@@ -32,9 +37,17 @@ namespace Core
                     _watch = System.Diagnostics.Stopwatch.StartNew();
                     _started = true;
                 }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Timer already started...");
+
+                }
 #endif
             }
 
+            /// <summary>
+            ///  Stop the benchmark timer and log the elapsed time.
+            /// </summary>
             public void Stop()
             {
 #if DEBUG
@@ -44,6 +57,11 @@ namespace Core
                     var elapsed_ms = _watch.ElapsedMilliseconds;
                     Log.Default.Msg(Log.Level.Debug, "Elapsed Time (ms): " + elapsed_ms.ToString(), new StackTrace(true));
                     _started = false;
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Start timer before stopping it...");
+
                 }
 #endif
             }

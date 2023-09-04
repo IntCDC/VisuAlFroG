@@ -15,6 +15,7 @@ using Core.GUI;
 using Visualizations.Abstracts;
 using Visualizations.Management;
 using System.Runtime.InteropServices;
+using Visualizations.Interaction;
 
 
 
@@ -28,7 +29,6 @@ namespace Visualizations
     {
         public class ContentManager : AbstractService
         {
-
             /* ------------------------------------------------------------------*/
             // public functions
 
@@ -46,18 +46,22 @@ namespace Visualizations
                 _timer.Start();
 
                 _request_data_callback = request_data_callback;
-
                 _contents = new Dictionary<Type, Dictionary<string, AbstractContent>>();
 
+
+                /// TODO Register new visualizations here:
                 register_content(typeof(LogContent));
-                register_content(typeof(DEBUGLines));
-                register_content(typeof(DEBUGColumns));
+                register_content(typeof(FilterContent));
+                register_content(typeof(ScatterPlotVisualization));
+                register_content(typeof(ParallelCoordinatesPlotVisualization));
+                register_content(typeof(LinesVisualization));
+                register_content(typeof(ColumnsVisualization));
+                //register_content(typeof(...));
 
                 _timer.Stop();
                 _initilized = true;
                 return _initilized;
             }
-
 
             public override bool Terminate()
             {
@@ -84,12 +88,11 @@ namespace Visualizations
                 {
                     foreach (var content_data in content_types.Value)
                     {
-                        settings.Add(new AbstractContent.Settings() { ContentID = content_data.Value.ID, ContentType = content_types.Key.FullName });
+                        settings.Add(new AbstractContent.Settings() { ID = content_data.Value.ID, Type = content_types.Key.FullName });
                     }
                 }
                 return SettingsService.Serialize<List<AbstractContent.Settings>>(settings);
             }
-
 
             public bool ApplySettings(string settings)
             {
@@ -98,10 +101,10 @@ namespace Visualizations
                 {
                     foreach (var content_settings in visualizations_settings)
                     {
-                        var type = get_type(content_settings.ContentType);
+                        var type = get_type(content_settings.Type);
                         if (_contents.ContainsKey(type))
                         {
-                            var id = content_settings.ContentID;
+                            var id = content_settings.ID;
                             if (id == UniqueID.Invalid)
                             {
                                 Log.Default.Msg(Log.Level.Warn, "Invalid content id: " + id);
@@ -115,14 +118,16 @@ namespace Visualizations
                                 {
                                     ((AbstractVisualization)new_content).SetRequestDataCallback(_request_data_callback);
                                 }
+
                                 new_content.ID = id;
                                 new_content.Initialize();
                                 new_content.Create();
+
                                 _contents[type].Add(id, new_content);
                             }
                             else
                             {
-                                Log.Default.Msg(Log.Level.Error, "Content " + content_settings.ContentType + " with ID " + id + " already exists");
+                                Log.Default.Msg(Log.Level.Error, "Content " + content_settings.Type + " with ID " + id + " already exists");
                             }
                         }
                         else
@@ -135,10 +140,10 @@ namespace Visualizations
                 return false;
             }
 
-
             /// <summary>
-            ///  Returns distinct list of vaild services required by the registered contents
+            /// Returns distinct list of valid services required by the registered contents.
             /// </summary>
+            /// <returns>List of service types.</returns>
             public List<Type> DependingServices()
             {
                 var depending_services = new List<Type>();
@@ -175,11 +180,10 @@ namespace Visualizations
                 return depending_services;
             }
 
-
             /// <summary>
-            ///  Provide necessary information of available window content
-            /// >> Called by WindowLeaf
+            /// Provide necessary information of available window content (called by window leaf).
             /// </summary>
+            /// <returns>List of available content meta data.</returns>
             public AvailableContentList_Type AvailableContents()
             {
                 var content_ids = new AvailableContentList_Type();
@@ -198,9 +202,9 @@ namespace Visualizations
                     // Create temporary instance of content
                     var tmp_content = (AbstractContent)Activator.CreateInstance(content_type);
                     string header = tmp_content.Name;
-                    bool multiple_instances = tmp_content.MultipleIntances;
+                    bool multiple_instances = tmp_content.MultipleInstances;
 
-                    // Content is only available if multiple instance are allowed or has not been instanciated yet
+                    // Content is only available if multiple instance are allowed or has not been instantiated yet
                     bool available = (multiple_instances || (content_types.Value.IsEmpty() && !multiple_instances));
 
                     content_ids.Add(new AvailableContent_Type(header, available, multiple_instances, content_type.FullName));
@@ -209,11 +213,12 @@ namespace Visualizations
                 return content_ids;
             }
 
-
             /// <summary>
-            /// Attach requested content to provided parent content element.
-            /// >> Called by WindowLeaf
+            /// Attach requested content to provided parent content element (called by window leaf).
             /// </summary>
+            /// <param name="content_id">The string ID of the content if present.</param>
+            /// <param name="content_type">Using string for content type to allow cross project compatibility.</param> 
+            /// <returns>The WPF Control element holding the actual content.</returns>
             public Control CreateContent(string content_id, string content_type)
             {
                 if (!_initilized)
@@ -240,8 +245,10 @@ namespace Visualizations
                             {
                                 ((AbstractVisualization)new_content).SetRequestDataCallback(_request_data_callback);
                             }
+
                             new_content.Initialize();
                             new_content.Create();
+
                             id = new_content.ID;
                             _contents[type].Add(id, new_content);
                         }
@@ -256,11 +263,10 @@ namespace Visualizations
                 return null;
             }
 
-
             /// <summary>
-            /// Delete content.
-            /// >> Called by WindowLeaf
+            /// Delete the content requested by id (called by window leaf).
             /// </summary>
+            /// <param name="content_id">The id of the content to be deleted.</param>
             public void DeleteContent(string content_id)
             {
                 // Loop over registered types
@@ -278,6 +284,10 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private functions
 
+            /// <summary>
+            /// Register new content type.
+            /// </summary>
+            /// <param name="content_type">The content type.</param>
             private void register_content(Type content_type)
             {
                 // Check for required base type
@@ -299,8 +309,15 @@ namespace Visualizations
                 }
                 if (valid_type)
                 {
-                    _contents.Add(content_type, new Dictionary<string, AbstractContent>());
-                    Log.Default.Msg(Log.Level.Info, "Registered content type: " + content_type.FullName);
+                    if (_contents.ContainsKey(content_type))
+                    {
+                        Log.Default.Msg(Log.Level.Warn, "Content type already added: " + content_type.FullName);
+                    }
+                    else
+                    {
+                        _contents.Add(content_type, new Dictionary<string, AbstractContent>());
+                        Log.Default.Msg(Log.Level.Info, "Registered content type: " + content_type.FullName);
+                    }
                 }
                 else
                 {
@@ -308,7 +325,12 @@ namespace Visualizations
                 }
             }
 
-
+            /// <summary>
+            /// Check recursively for base type.
+            /// </summary>
+            /// <param name="check_type">The type to look into.</param>
+            /// <param name="reference_base_type">The base type to check for.</param>
+            /// <returns>True on success, false otherwise.</returns>
             bool recursive_basetype(Type check_type, Type reference_base_type)
             {
                 Type base_type = check_type;
@@ -329,16 +351,17 @@ namespace Visualizations
                 return valid_base_type;
             }
 
-
             /// <summary>
-            /// Convert type from string
+            /// Convert string to type.
             /// </summary>
+            /// <param name="type_string">The type as string.</param>
+            /// <returns>The requested type, default(?) otherwise.</returns>
             public Type get_type(string type_string)
             {
                 Type type = default(Type);
                 try
                 {
-                    // Try to load type from current assmebly (supress errors -> return null on error)
+                    // Try to load type from current assembly (suppress errors -> return null on error)
                     type = Type.GetType(type_string);
                     if (type == null)
                     {
@@ -357,7 +380,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private variables
 
-            // separate dict for each content type
+            // Separate dictionary for each content type
             private Dictionary<Type, Dictionary<string, AbstractContent>> _contents = null;
             private DataManager.RequestDataCallback_Delegate _request_data_callback = null;
         }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Core.Utilities;
 using Core.Abstracts;
-using EntityFrameworkDatabase;
 using Visualizations.SciChartInterface;
 
 
@@ -21,7 +20,10 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-
+            /// <summary>
+            /// Add new service.
+            /// </summary>
+            /// <param name="service">The service object.</param>
             public void AddService(AbstractService service)
             {
                 if (_services == null)
@@ -37,10 +39,9 @@ namespace Visualizations
                 }
                 else
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Service was already added: " + service_type.FullName);
+                    Log.Default.Msg(Log.Level.Warn, "Service has already been added: " + service_type.FullName);
                 }
             }
-
 
             public override bool Initialize()
             {
@@ -63,7 +64,6 @@ namespace Visualizations
                 _initilized = initilized;
                 return _initilized;
             }
-
 
             public override bool Terminate()
             {
