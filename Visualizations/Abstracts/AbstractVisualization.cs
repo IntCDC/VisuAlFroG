@@ -58,7 +58,7 @@ namespace Visualizations
                 _id = UniqueID.Generate();
                 _timer = new TimeBenchmark();
 
-                /// TODO Move somewhere else to prevent calling it whenever the context menu is opened
+                /// TODO Move somewhere else to prevent calling it whenever the context menu is opened and class is constructed
                 StackPanel stack = new StackPanel();
                 _content_child = new Grid();
                 _content_parent = new DockPanel();

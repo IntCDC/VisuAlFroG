@@ -12,6 +12,7 @@ using Core.GUI;
 using Visualizations.Types;
 using Visualizations.Management;
 using System.Windows.Input;
+using Visualizations.Interaction;
 
 
 
@@ -92,7 +93,7 @@ namespace Frontend
             /// Get input data from interface (= Grasshopper).
             /// </summary>
             /// <param name="input_data">Reference to the input data hold by the interface.</param>
-            public void UpdateInputData(ref DefaultData_Type input_data)
+            public void UpdateInputData(ref GenericDataBranch input_data)
             {
                 if (_inputdata_callback != null)
                 {
@@ -144,7 +145,7 @@ namespace Frontend
                 }
                 _timer = new TimeBenchmark();
                 _timer.Start();
-                Cursor = Cursors.Wait;
+                /// Cursor = Cursors.Wait;
 
                 // Window setup
                 InitializeComponent();
@@ -166,19 +167,15 @@ namespace Frontend
                 initilized &= _winmanager.Initialize(_vismanager.GetContentCallbacks());
                 initilized &= _menubar.Initialize(this.Close, _configurationservice.Save, _configurationservice.Load);
 
-
                 // Register additional callbacks
                 ///  Do not reorder since applying configuration might be order dependent!
                 _configurationservice.RegisterConfiguration(_vismanager.Name, _vismanager.CollectConfigurations, _vismanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_winmanager.Name, _winmanager.CollectConfigurations, _winmanager.ApplyConfigurations);
 
-
                 // Get callbacks
                 _inputdata_callback = _vismanager.GetInputDataCallback();
 
-
-
-                Cursor = Cursors.Arrow;
+                /// Cursor = Cursors.Arrow;
                 _timer.Stop();
                 _initilized = initilized;
                 if (_initilized)
@@ -200,7 +197,7 @@ namespace Frontend
                     return false;
                 }
                 _timer.Start();
-                Cursor = Cursors.Wait;
+                /// Cursor = Cursors.Wait;
 
                 var menubar_content = _menubar.Attach();
                 if (menubar_content == null)
@@ -221,12 +218,21 @@ namespace Frontend
                 /// DEBUG Load sample data in detached mode ...
                 if (_detached)
                 {
-                    var sample_data = new DefaultData_Type();
-                    sample_data.Add(new List<double>() { 1.0, 2.0, 5.0, 9.0, 6.0, 8.0, 2.0, 3.0, 3.0, 1.0, 5.0, 4.0, 6.0, 8.0, 7.0, 7.0, 2.0 });
+                    var sample_data = new GenericDataBranch();
+                    var data_branch = new GenericDataBranch();
+                    sample_data.AddBranch(data_branch);
+                    var generator = new Random();
+                    for (int i = 0; i < 20; i++) {
+                        var value = generator.Next(2, 25);
+                        var data_leaf = new GenericDataEntry();
+                        data_leaf.AddValue((double)value);
+                        data_leaf.MetaData.Index = i;
+                        data_branch.AddLeaf(data_leaf);
+                    }
                     UpdateInputData(ref sample_data);
                 }
 
-                Cursor = Cursors.Arrow;
+                /// Cursor = Cursors.Arrow;
                 _timer.Stop();
                 return true;
             }

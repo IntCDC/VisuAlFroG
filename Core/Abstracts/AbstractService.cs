@@ -81,7 +81,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // protected variables
 
-            protected bool _initilized = false;
+            protected bool _initialized = false;
             /// DEBUG
             protected TimeBenchmark _timer = null;
         }

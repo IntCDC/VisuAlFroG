@@ -47,6 +47,8 @@ namespace Visualizations
                 _content.Background = ColorTheme.GenericBackground;
                 _content.Foreground = ColorTheme.GenericForeground;
 
+                _content.PreviewMouseWheel += scrollviewer_previewmousewheel;
+
                 ContentChild.Children.Add(_content);
 
                 _timer.Stop();
@@ -72,6 +74,17 @@ namespace Visualizations
             public new DataType Data()
             {
                 return (DataType)_request_data_callback(typeof(DataType));
+            }
+
+
+            /* ------------------------------------------------------------------*/
+            // private functions
+
+            private void scrollviewer_previewmousewheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+            {
+                ScrollViewer scv = (ScrollViewer)sender;
+                scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);
+                e.Handled = true;
             }
 
 

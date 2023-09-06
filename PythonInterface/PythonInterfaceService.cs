@@ -28,7 +28,7 @@ namespace Visualizations
 
             public override bool Initialize()
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     Terminate();
                 }
@@ -62,17 +62,17 @@ namespace Visualizations
                 }
 
                 _timer.Stop();
-                _initilized = initilized;
-                if (_initilized)
+                _initialized = initilized;
+                if (_initialized)
                 {
                     Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
                 }
-                return _initilized;
+                return _initialized;
             }
 
             public override bool Terminate()
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     _worker.Join();
                     _worker = null;
@@ -82,7 +82,7 @@ namespace Visualizations
 
                     _script = null;
 
-                    _initilized = false;
+                    _initialized = false;
                 }
                 return true;
             }

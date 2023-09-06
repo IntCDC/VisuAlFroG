@@ -47,11 +47,5 @@ namespace Core
             // Arguments: <content name, is content available, multiple instances allowed, content type>
             public AttachContentMetaData_Type(string a1, System.Windows.Controls.Panel a2) : base(a1, a2) { }
         }
-
-
-        /// <summary>
-        /// Default data type used in DataManager.
-        /// </summary>
-        public class DefaultData_Type : List<List<double>> { }
     }
 }

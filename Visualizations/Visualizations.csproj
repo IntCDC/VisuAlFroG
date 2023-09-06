@@ -119,6 +119,7 @@
   <ItemGroup>
     <Compile Include="Abstracts\AbstractVisualization.cs" />
     <Compile Include="Abstracts\AbstractGenericVisualization.cs" />
+    <Compile Include="Interaction\GenericDataStructure.cs" />
     <Compile Include="Interaction\MetaData.cs" />
     <Compile Include="Interaction\PointSelection.cs" />
     <Compile Include="Management\ContentManager.cs" />
@@ -129,8 +130,8 @@
     <Compile Include="Types\DataBrowser.cs" />
     <Compile Include="Types\LinesVisualization.cs" />
     <Compile Include="Types\LogConsole.cs" />
-    <Compile Include="Types\ParallelCoordinatesPlotVisualization.cs" />
-    <Compile Include="Types\ScatterPlotVisualization.cs" />
+    <Compile Include="Types\ParallelCoordinatesVisualization.cs" />
+    <Compile Include="Types\ScatterVisualization.cs" />
     <Compile Include="VisualizationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

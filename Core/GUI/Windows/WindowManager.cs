@@ -26,7 +26,7 @@ namespace Core
 
             public bool Initialize(ContentCallbacks_Type content_callbacks)
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     Terminate();
                 }
@@ -45,13 +45,13 @@ namespace Core
                 bool initilized = (_content != null);
 
                 _timer.Stop();
-                _initilized = initilized;
-                return _initilized;
+                _initialized = initilized;
+                return _initialized;
             }
 
             public Panel Attach()
             {
-                if (!_initilized)
+                if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return null;
@@ -62,13 +62,13 @@ namespace Core
             public override bool Terminate()
             {
                 bool terminated = true;
-                if (_initilized)
+                if (_initialized)
                 {
                     _content = null;
                     _window_root = null;
                     _content_callbacks = null;
 
-                    _initilized = false;
+                    _initialized = false;
                 }
                 return terminated;
             }
@@ -97,7 +97,7 @@ namespace Core
             /// </summary>
             public void CreateDefault()
             {
-                if (!_initilized)
+                if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return;

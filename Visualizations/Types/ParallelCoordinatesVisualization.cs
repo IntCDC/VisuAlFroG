@@ -31,19 +31,29 @@ using SciChart.Core.Utility.Mouse;
 
 
 /*
- * Visualization: Scatter Plot Matrices (SPLOM) (2D)
+ * Visualization: Parallel Coordinates Plot (2D)
  * 
  */
 namespace Visualizations
 {
     namespace Types
     {
-        public class ScatterPlotVisualization : AbstractSciChartVisualization<SciChartSurface, SciChartUniformData_Type>
+
+        ///  DEBUG
+        public class SciChartPCPData_Type
+        {
+            public DateTime Date { get; set; }
+            public double MinTemp { get; set; }
+            public double MaxTemp { get; set; }
+        }
+
+
+        public class ParallelCoordinatesVisualization : AbstractSciChartVisualization<SciChartParallelCoordinateSurface, ParallelCoordinateDataSource<SciChartPCPData_Type>>
         {
             /* ------------------------------------------------------------------*/
             // properties
 
-            public override string Name { get { return "Scatter Plot (2D)"; } }
+            public override string Name { get { return "Parallel Coordinates Plot (2D)"; } }
 
 
             /* ------------------------------------------------------------------*/
@@ -68,39 +78,48 @@ namespace Visualizations
                 }
                 _timer.Start();
 
-
                 Content.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
                 Content.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
+                Content.ZoomExtents();
+                Content.ChartTitle = "Parallel Coordinates Plot TEST";
+                //Content.DrawSplines = true;
 
 
                 // Data Series -------------------------------------
-                var render_series = new XyScatterRenderableSeries();
-                render_series.Name = "scatter_series_" + ID;
-                render_series.Stroke = Colors.Aquamarine;
-                render_series.StrokeThickness = 2;
-                render_series.PointMarker = Selection_PointMarker.Default;
-                render_series.SelectedPointMarker = Selection_PointMarker.Selected;
+
+                /*
                 render_series.DataSeries = Data();
                 Content.RenderableSeries.Add(render_series);
                 Content.ZoomExtents();
+                */
+                _pcp_source = new ParallelCoordinateDataSource<SciChartPCPData_Type>(
+                    new ParallelCoordinateDataItem<SciChartPCPData_Type, DateTime>(p => p.Date)
+                    {
+                        Title = "Time",
+                        //AxisStyle = defaultAxisStyle
+                    },
+                    new ParallelCoordinateDataItem<SciChartPCPData_Type, double>(p => p.MinTemp)
+                    {
+                        Title = "Min Temp",
+                    },
+                    new ParallelCoordinateDataItem<SciChartPCPData_Type, double>(p => p.MaxTemp)
+                    {
+                        Title = "Max Temp",
+                    }
+                );
 
+                //_pcp_source.SetValues(...);
+                Content.ParallelCoordinateDataSource = _pcp_source;
 
-                // Axis --------------------------------------------
-                var xAxis = new NumericAxis()
+                /*
+                var data = (SciChartUniformData_Type)_request_data_callback(typeof(SciChartUniformData_Type));
+                if (data != null)
                 {
-                    AxisTitle = "Sample No",
-                    GrowBy = new SciChart.Data.Model.DoubleRange(0.2, 0.2),
-                    DrawMajorBands = false
-                };
-                Content.XAxis = xAxis;
-
-                var yAxis = new NumericAxis()
-                {
-                    AxisTitle = "Value",
-                    GrowBy = new SciChart.Data.Model.DoubleRange(0.2, 0.2),
-                    DrawMajorBands = false,
-                };
-                Content.YAxis = yAxis;
+                    render_series.DataSeries = data;
+                }
+                Content.RenderableSeries.Add(render_series);
+                Content.ZoomExtents();
+                */
 
 
                 // Modifiers ---------------------------------------
@@ -132,23 +151,27 @@ namespace Visualizations
                 );
 
 
-                // Annotation --------------------------------------
-                var textAnnotation = new TextAnnotation()
-                {
-                    Text = "|----------[Interaction]----------|" + Environment.NewLine +
-                        "Left Mouse:  Select/Box-Select" + Environment.NewLine +
-                        "Mouse Wheel: Zoom" + Environment.NewLine +
-                        "Right Mouse: Pan",
-                    X1 = 6.0,
-                    Y1 = 9.0
-                };
-                Content.Annotations.Add(textAnnotation);
-
-
                 _timer.Stop();
                 _created = true;
                 return _created;
             }
+
+
+            /* ------------------------------------------------------------------*/
+            // private functions
+
+            private void on_axis_reordered(object sender, ParallelAxisReorderArgs args)
+            {
+                _pcp_source?.ReorderItems(args.OldIndex, args.NewIndex);
+            }
+
+
+            /* ------------------------------------------------------------------*/
+            // private variables
+
+
+            private ParallelCoordinateDataSource<SciChartPCPData_Type> _pcp_source;
+
         }
     }
 }

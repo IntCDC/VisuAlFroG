@@ -38,7 +38,7 @@ namespace Visualizations
 {
     namespace Types
     {
-        public class LinesVisualization : AbstractSciChartVisualization<SciChartSurface, SciChartUniformData_Type>
+        public class LinesVisualization : AbstractSciChartVisualization<SciChartSurface, SciChartUniformData>
         {
             /* ------------------------------------------------------------------*/
             // properties

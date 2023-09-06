@@ -39,7 +39,7 @@ namespace Visualizations
 {
     namespace Types
     {
-        public class ColumnsVisualization : AbstractSciChartVisualization<SciChartSurface, SciChartUniformData_Type>
+        public class ColumnsVisualization : AbstractSciChartVisualization<SciChartSurface, SciChartUniformData>
         {
             /* ------------------------------------------------------------------*/
             // properties

@@ -11,18 +11,23 @@ using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.Runtime.Remoting.Contexts;
 using Visualizations.Abstracts;
+using Visualizations.Management;
+using Visualizations.Interaction;
 
 
 
 /*
  * Log Window Content
  * 
+ * TODO Optimize performance for huge amount of messages 
+ * -> only add last x Inlines to fill screen and 
+ * implement separate scrolling (with mouse wheel...)
  */
 namespace Visualizations
 {
     namespace Types
     {
-        public class LogConsole : AbstractGenericVisualization<System.Windows.Controls.TextBlock, DefaultData_Type>
+        public class LogConsole : AbstractGenericVisualization<System.Windows.Controls.TextBlock, GenericDataBranch>
         {
             /* ------------------------------------------------------------------*/
             // properties

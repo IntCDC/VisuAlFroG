@@ -33,7 +33,7 @@ namespace Visualizations
 
             public override bool Initialize()
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     Terminate();
                 }
@@ -54,22 +54,22 @@ namespace Visualizations
                 _client = new HttpClient();
 
                 _timer.Stop();
-                _initilized = true;
-                if (_initilized)
+                _initialized = true;
+                if (_initialized)
                 {
                     Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
                 }
-                return _initilized;
+                return _initialized;
             }
 
             public override bool Terminate()
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     _client.Dispose();
                     _client = null;
 
-                    _initilized = false;
+                    _initialized = false;
                 }
                 return true;
             }

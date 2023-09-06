@@ -37,7 +37,7 @@ namespace Visualizations
 
             public bool Initialize(DataManager.RequestDataCallback_Delegate request_data_callback, RegisterUpdatedDataCallback_Delegate updated_data_callback)
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     Terminate();
                 }
@@ -53,32 +53,31 @@ namespace Visualizations
                 _updated_data_callback = updated_data_callback;
 
 
-                /// TODO Register new visualizations here:
+                // Register new visualizations here:
                 register_content(typeof(LogConsole));
                 register_content(typeof(DataBrowser));
-                register_content(typeof(ScatterPlotVisualization));
-                register_content(typeof(ParallelCoordinatesPlotVisualization));
+                register_content(typeof(ScatterVisualization));
+                register_content(typeof(ParallelCoordinatesVisualization));
                 register_content(typeof(LinesVisualization));
                 register_content(typeof(ColumnsVisualization));
-                //register_content(typeof(...));
 
 
                 _timer.Stop();
-                _initilized = true;
-                return _initilized;
+                _initialized = true;
+                return _initialized;
             }
 
             public override bool Terminate()
             {
                 bool terminated = true;
-                if (_initilized)
+                if (_initialized)
                 {
                     terminated &= clear_contents();
 
                     _request_data_callback = null;
                     _updated_data_callback = null;
 
-                    _initilized = false;
+                    _initialized = false;
                 }
                 return terminated;
             }
@@ -98,7 +97,7 @@ namespace Visualizations
 
             public bool ApplyConfigurations(string configurations)
             {
-                if (!_initilized)
+                if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return false;
@@ -157,7 +156,7 @@ namespace Visualizations
             {
                 var depending_services = new List<Type>();
 
-                if (_initilized)
+                if (_initialized)
                 {
                     // Loop over registered types
                     foreach (var content_types in _contents)
@@ -197,7 +196,7 @@ namespace Visualizations
             {
                 var content_ids = new AvailableContentsList_Type();
 
-                if (!_initilized)
+                if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return content_ids;
@@ -230,7 +229,7 @@ namespace Visualizations
             /// <returns>Tuple of content ID and the WPF Control element holding the actual content.</returns>
             public AttachContentMetaData_Type CreateContent(string content_id, string content_type)
             {
-                if (!_initilized)
+                if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return null;

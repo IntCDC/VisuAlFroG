@@ -45,7 +45,7 @@ namespace Visualizations
 
             public override bool Initialize()
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     Terminate();
                 }
@@ -61,14 +61,14 @@ namespace Visualizations
                 }
 
                 _timer.Stop();
-                _initilized = initilized;
-                return _initilized;
+                _initialized = initilized;
+                return _initialized;
             }
 
             public override bool Terminate()
             {
                 bool terminated = true;
-                if (_initilized)
+                if (_initialized)
                 {
                     if (_services != null)
                     {
@@ -79,7 +79,7 @@ namespace Visualizations
                         _services.Clear();
                         _services = null;
                     }
-                    _initilized = false;
+                    _initialized = false;
                 }
                 return terminated;
             }

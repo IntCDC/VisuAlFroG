@@ -37,7 +37,7 @@ namespace Core
 
             public bool Initialize(WindowClose_Delegate close_callback, ConfigurationService.Save_Delegate save_callback, ConfigurationService.Load_Delegate load_callback)
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     Terminate();
                 }
@@ -56,13 +56,13 @@ namespace Core
                 _content.Style = ColorTheme.MenuStyle();
 
                 _timer.Stop();
-                _initilized = true;
-                return _initilized;
+                _initialized = true;
+                return _initialized;
             }
 
             public Control Attach()
             {
-                if (!_initilized)
+                if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return null;
@@ -122,14 +122,14 @@ namespace Core
 
             public override bool Terminate()
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     _content = null;
                     _close_callback = null;
                     _save_callback = null;
                     _load_callback = null;
 
-                    _initilized = false;
+                    _initialized = false;
                 }
                 return true;
             }

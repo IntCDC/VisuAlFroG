@@ -84,7 +84,7 @@ namespace Core
 
             public override bool Initialize()
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     Terminate();
                 }
@@ -94,17 +94,17 @@ namespace Core
                 _apply_callbacks = new Dictionary<string, RegisterApply_Delegate>();
 
                 _timer.Stop();
-                _initilized = true;
-                if (_initilized)
+                _initialized = true;
+                if (_initialized)
                 {
                     Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().Name);
                 }
-                return _initilized;
+                return _initialized;
             }
 
             public override bool Terminate()
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     _collect_callbacks.Clear();
                     _collect_callbacks = new Dictionary<string, RegisterCollect_Delegate>();
@@ -112,7 +112,7 @@ namespace Core
                     _apply_callbacks.Clear();
                     _apply_callbacks = new Dictionary<string, RegisterApply_Delegate>();
 
-                    _initilized = false;
+                    _initialized = false;
                 }
                 return true;
             }
@@ -125,7 +125,7 @@ namespace Core
             /// <param name="apply_callback">callback for applying all configurations.</param>
             public void RegisterConfiguration(string name, RegisterCollect_Delegate collect_callback, RegisterApply_Delegate apply_callback)
             {
-                if (!_initilized)
+                if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to registration of callbacks");
                     return;

@@ -24,7 +24,7 @@ namespace Visualizations
 
             public override bool Initialize()
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     Terminate();
                 }
@@ -47,19 +47,19 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Error, exc.Message);
                 }
 
-                _initilized = true;
-                if (_initilized)
+                _initialized = true;
+                if (_initialized)
                 {
                     Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
                 }
-                return _initilized;
+                return _initialized;
             }
 
             public override bool Terminate()
             {
-                if (_initilized)
+                if (_initialized)
                 {
-                    _initilized = false;
+                    _initialized = false;
                 }
                 return true;
             }

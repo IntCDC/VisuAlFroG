@@ -10,6 +10,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Grasshopper.Kernel.Data;
 using Grasshopper.Kernel.Types;
+using Visualizations.Interaction;
 
 
 
@@ -102,8 +103,10 @@ namespace Interface
                         return;
                     }
                     _runtimemessages.Add(Log.Level.Debug, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().FullName);
+                    /// DEBUG Log.Default.Msg(Log.Level.Warn, input_data.DataDescription(true, true)); // -> Same as Grasshopper Panel output
+
                     // Convert and pass on input data 
-                    var input_data_converted = ConvertData.GH_to_List(ref input_data);
+                    var input_data_converted = DataConverter.ConvertFromGHStructure(ref input_data);
                     _window.UpdateInputData(ref input_data_converted);
                 }
 
@@ -124,7 +127,6 @@ namespace Interface
                     _runtimemessages.Add(Log.Level.Warn, "Input Parameter Name: " + output_param.Name + " | Type: " + output_param.Type.ToString());
                     Tuple<DataType, Set-Delegate>
                 }
-
 
                 // string gh_document_filepath = OnPingDocument().FilePath;
                 // OnPingDocument().FilePathChanged += this.FilePathChangedEvent
@@ -159,9 +161,9 @@ namespace Interface
             /// Callback for retrieving new output data.
             /// </summary>
             /// <param name="ouput_data">Reference to the new output data.</param>
-            public void retrieve_output_data(ref DefaultData_Type ouput_data)
+            public void retrieve_output_data(ref GenericDataBranch ouput_data)
             {
-                _output_data = ConvertData.list_to_gh(ref ouput_data);
+                _output_data = DataConverter.ConvertToGHStructure(ref ouput_data);
                 reload_instance();
             }
 
