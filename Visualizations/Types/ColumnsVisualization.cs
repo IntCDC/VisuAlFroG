@@ -39,7 +39,7 @@ namespace Visualizations
 {
     namespace Types
     {
-        public class ColumnsVisualization : AbstractSciChart
+        public class ColumnsVisualization : AbstractSciChartVisualization<SciChartSurface, SciChartUniformData_Type>
         {
             /* ------------------------------------------------------------------*/
             // properties
@@ -59,8 +59,8 @@ namespace Visualizations
                 }
                 if (_created)
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Content already created, skipping...");
-                    return false;
+                    Log.Default.Msg(Log.Level.Info, "Skipping re-creation of content");
+                    return true;
                 }
                 if (_request_data_callback == null)
                 {
@@ -70,8 +70,8 @@ namespace Visualizations
                 _timer.Start();
 
 
-                _content.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
-                _content.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
+                Content.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
+                Content.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
 
 
                 // Data Series -------------------------------------
@@ -80,7 +80,6 @@ namespace Visualizations
                 render_series.DataPointWidth = 0.5;
                 render_series.PaletteProvider = new Selection_StrokePaletteProvider();
                 render_series.StrokeThickness = 2;
-
                 var gradient = new LinearGradientBrush();
                 gradient.StartPoint = new Point(0.0, 0.0);
                 gradient.EndPoint = new Point(1.0, 1.0);
@@ -90,22 +89,9 @@ namespace Visualizations
                 var gs2 = new GradientStop() { Color = Colors.Green, Offset = 0.8 };
                 gradient.GradientStops.Add(gs2);
                 render_series.Fill = gradient;
-
-                /*
-                var wa = new WaveAnimation();
-                wa.AnimationDelay = new TimeSpan(0, 0, 0, 0, 200);
-                wa.Duration = new TimeSpan(0, 0, 1);
-                wa.PointDurationFraction = 0.2;
-                render_series.SeriesAnimation = wa;
-                */
-
-                var data = (SciChartUniformData_Type)_request_data_callback(typeof(SciChartUniformData_Type));
-                if (data != null)
-                {
-                    render_series.DataSeries = data;
-                }
-                _content.RenderableSeries.Add(render_series);
-                _content.ZoomExtents();
+                render_series.DataSeries = Data();
+                Content.RenderableSeries.Add(render_series);
+                Content.ZoomExtents();
 
 
                 // Axis --------------------------------------------
@@ -114,7 +100,7 @@ namespace Visualizations
                     AxisTitle = "Sample No",
                     DrawMajorBands = false
                 };
-                _content.XAxis = xAxis;
+                Content.XAxis = xAxis;
 
                 var yAxis = new NumericAxis()
                 {
@@ -122,11 +108,11 @@ namespace Visualizations
                     GrowBy = new SciChart.Data.Model.DoubleRange(0.2, 0.2),
                     DrawMajorBands = false,
                 };
-                _content.YAxis = yAxis;
+                Content.YAxis = yAxis;
 
 
                 // Modifiers ---------------------------------------
-                _content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
+                Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
                     new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier()
                     {
                         IsEnabled = false
@@ -164,7 +150,7 @@ namespace Visualizations
                     X1 = 6.0,
                     Y1 = 9.0
                 };
-                _content.Annotations.Add(textAnnotation);
+                Content.Annotations.Add(textAnnotation);
 
 
                 _timer.Stop();

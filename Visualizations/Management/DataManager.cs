@@ -10,6 +10,7 @@ using Visualizations.WebAPI;
 using Visualizations.PythonInterface;
 using System.Windows.Markup;
 using SciChart.Data.Model;
+using SciChart.Charting3D.Primitives;
 
 
 
@@ -22,7 +23,7 @@ namespace Visualizations
     namespace Management
     {
 
-        // Data Types
+        // Supported Data Types
         public class SciChartUniformData_Type : SciChart.Charting.Model.DataSeries.UniformXyDataSeries<double> { }
         public class SciChartData_Type : SciChart.Charting.Model.DataSeries.XyDataSeries<double, double> { }
 
@@ -35,17 +36,27 @@ namespace Visualizations
             /// <summary>
             /// Function provided by the data manager for passing on the input data to the visualizations
             /// </summary>
-            public delegate void InputData_Delegate(ref XYData_Type input_data);
+            public delegate void InputData_Delegate(ref DefaultData_Type input_data);
 
             /// <summary>
             /// Function provided by the interface (= Grasshopper) which allows pass output data to the interface
             /// </summary>
-            public delegate void OutputData_Delegate(ref XYData_Type ouput_data);
+            public delegate void OutputData_Delegate(ref DefaultData_Type ouput_data);
 
             /// <summary>
             /// Callback for visualizations to request suitable data
             /// </summary>
             public delegate object RequestDataCallback_Delegate(Type t);
+
+            /// <summary>
+            /// TODO
+            /// </summary>
+            public delegate void RegisterUpdatedDataCallback_Delegate(UpdatedDataCallback_Delegate update_callback);
+
+            /// <summary>
+            /// TODO
+            /// </summary>
+            public delegate object UpdatedDataCallback_Delegate();
 
 
             /* ------------------------------------------------------------------*/
@@ -64,16 +75,23 @@ namespace Visualizations
                 _data_x = new List<double>();
                 _data_y = new List<double>();
                 _data_meta = new List<MetaData>();
+
+                // Register all supported data types
                 _library_data = new Dictionary<Type, object>();
+                _updated_callbacks = new List<UpdatedDataCallback_Delegate>();
 
-                // SciChart
-                var scichart_uniformxy = new SciChartUniformData_Type();
-                scichart_uniformxy.SeriesName = "SciChartUniformData_Type";
-                _library_data.Add(typeof(SciChartUniformData_Type), scichart_uniformxy);
+                // DefaultData_Type
+                _library_data.Add(typeof(DefaultData_Type), new DefaultData_Type());
 
-                var scichart_xy = new SciChartData_Type();
-                scichart_xy.SeriesName = "SciChartData_Type";
-                _library_data.Add(typeof(SciChartData_Type), scichart_xy);
+                // SciChartUniformData_Type
+                var data_scichart_uniform = new SciChartUniformData_Type();
+                data_scichart_uniform.SeriesName = "SciChartUniformData_Type";
+                _library_data.Add(typeof(SciChartUniformData_Type), data_scichart_uniform);
+
+                // SciChartData_Type
+                var data_scichart = new SciChartData_Type();
+                data_scichart.SeriesName = "SciChartData_Type";
+                _library_data.Add(typeof(SciChartData_Type), data_scichart);
 
                 /// TODO Add more library data formats here ...
 
@@ -88,9 +106,15 @@ namespace Visualizations
                 bool terminated = true;
                 if (_initilized)
                 {
+                    _outputdata_callback = null;
+
                     foreach (var data_type in _library_data)
                     {
-                        if (data_type.Key == typeof(SciChartUniformData_Type))
+                        if (data_type.Key == typeof(DefaultData_Type))
+                        {
+                            ((DefaultData_Type)data_type.Value).Clear();
+                        }
+                        else if (data_type.Key == typeof(SciChartUniformData_Type))
                         {
                             ((SciChartUniformData_Type)data_type.Value).Clear();
                         }
@@ -105,6 +129,15 @@ namespace Visualizations
                         }
                     }
                     _library_data.Clear();
+                    _library_data = null;
+                    _data_x.Clear();
+                    _data_x = null;
+                    _data_y.Clear();
+                    _data_y = null;
+                    _data_meta.Clear();
+                    _data_meta = null;
+                    _updated_callbacks.Clear();
+                    _updated_callbacks = null;
 
                     _initilized = false;
                 }
@@ -115,7 +148,7 @@ namespace Visualizations
             /// Callback for new input data.
             /// </summary>
             /// <param name="input_data">Reference to the new input data.</param>
-            public void InputData(ref XYData_Type input_data)
+            public void UpdateInputData(ref DefaultData_Type input_data)
             {
                 _data_x.Clear();
                 _data_y.Clear();
@@ -126,7 +159,7 @@ namespace Visualizations
                     return;
                 }
                 _timer.Start();
-                Log.Default.Msg(Log.Level.Debug, "Reading input data ...");
+                Log.Default.Msg(Log.Level.Debug, "Reading input data");
 
                 // Copy input data
 
@@ -145,6 +178,7 @@ namespace Visualizations
                     _data_meta.Add(meta_data);
                 }
                 //}
+
                 if ((_data_x.Count != _data_y.Count) || (_data_x.Count != _data_meta.Count) || (_data_y.Count != _data_meta.Count))
                 {
                     Log.Default.Msg(Log.Level.Warn, "Data count does not match");
@@ -156,7 +190,16 @@ namespace Visualizations
                 {
                     Log.Default.Msg(Log.Level.Debug, data_type.Key.FullName);
 
-                    if (data_type.Key == typeof(SciChartUniformData_Type))
+                    if (data_type.Key == typeof(DefaultData_Type))
+                    {
+                        var data_series = (DefaultData_Type)data_type.Value;
+                        data_series.Clear();
+                        for (int i = 0; i < _data_y.Count; i++)
+                        {
+                            data_series.Add(new List<double>() { _data_y[i] });
+                        }
+                    }
+                    else if (data_type.Key == typeof(SciChartUniformData_Type))
                     {
                         var data_series = (SciChartUniformData_Type)data_type.Value;
                         data_series.Clear();
@@ -181,12 +224,18 @@ namespace Visualizations
                     }
                 }
 
+                // Notify registered update callbacks on new input data
+                foreach (var updated_callback in _updated_callbacks)
+                {
+                    updated_callback();
+                }
+
                 _timer.Stop();
                 Log.Default.Msg(Log.Level.Debug, "... done.");
             }
 
             /// <summary>
-            /// Set the callback to provide new output data to the interface. 
+            /// Set the callback to provide new output data to the interface.
             /// </summary>
             /// <param name="outputdata_callback"></param>
             public void SetOutputDataCallback(OutputData_Delegate outputdata_callback)
@@ -195,20 +244,28 @@ namespace Visualizations
             }
 
             /// <summary>
-            /// Callback for visualizations to ask for library specific data.
+            /// Notify registered callers on updated input data. Called by visualizations.
             /// </summary>
-            /// <returns>The callback for requesting data.</returns>
-            public RequestDataCallback_Delegate GetRequestDataCallback()
+            public void RegisterUpdatedDataCallback(UpdatedDataCallback_Delegate update_callback)
             {
-                return request_data;
+                if (_updated_callbacks.Contains(update_callback))
+                {
+                    Log.Default.Msg(Log.Level.Debug, "callback for updated data already registered");
+                    return;
+                }
+                _updated_callbacks.Add(update_callback);
             }
+
+
+            /* ------------------------------------------------------------------*/
+            // private functions
 
             /// <summary>
             /// Return the data for the requested type.
             /// </summary>
             /// <param name="t">The type the data would be required.</param>
             /// <returns>The data as generic object. Cast to requested type manually.</returns>
-            private object request_data(Type t)
+            public object RequestDataCallback(Type t)
             {
                 if (!_initilized)
                 {
@@ -243,7 +300,12 @@ namespace Visualizations
 
                 foreach (var data_type in _library_data)
                 {
-                    if (data_type.Key == typeof(SciChartUniformData_Type))
+                    if (data_type.Key == typeof(DefaultData_Type))
+                    {
+                        var dataseries = (DefaultData_Type)_library_data[data_type.Key];
+                        /// TODO
+                    }
+                    else if (data_type.Key == typeof(SciChartUniformData_Type))
                     {
                         var dataseries = (SciChartUniformData_Type)_library_data[data_type.Key];
                         using (dataseries.SuspendUpdates())
@@ -269,7 +331,7 @@ namespace Visualizations
                 // Send changed output data
                 if (_outputdata_callback != null)
                 {
-                    var out_data = new XYData_Type();
+                    var out_data = new DefaultData_Type();
                     var list = new List<double>();
                     foreach (var metadata in _data_meta)
                     {
@@ -277,6 +339,10 @@ namespace Visualizations
                     }
                     out_data.Add(list);
                     _outputdata_callback(ref out_data);
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Missing callback to propagate updated output data.");
                 }
             }
 
@@ -289,6 +355,7 @@ namespace Visualizations
             private List<double> _data_y = null;
             private List<MetaData> _data_meta = null;
             private Dictionary<Type, object> _library_data = null;
+            private List<UpdatedDataCallback_Delegate> _updated_callbacks = null;
         }
     }
 }

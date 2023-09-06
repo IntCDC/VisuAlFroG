@@ -4,10 +4,13 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-
 using Core.Abstracts;
 using Core.Utilities;
 
+
+// Additional types only used here:
+using DragDrop_Type = System.Tuple<Core.GUI.WindowLeaf, string, string>;
+using AttachedContent_Type = System.Tuple<string, string>;
 
 
 /*
@@ -24,9 +27,9 @@ namespace Core
             // public classes 
 
             /// <summary>
-            /// Settings data.
+            /// Configuration data.
             /// </summary>
-            public class Settings : IAbstractSettingData
+            public class Configuration : IAbstractConfigurationData
             {
                 public string ContentID { get; set; }
                 public string ContentType { get; set; }
@@ -66,7 +69,7 @@ namespace Core
                 }
 
                 _content = new Grid();
-                _content.Background = ColorTheme.GridBackground;
+                _content.Background = ColorTheme.GenericBackground;
                 _content.Name = "grid_" + UniqueID.Generate();
 
                 var info_text = new TextBlock();
@@ -94,30 +97,26 @@ namespace Core
             /// </summary>
             /// <param name="content_id">Provide ID of existing content or invalid id otherwise.</param>
             /// <param name="content_type">The type of the content as string.</param>
-            /// <returns>The id of the attached content.</returns>
-            public string CreateContent(string content_id, string content_type)
+            public void CreateContent(string content_id, string content_type)
             {
                 // Call Create Content
-                var content_element = _content_callbacks.Item2(content_id, content_type);
-                if (content_element != null)
+                var content_metadata = _content_callbacks.Item2(content_id, content_type);
+                if (content_metadata != null)
                 {
-                    var updated_content_id = content_element.Name;
-                    if (updated_content_id != UniqueID.Invalid)
+                    if ((content_metadata.Item1 != UniqueID.Invalid) && (content_metadata.Item2 != null))
                     {
-                        _content.Children.Add(content_element);
-                        _attached_content = new AttachedContent_Type(updated_content_id, content_type);
-                        return updated_content_id;
+                        _content.Children.Add(content_metadata.Item2);
+                        _attached_content = new AttachedContent_Type(content_metadata.Item1, content_type);
                     }
                     else
                     {
-                        Log.Default.Msg(Log.Level.Error, "Missing valid id of attached content element");
+                        Log.Default.Msg(Log.Level.Error, "Missing valid id or content element");
                     }
                 }
                 else
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing content element to attach");
                 }
-                return UniqueID.Invalid;
             }
 
             /// <summary>
@@ -134,9 +133,23 @@ namespace Core
                     Log.Default.Msg(Log.Level.Error, "Parameter parent_branch should not be null");
                     return;
                 }
+            }
 
-                // Recreate context menu due to changed root
-                ///contextmenu_setup();
+            /// <summary>
+            /// Reset attached resources.
+            /// </summary>
+            public void ResetLeaf()
+            {
+                delete_content();
+                base.Reset();
+            }
+
+            /// <summary>
+            /// DEBUG
+            /// </summary>
+            ~WindowLeaf()
+            {
+                Console.WriteLine("DEBUG - DTOR: WindowLeaf");
             }
 
 
@@ -211,24 +224,21 @@ namespace Core
                 contextmenu.Items.Add(item_vertical);
 
                 // Enable deletion of child only if it is not root
-                if (!_parent_is_root)
-                {
-                    var item_delete = new MenuItem();
-                    item_delete.Style = ColorTheme.MenuItemStyle("delete-window.png");
-                    item_delete.Header = "Delete Window";
-                    item_delete.Name = _item_id_window_delete;
-                    item_delete.Click += menuitem_click;
-                    contextmenu.Items.Add(item_delete);
-                }
+                var item_delete = new MenuItem();
+                item_delete.Style = ColorTheme.MenuItemStyle("delete-window.png");
+                item_delete.Header = "Delete Window";
+                item_delete.Name = _item_id_window_delete;
+                item_delete.Click += menuitem_click;
+                item_delete.IsEnabled = (!_parent_is_root);
+                contextmenu.Items.Add(item_delete);
 
-                var item_sep1 = new Separator();
-                contextmenu.Items.Add(item_sep1);
+                contextmenu.Items.Add(new Separator());
 
                 var item_content_add = new MenuItem();
                 item_content_add.Style = ColorTheme.MenuItemStyle("add-content.png");
                 item_content_add.Header = "Add Content";
                 // Call Available Contents
-                AvailableContentList_Type available_child_content = _content_callbacks.Item1();
+                AvailableContentsList_Type available_child_content = _content_callbacks.Item1();
                 foreach (var content_data in available_child_content)
                 {
                     // Item index: 1=name, 2=available, 3=is-multi, 4=type
@@ -318,10 +328,9 @@ namespace Core
                 }
 
                 // Call Available Contents
-                AvailableContentList_Type available_contents = _content_callbacks.Item1();
+                AvailableContentsList_Type available_contents = _content_callbacks.Item1();
                 foreach (var content_data in available_contents)
                 {
-                    // Replacement of spaces is necessary for Name property
                     string name = conform_name(content_data.Item1);
                     if (content_id == name)
                     {
@@ -334,16 +343,19 @@ namespace Core
             /// <summary>
             /// Delete attached content permanently.
             /// </summary>
-            private void delete_content()
+            private void delete_content(bool only_detach = false)
             {
                 _content.Children.Clear();
-                _content.Background = ColorTheme.GridBackground;
+
                 if (_attached_content != null)
                 {
-                    if (_attached_content.Item1 != UniqueID.Invalid)
+                    if (!only_detach)
                     {
-                        // Call Delete Content
-                        _content_callbacks.Item3(_attached_content.Item1);
+                        if (_attached_content.Item1 != UniqueID.Invalid)
+                        {
+                            // Call Delete Content
+                            _content_callbacks.Item3(_attached_content.Item1);
+                        }
                     }
                     _attached_content = null;
                 }
@@ -363,8 +375,9 @@ namespace Core
                 }
                 if ((_attached_content != null) && (e.MiddleButton == MouseButtonState.Pressed))
                 {
-                    var drag_and_drop_load = new Tuple<WindowLeaf, string, string>(this, _attached_content.Item1, _attached_content.Item2);
-                    delete_content();
+                    var drag_and_drop_load = new DragDrop_Type(this, _attached_content.Item1, _attached_content.Item2);
+                    // Only detach content
+                    delete_content(true);
                     DragDrop.DoDragDrop(sender_grid, drag_and_drop_load, DragDropEffects.All);
                 }
             }
@@ -382,11 +395,15 @@ namespace Core
                     return;
                 }
                 // Check for compatible data
-                var data_type = typeof(Tuple<WindowLeaf, string, Type>);
+                var data_type = typeof(DragDrop_Type);
                 if (e.Data.GetDataPresent(data_type))
                 {
                     // Change mouse cursor
                     e.Effects = DragDropEffects.Move | DragDropEffects.Copy;
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unexpected drag over data type");
                 }
             }
 
@@ -403,22 +420,25 @@ namespace Core
                     return;
                 }
                 // Check for compatible drop data
-                var data_type = typeof(Tuple<WindowLeaf, string, Type>);
+                var data_type = typeof(DragDrop_Type);
                 if (e.Data.GetDataPresent(data_type))
                 {
-                    var source_content = (Tuple<WindowLeaf, string, string>)e.Data.GetData(data_type);
+                    var source_content = (DragDrop_Type)e.Data.GetData(data_type);
+                    var target_content = _attached_content;
+                    // Only detach content
+                    delete_content(true);
+
                     // Move content from target to source (content in source is already detached)
-                    if ((source_content.Item1 != null) && (_attached_content != null))
+                    if ((source_content.Item1 != null) && (target_content != null))
                     {
-                        var target_content = _attached_content;
-                        // Set _attached_content to null before detaching to prevent deletion of content
-                        _attached_content = null;
-                        delete_content();
                         source_content.Item1.CreateContent(target_content.Item1, target_content.Item2);
                     }
                     // Drop content from source in target
-                    delete_content();
                     CreateContent(source_content.Item2, source_content.Item3);
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unexpected drop data type");
                 }
             }
 

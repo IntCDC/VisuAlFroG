@@ -35,7 +35,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public bool Initialize(WindowClose_Delegate close_callback, SettingsService.Save_Delegate save_callback, SettingsService.Load_Delegate load_callback)
+            public bool Initialize(WindowClose_Delegate close_callback, ConfigurationService.Save_Delegate save_callback, ConfigurationService.Load_Delegate load_callback)
             {
                 if (_initilized)
                 {
@@ -53,6 +53,7 @@ namespace Core
                 _load_callback = load_callback;
 
                 _content = new Menu();
+                _content.Style = ColorTheme.MenuStyle();
 
                 _timer.Stop();
                 _initilized = true;
@@ -78,24 +79,24 @@ namespace Core
                 item_close.Style = ColorTheme.MenuItemStyle();
                 item_file.Items.Add(item_close);
 
-                var item_settings = new MenuItem();
-                item_settings.Header = "Settings";
-                item_settings.Style = ColorTheme.MenuItemStyle();
-                item_file.Items.Add(item_settings);
+                var item_configurations = new MenuItem();
+                item_configurations.Header = "Configuration";
+                item_configurations.Style = ColorTheme.MenuItemStyle();
+                item_file.Items.Add(item_configurations);
 
                 var item_save = new MenuItem();
                 item_save.Header = "Save";
                 item_save.Name = _item_id_save;
                 item_save.Click += menuitem_click;
                 item_save.Style = ColorTheme.MenuItemStyle();
-                item_settings.Items.Add(item_save);
+                item_configurations.Items.Add(item_save);
 
                 var item_load = new MenuItem();
                 item_load.Header = "Load";
                 item_load.Name = _item_id_load;
                 item_load.Click += menuitem_click;
                 item_load.Style = ColorTheme.MenuItemStyle();
-                item_settings.Items.Add(item_load);
+                item_configurations.Items.Add(item_load);
 
 
                 // ----------------------------------------
@@ -112,10 +113,6 @@ namespace Core
                 item_github_link.Style = ColorTheme.MenuItemStyle("github.png");
                 item_github_link.Header = hyper_link;
                 item_info.Items.Add(item_github_link);
-
-
-                _content.Height = 20.0;
-                _content.Style = ColorTheme.MenuStyle();
 
                 _content.Items.Add(item_file);
                 _content.Items.Add(item_info);
@@ -196,8 +193,8 @@ namespace Core
 
             private Menu _content = null;
             private WindowClose_Delegate _close_callback = null;
-            private SettingsService.Save_Delegate _save_callback = null;
-            private SettingsService.Load_Delegate _load_callback = null;
+            private ConfigurationService.Save_Delegate _save_callback = null;
+            private ConfigurationService.Load_Delegate _load_callback = null;
 
             private readonly string _item_id_close = "item_close_" + UniqueID.Generate();
             private readonly string _item_id_save = "item_save_" + UniqueID.Generate();

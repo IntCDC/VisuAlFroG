@@ -115,7 +115,7 @@ namespace Core
 
                 // Fixed padding
                 string trace_meta = timestamp + level_prefix + trace_file + trace_method + trace_line;
-                trace_meta = trace_meta.PadRight(75, ' ');
+                trace_meta = trace_meta.PadRight(80, ' ');
                 string message = (trace_meta + " > " + log);
 
                 MessageData msgdata = new MessageData();

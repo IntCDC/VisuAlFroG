@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Core.Utilities;
 using Core.Abstracts;
+using static Core.Utilities.WorkingDirectory;
 
 
 
@@ -30,15 +31,15 @@ namespace Core
             // public classes 
 
             /// <summary>
-            /// Settings data.
+            /// Configuration data.
             /// </summary>
-            public class Settings : IAbstractSettingData
+            public class Configuration : IAbstractConfigurationData
             {
                 public WindowBranch.SplitOrientation Orientation { get; set; }
                 public WindowBranch.ChildLocation Location { get; set; }
                 public double Position { get; set; }
-                public WindowLeaf.Settings Leaf { get; set; }
-                public Tuple<WindowBranch.Settings, WindowBranch.Settings> Children { get; set; }
+                public WindowLeaf.Configuration Leaf { get; set; }
+                public Tuple<WindowBranch.Configuration, WindowBranch.Configuration> Children { get; set; }
             }
 
 
@@ -73,10 +74,10 @@ namespace Core
                 _children = null;
                 _content_callbacks = content_callbacks;
 
-                _child_leaf = new WindowLeaf(this, _parent_is_root, _content_callbacks);
-
                 _content = new Grid();
                 _content.Name = "grid_parent_is_root";
+
+                _child_leaf = new WindowLeaf(this, _parent_is_root, _content_callbacks);
                 _content.Children.Add(_child_leaf.ContentElement);
 
                 return _content;
@@ -107,7 +108,7 @@ namespace Core
                     Log.Default.Msg(Log.Level.Error, "Relative splitter position must be in range [0.0, 1.0]");
                 }
 
-                clear_content(_content);
+                delete_content(_content);
 
                 _orientation = orientation;
                 _location = location;
@@ -196,7 +197,41 @@ namespace Core
                 return true;
             }
 
+            /// <summary>
+            /// Reset root branch.
+            /// </summary>
+            public void ResetRoot()
+            {
+                if (!_parent_is_root)
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Tried to reset none root branch");
+                    return;
+                }
 
+                if (_child_leaf != null)
+                {
+                    _child_leaf.ResetLeaf();
+                    _child_leaf = null;
+                }
+                _orientation = SplitOrientation.None;
+                _location = ChildLocation.None;
+                delete_content(_content);
+
+                if (_children != null)
+                {
+                    clear_windows(_children.Item1);
+                    clear_windows(_children.Item2);
+                }
+                _children = null;
+
+                _child_leaf = new WindowLeaf(this, _parent_is_root, _content_callbacks);
+                _content.Children.Add(_child_leaf.ContentElement);
+            }
+
+            /// <summary>
+            /// Request the parent branch to delete this branch holding a leaf.
+            /// Called by the leaf of this branch.
+            /// </summary>
             public void DeleteLeaf()
             {
                 if (_parent_branch == null)
@@ -205,6 +240,14 @@ namespace Core
                     return;
                 }
                 _parent_branch.delete_childbranch(this);
+            }
+
+            /// <summary>
+            /// DEBUG
+            /// </summary>
+            ~WindowBranch()
+            {
+                Console.WriteLine("DEBUG - DTOR: WindowBranch");
             }
 
 
@@ -239,7 +282,10 @@ namespace Core
                 _content.Children.Add(_child_leaf.ContentElement);
             }
 
-
+            /// <summary>
+            /// Delete the given child branch. Restructure children accordingly. 
+            /// </summary>
+            /// <param name="delete_child">The branch to delete.</param>
             private void delete_childbranch(WindowBranch delete_child)
             {
                 WindowBranch kept_child = ((delete_child == _children.Item1) ? _children.Item2 : ((delete_child == _children.Item2) ? _children.Item1 : null));
@@ -257,8 +303,8 @@ namespace Core
                 _child_leaf = null;
 
                 // Reset grids
-                clear_content(_content);
-                clear_content(kept_child._content);
+                delete_content(_content);
+                delete_content(kept_child._content);
 
                 if ((kept_child._children != null) && (kept_child._children.Item1 != null) && (kept_child._children.Item2 != null))
                 {
@@ -282,19 +328,23 @@ namespace Core
                 }
 
                 // Clear unused branch child
-                kept_child._content = null;
-                kept_child._children = null;
-                kept_child._child_leaf = null;
-                kept_child._parent_branch = null;
+                kept_child.Reset();
             }
 
-
-            private void clear_content(Grid cotent_element)
+            /// <summary>
+            /// Clear content of provided Grid.
+            /// </summary>
+            /// <param name="content_element">The grid to clear.</param>
+            private void delete_content(Grid content_element)
             {
-                cotent_element.Children.Clear();
-                cotent_element.RowDefinitions.Clear();
-                cotent_element.ColumnDefinitions.Clear();
-                cotent_element.UpdateLayout();
+                if (content_element == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Provided Grid is null");
+                }
+                content_element.Children.Clear();
+                content_element.RowDefinitions.Clear();
+                content_element.ColumnDefinitions.Clear();
+                content_element.UpdateLayout();
             }
 
             /// <summary>
@@ -340,6 +390,43 @@ namespace Core
                         }
                 }
                 return value;
+            }
+
+            /// <summary>
+            /// Clear window tree recursively.
+            /// </summary>
+            /// <param name="branch">The branch to start with.</param>
+            private void clear_windows(WindowBranch branch)
+            {
+                if (branch.Children != null)
+                {
+                    if (branch.Children.Item1 != null)
+                    {
+                        clear_windows(branch.Children.Item1);
+                    }
+                    if (branch.Children.Item2 != null)
+                    {
+                        clear_windows(branch.Children.Item2);
+                    }
+                }
+                branch.reset_window();
+            }
+
+            /// <summary>
+            /// Reset attached resources.
+            /// </summary>
+            private void reset_window()
+            {
+                _children = null;
+                if (_child_leaf != null)
+                {
+                    _child_leaf.ResetLeaf();
+                    _child_leaf = null;
+                }
+                _orientation = SplitOrientation.None;
+                _location = ChildLocation.None;
+                delete_content(_content);
+                base.Reset();
             }
 
 

@@ -39,7 +39,7 @@ p = figure(tools="tap")
 renderer = p.patches('x', 'y', source=source)
 
 def my_tap_handler(attr,old,new):
-    print("Python Handler Called ...")
+    print("Python Handler called")
     indices = source.selected.indices
     if len(indices) == 1:
         group = source.data["group"][indices[0]]
@@ -74,5 +74,5 @@ selected_patches = Patches(fill_color="#a6cee3")
 renderer.selection_glyph = selected_patches
 source.selected.js_on_change('indices', callback)
 
-print("Show Plot ...")
+print("Show Plot")
 show(p, width=800)

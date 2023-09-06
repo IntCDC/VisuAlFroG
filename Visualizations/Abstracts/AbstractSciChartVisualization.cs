@@ -13,26 +13,28 @@ using SciChart.Charting.Model.DataSeries;
 
 
 /*
- * Abstract Visualization for SciChart based visualizations relying on the SciChartParallelCoordinateSurface.
+ * Abstract Visualization for SciChart based visualizations relying on the SciChartSurface.
  * 
  */
 namespace Visualizations
 {
     namespace Abstracts
     {
-        public abstract class AbstractSciChartParallel : AbstractVisualization
+        public abstract class AbstractSciChartVisualization<SurfaceType, DataType> : AbstractVisualization where SurfaceType : SciChartSurface, new()
         {
-
             /* ------------------------------------------------------------------*/
             // properties
 
+            public sealed override bool MultipleInstances { get { return true; } }
             public sealed override List<Type> DependingServices { get { return new List<Type>() { typeof(SciChartInterfaceService) }; } }
+
+            protected SurfaceType Content { get { return _content; } }
 
 
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public sealed override bool Initialize()
+            public override bool Initialize()
             {
                 if (_initialized)
                 {
@@ -40,8 +42,10 @@ namespace Visualizations
                 }
                 _timer.Start();
 
-                _content = new SciChartParallelCoordinateSurface();
+                _content = new SurfaceType();
                 _content.Name = ID;
+
+                ContentChild.Children.Add(_content);
 
                 _timer.Stop();
                 _initialized = true;
@@ -52,18 +56,16 @@ namespace Visualizations
                 return _initialized;
             }
 
-            public sealed override Control Attach()
+            public sealed override Panel Attach()
             {
                 if (!_created)
                 {
                     Log.Default.Msg(Log.Level.Error, "Creation of content required prior to execution");
                     return null;
                 }
-
                 _content.ChartModifier.IsAttached = true;
 
-                _attached = true;
-                return _content;
+                return base.Attach();
             }
 
             public sealed override bool Detach()
@@ -74,7 +76,7 @@ namespace Visualizations
                 return true;
             }
 
-            public sealed override bool Terminate()
+            public override bool Terminate()
             {
                 if (_initialized)
                 {
@@ -83,14 +85,19 @@ namespace Visualizations
 
                     _initialized = false;
                 }
-                return true;
+                return base.Terminate();
+            }
+
+            public new DataType Data()
+            {
+                return (DataType)_request_data_callback(typeof(DataType));
             }
 
 
             /* ------------------------------------------------------------------*/
-            // protected variables
+            // private variables
 
-            protected SciChartParallelCoordinateSurface _content = null;
+            private SurfaceType _content = null;
         }
     }
 }

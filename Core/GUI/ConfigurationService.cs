@@ -13,14 +13,14 @@ using System.Collections;
 
 
 /*
- * Settings Service
+ * Configuration Service
  * 
  */
 namespace Core
 {
     namespace GUI
     {
-        public class SettingsService : AbstractService
+        public class ConfigurationService : AbstractService
         {
 
             /* ------------------------------------------------------------------*/
@@ -32,34 +32,50 @@ namespace Core
 
             public delegate string RegisterCollect_Delegate();
 
-            public delegate bool RegisterApply_Delegate(string settings);
+            public delegate bool RegisterApply_Delegate(string configurations);
 
 
             /* ------------------------------------------------------------------*/
             // static functions
 
             /// <summary>
-            /// [STATIC] Provides static serialization of settings to JSON string.
+            /// [STATIC] Provides static serialization of configurations to JSON string.
             /// </summary>
-            /// <typeparam name="T">The settings type.</typeparam>
-            /// <param name="window_data">The actual settings object.</param>
-            /// <returns>The serialized settings.</returns>
+            /// <typeparam name="T">The configurations type.</typeparam>
+            /// <param name="window_data">The actual configurations object.</param>
+            /// <returns>The serialized configurations.</returns>
             public static string Serialize<T>(T window_data)
             {
-                string settings = JsonConvert.SerializeObject(window_data); //, Formatting.Indented);
-                return settings;
+                try
+                {
+                    string configurations = JsonConvert.SerializeObject(window_data); //, Formatting.Indented);
+                    return configurations;
+                }
+                catch (Exception exc)
+                {
+                    Log.Default.Msg(Log.Level.Error, exc.Message);
+                }
+                return null;
             }
 
             /// <summary>
             /// [STATIC] Provides static deserialization contained in JSON string.
             /// </summary>
-            /// <typeparam name="T">The settings type.</typeparam>
+            /// <typeparam name="T">The configurations type.</typeparam>
             /// <param name="content">The JSON string.</param>
-            /// <returns>The settings object.</returns>
+            /// <returns>The configurations object.</returns>
             public static T Deserialize<T>(string content)
             {
-                T settings = JsonConvert.DeserializeObject<T>(content);
-                return settings;
+                try
+                {
+                    T configurations = JsonConvert.DeserializeObject<T>(content);
+                    return configurations;
+                }
+                catch (Exception exc)
+                {
+                    Log.Default.Msg(Log.Level.Error, exc.Message);
+                }
+                return default(T);
             }
 
 
@@ -102,12 +118,12 @@ namespace Core
             }
 
             /// <summary>
-            /// Register object that provides settings. Unique name of requesting caller is required in order to create separate JSON entries.
+            /// Register object that provides configurations. Unique name of requesting caller is required in order to create separate JSON entries.
             /// </summary>
             /// <param name="name">Unique name of the caller.</param>
-            /// <param name="collect_callback">Callback for collecting all settings.</param>
-            /// <param name="apply_callback">callback for applying all settings.</param>
-            public void RegisterSettings(string name, RegisterCollect_Delegate collect_callback, RegisterApply_Delegate apply_callback)
+            /// <param name="collect_callback">Callback for collecting all configurations.</param>
+            /// <param name="apply_callback">callback for applying all configurations.</param>
+            public void RegisterConfiguration(string name, RegisterCollect_Delegate collect_callback, RegisterApply_Delegate apply_callback)
             {
                 if (!_initilized)
                 {
@@ -125,7 +141,7 @@ namespace Core
             }
 
             /// <summary>
-            /// Request saving all settings to a JSON file.
+            /// Request saving all configurations to a JSON file.
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
             public bool Save()
@@ -133,28 +149,28 @@ namespace Core
                 var _serialize_strucutre = new Dictionary<string, string>();
                 foreach (var collect_callback in _collect_callbacks)
                 {
-                    // Call callback for collecting all settings
+                    // Call callback for collecting all configurations
                     _serialize_strucutre.Add(collect_callback.Key, collect_callback.Value());
                 }
-                string settings = Serialize<Dictionary<string, string>>(_serialize_strucutre);
-                savefile_dialog(settings);
+                string configurations = Serialize<Dictionary<string, string>>(_serialize_strucutre);
+                savefile_dialog(configurations);
                 return true;
             }
 
             /// <summary>
-            /// Request loading of settings from a JSON file.
+            /// Request loading of configurations from a JSON file.
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
             public bool Load()
             {
-                string settings = openfile_dialog();
-                var _deserialize_structure = Deserialize<Dictionary<string, string>>(settings);
+                string configurations = openfile_dialog();
+                var _deserialize_structure = Deserialize<Dictionary<string, string>>(configurations);
 
                 foreach (var apply_callback in _deserialize_structure)
                 {
                     if (_apply_callbacks.ContainsKey(apply_callback.Key))
                     {
-                        // Call callback for applying settings
+                        // Call callback for applying configurations
                         _apply_callbacks[apply_callback.Key](apply_callback.Value);
                     }
                 }
@@ -174,13 +190,13 @@ namespace Core
                 Stream ouput_stream;
                 System.Windows.Forms.SaveFileDialog save_file_dialog = new System.Windows.Forms.SaveFileDialog();
 
-                save_file_dialog.Title = "Save Window Settings";
+                save_file_dialog.Title = "Save Configuration";
                 save_file_dialog.InitialDirectory = System.Windows.Forms.Application.StartupPath;
                 save_file_dialog.Filter = "JSON files (*.json)|*.json";
                 save_file_dialog.FilterIndex = 1;
                 save_file_dialog.RestoreDirectory = true;
                 save_file_dialog.AddExtension = true;
-                save_file_dialog.FileName = "settings";
+                save_file_dialog.FileName = WorkingDirectory.FileName("configuration", "json");
 
                 if (save_file_dialog.ShowDialog() == DialogResult.OK)
                 {
@@ -206,12 +222,12 @@ namespace Core
 
                 using (System.Windows.Forms.OpenFileDialog open_file_dialog = new System.Windows.Forms.OpenFileDialog())
                 {
-                    open_file_dialog.Title = "Load Window Settings";
+                    open_file_dialog.Title = "Load Configuration";
                     open_file_dialog.InitialDirectory = System.Windows.Forms.Application.StartupPath;
                     open_file_dialog.Filter = "JSON files (*.json)|*.json";
                     open_file_dialog.FilterIndex = 1;
                     open_file_dialog.RestoreDirectory = true;
-                    open_file_dialog.FileName = "settings";
+                    open_file_dialog.FileName = WorkingDirectory.FileName("configuration", "json");
 
                     if (open_file_dialog.ShowDialog() == DialogResult.OK)
                     {

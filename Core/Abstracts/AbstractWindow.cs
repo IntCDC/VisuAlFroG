@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Controls;
 using Core.Utilities;
 using Core.GUI;
+using System.Threading;
 
 
 
@@ -20,11 +21,11 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public delegates
 
-            public delegate AvailableContentList_Type AvailableContents_Delegate();
+            public delegate AvailableContentsList_Type AvailableContents_Delegate();
 
-            public delegate Control CreateContent_Delegate(string content_id, string content_type);
+            public delegate AttachContentMetaData_Type CreateContent_Delegate(string content_id, string content_type);
 
-            public delegate void DeleteContent_Delegate(string content_id);
+            public delegate bool DeleteContent_Delegate(string content_id);
 
 
             /* ------------------------------------------------------------------*/
@@ -43,6 +44,19 @@ namespace Core
                 Top_Left,
                 Bottom_Right,
             }
+
+
+            /* ------------------------------------------------------------------*/
+            // protected functions
+
+            protected void Reset()
+            {
+                _content = null;
+                _parent_is_root = false;
+                _parent_branch = null;
+                _content_callbacks = null;
+            }
+
 
             /* ------------------------------------------------------------------*/
             // protected variables

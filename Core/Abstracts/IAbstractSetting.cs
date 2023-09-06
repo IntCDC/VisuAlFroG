@@ -8,33 +8,33 @@ using Core.GUI;
 
 
 /*
- * Abstract Settings Interfaces for data and classes providing settings
+ * Abstract Configuration Interfaces for data and classes providing some configuration
  * 
  */
 namespace Core
 {
     namespace Abstracts
     {
-        public interface IAbstractSettingData
+        public interface IAbstractConfigurationData
         {
             /// Empty so far 
         }
 
 
-        public interface IAbstractSettings
+        public interface IAbstractConfiguration
         {
             /// <summary>
-            /// Called for collecting all settings.
+            /// Called for collecting all configurations.
             /// </summary>
-            /// <returns>The serialized settings as JSON string.</returns>
-            string CollectSettings();
+            /// <returns>The serialized configurations as JSON string.</returns>
+            string CollectConfigurations();
 
             /// <summary>
-            /// Called for applying all settings.
+            /// Called for applying all configurations.
             /// </summary>
-            /// <param name="settings">The settings as JSON string.</param>
+            /// <param name="configurations">The configurations as JSON string.</param>
             /// <returns>True on success, false otherwise.</returns>
-            bool ApplySettings(string settings);
+            bool ApplyConfigurations(string configurations);
         }
     }
 }

@@ -3,12 +3,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.IO;
 using Core.Utilities;
+using Core.GUI;
 using Core.Abstracts;
 using System.Windows.Media;
 using System.Windows.Documents;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.Runtime.Remoting.Contexts;
+using Visualizations.Abstracts;
 
 
 
@@ -16,18 +18,16 @@ using System.Runtime.Remoting.Contexts;
  * Log Window Content
  * 
  */
-namespace Core
+namespace Visualizations
 {
-    namespace GUI
+    namespace Types
     {
-        public class LogContent : AbstractContent
+        public class LogConsole : AbstractGenericVisualization<System.Windows.Controls.TextBlock, DefaultData_Type>
         {
             /* ------------------------------------------------------------------*/
             // properties
 
             public override string Name { get { return "Log Console"; } }
-            public override bool MultipleInstances { get { return false; } }
-            public override List<Type> DependingServices { get { return new List<Type>() { }; } }
 
 
             /* ------------------------------------------------------------------*/
@@ -35,24 +35,10 @@ namespace Core
 
             public override bool Initialize()
             {
-                if (_initialized)
-                {
-                    Terminate();
-                }
-                _timer.Start();
-
-                _textblock = new TextBlock();
-                _content = new ScrollViewer();
-                _content.Name = ID;
+                var init = base.Initialize();
+                // ! Initialize base class before registering listener
                 Log.Default.RegisterListener(this.LogListener);
-
-                _timer.Stop();
-                _initialized = true;
-                if (_initialized)
-                {
-                    Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().Name);
-                }
-                return _initialized;
+                return init;
             }
 
             public override bool Create()
@@ -64,57 +50,32 @@ namespace Core
                 }
                 if (_created)
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Content already created, skipping...");
-                    return false;
+                    Log.Default.Msg(Log.Level.Info, "Skipping re-creation of content");
+                    return true;
                 }
                 _timer.Start();
 
-                _content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-                _content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+                ScrollView.Background = ColorTheme.LogBackground;
 
-                _textblock.TextWrapping = TextWrapping.Wrap;
-                _textblock.FontFamily = new FontFamily("Consolas");
-                _textblock.Width = Double.NaN; // = "Auto"
-                _textblock.Height = Double.NaN; // = "Auto"
+                Content.TextWrapping = TextWrapping.Wrap;
+                Content.FontFamily = new FontFamily("Consolas");
+                Content.Width = Double.NaN; // = "Auto"
+                Content.Height = Double.NaN; // = "Auto"
 
-                _content.Content = _textblock;
+                var copy_option = new MenuItem();
+                copy_option.Header = "Copy";
+                copy_option.Click += copy_option_click;
+                AddOption(copy_option);
 
                 _timer.Stop();
-
                 _created = true;
                 return _created;
             }
 
-            public override Control Attach()
-            {
-                if (!_initialized)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return null;
-                }
-                if (!_created)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Creation of content required prior to execution");
-                    return null;
-                }
-
-                _content.Background = ColorTheme.BackgroundBlack;
-
-                _attached = true;
-                return _content;
-            }
-
             public override bool Terminate()
             {
-                if (_initialized)
-                {
-                    _content = null;
-                    _textblock = null;
-                    Log.Default.UnRegisterListener(this.LogListener);
-
-                    _initialized = false;
-                }
-                return true;
+                Log.Default.UnRegisterListener(this.LogListener);
+                return base.Terminate();
             }
 
             /// <summary>
@@ -142,17 +103,25 @@ namespace Core
                     }
                     var run = new Run(msg.message + Environment.NewLine);
                     run.Foreground = font_color;
-                    _textblock.Inlines.Add(run);
-                    _content.ScrollToBottom();
+                    Content.Inlines.Add(run);
+                    ScrollView.ScrollToBottom();
                 }
             }
 
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            // private functions
 
-            private ScrollViewer _content = null;
-            private TextBlock _textblock = null;
+            private void copy_option_click(object sender, RoutedEventArgs e)
+            {
+                string complete_log = "";
+                foreach (var inline in Content.Inlines)
+                {
+                    var text_range = new TextRange(inline.ContentStart, inline.ContentEnd);
+                    complete_log += text_range.Text;
+                }
+                Clipboard.SetText(complete_log);
+            }
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Visualizations
                 SciChartSurface.SetRuntimeLicenseKey(SciChartRuntimeLicense.Key);
                 try
                 {
-                    // Loading SciChartSurface for the first time takes some time to initilaize.
+                    // Loading SciChartSurface for the first time takes some time to initialize.
                     Log.Default.Msg(Log.Level.Debug, "Loading SciChartSurface ...");
                     _timer.Start();
 

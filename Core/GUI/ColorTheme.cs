@@ -16,7 +16,7 @@ using Core.Utilities;
  */
 namespace Core
 {
-    namespace Utilities
+    namespace GUI
     {
         public class ColorTheme
         {
@@ -24,20 +24,15 @@ namespace Core
             // static functions
 
 
-            // BACKGROUND -----------------------------------------------------
+            // GENERIC -----------------------------------------------------
 
-            public static Brush BackgroundWhite { get { return Brushes.White; } }
-            public static Brush BackgroundBlack { get { return Brushes.Black; } }
+            public static Brush GenericBackground { get { return Brushes.AliceBlue; } }
+            public static Brush GenericForeground { get { return Brushes.Black; } }
 
 
             // TEXT -----------------------------------------------------------
 
             public static Brush TextDisabled { get { return Brushes.DimGray; } }
-
-
-            // GRID -----------------------------------------------------------
-
-            public static Brush GridBackground { get { return Brushes.AliceBlue; } }
 
 
             //  HYPER LINK ----------------------------------------------------
@@ -58,6 +53,7 @@ namespace Core
 
             // LOG MESSAGES ---------------------------------------------------
 
+            public static Brush LogBackground { get { return Brushes.Black; } }
             public static Brush LogMessageInfo { get { return Brushes.White; } }
             public static Brush LogMessageDebug { get { return Brushes.Gray; } }
             public static Brush LogMessageWarn { get { return Brushes.Yellow; } }
@@ -94,6 +90,60 @@ namespace Core
             }
 
 
+            //  CONTENT MENU --------------------------------------------------
+
+            public static Style ContentMenuStyle()
+            {
+                var style = new Style();
+                style.TargetType = typeof(Grid);
+
+                Setter setter_background = new Setter();
+                setter_background.Property = Grid.BackgroundProperty;
+                setter_background.Value = ColorTheme.GenericBackground;
+                style.Setters.Add(setter_background);
+
+                Setter setter_height = new Setter();
+                setter_height.Property = Grid.HeightProperty;
+                setter_height.Value = 20.0;
+                style.Setters.Add(setter_height);
+
+                return style;
+            }
+
+            public static Style CaptionStyle()
+            {
+                var style = new Style();
+                style.TargetType = typeof(TextBlock);
+
+                Setter setter_background = new Setter();
+                setter_background.Property = TextBlock.BackgroundProperty;
+                setter_background.Value = ColorTheme.GenericBackground;
+                style.Setters.Add(setter_background);
+
+                Setter setter_foreground = new Setter();
+                setter_foreground.Property = TextBlock.ForegroundProperty;
+                setter_foreground.Value = ColorTheme.GenericForeground;
+                style.Setters.Add(setter_foreground);
+
+                Setter setter_horiz = new Setter();
+                setter_horiz.Property = TextBlock.HorizontalAlignmentProperty;
+                setter_horiz.Value = HorizontalAlignment.Left;
+                style.Setters.Add(setter_horiz);
+
+                Setter setter_vert = new Setter();
+                setter_vert.Property = TextBlock.VerticalAlignmentProperty;
+                setter_vert.Value = VerticalAlignment.Center;
+                style.Setters.Add(setter_vert);
+
+                Setter setter_margin = new Setter();
+                setter_margin.Property = Label.MarginProperty;
+                setter_margin.Value = new Thickness(2.0, 0.0, 2.0, 0.0);
+                style.Setters.Add(setter_margin);
+
+                return style;
+            }
+
+
             // MENU -----------------------------------------------------------
 
             public static Brush MenuBackground { get { return Brushes.SteelBlue; } }
@@ -114,6 +164,12 @@ namespace Core
                 setter_foreground.Property = Menu.ForegroundProperty;
                 setter_foreground.Value = ColorTheme.MenuForeground;
                 style.Setters.Add(setter_foreground);
+
+                Setter setter_height = new Setter();
+                setter_height.Property = Menu.HeightProperty;
+                setter_height.Value = 20.0;
+                style.Setters.Add(setter_height);
+
                 return style;
             }
 

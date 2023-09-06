@@ -16,6 +16,9 @@ using Visualizations.Abstracts;
 using Visualizations.Management;
 using System.Runtime.InteropServices;
 using Visualizations.Interaction;
+using static Visualizations.Management.DataManager;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Runtime.Remoting.Contexts;
 
 
 
@@ -32,7 +35,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public bool Initialize(DataManager.RequestDataCallback_Delegate request_data_callback)
+            public bool Initialize(DataManager.RequestDataCallback_Delegate request_data_callback, RegisterUpdatedDataCallback_Delegate updated_data_callback)
             {
                 if (_initilized)
                 {
@@ -45,18 +48,20 @@ namespace Visualizations
                 }
                 _timer.Start();
 
+                _contents = new Dictionary<Type, Dictionary<string, AbstractVisualization>>();
                 _request_data_callback = request_data_callback;
-                _contents = new Dictionary<Type, Dictionary<string, AbstractContent>>();
+                _updated_data_callback = updated_data_callback;
 
 
                 /// TODO Register new visualizations here:
-                register_content(typeof(LogContent));
-                register_content(typeof(FilterContent));
+                register_content(typeof(LogConsole));
+                register_content(typeof(DataBrowser));
                 register_content(typeof(ScatterPlotVisualization));
                 register_content(typeof(ParallelCoordinatesPlotVisualization));
                 register_content(typeof(LinesVisualization));
                 register_content(typeof(ColumnsVisualization));
                 //register_content(typeof(...));
+
 
                 _timer.Stop();
                 _initilized = true;
@@ -65,46 +70,55 @@ namespace Visualizations
 
             public override bool Terminate()
             {
+                bool terminated = true;
                 if (_initilized)
                 {
-                    foreach (var content_types in _contents)
-                    {
-                        foreach (var content_data in content_types.Value)
-                        {
-                            content_data.Value.Terminate();
-                        }
-                        content_types.Value.Clear();
-                    }
-                    _contents.Clear();
+                    terminated &= clear_contents();
+
+                    _request_data_callback = null;
+                    _updated_data_callback = null;
+
                     _initilized = false;
                 }
-                return true;
+                return terminated;
             }
 
-            public string CollectSettings()
+            public string CollectConfigurations()
             {
-                var settings = new List<AbstractContent.Settings>();
+                var configurations = new List<AbstractVisualization.Configuration>();
                 foreach (var content_types in _contents)
                 {
                     foreach (var content_data in content_types.Value)
                     {
-                        settings.Add(new AbstractContent.Settings() { ID = content_data.Value.ID, Type = content_types.Key.FullName });
+                        configurations.Add(new AbstractVisualization.Configuration() { ID = content_data.Value.ID, Type = content_types.Key.FullName });
                     }
                 }
-                return SettingsService.Serialize<List<AbstractContent.Settings>>(settings);
+                return ConfigurationService.Serialize<List<AbstractVisualization.Configuration>>(configurations);
             }
 
-            public bool ApplySettings(string settings)
+            public bool ApplyConfigurations(string configurations)
             {
-                var visualizations_settings = SettingsService.Deserialize<List<AbstractContent.Settings>>(settings);
-                if (visualizations_settings != null)
+                if (!_initilized)
                 {
-                    foreach (var content_settings in visualizations_settings)
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return false;
+                }
+
+                var visualization_configurations = ConfigurationService.Deserialize<List<AbstractVisualization.Configuration>>(configurations);
+                if (visualization_configurations != null)
+                {
+                    if (!clear_contents())
                     {
-                        var type = get_type(content_settings.Type);
+                        Log.Default.Msg(Log.Level.Warn, "Unable to clear content properly");
+                        return false;
+                    }
+
+                    foreach (var content_configuration in visualization_configurations)
+                    {
+                        var type = get_type(content_configuration.Type);
                         if (_contents.ContainsKey(type))
                         {
-                            var id = content_settings.ID;
+                            var id = content_configuration.ID;
                             if (id == UniqueID.Invalid)
                             {
                                 Log.Default.Msg(Log.Level.Warn, "Invalid content id: " + id);
@@ -112,22 +126,17 @@ namespace Visualizations
 
                             if (!_contents[type].ContainsKey(id))
                             {
-                                // Create new instance from type
-                                var new_content = (AbstractContent)Activator.CreateInstance(type);
-                                if (recursive_basetype(new_content.GetType(), typeof(AbstractVisualization)))
+                                var new_content = create_content(type);
+                                if (new_content == null)
                                 {
-                                    ((AbstractVisualization)new_content).SetRequestDataCallback(_request_data_callback);
+                                    return false;
                                 }
-
                                 new_content.ID = id;
-                                new_content.Initialize();
-                                new_content.Create();
-
                                 _contents[type].Add(id, new_content);
                             }
                             else
                             {
-                                Log.Default.Msg(Log.Level.Error, "Content " + content_settings.Type + " with ID " + id + " already exists");
+                                Log.Default.Msg(Log.Level.Error, "Content " + content_configuration.Type + " with ID " + id + " already exists");
                             }
                         }
                         else
@@ -157,7 +166,7 @@ namespace Visualizations
 
                         // Create temporary instance of content
                         Type content_type = content_types.Key;
-                        var tmp_content = (AbstractContent)Activator.CreateInstance(content_type);
+                        var tmp_content = (AbstractVisualization)Activator.CreateInstance(content_type);
                         var lservice_types = tmp_content.DependingServices;
                         foreach (Type lservice_type in lservice_types)
                         {
@@ -184,9 +193,9 @@ namespace Visualizations
             /// Provide necessary information of available window content (called by window leaf).
             /// </summary>
             /// <returns>List of available content meta data.</returns>
-            public AvailableContentList_Type AvailableContents()
+            public AvailableContentsList_Type AvailableContents()
             {
-                var content_ids = new AvailableContentList_Type();
+                var content_ids = new AvailableContentsList_Type();
 
                 if (!_initilized)
                 {
@@ -200,14 +209,14 @@ namespace Visualizations
                     var content_type = content_types.Key;
 
                     // Create temporary instance of content
-                    var tmp_content = (AbstractContent)Activator.CreateInstance(content_type);
+                    var tmp_content = (AbstractVisualization)Activator.CreateInstance(content_type);
                     string header = tmp_content.Name;
                     bool multiple_instances = tmp_content.MultipleInstances;
 
                     // Content is only available if multiple instance are allowed or has not been instantiated yet
                     bool available = (multiple_instances || (content_types.Value.IsEmpty() && !multiple_instances));
 
-                    content_ids.Add(new AvailableContent_Type(header, available, multiple_instances, content_type.FullName));
+                    content_ids.Add(new ReadContentMetaData_Type(header, available, multiple_instances, content_type.FullName));
                 }
 
                 return content_ids;
@@ -218,16 +227,21 @@ namespace Visualizations
             /// </summary>
             /// <param name="content_id">The string ID of the content if present.</param>
             /// <param name="content_type">Using string for content type to allow cross project compatibility.</param> 
-            /// <returns>The WPF Control element holding the actual content.</returns>
-            public Control CreateContent(string content_id, string content_type)
+            /// <returns>Tuple of content ID and the WPF Control element holding the actual content.</returns>
+            public AttachContentMetaData_Type CreateContent(string content_id, string content_type)
             {
                 if (!_initilized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return null;
                 }
-
                 var type = get_type(content_type);
+                if (type == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unable to find type: " + content_type);
+                    return null;
+                }
+
                 if (_contents.ContainsKey(type))
                 {
                     string id = content_id;
@@ -236,25 +250,21 @@ namespace Visualizations
                         if (content_id != UniqueID.Invalid)
                         {
                             Log.Default.Msg(Log.Level.Warn, "Could not find requested content " + content_type + " with ID " + id);
+                            return null;
                         }
                         else
                         {
-                            // Create new instance from type
-                            var new_content = (AbstractContent)Activator.CreateInstance(type);
-                            if (recursive_basetype(new_content.GetType(), typeof(AbstractVisualization)))
+                            var new_content = create_content(type);
+                            if (new_content == null)
                             {
-                                ((AbstractVisualization)new_content).SetRequestDataCallback(_request_data_callback);
+                                return null;
                             }
-
-                            new_content.Initialize();
-                            new_content.Create();
-
                             id = new_content.ID;
                             _contents[type].Add(id, new_content);
                         }
                     }
 
-                    return _contents[type][id].Attach();
+                    return new AttachContentMetaData_Type(id, _contents[type][id].Attach());
                 }
                 else
                 {
@@ -267,7 +277,8 @@ namespace Visualizations
             /// Delete the content requested by id (called by window leaf).
             /// </summary>
             /// <param name="content_id">The id of the content to be deleted.</param>
-            public void DeleteContent(string content_id)
+            /// <return>True on success, false otherwise.</return>
+            public bool DeleteContent(string content_id)
             {
                 // Loop over registered types
                 foreach (var content_types in _contents)
@@ -275,9 +286,11 @@ namespace Visualizations
                     if (content_types.Value.ContainsKey(content_id))
                     {
                         content_types.Value[content_id].Detach();
-                        content_types.Value.Remove(content_id);
+                        return content_types.Value.Remove(content_id);
                     }
                 }
+                Log.Default.Msg(Log.Level.Debug, "Content not available for deletion: " + content_id);
+                return false;
             }
 
 
@@ -292,7 +305,7 @@ namespace Visualizations
             {
                 // Check for required base type
                 Type type = content_type;
-                Type required_basetype = typeof(AbstractContent);
+                Type required_basetype = typeof(AbstractVisualization);
                 bool valid_type = false;
                 while (!recursive_basetype(type, typeof(object)))
                 {
@@ -315,7 +328,7 @@ namespace Visualizations
                     }
                     else
                     {
-                        _contents.Add(content_type, new Dictionary<string, AbstractContent>());
+                        _contents.Add(content_type, new Dictionary<string, AbstractVisualization>());
                         Log.Default.Msg(Log.Level.Info, "Registered content type: " + content_type.FullName);
                     }
                 }
@@ -323,6 +336,27 @@ namespace Visualizations
                 {
                     Log.Default.Msg(Log.Level.Error, "Incompatible content type: " + content_type.FullName);
                 }
+            }
+
+            /// <summary>
+            /// Initialize and create new instance of content of given type
+            /// </summary>
+            /// <param name="type">The content type.</param>
+            /// <returns>Return instance of new content.</returns>
+            private AbstractVisualization create_content(Type type)
+            {
+                var content = (AbstractVisualization)Activator.CreateInstance(type);
+                if (content.Initialize())
+                {
+                    content.SetRequestDataCallback(_request_data_callback);
+                    _updated_data_callback(content.Data);
+                    if (content.Create())
+                    {
+                        return content;
+                    }
+                }
+                Log.Default.Msg(Log.Level.Error, "Unable to initialize or create content: " + type.FullName);
+                return null;
             }
 
             /// <summary>
@@ -376,13 +410,33 @@ namespace Visualizations
                 return type;
             }
 
+            /// <summary>
+            /// Delete all contents.
+            /// </summary>
+            /// <returns>True on success, false otherwise.</returns>
+            private bool clear_contents()
+            {
+                bool terminated = true;
+                foreach (var content_types in _contents)
+                {
+                    foreach (var content_data in content_types.Value)
+                    {
+                        terminated &= content_data.Value.Terminate();
+                    }
+                    content_types.Value.Clear();
+                }
+                return terminated;
+            }
+
 
             /* ------------------------------------------------------------------*/
             // private variables
 
             // Separate dictionary for each content type
-            private Dictionary<Type, Dictionary<string, AbstractContent>> _contents = null;
+            private Dictionary<Type, Dictionary<string, AbstractVisualization>> _contents = null;
+
             private DataManager.RequestDataCallback_Delegate _request_data_callback = null;
+            private DataManager.RegisterUpdatedDataCallback_Delegate _updated_data_callback = null;
         }
     }
 }

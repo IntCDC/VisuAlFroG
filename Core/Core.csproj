@@ -82,25 +82,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstracts\AbstractWindow.cs" />
-    <Compile Include="Abstracts\AbstractContent.cs" />
     <Compile Include="Abstracts\IAbstractContent.cs" />
     <Compile Include="Abstracts\IAbstractService.cs" />
     <Compile Include="Abstracts\IAbstractSetting.cs" />
     <Compile Include="GUI\MenuBar.cs" />
-    <Compile Include="GUI\SettingsService.cs" />
+    <Compile Include="GUI\ConfigurationService.cs" />
     <Compile Include="GUI\Windows\WindowBranch.cs" />
     <Compile Include="GUI\Windows\WindowLeaf.cs" />
-    <Compile Include="GUI\Content\LogContent.cs" />
     <Compile Include="Abstracts\AbstractService.cs" />
     <Compile Include="GUI\Windows\WindowManager.cs" />
-    <Compile Include="Utilities\ColorTheme.cs" />
+    <Compile Include="GUI\ColorTheme.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\TypeAliases.cs" />
     <Compile Include="Utilities\WorkingDirectory.cs" />
-    <Compile Include="Utilities\GUIHelpers.cs" />
+    <Compile Include="Utilities\ImageHelpers.cs" />
     <Compile Include="Utilities\Log.cs" />
     <Compile Include="Utilities\TimeBenchmark.cs" />
     <Compile Include="Utilities\UniqueID.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

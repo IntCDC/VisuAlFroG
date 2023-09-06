@@ -39,7 +39,7 @@ namespace Core
                 }
                 else
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Timer already started...");
+                    Log.Default.Msg(Log.Level.Warn, "Timer already started");
 
                 }
 #endif
@@ -60,7 +60,7 @@ namespace Core
                 }
                 else
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Start timer before stopping it...");
+                    Log.Default.Msg(Log.Level.Warn, "Start timer before stopping it");
 
                 }
 #endif

@@ -47,7 +47,7 @@ namespace Visualizations
             _timer.Start();
 
             // Content Manager
-            bool initilized = _contentmanager.Initialize(_datamanager.GetRequestDataCallback());
+            bool initilized = _contentmanager.Initialize(_datamanager.RequestDataCallback, _datamanager.RegisterUpdatedDataCallback);
             var required_services = _contentmanager.DependingServices();
 
             // Data Manager
@@ -79,14 +79,14 @@ namespace Visualizations
             return terminated;
         }
 
-        public string CollectSettings()
+        public string CollectConfigurations()
         {
-            return _contentmanager.CollectSettings();
+            return _contentmanager.CollectConfigurations();
         }
 
-        public bool ApplySettings(string settings)
+        public bool ApplyConfigurations(string configuration)
         {
-            return _contentmanager.ApplySettings(settings);
+            return _contentmanager.ApplyConfigurations(configuration);
         }
 
         public ContentCallbacks_Type GetContentCallbacks()
@@ -96,7 +96,7 @@ namespace Visualizations
 
         public DataManager.InputData_Delegate GetInputDataCallback()
         {
-            return _datamanager.InputData;
+            return _datamanager.UpdateInputData;
         }
 
         public void SetOutputDataCallback(DataManager.OutputData_Delegate _outputdata_callback)

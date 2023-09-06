@@ -38,7 +38,7 @@ namespace Visualizations
 {
     namespace Types
     {
-        public class ScatterPlotVisualization : AbstractSciChart
+        public class ScatterPlotVisualization : AbstractSciChartVisualization<SciChartSurface, SciChartUniformData_Type>
         {
             /* ------------------------------------------------------------------*/
             // properties
@@ -58,8 +58,8 @@ namespace Visualizations
                 }
                 if (_created)
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Content already created, skipping...");
-                    return false;
+                    Log.Default.Msg(Log.Level.Info, "Skipping re-creation of content");
+                    return true;
                 }
                 if (_request_data_callback == null)
                 {
@@ -69,8 +69,8 @@ namespace Visualizations
                 _timer.Start();
 
 
-                _content.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
-                _content.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
+                Content.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
+                Content.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
 
 
                 // Data Series -------------------------------------
@@ -80,14 +80,9 @@ namespace Visualizations
                 render_series.StrokeThickness = 2;
                 render_series.PointMarker = Selection_PointMarker.Default;
                 render_series.SelectedPointMarker = Selection_PointMarker.Selected;
-
-                var data = (SciChartUniformData_Type)_request_data_callback(typeof(SciChartUniformData_Type));
-                if (data != null)
-                {
-                    render_series.DataSeries = data;
-                }
-                _content.RenderableSeries.Add(render_series);
-                _content.ZoomExtents();
+                render_series.DataSeries = Data();
+                Content.RenderableSeries.Add(render_series);
+                Content.ZoomExtents();
 
 
                 // Axis --------------------------------------------
@@ -97,7 +92,7 @@ namespace Visualizations
                     GrowBy = new SciChart.Data.Model.DoubleRange(0.2, 0.2),
                     DrawMajorBands = false
                 };
-                _content.XAxis = xAxis;
+                Content.XAxis = xAxis;
 
                 var yAxis = new NumericAxis()
                 {
@@ -105,11 +100,11 @@ namespace Visualizations
                     GrowBy = new SciChart.Data.Model.DoubleRange(0.2, 0.2),
                     DrawMajorBands = false,
                 };
-                _content.YAxis = yAxis;
+                Content.YAxis = yAxis;
 
 
                 // Modifiers ---------------------------------------
-                _content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
+                Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
                     new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier()
                     {
                         IsEnabled = false
@@ -147,7 +142,7 @@ namespace Visualizations
                     X1 = 6.0,
                     Y1 = 9.0
                 };
-                _content.Annotations.Add(textAnnotation);
+                Content.Annotations.Add(textAnnotation);
 
 
                 _timer.Stop();

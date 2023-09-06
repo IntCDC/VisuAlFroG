@@ -104,7 +104,7 @@ namespace Interface
                     _runtimemessages.Add(Log.Level.Debug, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().FullName);
                     // Convert and pass on input data 
                     var input_data_converted = ConvertData.GH_to_List(ref input_data);
-                    _window.InputData(ref input_data_converted);
+                    _window.UpdateInputData(ref input_data_converted);
                 }
 
 
@@ -159,7 +159,7 @@ namespace Interface
             /// Callback for retrieving new output data.
             /// </summary>
             /// <param name="ouput_data">Reference to the new output data.</param>
-            public void retrieve_output_data(ref XYData_Type ouput_data)
+            public void retrieve_output_data(ref DefaultData_Type ouput_data)
             {
                 _output_data = ConvertData.list_to_gh(ref ouput_data);
                 reload_instance();

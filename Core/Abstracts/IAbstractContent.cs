@@ -59,7 +59,7 @@ namespace Core
             /// Called when content element should be attached.
             /// </summary>
             /// <returns>The content to be attached by the caller.</returns>
-            Control Attach();
+            Panel Attach();
 
             /// <summary>
             /// Called when the content element has been detached. Should implement counterpart to Attach().

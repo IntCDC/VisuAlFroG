@@ -19,7 +19,7 @@ namespace Core
 {
     namespace GUI
     {
-        public class WindowManager : AbstractService, IAbstractSettingData
+        public class WindowManager : AbstractService, IAbstractConfigurationData
         {
             /* ------------------------------------------------------------------*/
             // public functions
@@ -73,53 +73,74 @@ namespace Core
                 return terminated;
             }
 
-            public string CollectSettings()
+            public string CollectConfigurations()
             {
-                var settings = new WindowBranch.Settings();
-                collect_settings(_window_root, settings);
-                return SettingsService.Serialize<WindowBranch.Settings>(settings);
+                var configurations = new WindowBranch.Configuration();
+                collect_configurations(_window_root, configurations);
+                return ConfigurationService.Serialize<WindowBranch.Configuration>(configurations);
             }
 
-            public bool ApplySettings(string settings)
+            public bool ApplyConfigurations(string configurations)
             {
-                var windowbranch_settings = SettingsService.Deserialize<WindowBranch.Settings>(settings);
-                if (windowbranch_settings != null)
+                var windowbranch_configurations = ConfigurationService.Deserialize<WindowBranch.Configuration>(configurations);
+                if (windowbranch_configurations != null)
                 {
-                    apply_settings(_window_root, windowbranch_settings);
+                    _window_root.ResetRoot();
+                    apply_configurations(_window_root, windowbranch_configurations);
                     return true;
                 }
                 return false;
             }
 
+            /// <summary>
+            /// Load default window configuration.
+            /// </summary>
+            public void CreateDefault()
+            {
+                if (!_initilized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return;
+                }
+                try
+                {
+                    _window_root.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.None, 0.6);
+                    _window_root.Children.Item2.Leaf.CreateContent(UniqueID.Invalid, "Visualizations.Types.LogConsole");
+                }
+                catch (Exception exc)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unable to create default window configuration: " + exc.Message);
+                }
+            }
 
             /* ------------------------------------------------------------------*/
             // private functions
 
             /// <summary>
-            /// Traverse window tree in breadth first order to gather all settings recursively.
+            /// Traverse window tree in breadth first order to gather all configurations recursively.
             /// </summary>
             /// <param name="branch">The current branch object</param>
-            /// <param name="settings">The settings are appended according to the branch settings.</param>
-            void collect_settings(WindowBranch branch, WindowBranch.Settings settings)
+            /// <param name="configurations">The configurations are appended according to the branch configurations.</param>
+            void collect_configurations(WindowBranch branch, WindowBranch.Configuration configurations)
             {
                 if (branch == null)
                 {
                     return;
                 }
-                if (settings == null)
+                if (configurations == null)
                 {
                     return;
                 }
-                settings.Location = branch.Location;
-                settings.Orientation = branch.Orientation;
-                settings.Position = branch.Position;
+                configurations.Location = branch.Location;
+                configurations.Orientation = branch.Orientation;
+                configurations.Position = branch.Position;
 
                 if (branch.Leaf != null)
                 {
                     var attached_content = branch.Leaf.AttachedContent;
                     if (attached_content != null)
                     {
-                        settings.Leaf = new WindowLeaf.Settings()
+                        configurations.Leaf = new WindowLeaf.Configuration()
                         {
                             ContentID = attached_content.Item1,
                             ContentType = attached_content.Item2,
@@ -131,36 +152,36 @@ namespace Core
                     var child1 = branch.Children.Item1;
                     var child2 = branch.Children.Item2;
 
-                    settings.Children = new Tuple<WindowBranch.Settings, WindowBranch.Settings>(new WindowBranch.Settings(), new WindowBranch.Settings());
+                    configurations.Children = new Tuple<WindowBranch.Configuration, WindowBranch.Configuration>(new WindowBranch.Configuration(), new WindowBranch.Configuration());
 
-                    collect_settings(child1, settings.Children.Item1);
-                    collect_settings(child2, settings.Children.Item2);
+                    collect_configurations(child1, configurations.Children.Item1);
+                    collect_configurations(child2, configurations.Children.Item2);
                 }
             }
 
 
             /// <summary>
-            /// Traverse window tree in breadth first order and set branch settings recursively.
+            /// Traverse window tree in breadth first order and set branch configurations recursively.
             /// </summary>
             /// <param name="branch">The initial branch object.</param>
-            /// <param name="settings">The settings object.</param>
-            void apply_settings(WindowBranch branch, WindowBranch.Settings settings)
+            /// <param name="configurations">The configurations object.</param>
+            void apply_configurations(WindowBranch branch, WindowBranch.Configuration configurations)
             {
-                if (settings == null)
+                if (configurations == null)
                 {
                     return;
                 }
 
-                if (settings.Leaf != null)
+                if (configurations.Leaf != null)
                 {
-                    branch.Leaf.CreateContent(settings.Leaf.ContentID, settings.Leaf.ContentType);
+                    branch.Leaf.CreateContent(configurations.Leaf.ContentID, configurations.Leaf.ContentType);
                 }
-                else if (settings.Children != null)
+                else if (configurations.Children != null)
                 {
-                    branch.Split(settings.Orientation, settings.Location, settings.Position);
+                    branch.Split(configurations.Orientation, configurations.Location, configurations.Position);
 
-                    apply_settings(branch.Children.Item1, settings.Children.Item1);
-                    apply_settings(branch.Children.Item2, settings.Children.Item2);
+                    apply_configurations(branch.Children.Item1, configurations.Children.Item1);
+                    apply_configurations(branch.Children.Item2, configurations.Children.Item2);
                 }
             }
 

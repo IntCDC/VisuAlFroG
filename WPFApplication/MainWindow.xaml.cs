@@ -11,6 +11,7 @@ using Visualizations;
 using Core.GUI;
 using Visualizations.Types;
 using Visualizations.Management;
+using System.Windows.Input;
 
 
 
@@ -63,7 +64,7 @@ namespace Frontend
             /// </summary>
             ~MainWindow()
             {
-                _settingsservice.Terminate();
+                _configurationservice.Terminate();
                 _vismanager.Terminate();
                 _winmanager.Terminate();
                 _menubar.Terminate();
@@ -91,7 +92,7 @@ namespace Frontend
             /// Get input data from interface (= Grasshopper).
             /// </summary>
             /// <param name="input_data">Reference to the input data hold by the interface.</param>
-            public void InputData(ref XYData_Type input_data)
+            public void UpdateInputData(ref DefaultData_Type input_data)
             {
                 if (_inputdata_callback != null)
                 {
@@ -143,7 +144,7 @@ namespace Frontend
                 }
                 _timer = new TimeBenchmark();
                 _timer.Start();
-
+                Cursor = Cursors.Wait;
 
                 // Window setup
                 InitializeComponent();
@@ -154,29 +155,30 @@ namespace Frontend
                 // base.Loaded += on_loaded;
                 // CompositionTarget.Rendering += once_per_frame;
 
-
                 // Initialize managers and services
-                _settingsservice = new SettingsService();
+                _configurationservice = new ConfigurationService();
                 _vismanager = new VisualizationManager();
                 _winmanager = new WindowManager();
                 _menubar = new MenuBar();
 
-                bool initilized = _settingsservice.Initialize();
+                bool initilized = _configurationservice.Initialize();
                 initilized &= _vismanager.Initialize();
                 initilized &= _winmanager.Initialize(_vismanager.GetContentCallbacks());
-                initilized &= _menubar.Initialize(this.Close, _settingsservice.Save, _settingsservice.Load);
+                initilized &= _menubar.Initialize(this.Close, _configurationservice.Save, _configurationservice.Load);
 
 
                 // Register additional callbacks
-                ///  Do not reorder since applying settings might be order dependent!
-                _settingsservice.RegisterSettings(_vismanager.Name, _vismanager.CollectSettings, _vismanager.ApplySettings);
-                _settingsservice.RegisterSettings(_winmanager.Name, _winmanager.CollectSettings, _winmanager.ApplySettings);
+                ///  Do not reorder since applying configuration might be order dependent!
+                _configurationservice.RegisterConfiguration(_vismanager.Name, _vismanager.CollectConfigurations, _vismanager.ApplyConfigurations);
+                _configurationservice.RegisterConfiguration(_winmanager.Name, _winmanager.CollectConfigurations, _winmanager.ApplyConfigurations);
 
 
                 // Get callbacks
                 _inputdata_callback = _vismanager.GetInputDataCallback();
 
 
+
+                Cursor = Cursors.Arrow;
                 _timer.Stop();
                 _initilized = initilized;
                 if (_initilized)
@@ -198,6 +200,7 @@ namespace Frontend
                     return false;
                 }
                 _timer.Start();
+                Cursor = Cursors.Wait;
 
                 var menubar_content = _menubar.Attach();
                 if (menubar_content == null)
@@ -212,17 +215,18 @@ namespace Frontend
                     Log.Default.Msg(Log.Level.Error, "Invalid menu bar content");
                 }
                 _subwindows_element.Children.Add(winmanager_content);
+                _winmanager.CreateDefault();
 
 
                 /// DEBUG Load sample data in detached mode ...
                 if (_detached)
                 {
-                    var sample_data = new XYData_Type();
+                    var sample_data = new DefaultData_Type();
                     sample_data.Add(new List<double>() { 1.0, 2.0, 5.0, 9.0, 6.0, 8.0, 2.0, 3.0, 3.0, 1.0, 5.0, 4.0, 6.0, 8.0, 7.0, 7.0, 2.0 });
-                    InputData(ref sample_data);
+                    UpdateInputData(ref sample_data);
                 }
 
-
+                Cursor = Cursors.Arrow;
                 _timer.Stop();
                 return true;
             }
@@ -255,7 +259,7 @@ namespace Frontend
             private bool _soft_close = false;
             private bool _detached = false;
 
-            private SettingsService _settingsservice = null;
+            private ConfigurationService _configurationservice = null;
             private VisualizationManager _vismanager = null;
             private WindowManager _winmanager = null;
             private MenuBar _menubar = null;
