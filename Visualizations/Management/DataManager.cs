@@ -10,7 +10,6 @@ using Visualizations.WebAPI;
 using Visualizations.PythonInterface;
 using System.Windows.Markup;
 using SciChart.Data.Model;
-using SciChart.Charting3D.Primitives;
 
 
 
