@@ -24,9 +24,9 @@ using SciChart.Charting.Visuals.PointMarkers;
 using System.Windows.Input;
 using Visualizations.Abstracts;
 using Visualizations.Interaction;
-using Visualizations.Management;
 using SciChart.Charting.ChartModifiers;
 using SciChart.Core.Utility.Mouse;
+using Visualizations.Data;
 
 
 
@@ -38,7 +38,7 @@ namespace Visualizations
 {
     namespace Types
     {
-        public class ScatterVisualization : AbstractSciChartVisualization<SciChartSurface, SciChartUniformData>
+        public class ScatterVisualization : AbstractSciChartVisualization<SciChartSurface, SciChartSeriesDataInterface<XyScatterRenderableSeries>>
         {
             /* ------------------------------------------------------------------*/
             // properties
@@ -61,28 +61,12 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Info, "Skipping re-creation of content");
                     return true;
                 }
-                if (_request_data_callback == null)
+                if (Data.RequestDataCallback == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
                 }
                 _timer.Start();
-
-
-                Content.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
-                Content.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
-
-
-                // Data Series -------------------------------------
-                var render_series = new XyScatterRenderableSeries();
-                render_series.Name = "scatter_series_" + ID;
-                render_series.Stroke = Colors.Aquamarine;
-                render_series.StrokeThickness = 2;
-                render_series.PointMarker = Selection_PointMarker.Default;
-                render_series.SelectedPointMarker = Selection_PointMarker.Selected;
-                render_series.DataSeries = Data();
-                Content.RenderableSeries.Add(render_series);
-                Content.ZoomExtents();
 
 
                 // Axis --------------------------------------------

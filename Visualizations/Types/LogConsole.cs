@@ -11,8 +11,8 @@ using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.Runtime.Remoting.Contexts;
 using Visualizations.Abstracts;
-using Visualizations.Management;
 using Visualizations.Interaction;
+using Visualizations.Data;
 
 
 
@@ -27,8 +27,30 @@ namespace Visualizations
 {
     namespace Types
     {
-        public class LogConsole : AbstractGenericVisualization<System.Windows.Controls.TextBlock, GenericDataBranch>
+        public class LogConsole : AbstractGenericVisualization<System.Windows.Controls.TextBlock, GenericDataInterface<GenericDataStructure>>
         {
+
+            /* ------------------------------------------------------------------
+            // Available methods/properties:
+            * 
+            * - Data.SetDataStyle(...)
+            * - Content...
+            * - AddOption(MenuItem option)
+            * - SetScrollViewBackground(Brush background)
+            * - ScrollToBottom()
+            * 
+            *
+            /* ------------------------------------------------------------------
+            // Methods/properties to implement:
+            * 
+            * - public override string Name { get { return "..."; } }
+            * - public override bool Create()
+            * - [optional] public override bool Initialize()
+            * - [optional] public override bool Terminate()
+            * 
+            * 
+            ------------------------------------------------------------------*/
+
             /* ------------------------------------------------------------------*/
             // properties
 
@@ -60,7 +82,8 @@ namespace Visualizations
                 }
                 _timer.Start();
 
-                ScrollView.Background = ColorTheme.LogBackground;
+
+                SetScrollViewBackground(ColorTheme.LogBackground);
 
                 Content.TextWrapping = TextWrapping.Wrap;
                 Content.FontFamily = new FontFamily("Consolas");
@@ -71,6 +94,7 @@ namespace Visualizations
                 copy_option.Header = "Copy";
                 copy_option.Click += copy_option_click;
                 AddOption(copy_option);
+
 
                 _timer.Stop();
                 _created = true;
@@ -109,7 +133,7 @@ namespace Visualizations
                     var run = new Run(msg.message + Environment.NewLine);
                     run.Foreground = font_color;
                     Content.Inlines.Add(run);
-                    ScrollView.ScrollToBottom();
+                    ScrollToBottom();
                 }
             }
 

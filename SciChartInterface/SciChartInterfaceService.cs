@@ -40,7 +40,6 @@ namespace Visualizations
                     var load_scichart = new SciChartSurface();
 
                     _timer.Stop();
-                    Log.Default.Msg(Log.Level.Debug, "... done.");
                 }
                 catch (Exception exc)
                 {

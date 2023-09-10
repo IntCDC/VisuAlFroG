@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using SciChart.Charting.Model.DataSeries;
 
 
@@ -14,7 +13,7 @@ using SciChart.Charting.Model.DataSeries;
  */
 namespace Visualizations
 {
-    namespace Interaction
+    namespace Data
     {
 
         public class MetaData : SciChart.Charting.Model.DataSeries.IPointMetadata

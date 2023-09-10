@@ -10,7 +10,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Grasshopper.Kernel.Data;
 using Grasshopper.Kernel.Types;
-using Visualizations.Interaction;
+using Visualizations.Data;
 
 
 
@@ -41,6 +41,7 @@ namespace Interface
             {
                 _runtimemessages = new RuntimeMessages(this);
                 _timer = new TimeBenchmark();
+                _input_data = new GH_Structure<IGH_Goo>();
                 _exec_count = 0;
             }
 
@@ -96,18 +97,24 @@ namespace Interface
                 else
                 {
                     // Read input data
-                    var input_data = new GH_Structure<IGH_Goo>();
-                    if (!DataAccess.GetDataTree(0, out input_data))
+                    var new_input_data = new GH_Structure<IGH_Goo>();
+                    if (!DataAccess.GetDataTree(0, out _input_data))
                     {
                         _runtimemessages.Add(Log.Level.Error, "Missing input data");
                         return;
                     }
-                    _runtimemessages.Add(Log.Level.Debug, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().FullName);
+                    _runtimemessages.Add(Log.Level.Debug, "Data Count: " + _input_data.DataCount.ToString() + " | Type: " + _input_data.GetType().FullName);
                     /// DEBUG Log.Default.Msg(Log.Level.Warn, input_data.DataDescription(true, true)); // -> Same as Grasshopper Panel output
 
+                    /// TODO Is this working ???
+                    if (_input_data != new_input_data) {
                     // Convert and pass on input data 
-                    var input_data_converted = DataConverter.ConvertFromGHStructure(ref input_data);
-                    _window.UpdateInputData(ref input_data_converted);
+                        var input_data_converted = DataConverter.ConvertFromGHStructure(ref _input_data);
+                        _window.UpdateInputData(ref input_data_converted);
+                    } else 
+                    {
+                        _runtimemessages.Add(Log.Level.Info, "Skipping unchanged input data");
+                    }
                 }
 
 
@@ -135,14 +142,14 @@ namespace Interface
 
                 // Log --------------------------------------------------------
 
+                _timer.Stop();
+
                 // DEBUG
                 _exec_count++;
-                _runtimemessages.Add(Log.Level.Debug, "Executions: " + _exec_count);
+                _runtimemessages.Add(Log.Level.Info, "Solution execution number: " + _exec_count);
 
                 // Show runtime messages in Grasshopper
                 _runtimemessages.Show();
-
-                _timer.Stop();
             }
 
 
@@ -161,7 +168,7 @@ namespace Interface
             /// Callback for retrieving new output data.
             /// </summary>
             /// <param name="ouput_data">Reference to the new output data.</param>
-            public void retrieve_output_data(ref GenericDataBranch ouput_data)
+            public void retrieve_output_data(ref GenericDataStructure ouput_data)
             {
                 _output_data = DataConverter.ConvertToGHStructure(ref ouput_data);
                 reload_instance();
@@ -174,6 +181,7 @@ namespace Interface
             private MainWindow _window = null;
             private GH_Structure<IGH_Goo> _output_data = null;
             private RuntimeMessages _runtimemessages = null;
+            private GH_Structure<IGH_Goo> _input_data = null;
 
             /// DEBUG
             private int _exec_count = 0;

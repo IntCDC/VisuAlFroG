@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Visualizations.PythonInterface;
 using Visualizations.WebAPI;
 using Visualizations.SciChartInterface;
-using Visualizations.Management;
+using Visualizations.Data;
 using System.Net.Http;
 using Microsoft.Owin.Hosting;
 using Core.Utilities;
@@ -24,15 +24,15 @@ using Visualizations.Abstracts;
  */
 namespace Visualizations
 {
-    public class VisualizationManager : AbstractService
+    public class BaseManager : AbstractService
     {
         /* ------------------------------------------------------------------*/
         // public functions
 
-        public VisualizationManager()
+        public BaseManager()
         {
             _servicemanager = new ServiceManager();
-            _contentmanager = new ContentManager();
+            _contentmanager = new VisualizationsManager();
             _datamanager = new DataManager();
         }
 
@@ -47,7 +47,7 @@ namespace Visualizations
             _timer.Start();
 
             // Content Manager
-            bool initilized = _contentmanager.Initialize(_datamanager.RequestDataCallback, _datamanager.RegisterUpdatedDataCallback);
+            bool initilized = _contentmanager.Initialize(_datamanager.RequestDataCallback, _datamanager.RegisterUpdateCallback);
             var required_services = _contentmanager.DependingServices();
 
             // Data Manager
@@ -109,7 +109,7 @@ namespace Visualizations
         // private variables
 
         private ServiceManager _servicemanager = null;
-        private ContentManager _contentmanager = null;
+        private VisualizationsManager _contentmanager = null;
         private DataManager _datamanager = null;
     }
 }

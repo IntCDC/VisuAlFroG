@@ -119,12 +119,17 @@
   <ItemGroup>
     <Compile Include="Abstracts\AbstractVisualization.cs" />
     <Compile Include="Abstracts\AbstractGenericVisualization.cs" />
-    <Compile Include="Interaction\GenericDataStructure.cs" />
-    <Compile Include="Interaction\MetaData.cs" />
+    <Compile Include="Data\DataTypes.cs" />
+    <Compile Include="Data\GenericDataStructure.cs" />
+    <Compile Include="Data\GenericDataInterface.cs" />
+    <Compile Include="Data\IDataInterface.cs" />
+    <Compile Include="Data\MetaData.cs" />
+    <Compile Include="Data\SciChartParallelDataInterface.cs" />
+    <Compile Include="Data\SciChartSeriesDataInterface.cs" />
     <Compile Include="Interaction\PointSelection.cs" />
-    <Compile Include="Management\ContentManager.cs" />
-    <Compile Include="Management\DataManager.cs" />
-    <Compile Include="Management\ServiceManager.cs" />
+    <Compile Include="VisualizationsManager.cs" />
+    <Compile Include="Data\DataManager.cs" />
+    <Compile Include="ServiceManager.cs" />
     <Compile Include="Abstracts\AbstractSciChartVisualization.cs" />
     <Compile Include="Types\ColumnsVisualization.cs" />
     <Compile Include="Types\DataBrowser.cs" />
@@ -132,7 +137,7 @@
     <Compile Include="Types\LogConsole.cs" />
     <Compile Include="Types\ParallelCoordinatesVisualization.cs" />
     <Compile Include="Types\ScatterVisualization.cs" />
-    <Compile Include="VisualizationManager.cs" />
+    <Compile Include="BaseManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

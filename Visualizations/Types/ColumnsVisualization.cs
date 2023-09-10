@@ -25,9 +25,9 @@ using System.Windows.Input;
 using SciChart.Charting.Visuals.PaletteProviders;
 using Visualizations.Abstracts;
 using Visualizations.Interaction;
-using Visualizations.Management;
 using SciChart.Core.Utility.Mouse;
 using SciChart.Charting.ChartModifiers;
+using Visualizations.Data;
 
 
 
@@ -39,7 +39,7 @@ namespace Visualizations
 {
     namespace Types
     {
-        public class ColumnsVisualization : AbstractSciChartVisualization<SciChartSurface, SciChartUniformData>
+        public class ColumnsVisualization : AbstractSciChartVisualization<SciChartSurface, SciChartSeriesDataInterface<FastColumnRenderableSeries>>
         {
             /* ------------------------------------------------------------------*/
             // properties
@@ -62,36 +62,12 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Info, "Skipping re-creation of content");
                     return true;
                 }
-                if (_request_data_callback == null)
+                if (Data.RequestDataCallback == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
                 }
                 _timer.Start();
-
-
-                Content.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
-                Content.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
-
-
-                // Data Series -------------------------------------
-                var render_series = new FastColumnRenderableSeries();
-                render_series.Name = "column_series_" + ID;
-                render_series.DataPointWidth = 0.5;
-                render_series.PaletteProvider = new Selection_StrokePaletteProvider();
-                render_series.StrokeThickness = 2;
-                var gradient = new LinearGradientBrush();
-                gradient.StartPoint = new Point(0.0, 0.0);
-                gradient.EndPoint = new Point(1.0, 1.0);
-                gradient.GradientStops = new GradientStopCollection();
-                var gs1 = new GradientStop() { Color = Colors.Blue, Offset = 0.2 };
-                gradient.GradientStops.Add(gs1);
-                var gs2 = new GradientStop() { Color = Colors.Green, Offset = 0.8 };
-                gradient.GradientStops.Add(gs2);
-                render_series.Fill = gradient;
-                render_series.DataSeries = Data();
-                Content.RenderableSeries.Add(render_series);
-                Content.ZoomExtents();
 
 
                 // Axis --------------------------------------------

@@ -13,21 +13,23 @@ using System.Windows.Forms;
 using System.Runtime.Remoting.Contexts;
 using System.Collections.ObjectModel;
 using Visualizations.Abstracts;
-using Visualizations.Management;
 using Core.GUI;
 using Visualizations.Interaction;
 using System.Windows.Markup;
+using System.Globalization;
+using Visualizations.Data;
+
 
 
 /*
- *  Content for Data Filtering
+ *  Data Browser
  * 
  */
 namespace Visualizations
 {
     namespace Types
     {
-        public class DataBrowser : AbstractGenericVisualization<System.Windows.Controls.TreeView, GenericDataBranch>
+        public class DataBrowser : AbstractGenericVisualization<System.Windows.Controls.TreeView, GenericDataInterface<GenericDataStructure>>
         {
             /* ------------------------------------------------------------------*/
             // properties
@@ -50,27 +52,31 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Info, "Re-creating content");
                     _created = false;
                 }
-                if (_request_data_callback == null)
+                if (Data.RequestDataCallback == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
                 }
                 _timer.Start();
 
-                var data = Data();
-                if (data == null)
+
+                GenericDataStructure data = null;
+                if (!Data.Set(data))
                 {
+                    Log.Default.Msg(Log.Level.Error, "Missing valid data");
                     return false;
                 }
-                var tree_root = new TreeViewItem();
-                tree_root.Header = "Data Root";
-                tree_root.IsExpanded = true;
 
-                traverse_data(data, tree_root);
+                _tree_root = new TreeViewItem();
+                _tree_root.Header = "Data Root";
+                _tree_root.IsExpanded = true;
 
-                Content.Items.Add(tree_root);
+                Content.Items.Add(_tree_root);
                 Content.Background = ColorTheme.GenericBackground;
                 Content.Foreground = ColorTheme.GenericForeground;
+
+                ///TODO create_data_tree(Data.???, _tree_root);
+
 
                 _timer.Stop();
                 _created = true;
@@ -81,14 +87,18 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private functions
 
-            private void traverse_data(GenericDataBranch data, TreeViewItem tree_item)
+            /// <summary>
+            /// TODO
+            /// </summary>
+            /// <param name="data"></param>
+            /// <param name="tree_item"></param>
+            private void create_data_tree(GenericDataStructure data, TreeViewItem tree_item)
             {
-
-                int leaf_index = 0;
-                foreach (var leaf in data.Leafs)
+                int entry_index = 0;
+                foreach (var entry in data.Entries)
                 {
-                    var tree_leaf = new TreeViewItem();
-                    tree_leaf.Header = "Leaf [" + leaf_index.ToString() + "]";
+                    var tree_entry = new TreeViewItem();
+                    tree_entry.Header = "Entry [" + entry_index.ToString() + "]";
 
                     var tree_values = new TreeViewItem();
                     tree_values.Header = "Values";
@@ -99,10 +109,12 @@ namespace Visualizations
                     panel_template.VisualTree = stack_panel;
                     tree_values.ItemsPanel = panel_template;
 
-                    foreach (var value in leaf.Values)
+                    foreach (var value in entry.Values)
                     {
                         var tree_value = new TreeViewItem();
                         tree_value.Header = value.ToString();
+                        tree_value.MouseDoubleClick += treevalue_clicked;
+                        tree_value.Tag = entry.MetaData;
                         tree_values.Items.Add(tree_value);
                     }
                     var tree_meta = new TreeViewItem();
@@ -111,23 +123,25 @@ namespace Visualizations
                     var tree_index = new TreeViewItem();
                     tree_index.Header = "Index";
                     var tree_index_value = new TreeViewItem();
-                    tree_index_value.Header = leaf.MetaData.Index.ToString();
+                    tree_index_value.Header = entry.MetaData.Index.ToString();
                     tree_index.Items.Add(tree_index_value);
 
                     var tree_selected = new TreeViewItem();
                     tree_selected.Header = "IsSelected";
                     var tree_selected_value = new TreeViewItem();
-                    tree_selected_value.Header = leaf.MetaData.IsSelected.ToString();
+                    tree_selected_value.Header = entry.MetaData.IsSelected.ToString();
+                    // Set index of IsSelected to index of value to find it later
+                    tree_selected_value.Name = "index_" + entry.MetaData.Index.ToString();
                     tree_selected.Items.Add(tree_selected_value);
 
                     tree_meta.Items.Add(tree_index);
                     tree_meta.Items.Add(tree_selected);
 
-                    tree_leaf.Items.Add(tree_values);
-                    tree_leaf.Items.Add(tree_meta);
+                    tree_entry.Items.Add(tree_values);
+                    tree_entry.Items.Add(tree_meta);
 
-                    tree_item.Items.Add(tree_leaf);
-                    leaf_index++;
+                    tree_item.Items.Add(tree_entry);
+                    entry_index++;
                 }
 
                 int branch_index = 0;
@@ -136,12 +150,64 @@ namespace Visualizations
                     var tree_branch = new TreeViewItem();
                     tree_branch.Header = "Branch [" + branch_index.ToString() + "]";
 
-                    traverse_data(branch, tree_branch);
+                    create_data_tree(branch, tree_branch);
 
                     tree_item.Items.Add(tree_branch);
                     branch_index++;
                 }
             }
+
+            /// <summary>
+            /// TODO
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+            private void treevalue_clicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
+            {
+                var treevalue = sender as TreeViewItem;
+                if (treevalue != null)
+                {
+                    var meta_data = treevalue.Tag as MetaData;
+                    if (meta_data != null)
+                    {
+                        meta_data.IsSelected = !meta_data.IsSelected;
+                        change_metadata(_tree_root, meta_data.Index, meta_data.IsSelected);
+                        return;
+                    }
+                }
+                Log.Default.Msg(Log.Level.Error, "Failed to read meta data of selected tree item");
+            }
+
+            /// <summary>
+            /// TODO
+            /// </summary>
+            /// <param name="tree"></param>
+            /// <param name="value_index"></param>
+            /// <param name="is_selected"></param>
+            private void change_metadata(TreeViewItem tree, int metadata_index, bool metadata_is_selected)
+            {
+                foreach (var treeobject in tree.Items)
+                {
+                    var treeitem = treeobject as TreeViewItem;
+                    if (treeitem != null)
+                    {
+                        // IsSeleceted TreeViewItem of value with index
+                        if (treeitem.Name == ("index_" + metadata_index.ToString()))
+                        {
+                            treeitem.Header = metadata_is_selected.ToString();
+                            return;
+                        }
+                        change_metadata(treeitem, metadata_index, metadata_is_selected);
+                    }
+                }
+            }
+
+
+            /* ------------------------------------------------------------------*/
+            // private variables
+
+            private TreeViewItem _tree_root = null;
+
         }
     }
 }

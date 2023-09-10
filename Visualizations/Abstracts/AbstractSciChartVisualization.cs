@@ -4,11 +4,13 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Collections.Generic;
 using Core.Abstracts;
-using Visualizations.Management;
 using Visualizations.SciChartInterface;
 using Core.Utilities;
 using SciChart.Charting.Visuals;
 using SciChart.Charting.Model.DataSeries;
+using SciChart.Charting.Visuals.RenderableSeries;
+using Visualizations.Data;
+using System.Windows;
 
 
 
@@ -20,7 +22,10 @@ namespace Visualizations
 {
     namespace Abstracts
     {
-        public abstract class AbstractSciChartVisualization<SurfaceType, DataType> : AbstractVisualization where SurfaceType : SciChartSurface, new()
+        public abstract class AbstractSciChartVisualization<SurfaceType, DataType> : AbstractVisualization
+            where SurfaceType : SciChartSurface, new()
+            where DataType : IDataInterface, new()
+
         {
             /* ------------------------------------------------------------------*/
             // properties
@@ -28,6 +33,7 @@ namespace Visualizations
             public sealed override bool MultipleInstances { get { return true; } }
             public sealed override List<Type> DependingServices { get { return new List<Type>() { typeof(SciChartInterfaceService) }; } }
 
+            protected DataType Data { get; set; }
             protected SurfaceType Content { get { return _content; } }
 
 
@@ -42,10 +48,14 @@ namespace Visualizations
                 }
                 _timer.Start();
 
+                Data = new DataType();
+                Data.RequestDataCallback = _request_callback;
+
                 _content = new SurfaceType();
                 _content.Name = ID;
 
-                ContentChild.Children.Add(_content);
+                Content.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
+                Content.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
 
                 _timer.Stop();
                 _initialized = true;
@@ -63,17 +73,29 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Error, "Creation of content required prior to execution");
                     return null;
                 }
+
+                if (!Data.Set(Content))
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unable to set data");
+                }
+                Content.ZoomExtents();
+
                 _content.ChartModifier.IsAttached = true;
 
+                AttachChildContent(_content);
                 return base.Attach();
             }
 
             public sealed override bool Detach()
             {
-                // Required to release mouse handling
-                _content.ChartModifier.IsAttached = false;
+                if (!_attached)
+                {
+                    /// TDOD Detach data, too?
 
-                return true;
+                    // Required to release mouse handling
+                    _content.ChartModifier.IsAttached = false;
+                }
+                return base.Detach();
             }
 
             public override bool Terminate()
@@ -88,9 +110,16 @@ namespace Visualizations
                 return base.Terminate();
             }
 
-            public new DataType Data()
+            public sealed override void UpdateCallback()
             {
-                return (DataType)_request_data_callback(typeof(DataType));
+                if (!_created)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Creation required prior to execution");
+                    return;
+                }
+                /// TODO 
+
+                _content.ZoomExtents();
             }
 
 

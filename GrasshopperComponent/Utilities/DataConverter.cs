@@ -10,7 +10,7 @@ using Grasshopper.Kernel.Types;
 using System.Globalization;
 using Grasshopper.Kernel.Data;
 using GrasshopperComponent.Utilities;
-using Visualizations.Interaction;
+using Visualizations.Data;
 
 
 
@@ -32,16 +32,16 @@ namespace GrasshopperComponent
             /// </summary>
             /// <param name="input">Reference to the input data.</param>
             /// <returns>The converted output data.</returns>
-            public static GenericDataBranch ConvertFromGHStructure(ref GH_Structure<IGH_Goo> input_data)
+            public static GenericDataStructure ConvertFromGHStructure(ref GH_Structure<IGH_Goo> input_data)
             {
-                var output_data = new GenericDataBranch();
+                var output_data = new GenericDataStructure();
 
-                foreach (var input_leafs in input_data.Branches)
+                foreach (var input_entries in input_data.Branches)
                 {
-                    var output_branch = new GenericDataBranch();
-                    foreach (var input_value in input_leafs)
+                    var output_branch = new GenericDataStructure();
+                    foreach (var input_value in input_entries)
                     {
-                        var output_leaf = new GenericDataEntry();
+                        var output_entry = new GenericDataEntry();
 
                         var type = input_value.GetType();
                         if (type == typeof(GH_String))
@@ -53,12 +53,12 @@ namespace GrasshopperComponent
                                 try
                                 {
                                     double value_double = Convert.ToDouble(value_string, CultureInfo.InvariantCulture);
-                                    output_leaf.AddValue(value_double);
+                                    output_entry.AddValue(value_double);
                                 }
                                 catch (Exception exc)
                                 {
                                     ///Log.Default.Msg(Log.Level.Error, exc.Message);
-                                    output_leaf.AddValue(value_string);
+                                    output_entry.AddValue(value_string);
                                 }
                             }
                         }
@@ -66,7 +66,7 @@ namespace GrasshopperComponent
                         {
                             Log.Default.Msg(Log.Level.Error, "Can not convert input data from type: " + type.FullName);
                         }
-                        output_branch.AddLeaf(output_leaf);
+                        output_branch.AddEntry(output_entry);
                     }
                     output_data.AddBranch(output_branch);
                 }
@@ -78,7 +78,7 @@ namespace GrasshopperComponent
             /// </summary>
             /// <param name="input">Reference to the input data.</param>
             /// <returns>The converted output data.</returns>
-            public static GH_Structure<IGH_Goo> ConvertToGHStructure(ref GenericDataBranch input_data)
+            public static GH_Structure<IGH_Goo> ConvertToGHStructure(ref GenericDataStructure input_data)
             {
                 var output_data = new GH_Structure<IGH_Goo>();
 
@@ -89,10 +89,10 @@ namespace GrasshopperComponent
                 }
 
                 int branch_index = 0;
-                foreach (var input_leaf in input_data.Leafs)
+                foreach (var input_entry in input_data.Entries)
                 {
                     GH_Path path = new GH_Path(branch_index);
-                    foreach (var generic_value in input_leaf.Values)
+                    foreach (var generic_value in input_entry.Values)
                     {
                         output_data.Append(new GH_String(generic_value.ToString()), path);
                     }

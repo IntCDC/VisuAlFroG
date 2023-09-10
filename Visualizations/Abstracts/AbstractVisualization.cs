@@ -4,9 +4,9 @@ using System.Runtime.Remoting.Contexts;
 using System.Windows.Controls;
 using Core.Utilities;
 using Core.Abstracts;
-using Visualizations.Management;
 using System.Windows;
 using Core.GUI;
+using Visualizations.Data;
 
 
 
@@ -44,8 +44,6 @@ namespace Visualizations
             public bool IsAttached { get { return _attached; } }
             public string ID { get { return _id; } set { _id = value; } }
 
-            protected Grid ContentChild { get { return _content_child; } }
-
 
             /* ------------------------------------------------------------------*/
             // public functions
@@ -58,14 +56,14 @@ namespace Visualizations
                 _id = UniqueID.Generate();
                 _timer = new TimeBenchmark();
 
-                /// TODO Move somewhere else to prevent calling it whenever the context menu is opened and class is constructed
+                /// TODO Move somewhere else to prevent calling it whenever the context menu is opened
                 StackPanel stack = new StackPanel();
-                _content_child = new Grid();
+                _content = new Grid();
                 _content_parent = new DockPanel();
                 stack.Children.Add(create_menu());
                 DockPanel.SetDock(stack, System.Windows.Controls.Dock.Top);
                 _content_parent.Children.Add(stack);
-                _content_parent.Children.Add(_content_child);
+                _content_parent.Children.Add(_content);
             }
 
             /// <summary>
@@ -160,6 +158,7 @@ namespace Visualizations
 
                 /// PLACE YOUR STUFF HERE ...
 
+                AttachChildContent(_content);
                 return base.Attach();
             }
             */
@@ -172,12 +171,21 @@ namespace Visualizations
             {
                 if (!_attached)
                 {
-                    /// PLACE YOUR STUFF HERE ...
-
+                    _content.Children.Clear();
                     _attached = false;
                 }
                 return true;
             }
+            /* TEMPLATE
+            {
+                if (!_attached)
+                {
+                    /// PLACE YOUR STUFF HERE ...
+
+                }
+                return base.Detach();
+            }
+            */
 
             /// <summary>
             /// Called when content should be terminated. Should implement counterpart to Initialize().
@@ -191,11 +199,9 @@ namespace Visualizations
                 _created = false;
                 _attached = false;
 
-                _request_data_callback = null;
-
                 _content_parent = null;
                 _options_menu = null;
-                _content_child = null;
+                _content = null;
 
                 _timer = null;
 
@@ -214,20 +220,21 @@ namespace Visualizations
             */
 
             /// <summary>
-            /// Visualizations need access to data of specific type.
+            /// TODO Called when updated data is available
             /// </summary>
-            /// <param name="request_data_callback">Callback from data manager to request data of specific type.</param>
-            public void SetRequestDataCallback(DataManager.RequestDataCallback_Delegate request_data_callback)
-            {
-                _request_data_callback = request_data_callback;
-            }
+            public abstract void UpdateCallback();
 
             /// <summary>
-            /// Called from DataManager if updated input data is available (dummy).
-            /// => Implement in derived class: public new DataType Data()
+            /// TODO Call when visualization needs the actual data
             /// </summary>
-            /// <returns>Return data as requested type, null otherwise</returns>
-            public virtual object Data() { return null; }
+            public void RequestCallback(DataManager.RequestCallback_Delegate request_callback)
+            {
+                if (_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Required to be called prior to initialization");
+                }
+                _request_callback = request_callback;
+            }
 
 
             /* ------------------------------------------------------------------*/
@@ -242,11 +249,30 @@ namespace Visualizations
                 _options_menu.Items.Add(option);
             }
 
+            protected void AttachChildContent(Control control)
+            {
+                _content.Children.Add(control);
+            }
+
+
+            /* ------------------------------------------------------------------*/
+            // protected variables
+
+            protected string _id = UniqueID.Invalid;
+
+            protected bool _initialized = false;
+            protected bool _created = false;
+            protected bool _attached = false;
+
+
+            /* ------------------------------------------------------------------*/
+            // private functions
+
             /// <summary>
             /// Create content menu.
             /// </summary>
             /// <returns>Return the content element holding the menu.</returns>
-            protected Grid create_menu()
+            private Grid create_menu()
             {
                 var menu_grid = new Grid();
                 menu_grid.Style = ColorTheme.ContentMenuStyle();
@@ -278,24 +304,13 @@ namespace Visualizations
 
 
             /* ------------------------------------------------------------------*/
-            // protected variables
-
-            protected string _id = UniqueID.Invalid;
-
-            protected bool _initialized = false;
-            protected bool _created = false;
-            protected bool _attached = false;
-
-            protected DataManager.RequestDataCallback_Delegate _request_data_callback = null;
-
-
-            /* ------------------------------------------------------------------*/
             // private variables
 
             private DockPanel _content_parent = null;
             private MenuItem _options_menu = null;
-            private Grid _content_child = null;
+            private Grid _content = null;
 
+            protected DataManager.RequestCallback_Delegate _request_callback;
 
             /// DEBUG
             protected TimeBenchmark _timer = null;

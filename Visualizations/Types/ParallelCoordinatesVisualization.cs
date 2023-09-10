@@ -24,9 +24,9 @@ using SciChart.Charting.Visuals.PointMarkers;
 using System.Windows.Input;
 using Visualizations.Abstracts;
 using Visualizations.Interaction;
-using Visualizations.Management;
 using SciChart.Charting.ChartModifiers;
 using SciChart.Core.Utility.Mouse;
+using Visualizations.Data;
 
 
 
@@ -42,13 +42,16 @@ namespace Visualizations
         ///  DEBUG
         public class SciChartPCPData_Type
         {
+
+            public SciChartPCPData_Type() { }
+
             public DateTime Date { get; set; }
             public double MinTemp { get; set; }
             public double MaxTemp { get; set; }
         }
 
 
-        public class ParallelCoordinatesVisualization : AbstractSciChartVisualization<SciChartParallelCoordinateSurface, ParallelCoordinateDataSource<SciChartPCPData_Type>>
+        public class ParallelCoordinatesVisualization : AbstractSciChartVisualization<SciChartParallelCoordinateSurface, SciChartParallelDataInterface<SciChartPCPData_Type>>
         {
             /* ------------------------------------------------------------------*/
             // properties
@@ -71,27 +74,22 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Info, "Skipping re-creation of content");
                     return true;
                 }
-                if (_request_data_callback == null)
+                if (Data.RequestDataCallback == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
                 }
                 _timer.Start();
 
+
                 Content.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
                 Content.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
                 Content.ZoomExtents();
                 Content.ChartTitle = "Parallel Coordinates Plot TEST";
-                //Content.DrawSplines = true;
+                Content.DrawSplines = true;
 
 
                 // Data Series -------------------------------------
-
-                /*
-                render_series.DataSeries = Data();
-                Content.RenderableSeries.Add(render_series);
-                Content.ZoomExtents();
-                */
                 _pcp_source = new ParallelCoordinateDataSource<SciChartPCPData_Type>(
                     new ParallelCoordinateDataItem<SciChartPCPData_Type, DateTime>(p => p.Date)
                     {
@@ -107,19 +105,7 @@ namespace Visualizations
                         Title = "Max Temp",
                     }
                 );
-
-                //_pcp_source.SetValues(...);
                 Content.ParallelCoordinateDataSource = _pcp_source;
-
-                /*
-                var data = (SciChartUniformData_Type)_request_data_callback(typeof(SciChartUniformData_Type));
-                if (data != null)
-                {
-                    render_series.DataSeries = data;
-                }
-                Content.RenderableSeries.Add(render_series);
-                Content.ZoomExtents();
-                */
 
 
                 // Modifiers ---------------------------------------
@@ -157,6 +143,7 @@ namespace Visualizations
             }
 
 
+
             /* ------------------------------------------------------------------*/
             // private functions
 
@@ -169,9 +156,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private variables
 
-
             private ParallelCoordinateDataSource<SciChartPCPData_Type> _pcp_source;
-
         }
     }
 }

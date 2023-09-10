@@ -10,9 +10,8 @@ using Core.Abstracts;
 using Visualizations;
 using Core.GUI;
 using Visualizations.Types;
-using Visualizations.Management;
 using System.Windows.Input;
-using Visualizations.Interaction;
+using Visualizations.Data;
 
 
 
@@ -66,7 +65,7 @@ namespace Frontend
             ~MainWindow()
             {
                 _configurationservice.Terminate();
-                _vismanager.Terminate();
+                _basemanager.Terminate();
                 _winmanager.Terminate();
                 _menubar.Terminate();
             }
@@ -86,14 +85,14 @@ namespace Frontend
             /// <param name="output_data_callback">callback from the DataManager to pipe new output data to the interface.</param>
             public void SetOutputDataCallback(DataManager.OutputData_Delegate output_data_callback)
             {
-                _vismanager.SetOutputDataCallback(output_data_callback);
+                _basemanager.SetOutputDataCallback(output_data_callback);
             }
 
             /// <summary>
             /// Get input data from interface (= Grasshopper).
             /// </summary>
             /// <param name="input_data">Reference to the input data hold by the interface.</param>
-            public void UpdateInputData(ref GenericDataBranch input_data)
+            public void UpdateInputData(ref GenericDataStructure input_data)
             {
                 if (_inputdata_callback != null)
                 {
@@ -158,22 +157,22 @@ namespace Frontend
 
                 // Initialize managers and services
                 _configurationservice = new ConfigurationService();
-                _vismanager = new VisualizationManager();
+                _basemanager = new Visualizations.BaseManager();
                 _winmanager = new WindowManager();
                 _menubar = new MenuBar();
 
                 bool initilized = _configurationservice.Initialize();
-                initilized &= _vismanager.Initialize();
-                initilized &= _winmanager.Initialize(_vismanager.GetContentCallbacks());
+                initilized &= _basemanager.Initialize();
+                initilized &= _winmanager.Initialize(_basemanager.GetContentCallbacks());
                 initilized &= _menubar.Initialize(this.Close, _configurationservice.Save, _configurationservice.Load);
 
                 // Register additional callbacks
                 ///  Do not reorder since applying configuration might be order dependent!
-                _configurationservice.RegisterConfiguration(_vismanager.Name, _vismanager.CollectConfigurations, _vismanager.ApplyConfigurations);
+                _configurationservice.RegisterConfiguration(_basemanager.Name, _basemanager.CollectConfigurations, _basemanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_winmanager.Name, _winmanager.CollectConfigurations, _winmanager.ApplyConfigurations);
 
                 // Get callbacks
-                _inputdata_callback = _vismanager.GetInputDataCallback();
+                _inputdata_callback = _basemanager.GetInputDataCallback();
 
                 /// Cursor = Cursors.Arrow;
                 _timer.Stop();
@@ -218,8 +217,8 @@ namespace Frontend
                 /// DEBUG Load sample data in detached mode ...
                 if (_detached)
                 {
-                    var sample_data = new GenericDataBranch();
-                    var data_branch = new GenericDataBranch();
+                    var sample_data = new GenericDataStructure();
+                    var data_branch = new GenericDataStructure();
                     sample_data.AddBranch(data_branch);
                     var generator = new Random();
                     for (int i = 0; i < 20; i++) {
@@ -227,7 +226,7 @@ namespace Frontend
                         var data_leaf = new GenericDataEntry();
                         data_leaf.AddValue((double)value);
                         data_leaf.MetaData.Index = i;
-                        data_branch.AddLeaf(data_leaf);
+                        data_branch.AddEntry(data_leaf);
                     }
                     UpdateInputData(ref sample_data);
                 }
@@ -266,7 +265,7 @@ namespace Frontend
             private bool _detached = false;
 
             private ConfigurationService _configurationservice = null;
-            private VisualizationManager _vismanager = null;
+            private Visualizations.BaseManager _basemanager = null;
             private WindowManager _winmanager = null;
             private MenuBar _menubar = null;
 

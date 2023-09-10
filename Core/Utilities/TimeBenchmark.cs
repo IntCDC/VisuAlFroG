@@ -13,7 +13,6 @@ namespace Core
     {
         public class TimeBenchmark
         {
-
             /* ------------------------------------------------------------------*/
             // public functions
 
@@ -36,6 +35,7 @@ namespace Core
                 {
                     _watch = System.Diagnostics.Stopwatch.StartNew();
                     _started = true;
+                    _level++;
                 }
                 else
                 {
@@ -55,8 +55,9 @@ namespace Core
                 {
                     _watch.Stop();
                     var elapsed_ms = _watch.ElapsedMilliseconds;
-                    Log.Default.Msg(Log.Level.Debug, "Elapsed Time (ms): " + elapsed_ms.ToString(), new StackTrace(true));
+                    Log.Default.Msg(Log.Level.Debug, "[level " + _level.ToString() + "]Elapsed Time (ms): " + elapsed_ms.ToString(), new StackTrace(true));
                     _started = false;
+                    _level--;
                 }
                 else
                 {
@@ -72,6 +73,8 @@ namespace Core
 
             private bool _started = false;
             private System.Diagnostics.Stopwatch _watch = null;
+
+            private static int _level = 0;
         }
     }
 }

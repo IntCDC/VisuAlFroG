@@ -4,9 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Core.Abstracts;
-using Core.GUI;
-
 
 
 /*
@@ -15,7 +12,7 @@ using Core.GUI;
  */
 namespace Core
 {
-    namespace Utilities
+    namespace Abstracts
     {
         /// <summary>
         /// Content callbacks used in WindowLeaf for interaction between context menu and visualization content

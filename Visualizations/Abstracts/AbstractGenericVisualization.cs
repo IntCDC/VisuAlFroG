@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
-
+using System.Windows.Markup;
 using Core.GUI;
 using Core.Utilities;
+using System.Windows.Media;
+using Visualizations.Data;
+using System.Runtime.Remoting.Contexts;
 
 
 
@@ -15,7 +18,9 @@ namespace Visualizations
 {
     namespace Abstracts
     {
-        public abstract class AbstractGenericVisualization<ContentType, DataType> : AbstractVisualization where ContentType : System.Windows.FrameworkElement, new()
+        public abstract class AbstractGenericVisualization<ContentType, DataType> : AbstractVisualization
+            where ContentType : System.Windows.FrameworkElement, new()
+            where DataType : IDataInterface, new()
         {
             /* ------------------------------------------------------------------*/
             // properties
@@ -23,8 +28,8 @@ namespace Visualizations
             public sealed override bool MultipleInstances { get { return false; } }
             public sealed override List<Type> DependingServices { get { return new List<Type>() { }; } }
 
-            protected ContentType Content { get { return (ContentType)_content.Content; } }
-            protected ScrollViewer ScrollView { get { return _content; } }
+            protected DataType Data { get; set; }
+            protected ContentType Content { get { return (ContentType)_scroll_view.Content; } }
 
 
             /* ------------------------------------------------------------------*/
@@ -38,18 +43,19 @@ namespace Visualizations
                 }
                 _timer.Start();
 
-                _content = new ScrollViewer();
-                ScrollView.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-                ScrollView.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+                Data = new DataType();
+                Data.RequestDataCallback = _request_callback;
 
-                _content.Content = new ContentType();
-                _content.Name = ID;
-                _content.Background = ColorTheme.GenericBackground;
-                _content.Foreground = ColorTheme.GenericForeground;
+                _scroll_view = new ScrollViewer();
+                _scroll_view.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                _scroll_view.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
 
-                _content.PreviewMouseWheel += scrollviewer_previewmousewheel;
+                _scroll_view.Content = new ContentType();
+                _scroll_view.Name = ID;
+                _scroll_view.Background = ColorTheme.GenericBackground;
+                _scroll_view.Foreground = ColorTheme.GenericForeground;
 
-                ContentChild.Children.Add(_content);
+                _scroll_view.PreviewMouseWheel += scrollviewer_previewmousewheel;
 
                 _timer.Stop();
                 _initialized = true;
@@ -60,20 +66,50 @@ namespace Visualizations
                 return _initialized;
             }
 
+            public sealed override System.Windows.Controls.Panel Attach()
+            {
+                if (!_created)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Creation of content required prior to execution");
+                    return null;
+                }
+                AttachChildContent(_scroll_view);
+                return base.Attach();
+            }
+
             public override bool Terminate()
             {
                 if (_initialized)
                 {
-                    _content = null;
+                    _scroll_view = null;
 
                     _initialized = false;
                 }
                 return base.Terminate();
             }
 
-            public new DataType Data()
+            public sealed override void UpdateCallback()
             {
-                return (DataType)_request_data_callback(typeof(DataType));
+                if (!_created)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Creation required prior to execution");
+                    return;
+                }
+                Create();
+            }
+
+
+            /* ------------------------------------------------------------------*/
+            // protected functions
+
+            protected void SetScrollViewBackground(Brush background)
+            {
+                _scroll_view.Background = background;
+            }
+
+            protected void ScrollToBottom()
+            {
+                _scroll_view.ScrollToBottom();
             }
 
 
@@ -89,9 +125,9 @@ namespace Visualizations
 
 
             /* ------------------------------------------------------------------*/
-            // protected variables
+            // private variables
 
-            private ScrollViewer _content = null;
+            private ScrollViewer _scroll_view = null;
         }
     }
 }
