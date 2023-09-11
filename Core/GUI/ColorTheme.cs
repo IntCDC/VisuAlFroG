@@ -26,8 +26,11 @@ namespace Core
 
             // GENERIC -----------------------------------------------------
 
-            public static Brush GenericBackground { get { return Brushes.AliceBlue; } }
-            public static Brush GenericForeground { get { return Brushes.Black; } }
+            public static Brush DarkBackground { get { return Brushes.Black; } }
+            public static Brush DarkForeground { get { return Brushes.Black; } }
+
+            public static Brush LightBackground { get { return Brushes.AliceBlue; } }
+            public static Brush LightForeground { get { return Brushes.WhiteSmoke; } }
 
 
             // TEXT -----------------------------------------------------------
@@ -53,7 +56,6 @@ namespace Core
 
             // LOG MESSAGES ---------------------------------------------------
 
-            public static Brush LogBackground { get { return Brushes.Black; } }
             public static Brush LogMessageInfo { get { return Brushes.White; } }
             public static Brush LogMessageDebug { get { return Brushes.Gray; } }
             public static Brush LogMessageWarn { get { return Brushes.Yellow; } }
@@ -99,7 +101,7 @@ namespace Core
 
                 Setter setter_background = new Setter();
                 setter_background.Property = Grid.BackgroundProperty;
-                setter_background.Value = ColorTheme.GenericBackground;
+                setter_background.Value = ColorTheme.LightBackground;
                 style.Setters.Add(setter_background);
 
                 Setter setter_height = new Setter();
@@ -117,12 +119,12 @@ namespace Core
 
                 Setter setter_background = new Setter();
                 setter_background.Property = TextBlock.BackgroundProperty;
-                setter_background.Value = ColorTheme.GenericBackground;
+                setter_background.Value = ColorTheme.LightBackground;
                 style.Setters.Add(setter_background);
 
                 Setter setter_foreground = new Setter();
                 setter_foreground.Property = TextBlock.ForegroundProperty;
-                setter_foreground.Value = ColorTheme.GenericForeground;
+                setter_foreground.Value = ColorTheme.DarkForeground;
                 style.Setters.Add(setter_foreground);
 
                 Setter setter_horiz = new Setter();

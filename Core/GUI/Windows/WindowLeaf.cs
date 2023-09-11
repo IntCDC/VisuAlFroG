@@ -69,7 +69,7 @@ namespace Core
                 }
 
                 _content = new Grid();
-                _content.Background = ColorTheme.GenericBackground;
+                _content.Background = ColorTheme.LightBackground;
                 _content.Name = "grid_" + UniqueID.Generate();
 
                 var info_text = new TextBlock();

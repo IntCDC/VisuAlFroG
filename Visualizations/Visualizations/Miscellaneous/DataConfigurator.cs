@@ -30,7 +30,7 @@ namespace Visualizations
     namespace Miscellaneous
 
     {
-        public class DataConfigurator : AbstractGenericVisualization<System.Windows.Controls.TreeView, DataInterfaceGeneric<GenericDataStructure>>
+        public class DataConfigurator : AbstractGenericVisualization<System.Windows.Controls.StackPanel, DataInterfaceGeneric<GenericDataStructure>>
         {
             /* ------------------------------------------------------------------*/
             // properties
@@ -68,15 +68,29 @@ namespace Visualizations
                     return false;
                 }
 
+
+                Content.Background = ColorTheme.DarkBackground;
+
+                var text_dim = new TextBlock();
+                text_dim.Foreground = ColorTheme.LightForeground; 
+                text_dim.Text = "Data Dimensionality: " + data.Dimensionality().ToString();
+                Content.Children.Add(text_dim);
+
+                var text_value_types = new TextBlock();
+                text_value_types.Foreground = ColorTheme.LightForeground;
+                text_value_types.Text = "Data Value Type(s): ";
+                foreach (var value_type in data.ValueTypes())
+                {
+                    text_value_types.Text += value_type.ToString() + " ";
+                }
+                Content.Children.Add(text_value_types);
+
                 _tree_root = new TreeViewItem();
                 _tree_root.Header = "Data Root";
                 _tree_root.IsExpanded = true;
-
-                Content.Items.Add(_tree_root);
-                Content.Background = ColorTheme.GenericBackground;
-                Content.Foreground = ColorTheme.GenericForeground;
-
+                _tree_root.Foreground = ColorTheme.LightForeground;
                 create_data_tree(data, _tree_root);
+                Content.Children.Add(_tree_root);
 
 
                 _timer.Stop();
@@ -120,9 +134,12 @@ namespace Visualizations
                 {
                     var tree_entry = new TreeViewItem();
                     tree_entry.Header = "Entry [" + entry_index.ToString() + "]";
+                    tree_entry.Foreground = ColorTheme.LightForeground;
 
                     var tree_values = new TreeViewItem();
                     tree_values.Header = "Values";
+                    tree_values.Foreground = ColorTheme.LightForeground;
+
                     //Align child items horizontal
                     var panel_template = new ItemsPanelTemplate();
                     var stack_panel = new FrameworkElementFactory(typeof(StackPanel));
@@ -133,6 +150,8 @@ namespace Visualizations
                     foreach (var value in entry.Values)
                     {
                         var tree_value = new TreeViewItem();
+                        tree_value.Foreground = ColorTheme.LightForeground;
+
                         tree_value.Header = value.ToString();
                         tree_value.MouseDoubleClick += treevalue_clicked;
                         tree_value.Tag = entry.MetaData;
@@ -140,16 +159,21 @@ namespace Visualizations
                     }
                     var tree_meta = new TreeViewItem();
                     tree_meta.Header = "Meta Data";
+                    tree_meta.Foreground = ColorTheme.LightForeground;
 
                     var tree_index = new TreeViewItem();
+                    tree_index.Foreground = ColorTheme.LightForeground;
                     tree_index.Header = "Index";
                     var tree_index_value = new TreeViewItem();
+                    tree_index_value.Foreground = ColorTheme.LightForeground;
                     tree_index_value.Header = entry.MetaData.Index.ToString();
                     tree_index.Items.Add(tree_index_value);
 
                     var tree_selected = new TreeViewItem();
+                    tree_selected.Foreground = ColorTheme.LightForeground;
                     tree_selected.Header = "IsSelected";
                     var tree_selected_value = new TreeViewItem();
+                    tree_selected_value.Foreground = ColorTheme.LightForeground;
                     tree_selected_value.Header = entry.MetaData.IsSelected.ToString();
                     // Set index of IsSelected to index of value to find it later
                     tree_selected_value.Name = "index_" + entry.MetaData.Index.ToString();
@@ -170,6 +194,7 @@ namespace Visualizations
                 {
                     var tree_branch = new TreeViewItem();
                     tree_branch.Header = "Branch [" + branch_index.ToString() + "]";
+                    tree_branch.Foreground = ColorTheme.LightForeground;
 
                     create_data_tree(branch, tree_branch);
 

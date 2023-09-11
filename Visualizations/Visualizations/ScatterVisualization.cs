@@ -69,6 +69,8 @@ namespace Visualizations
                 _timer.Start();
 
 
+                Data.DataStyle = DataStyles.Points;
+
                 // Axis --------------------------------------------
                 var xAxis = new NumericAxis()
                 {

@@ -84,7 +84,7 @@ namespace Visualizations
                 _timer.Start();
 
 
-                SetScrollViewBackground(ColorTheme.LogBackground);
+                SetScrollViewBackground(ColorTheme.DarkBackground);
 
                 Content.TextWrapping = TextWrapping.Wrap;
                 Content.FontFamily = new FontFamily("Consolas");

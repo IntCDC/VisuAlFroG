@@ -28,7 +28,6 @@ using SciChart.Charting.ChartModifiers;
 using SciChart.Core.Utility.Mouse;
 using System.Windows.Forms;
 using Visualizations.Data;
-using System.Windows.Markup;
 
 
 
@@ -70,6 +69,8 @@ namespace Visualizations
                 }
                 _timer.Start();
 
+
+                Data.DataStyle = DataStyles.Lines;
 
                 // Axis --------------------------------------------
                 var xAxis = new NumericAxis()

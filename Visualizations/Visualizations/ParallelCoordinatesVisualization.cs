@@ -82,9 +82,6 @@ namespace Visualizations
                 _timer.Start();
 
 
-                Content.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
-                Content.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
-                Content.ZoomExtents();
                 Content.ChartTitle = "Parallel Coordinates Plot TEST";
                 Content.DrawSplines = true;
 

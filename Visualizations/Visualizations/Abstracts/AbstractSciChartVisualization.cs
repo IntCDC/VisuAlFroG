@@ -120,7 +120,10 @@ namespace Visualizations
                 }
                 // New data does not require any further update of the SciChart visualizations
 
-                _content.ZoomExtents();
+                if (new_data)
+                {
+                    _content.ZoomExtents();
+                }
             }
 
 

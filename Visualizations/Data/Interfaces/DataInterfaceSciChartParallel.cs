@@ -43,7 +43,40 @@ namespace Visualizations
                 }
 
                 parent.ParallelCoordinateDataSource = data;
+
+                /// TODO Set style
+
                 return true;
+            }
+
+
+            /* ------------------------------------------------------------------*/
+            // protected functions
+
+            protected override Style GetDataStyle()
+            {
+                var default_style = new Style();
+                default_style.TargetType = typeof(ParallelCoordinateDataSource<DataType>);
+                switch (DataStyle)
+                {
+                    case (DataStyles.Lines):
+                        {
+                           
+                        }
+                        break;
+                    case (DataStyles.Columns):
+                        {
+                            
+                        }
+                        break;
+                    case (DataStyles.Points):
+                        {
+
+                        }
+                        break;
+                    default: break;
+                }
+                return default_style;
             }
         }
     }

@@ -49,7 +49,7 @@ namespace Visualizations
 
             public override void UpdateEntryAtIndex(int index, GenericDataEntry updated_entry)
             {
-                /*
+                /* Not required for meta data update
                 var entry = _data.EntryAtIndex(index);
                 if (entry != null)
                 {

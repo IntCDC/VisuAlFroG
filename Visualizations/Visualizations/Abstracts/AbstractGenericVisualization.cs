@@ -52,8 +52,8 @@ namespace Visualizations
 
                 _scroll_view.Content = new ContentType();
                 _scroll_view.Name = ID;
-                _scroll_view.Background = ColorTheme.GenericBackground;
-                _scroll_view.Foreground = ColorTheme.GenericForeground;
+                _scroll_view.Background = ColorTheme.LightBackground;
+                _scroll_view.Foreground = ColorTheme.DarkForeground;
 
                 _scroll_view.PreviewMouseWheel += scrollviewer_previewmousewheel;
 

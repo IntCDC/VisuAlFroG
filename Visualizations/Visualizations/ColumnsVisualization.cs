@@ -70,6 +70,8 @@ namespace Visualizations
                 _timer.Start();
 
 
+                Data.DataStyle = DataStyles.Columns;
+
                 // Axis --------------------------------------------
                 var xAxis = new NumericAxis()
                 {

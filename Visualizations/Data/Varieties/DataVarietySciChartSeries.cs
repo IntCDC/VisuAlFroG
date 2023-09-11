@@ -16,6 +16,9 @@ using Core.Utilities;
  */
 using SciChartUniformDataType = SciChart.Charting.Model.DataSeries.UniformXyDataSeries<double>;
 using SciChartXYDataType = SciChart.Charting.Model.DataSeries.XyDataSeries<double, double>;
+using System.Windows.Media;
+using System.Windows;
+using Visualizations.Interaction;
 
 namespace Visualizations
 {
@@ -66,7 +69,7 @@ namespace Visualizations
 
                 }
                 
-                /* NOT necessary for meta data update
+                /* Not required for meta data update
                 if (dimensionality == DataDimensionality.Uniform)
                 {
                     var dataseries = (SciChartUniformData_Type)_library_data[data_type.Key];
@@ -93,7 +96,6 @@ namespace Visualizations
 
             private void add_series(GenericDataStructure branch, DataDimensionality dimensionality)
             {
-
                 foreach (var b in branch.Branches)
                 {
                     add_series(b, dimensionality);
@@ -103,6 +105,8 @@ namespace Visualizations
                 if (branch.Entries.Count > 0)
                 {
                     DataType data_series = new DataType();
+                    data_series.Name = UniqueID.Generate();
+
                     if (dimensionality == DataDimensionality.Uniform)
                     {
                         var series = new SciChartUniformDataType();
