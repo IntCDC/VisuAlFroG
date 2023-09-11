@@ -9,7 +9,6 @@ using Core.Utilities;
 using Core.Abstracts;
 using Visualizations;
 using Core.GUI;
-using Visualizations.Types;
 using System.Windows.Input;
 using Visualizations.Data;
 
@@ -137,7 +136,7 @@ namespace Frontend
             /// <returns>True on successful initialization, false otherwise.</returns>
             public bool initialize(string app_name)
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     Log.Default.Msg(Log.Level.Warn, "Initialization should only be called once");
                     return false;
@@ -161,10 +160,10 @@ namespace Frontend
                 _winmanager = new WindowManager();
                 _menubar = new MenuBar();
 
-                bool initilized = _configurationservice.Initialize();
-                initilized &= _basemanager.Initialize();
-                initilized &= _winmanager.Initialize(_basemanager.GetContentCallbacks());
-                initilized &= _menubar.Initialize(this.Close, _configurationservice.Save, _configurationservice.Load);
+                bool initialized = _configurationservice.Initialize();
+                initialized &= _basemanager.Initialize();
+                initialized &= _winmanager.Initialize(_basemanager.GetContentCallbacks());
+                initialized &= _menubar.Initialize(this.Close, _configurationservice.Save, _configurationservice.Load);
 
                 // Register additional callbacks
                 ///  Do not reorder since applying configuration might be order dependent!
@@ -176,12 +175,12 @@ namespace Frontend
 
                 /// Cursor = Cursors.Arrow;
                 _timer.Stop();
-                _initilized = initilized;
-                if (_initilized)
+                _initialized = initialized;
+                if (_initialized)
                 {
                     Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
                 }
-                return _initilized;
+                return _initialized;
             }
 
             /// <summary>
@@ -190,7 +189,7 @@ namespace Frontend
             /// <returns>True on successful creation of the content, false otherwise</returns>
             public bool create()
             {
-                if (!_initilized)
+                if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return false;
@@ -217,10 +216,11 @@ namespace Frontend
                 /// DEBUG Load sample data in detached mode ...
                 if (_detached)
                 {
-                    var sample_data = new GenericDataStructure();
-                    var data_branch = new GenericDataStructure();
-                    sample_data.AddBranch(data_branch);
                     var generator = new Random();
+
+                    var sample_data = new GenericDataStructure();
+
+                    var data_branch = new GenericDataStructure();
                     for (int i = 0; i < 20; i++) {
                         var value = generator.Next(2, 25);
                         var data_leaf = new GenericDataEntry();
@@ -228,6 +228,19 @@ namespace Frontend
                         data_leaf.MetaData.Index = i;
                         data_branch.AddEntry(data_leaf);
                     }
+                    sample_data.AddBranch(data_branch);
+
+                    data_branch = new GenericDataStructure();
+                    for (int i = 0; i < 25; i++)
+                    {
+                        var value = generator.Next(2, 25);
+                        var data_leaf = new GenericDataEntry();
+                        data_leaf.AddValue((double)value);
+                        data_leaf.MetaData.Index = i;
+                        data_branch.AddEntry(data_leaf);
+                    }
+                    sample_data.AddBranch(data_branch);
+
                     UpdateInputData(ref sample_data);
                 }
 
@@ -260,7 +273,7 @@ namespace Frontend
             /* ------------------------------------------------------------------*/
             // local variables
 
-            private bool _initilized = false;
+            private bool _initialized = false;
             private bool _soft_close = false;
             private bool _detached = false;
 

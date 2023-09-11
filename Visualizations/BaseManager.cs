@@ -12,7 +12,7 @@ using Microsoft.Owin.Hosting;
 using Core.Utilities;
 using Core.Abstracts;
 using System.Windows.Controls;
-using Visualizations.Types;
+using Visualizations.Varieties;
 using Core.GUI;
 using Visualizations.Abstracts;
 
@@ -47,11 +47,11 @@ namespace Visualizations
             _timer.Start();
 
             // Content Manager
-            bool initilized = _contentmanager.Initialize(_datamanager.RequestDataCallback, _datamanager.RegisterUpdateCallback);
+            bool initialized = _contentmanager.Initialize(_datamanager.RequestDataCallback, _datamanager.RegisterUpdateCallback);
             var required_services = _contentmanager.DependingServices();
 
             // Data Manager
-            initilized &= _datamanager.Initialize();
+            initialized &= _datamanager.Initialize();
 
             // Service Manager
             foreach (Type service_type in required_services)
@@ -59,10 +59,10 @@ namespace Visualizations
                 var new_service = (AbstractService)Activator.CreateInstance(service_type);
                 _servicemanager.AddService(new_service);
             }
-            initilized &= _servicemanager.Initialize();
+            initialized &= _servicemanager.Initialize();
 
             _timer.Stop();
-            _initialized = initilized;
+            _initialized = initialized;
             return _initialized;
         }
 
@@ -96,7 +96,7 @@ namespace Visualizations
 
         public DataManager.InputData_Delegate GetInputDataCallback()
         {
-            return _datamanager.UpdateInputData;
+            return _datamanager.GetInputDataCallback;
         }
 
         public void SetOutputDataCallback(DataManager.OutputData_Delegate _outputdata_callback)

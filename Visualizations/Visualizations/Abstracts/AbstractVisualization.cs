@@ -102,10 +102,10 @@ namespace Visualizations
             */
 
             /// <summary>
-            /// Called to actually (re-)create the WPF content.
+            /// Called to actually (re-)create the WPF content on any changes
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
-            public abstract bool Create();
+            public abstract bool ReCreate();
             /*
             {
                 if (!_initialized)
@@ -222,7 +222,8 @@ namespace Visualizations
             /// <summary>
             /// TODO Called when updated data is available
             /// </summary>
-            public abstract void UpdateCallback();
+            /// <param name="new_data">True if new data is available, false if existing data has been updated.</param>
+            public abstract void UpdateCallback(bool new_data);
 
             /// <summary>
             /// TODO Call when visualization needs the actual data
@@ -247,6 +248,7 @@ namespace Visualizations
             {
                 option.Style = ColorTheme.MenuItemStyle();
                 _options_menu.Items.Add(option);
+                _options_menu.IsEnabled = true;
             }
 
             protected void AttachChildContent(Control control)
@@ -297,6 +299,7 @@ namespace Visualizations
 
                 _options_menu = new MenuItem();
                 _options_menu.Header = "Options";
+                _options_menu.IsEnabled = false;
                 menu.Items.Add(_options_menu);
 
                 return menu_grid;

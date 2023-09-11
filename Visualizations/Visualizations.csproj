@@ -117,32 +117,33 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Abstracts\AbstractVisualization.cs" />
-    <Compile Include="Abstracts\AbstractGenericVisualization.cs" />
-    <Compile Include="Data\DataTypes.cs" />
+    <Compile Include="Data\GenericDataEntry.cs" />
+    <Compile Include="Data\Varieties\IDataVariety.cs" />
+    <Compile Include="Visualizations\Abstracts\AbstractVisualization.cs" />
+    <Compile Include="Visualizations\Abstracts\AbstractGenericVisualization.cs" />
+    <Compile Include="Data\Varieties\DataVarietySciChartSeries.cs" />
+    <Compile Include="Data\Varieties\DataVarietySciChartParallel.cs" />
+    <Compile Include="Data\Varieties\DataVarietyGeneric.cs" />
+    <Compile Include="Data\Varieties\AbstractDataVariety.cs" />
     <Compile Include="Data\GenericDataStructure.cs" />
-    <Compile Include="Data\GenericDataInterface.cs" />
-    <Compile Include="Data\IDataInterface.cs" />
+    <Compile Include="Data\Interfaces\DataInterfaceGeneric.cs" />
+    <Compile Include="Data\Interfaces\AbstractDataInterface.cs" />
     <Compile Include="Data\MetaData.cs" />
-    <Compile Include="Data\SciChartParallelDataInterface.cs" />
-    <Compile Include="Data\SciChartSeriesDataInterface.cs" />
+    <Compile Include="Data\Interfaces\DataInterfaceSciChartParallel.cs" />
+    <Compile Include="Data\Interfaces\DataInterfaceSciChartSeries.cs" />
     <Compile Include="Interaction\PointSelection.cs" />
     <Compile Include="VisualizationsManager.cs" />
     <Compile Include="Data\DataManager.cs" />
     <Compile Include="ServiceManager.cs" />
-    <Compile Include="Abstracts\AbstractSciChartVisualization.cs" />
-    <Compile Include="Types\ColumnsVisualization.cs" />
-    <Compile Include="Types\DataBrowser.cs" />
-    <Compile Include="Types\LinesVisualization.cs" />
-    <Compile Include="Types\LogConsole.cs" />
-    <Compile Include="Types\ParallelCoordinatesVisualization.cs" />
-    <Compile Include="Types\ScatterVisualization.cs" />
+    <Compile Include="Visualizations\Abstracts\AbstractSciChartVisualization.cs" />
+    <Compile Include="Visualizations\ColumnsVisualization.cs" />
+    <Compile Include="Visualizations\Miscellaneous\DataConfigurator.cs" />
+    <Compile Include="Visualizations\LinesVisualization.cs" />
+    <Compile Include="Visualizations\Miscellaneous\LogConsole.cs" />
+    <Compile Include="Visualizations\ParallelCoordinatesVisualization.cs" />
+    <Compile Include="Visualizations\ScatterVisualization.cs" />
     <Compile Include="BaseManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -164,7 +165,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Types\Templates\bokeh-template.py" />
+    <Content Include="Visualizations\Templates\bokeh-template.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

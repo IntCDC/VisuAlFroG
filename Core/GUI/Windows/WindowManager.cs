@@ -42,10 +42,10 @@ namespace Core
 
                 _window_root = new WindowBranch();
                 _content = _window_root.CreateRoot(_content_callbacks);
-                bool initilized = (_content != null);
+                bool initialized = (_content != null);
 
                 _timer.Stop();
-                _initialized = initilized;
+                _initialized = initialized;
                 return _initialized;
             }
 
@@ -105,7 +105,7 @@ namespace Core
                 try
                 {
                     _window_root.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.None, 0.6);
-                    _window_root.Children.Item2.Leaf.CreateContent(UniqueID.Invalid, "Visualizations.Types.LogConsole");
+                    _window_root.Children.Item2.Leaf.CreateContent(UniqueID.Invalid, "Visualizations.Miscellaneous.LogConsole");
                 }
                 catch (Exception exc)
                 {

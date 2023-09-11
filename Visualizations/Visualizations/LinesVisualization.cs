@@ -22,45 +22,46 @@ using System.ComponentModel;
 using System.Linq;
 using SciChart.Charting.Visuals.PointMarkers;
 using System.Windows.Input;
-using SciChart.Charting.Visuals.PaletteProviders;
 using Visualizations.Abstracts;
 using Visualizations.Interaction;
-using SciChart.Core.Utility.Mouse;
 using SciChart.Charting.ChartModifiers;
+using SciChart.Core.Utility.Mouse;
+using System.Windows.Forms;
 using Visualizations.Data;
+using System.Windows.Markup;
 
 
 
 /*
- * Visualization: Columns (Bar Chart) (2D)
+ * Visualization: Lines (2D)
  * 
  */
 namespace Visualizations
 {
-    namespace Types
+    namespace Varieties
     {
-        public class ColumnsVisualization : AbstractSciChartVisualization<SciChartSurface, SciChartSeriesDataInterface<FastColumnRenderableSeries>>
+        public class LinesVisualization : AbstractSciChartVisualization<SciChartSurface, DataInterfaceSciChartSeries<FastLineRenderableSeries>>
         {
             /* ------------------------------------------------------------------*/
             // properties
 
-            public override string Name { get { return "Columns (2D)"; } }
+            public override string Name { get { return "Lines (2D)"; } }
 
 
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public override bool Create()
+            public override bool ReCreate()
             {
+                if (_created)
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Re-creation of content should not be required");
+                    return false;
+                }
                 if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return false;
-                }
-                if (_created)
-                {
-                    Log.Default.Msg(Log.Level.Info, "Skipping re-creation of content");
-                    return true;
                 }
                 if (Data.RequestDataCallback == null)
                 {
@@ -86,7 +87,6 @@ namespace Visualizations
                 };
                 Content.YAxis = yAxis;
 
-
                 // Modifiers ---------------------------------------
                 Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
                     new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier()
@@ -111,20 +111,19 @@ namespace Visualizations
                     },
                     new SciChart.Charting.ChartModifiers.DataPointSelectionModifier()
                     {
-                        IsEnabled = true
+                        IsEnabled = true,
                     }
                 );
-
 
                 // Annotation --------------------------------------
                 var textAnnotation = new TextAnnotation()
                 {
                     Text = "|----------[Interaction]----------|" + Environment.NewLine +
-                        "Left Mouse:  Select/Box-Select" + Environment.NewLine +
-                        "Mouse Wheel: Zoom" + Environment.NewLine +
-                        "Right Mouse: Pan",
-                    X1 = 6.0,
-                    Y1 = 9.0
+                            "Left Mouse:  Select/Box-Select" + Environment.NewLine +
+                            "Mouse Wheel: Zoom" + Environment.NewLine +
+                            "Right Mouse: Pan",
+                    X1 = 2.0,
+                    Y1 = 2.0
                 };
                 Content.Annotations.Add(textAnnotation);
 

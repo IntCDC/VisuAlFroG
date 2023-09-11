@@ -53,7 +53,7 @@ namespace Core
             /// Create the content. To be called only once.
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
-            bool Create();
+            bool ReCreate();
 
             /// <summary>
             /// Called when content element should be attached.

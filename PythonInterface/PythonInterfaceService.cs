@@ -34,7 +34,7 @@ namespace Visualizations
                 }
                 _timer.Start();
 
-                bool initilized = false;
+                bool initialized = false;
 
                 //Setup Python Environment
                 /// TODO Get path to Python DLL dynamically
@@ -58,11 +58,11 @@ namespace Visualizations
                     _worker = new Thread(_script.Execute);
                     _worker.Name = "PythonScript";
 
-                    initilized = true;
+                    initialized = true;
                 }
 
                 _timer.Stop();
-                _initialized = initilized;
+                _initialized = initialized;
                 if (_initialized)
                 {
                     Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);

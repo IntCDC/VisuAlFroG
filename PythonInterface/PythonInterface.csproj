@@ -88,10 +88,6 @@
     <Compile Include="PythonScript.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{8da3258e-49cf-483f-a100-3a12304bde0e}</Project>
       <Name>Core</Name>

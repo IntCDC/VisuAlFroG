@@ -36,14 +36,14 @@ namespace Visualizations
                     _source = File.ReadAllText(@"bokeh-template.py");
                     if (!string.IsNullOrEmpty(_source))
                     {
-                        _initilized = true;
+                        _initialized = true;
                     }
                 }
                 catch (Exception e)
                 {
                     Log.Default.Msg(Log.Level.Error, e.Message);
                 }
-                return _initilized;
+                return _initialized;
             }
 
             /// <summary>
@@ -80,7 +80,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private bool _initilized = false;
+            private bool _initialized = false;
             private string _source = null;
         }
     }

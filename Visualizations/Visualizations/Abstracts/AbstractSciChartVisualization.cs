@@ -24,7 +24,7 @@ namespace Visualizations
     {
         public abstract class AbstractSciChartVisualization<SurfaceType, DataType> : AbstractVisualization
             where SurfaceType : SciChartSurface, new()
-            where DataType : IDataInterface, new()
+            where DataType : AbstractDataInterface, new()
 
         {
             /* ------------------------------------------------------------------*/
@@ -74,6 +74,7 @@ namespace Visualizations
                     return null;
                 }
 
+                // Set data
                 if (!Data.Set(Content))
                 {
                     Log.Default.Msg(Log.Level.Error, "Unable to set data");
@@ -110,14 +111,14 @@ namespace Visualizations
                 return base.Terminate();
             }
 
-            public sealed override void UpdateCallback()
+            public override void UpdateCallback(bool new_data)
             {
                 if (!_created)
                 {
                     Log.Default.Msg(Log.Level.Error, "Creation required prior to execution");
                     return;
                 }
-                /// TODO 
+                // New data does not require any further update of the SciChart visualizations
 
                 _content.ZoomExtents();
             }

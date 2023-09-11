@@ -25,9 +25,9 @@ using Visualizations.Data;
  */
 namespace Visualizations
 {
-    namespace Types
+    namespace Miscellaneous
     {
-        public class LogConsole : AbstractGenericVisualization<System.Windows.Controls.TextBlock, GenericDataInterface<GenericDataStructure>>
+        public class LogConsole : AbstractGenericVisualization<System.Windows.Controls.TextBlock, DataInterfaceGeneric<GenericDataStructure>>
         {
 
             /* ------------------------------------------------------------------
@@ -68,17 +68,18 @@ namespace Visualizations
                 return init;
             }
 
-            public override bool Create()
+            public override bool ReCreate()
             {
+                if (_created)
+                {
+                    // Log Console does not depend on data
+                    Log.Default.Msg(Log.Level.Debug, "Content already created. Skipping re-creating content.");
+                    return false;
+                }
                 if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return false;
-                }
-                if (_created)
-                {
-                    Log.Default.Msg(Log.Level.Info, "Skipping re-creation of content");
-                    return true;
                 }
                 _timer.Start();
 

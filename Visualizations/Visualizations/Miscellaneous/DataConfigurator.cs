@@ -27,20 +27,21 @@ using Visualizations.Data;
  */
 namespace Visualizations
 {
-    namespace Types
+    namespace Miscellaneous
+
     {
-        public class DataBrowser : AbstractGenericVisualization<System.Windows.Controls.TreeView, GenericDataInterface<GenericDataStructure>>
+        public class DataConfigurator : AbstractGenericVisualization<System.Windows.Controls.TreeView, DataInterfaceGeneric<GenericDataStructure>>
         {
             /* ------------------------------------------------------------------*/
             // properties
 
-            public override string Name { get { return "Data Browser"; } }
+            public override string Name { get { return "Data Configurator"; } }
 
 
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public override bool Create()
+            public override bool ReCreate()
             {
                 if (!_initialized)
                 {
@@ -49,8 +50,8 @@ namespace Visualizations
                 }
                 if (_created)
                 {
-                    Log.Default.Msg(Log.Level.Info, "Re-creating content");
-                    _created = false;
+                    Log.Default.Msg(Log.Level.Warn, "Content already created");
+                    return false;
                 }
                 if (Data.RequestDataCallback == null)
                 {
@@ -61,9 +62,9 @@ namespace Visualizations
 
 
                 GenericDataStructure data = null;
-                if (!Data.Set(data))
+                if (!Data.Set(ref data))
                 {
-                    Log.Default.Msg(Log.Level.Error, "Missing valid data");
+                    Log.Default.Msg(Log.Level.Error, "Missing data");
                     return false;
                 }
 
@@ -75,12 +76,32 @@ namespace Visualizations
                 Content.Background = ColorTheme.GenericBackground;
                 Content.Foreground = ColorTheme.GenericForeground;
 
-                ///TODO create_data_tree(Data.???, _tree_root);
+                create_data_tree(data, _tree_root);
 
 
                 _timer.Stop();
                 _created = true;
                 return _created;
+            }
+
+            public override bool Update()
+            {
+                if (!_created)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Creation required prior to execution");
+                    return false;
+                }
+
+                GenericDataStructure data = null;
+                if (!Data.Set(ref data))
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing data");
+                    return false;
+                }
+
+                update_metadata(data);
+
+                return true;
             }
 
 
@@ -171,7 +192,7 @@ namespace Visualizations
                     if (meta_data != null)
                     {
                         meta_data.IsSelected = !meta_data.IsSelected;
-                        change_metadata(_tree_root, meta_data.Index, meta_data.IsSelected);
+                        update_metadata_at_index(_tree_root, meta_data);
                         return;
                     }
                 }
@@ -182,9 +203,8 @@ namespace Visualizations
             /// TODO
             /// </summary>
             /// <param name="tree"></param>
-            /// <param name="value_index"></param>
-            /// <param name="is_selected"></param>
-            private void change_metadata(TreeViewItem tree, int metadata_index, bool metadata_is_selected)
+            /// <param name="meta_data"></param>
+            private void update_metadata_at_index(TreeViewItem tree, MetaData meta_data)
             {
                 foreach (var treeobject in tree.Items)
                 {
@@ -192,16 +212,31 @@ namespace Visualizations
                     if (treeitem != null)
                     {
                         // IsSeleceted TreeViewItem of value with index
-                        if (treeitem.Name == ("index_" + metadata_index.ToString()))
+                        if (treeitem.Name == ("index_" + meta_data.Index.ToString()))
                         {
-                            treeitem.Header = metadata_is_selected.ToString();
+                            treeitem.Header = meta_data.IsSelected.ToString();
                             return;
                         }
-                        change_metadata(treeitem, metadata_index, metadata_is_selected);
+                        update_metadata_at_index(treeitem, meta_data);
                     }
                 }
             }
 
+            /// <summary>
+            /// TODO
+            /// </summary>
+            /// <param name="branch"></param>
+            private void update_metadata(GenericDataStructure branch)
+            {
+                foreach (var b in branch.Branches)
+                {
+                    update_metadata(b);
+                }
+                foreach (var l in branch.Entries)
+                {
+                    update_metadata_at_index(_tree_root, l.MetaData);
+                }
+            }
 
             /* ------------------------------------------------------------------*/
             // private variables

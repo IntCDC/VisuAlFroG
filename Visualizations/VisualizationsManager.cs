@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using Core.Utilities;
 using Core.Abstracts;
-using Visualizations.Types;
+using Visualizations.Varieties;
 using System.Reflection;
 using System.Windows;
 using SciChart.Core.Extensions;
@@ -14,6 +14,7 @@ using SciChart.Charting.Visuals;
 using Core.GUI;
 using Visualizations.Abstracts;
 using Visualizations.Data;
+using Visualizations.Miscellaneous;
 using System.Runtime.InteropServices;
 using Visualizations.Interaction;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -52,12 +53,11 @@ namespace Visualizations
 
             // Register new visualizations here:
             register_content(typeof(LogConsole));
-            register_content(typeof(DataBrowser));
+            register_content(typeof(DataConfigurator));
             register_content(typeof(ScatterVisualization));
-            register_content(typeof(ParallelCoordinatesVisualization));
             register_content(typeof(LinesVisualization));
             register_content(typeof(ColumnsVisualization));
-
+            //register_content(typeof(ParallelCoordinatesVisualization));
 
             _timer.Stop();
             _initialized = true;
@@ -346,7 +346,7 @@ namespace Visualizations
             if (content.Initialize())
             {
                 _update_callback(content.UpdateCallback);
-                if (content.Create())
+                if (content.ReCreate())
                 {
                     return content;
                 }

@@ -10,6 +10,9 @@ using SciChart.Data.Model;
 using System.Windows.Controls;
 using System.Windows;
 using Visualizations.Data;
+using Visualizations.Abstracts;
+using SciChart.Charting.Visuals;
+
 
 
 /*
@@ -38,7 +41,7 @@ namespace Visualizations
             /// <summary>
             /// Callback for visualizations to request suitable data
             /// </summary>
-            public delegate object RequestCallback_Delegate(Type t);
+            public delegate object RequestCallback_Delegate(Type data_type);
 
             /// <summary>
             /// Callback to register callback for getting notified on any data update
@@ -48,7 +51,7 @@ namespace Visualizations
             /// <summary>
             /// Callback called on updated data
             /// </summary>
-            public delegate void UpdateCallback_Delegate(); 
+            public delegate void UpdateCallback_Delegate(bool new_data);
 
 
             /* ------------------------------------------------------------------*/
@@ -62,31 +65,34 @@ namespace Visualizations
                 }
                 _timer.Start();
 
-                bool initilized = true;
+                bool initialized = true;
+
 
                 _updated_callbacks = new List<UpdateCallback_Delegate>();
 
-/*
-                // Register all supported data types
-                _library_data = new Dictionary<Type, Tuple<int, object>>();
-                // GenericDataBranch (mandatory)
-                _library_data.Add(typeof(GenericDataStructure), new Tuple<int, object>(intmax, new GenericDataStructure()));
+                // Register all supported data varieties
+                _data_library = new Dictionary<Type, IDataVariety>();
 
-                // SciChartUniformData (optional)
-                var data_scichart_uniform = new SciChartUniformData();
-                data_scichart_uniform.SeriesName = "SciChartUniformData";
-                _library_data.Add(typeof(SciChartUniformData), data_scichart_uniform);
+                var variety_generic = new DataVarietyGeneric();
+                _data_library.Add(variety_generic.Variety, variety_generic);
 
-                // SciChartData (optional)
-                var data_scichart = new SciChartData();
-                data_scichart.SeriesName = "SciChartData";
-                _library_data.Add(typeof(SciChartData), data_scichart);
+                var variety_fastline = new DataVarietySciChartSeries<SciChart.Charting.Visuals.RenderableSeries.FastLineRenderableSeries>();
+                _data_library.Add(variety_fastline.Variety, variety_fastline);
+
+                var variety_fastcolumn = new DataVarietySciChartSeries<SciChart.Charting.Visuals.RenderableSeries.FastColumnRenderableSeries>();
+                _data_library.Add(variety_fastcolumn.Variety, variety_fastcolumn);
+
+                var variety_xyscatter = new DataVarietySciChartSeries<SciChart.Charting.Visuals.RenderableSeries.XyScatterRenderableSeries>();
+                _data_library.Add(variety_xyscatter.Variety, variety_xyscatter);
+
+                //var variety_parallel = new DataVarietySciChartParallel<T>();
+                //_data_library.Add(variety_parallel.DataVariety, variety_parallel);
 
                 /// TODO Add more library data formats here ...
-*/
+
 
                 _timer.Stop();
-                _initialized = initilized;
+                _initialized = initialized;
                 return _initialized;
             }
 
@@ -97,30 +103,9 @@ namespace Visualizations
                 {
                     _outputdata_callback = null;
 
-                    /*
-                    foreach (var data_type in _library_data)
-                    {
-                        if (data_type.Key == typeof(GenericDataStructure))
-                        {
-                            /// Nothing to do
-                        }
-                        else if (data_type.Key == typeof(SciChartUniformData))
-                        {
-                            ((SciChartUniformData)data_type.Value).Clear();
-                        }
-                        else if (data_type.Key == typeof(SciChartData))
-                        {
-                            ((SciChartData)data_type.Value).Clear();
-                        }
-                        else
-                        {
-                            /// TODO Add more library data formats here ...
-                            Log.Default.Msg(Log.Level.Warn, "Unknown data type: " + data_type.Key.FullName);
-                        }
-                    }
-                    _library_data.Clear();
-                    _library_data = null;
-                    */
+                    _data_library.Clear();
+                    _data_library = null;
+
                     _updated_callbacks.Clear();
                     _updated_callbacks = null;
 
@@ -130,10 +115,10 @@ namespace Visualizations
             }
 
             /// <summary>
-            /// Callback for new input data.
+            /// Callback to propagate new input data to the data manager.
             /// </summary>
             /// <param name="input_data">Reference to the new input data.</param>
-            public void UpdateInputData(ref GenericDataStructure input_data)
+            public void GetInputDataCallback(ref GenericDataStructure input_data)
             {
                 if (input_data == null)
                 {
@@ -146,85 +131,27 @@ namespace Visualizations
                     return;
                 }
                 _timer.Start();
+                Log.Default.Msg(Log.Level.Info, "Reading input data ...");
 
-                /*
-                Log.Default.Msg(Log.Level.Debug, "Reading input data");
-                if (!_library_data.ContainsKey(typeof(GenericDataStructure)))
-                {
-                    Log.Default.Msg(Log.Level.Error, "Missing GenericDataBranch in library");
-                    return;
-                }
-                _library_data[typeof(GenericDataStructure)] = input_data;
 
+                // Collect information on input data 
+                var dimensionality = input_data.Dimensionality();
+                var value_types = input_data.ValueTypes();
+                // Initialize meta data
                 int index = 0;
                 init_metadata(input_data, ref index);
 
-                DataDimensionality data_dim = new DataDimensionality();
-                check_data_type(input_data, data_dim);
-
-                if (data_dim.Uniform) 
+                // Update all data 
+                foreach (var pair in _data_library)
                 {
-
+                    pair.Value.Update(ref input_data, dimensionality, value_types);
                 }
-                else if (data_dim.XY) 
-                {
 
 
-                }
-                else if (data_dim.XYZ)
-                {
-
-
-                }
-                else if (data_dim.Multivariate) 
-                {
-
-
-                }
-                */
-
-                /// DEBUG
-                /*
-                var debug_branch = input_data.Branches[0];
-                foreach (var data_type in _library_data)
-                {
-                    Log.Default.Msg(Log.Level.Debug, data_type.Key.FullName);
-
-                    if (data_type.Key == typeof(GenericDataBranch))
-                    {
-                        /// Nothing to do ...
-                    }
-                    else if (data_type.Key == typeof(SciChartUniformData))
-                    {
-                        var data_series = (SciChartUniformData)data_type.Value;
-                        data_series.Clear();
-                        for (int i = 0; i < debug_branch.Entries.Count; i++)
-                        {
-                            data_series.Append((double)debug_branch.Entries[i].Values[0], debug_branch.Entries[i].MetaData);
-                        }
-                    }
-                    else if (data_type.Key == typeof(SciChartData))
-                    {
-                        var data_series = (SciChartData)data_type.Value;
-                        data_series.Clear();
-                        for (int i = 0; i < debug_branch.Entries.Count; i++)
-                        {
-                            data_series.Append((double)i, (double)debug_branch.Entries[i].Values[0], debug_branch.Entries[i].MetaData);
-                        }
-                    }
-                    else
-                    {
-                        /// TODO Add more library data formats here ...
-                        Log.Default.Msg(Log.Level.Warn, "Unknown data type: " + data_type.Key.FullName);
-                    }
-                }
-                */
-
-
-                // Notify registered update callbacks on new input data
+                // Notify visualizations via registered update callbacks
                 foreach (var updated_callback in _updated_callbacks)
                 {
-                    updated_callback();
+                    updated_callback(true);
                 }
 
                 _timer.Stop();
@@ -257,23 +184,21 @@ namespace Visualizations
             /// </summary>
             /// <param name="t">The type the data would be required.</param>
             /// <returns>The data as generic object. Cast to requested type manually.</returns>
-            public object RequestDataCallback(Type t)
+            public object RequestDataCallback(Type data_type)
             {
                 if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return null;
                 }
-                /*
-                if (_library_data.ContainsKey(t))
+                if (_data_library.ContainsKey(data_type))
                 {
-                    return _library_data[t];
+                    return _data_library[data_type].Get;
                 }
                 else
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Requested data not available for given data type: " + t.FullName);
+                    Log.Default.Msg(Log.Level.Warn, "Requested data not available for given data type: " + data_type.FullName);
                 }
-                */
                 return null;
             }
 
@@ -291,57 +216,61 @@ namespace Visualizations
                 var sender_selection = sender as MetaData;
                 if ((sender_selection == null) || (e.PropertyName != "IsSelected"))
                 {
+                    Log.Default.Msg(Log.Level.Error, "Unknown sender");
                     return;
                 }
                 int index = sender_selection.Index;
 
-                /*
-                var entry = _library_data[SciChartUniformData].EntryAtIndex(index);
-                var dim = entry.Dimension;
-
-                foreach (var data_type in _library_data)
+                // Use GenericDataStructure as reference ...
+                GenericDataStructure data = null;
+                GenericDataEntry entry = null;
+                try
                 {
-                    if (data_type.Key == typeof(GenericDataStructure))
+                    data = _data_library[typeof(GenericDataStructure)].Get as GenericDataStructure;
+                    entry = data.EntryAtIndex(index);
+                    if (data == null)
                     {
-                        // Nothing to do since local data lists are linked per reference
-                        /// var data_series = (GenericData_Type)_library_data[data_type.Key];
+                        Log.Default.Msg(Log.Level.Error, "Missing data");
+                        return;
                     }
-                    else if (data_type.Key == typeof(SciChartUniformData))
+                    if (entry == null)
                     {
-                        var data_series = (SciChartUniformData)_library_data[data_type.Key];
-                        using (data_series.SuspendUpdates())
-                        {
-                            /// TODO fix me
-                            /// data_series.Update(i, _data_y[i], data_series.Metadata[i]);
-                        }
-                    }
-                    else if (data_type.Key == typeof(SciChartData))
-                    {
-                        var data_series = (SciChartData)_library_data[data_type.Key];
-                        using (data_series.SuspendUpdates())
-                        {
-                            /// TODO fix me
-                            /// data_series.Update(i, _data_y[i], data_series.Metadata[i]);
-                        }
-                    }
-                    else
-                    {
-                        /// TODO Add more library data formats here ...
-                        Log.Default.Msg(Log.Level.Warn, "Unknown data type: " + data_type.Key.FullName);
+                        Log.Default.Msg(Log.Level.Error, "Missing data entry");
+                        return;
                     }
                 }
-                */
+                catch (Exception exc)
+                {
+                    Log.Default.Msg(Log.Level.Error, exc.Message);
+                    return;
+                }
+                //...to update meta data:
+                foreach (var pair in _data_library)
+                {
+                    pair.Value.UpdateEntryAtIndex(index, entry);
+                }
+
+                // Notify visualizations via registered update callbacks
+                foreach (var updated_callback in _updated_callbacks)
+                {
+                    updated_callback(false);
+                }
+
                 // Send changed output data
-                /* DEBUG
+                /*
                 if (_outputdata_callback != null)
                 {
-                    var out_data = new DefaultData_Type();
-                    var list = new List<double>();
-                    foreach (var meta_data in _data_meta)
+                    var metadata_list = data.ListMetaData();
+
+                    var out_data = new GenericDataStructure();
+                    foreach (var meta_data in metadata_list)
                     {
-                        list.Add(metadata.IsSelected ? 1.0 : 0.0);
+                        var metadata_entry = new GenericDataEntry();
+                        metadata_entry.AddValue(meta_data.IsSelected);
+                        metadata_entry.AddValue(meta_data.Index);
+
+                        out_data.AddEntry(metadata_entry);
                     }
-                    out_data.Add(list);
                     _outputdata_callback(ref out_data);
                 }
                 else
@@ -360,8 +289,10 @@ namespace Visualizations
             {
                 foreach (var entry in data.Entries)
                 {
+                    entry.MetaData.IsSelected = false;
                     entry.MetaData.Index = entry_index;
                     entry.MetaData.PropertyChanged += metadata_changed;
+
                     entry_index++;
                 }
                 foreach (var branch in data.Branches)
@@ -374,8 +305,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private variables
 
-            //private Dictionary<Type, List<Type>> _data_compatibility = null;
-
+            private Dictionary<Type, IDataVariety> _data_library = null;
 
             private OutputData_Delegate _outputdata_callback = null;
             private List<UpdateCallback_Delegate> _updated_callbacks = null;

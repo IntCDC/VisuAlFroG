@@ -36,9 +36,9 @@ using Visualizations.Data;
  */
 namespace Visualizations
 {
-    namespace Types
+    namespace Varieties
     {
-        public class ScatterVisualization : AbstractSciChartVisualization<SciChartSurface, SciChartSeriesDataInterface<XyScatterRenderableSeries>>
+        public class ScatterVisualization : AbstractSciChartVisualization<SciChartSurface, DataInterfaceSciChartSeries<XyScatterRenderableSeries>>
         {
             /* ------------------------------------------------------------------*/
             // properties
@@ -49,17 +49,17 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public override bool Create()
+            public override bool ReCreate()
             {
+                if (_created)
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Re-creation of content should not be required");
+                    return false;
+                }
                 if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return false;
-                }
-                if (_created)
-                {
-                    Log.Default.Msg(Log.Level.Info, "Skipping re-creation of content");
-                    return true;
                 }
                 if (Data.RequestDataCallback == null)
                 {

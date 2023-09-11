@@ -47,19 +47,19 @@ namespace Visualizations
             {
                 Terminate();
             }
-            bool initilized = true;
+            bool initialized = true;
             _timer.Start();
 
             if (_services != null)
             {
                 foreach (var m in _services)
                 {
-                    initilized &= m.Value.Initialize();
+                    initialized &= m.Value.Initialize();
                 }
             }
 
             _timer.Stop();
-            _initialized = initilized;
+            _initialized = initialized;
             return _initialized;
         }
 

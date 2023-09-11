@@ -20,7 +20,7 @@ namespace Visualizations
     {
         public abstract class AbstractGenericVisualization<ContentType, DataType> : AbstractVisualization
             where ContentType : System.Windows.FrameworkElement, new()
-            where DataType : IDataInterface, new()
+            where DataType : AbstractDataInterface, new()
         {
             /* ------------------------------------------------------------------*/
             // properties
@@ -88,14 +88,29 @@ namespace Visualizations
                 return base.Terminate();
             }
 
-            public sealed override void UpdateCallback()
+            public override void UpdateCallback(bool new_data)
             {
                 if (!_created)
                 {
                     Log.Default.Msg(Log.Level.Error, "Creation required prior to execution");
                     return;
                 }
-                Create();
+                if (new_data)
+                {
+                    ReCreate();
+                }
+                else {
+                    Update();
+                }
+            }
+
+            /// <summary>
+            /// Called when existing data has been updated
+            /// </summary>
+            /// <returns>True on success, false otherwise.</returns>
+            public virtual bool Update() 
+            {
+                return true;
             }
 
 

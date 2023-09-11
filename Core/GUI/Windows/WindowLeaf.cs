@@ -130,7 +130,7 @@ namespace Core
                 _parent_is_root = parent_is_root;
                 if (_parent_branch == null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Parameter parent_branch should not be null");
+                    Log.Default.Msg(Log.Level.Error, "Parent branch parameter should not be null");
                     return;
                 }
             }

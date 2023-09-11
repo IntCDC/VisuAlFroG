@@ -45,7 +45,7 @@ namespace Core
             }
             /* TEMPLATE
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     Terminate();
                 }
@@ -54,12 +54,12 @@ namespace Core
                 /// PLACE YOUR STUFF HERE ...
 
                 _timer.Stop();
-                _initilized = true;
-                if (_initilized)
+                _initialized = true;
+                if (_initialized)
                 {
                     Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().Name);
                 }
-                return _initilized;
+                return _initialized;
             }
             */
 
@@ -67,11 +67,11 @@ namespace Core
             public abstract bool Terminate();
             /* TEMPLATE
             {
-                if (_initilized)
+                if (_initialized)
                 {
                     /// PLACE YOUR STUFF HERE ...
                     
-                    _initilized = false;
+                    _initialized = false;
                 }
                 return true;
             }
