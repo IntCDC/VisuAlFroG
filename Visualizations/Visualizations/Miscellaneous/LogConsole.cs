@@ -28,28 +28,6 @@ namespace Visualizations
     {
         public class LogConsole : AbstractGenericVisualization<System.Windows.Controls.TextBlock, DataInterfaceGeneric<GenericDataStructure>>
         {
-
-            /* ------------------------------------------------------------------
-            // Available methods/properties:
-            * 
-            * - Data.SetDataStyle(...)
-            * - Content...
-            * - AddOption(MenuItem option)
-            * - SetScrollViewBackground(Brush background)
-            * - ScrollToBottom()
-            * 
-            *
-            /* ------------------------------------------------------------------
-            // Methods/properties to implement:
-            * 
-            * - public override string Name { get { return "..."; } }
-            * - public override bool Create()
-            * - [optional] public override bool Initialize()
-            * - [optional] public override bool Terminate()
-            * 
-            * 
-            ------------------------------------------------------------------*/
-
             /* ------------------------------------------------------------------*/
             // properties
 
@@ -58,6 +36,14 @@ namespace Visualizations
 
             /* ------------------------------------------------------------------*/
             // public functions
+
+            /// <summary>
+            /// DEBUG
+            /// </summary>
+            ~LogConsole()
+            {
+                Console.WriteLine("DEBUG - DTOR: LogConsole");
+            }
 
             public override bool Initialize()
             {

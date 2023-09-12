@@ -48,12 +48,12 @@ namespace Visualizations
             /// Callback to register callback for getting notified on any data update
             /// </summary>
             public delegate void RegisterUpdateCallback_Delegate(UpdateCallback_Delegate update_callback);
+            public delegate void UnregisterCallback_Delegate(UpdateCallback_Delegate update_callback);
 
             /// <summary>
             /// Callback called on updated data
             /// </summary>
             public delegate void UpdateCallback_Delegate(bool new_data);
-
 
             /* ------------------------------------------------------------------*/
             // public functions
@@ -122,14 +122,14 @@ namespace Visualizations
             /// <param name="input_data">Reference to the new input data.</param>
             public void GetInputDataCallback(ref GenericDataStructure input_data)
             {
-                if (input_data == null)
-                {
-                    Log.Default.Msg(Log.Level.Warn, "No input data available");
-                    return;
-                }
                 if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return;
+                }
+                if (input_data == null)
+                {
+                    Log.Default.Msg(Log.Level.Warn, "No input data available");
                     return;
                 }
                 _timer.Start();
@@ -182,10 +182,27 @@ namespace Visualizations
             {
                 if (_updated_callbacks.Contains(update_callback))
                 {
-                    Log.Default.Msg(Log.Level.Debug, "callback for updated data already registered");
+                    Log.Default.Msg(Log.Level.Debug, "Callback for updated data already registered");
                     return;
                 }
                 _updated_callbacks.Add(update_callback);
+            }
+
+            /// <summary>
+            /// Notify registered callers on updated input data. Called by visualizations.
+            /// </summary>
+            public void UnregisterUpdateCallback(UpdateCallback_Delegate update_callback)
+            {
+                /// XXX Required since DataManager might be deleted before VisualizationsManager
+                if (_updated_callbacks != null)
+                {
+                    if (_updated_callbacks.Contains(update_callback))
+                    {
+                        _updated_callbacks.Remove(update_callback);
+                        return;
+                    }
+                    Log.Default.Msg(Log.Level.Debug, "Callback for updated data already removed");
+                }
             }
 
             /// <summary>

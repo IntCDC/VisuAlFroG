@@ -10,6 +10,7 @@ using SciChart.Charting.Visuals.Axes.LabelProviders;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Core.Utilities;
+using System;
 
 
 
@@ -31,6 +32,14 @@ namespace Visualizations
 
             /* ------------------------------------------------------------------*/
             // public functions
+
+            /// <summary>
+            /// DEBUG
+            /// </summary>
+            ~ParallelCoordinatesVisualization()
+            {
+                Console.WriteLine("DEBUG - DTOR: ParallelCoordinatesVisualization");
+            }
 
             public override bool ReCreate()
             {
@@ -142,14 +151,13 @@ namespace Visualizations
                         XyDirection = SciChart.Charting.XyDirection.XYDirection
                     },
                     reorder_modifier
-                ) ;
+                );
 
 
-            _timer.Stop();
+                _timer.Stop();
                 _created = true;
                 return _created;
             }
-
 
 
             /* ------------------------------------------------------------------*/

@@ -8,6 +8,7 @@ using Core.GUI;
 using System.Windows;
 using System.Windows.Controls;
 using Core.Utilities;
+using System;
 
 
 
@@ -29,6 +30,14 @@ namespace Visualizations
 
             /* ------------------------------------------------------------------*/
             // public functions
+
+            /// <summary>
+            /// DEBUG
+            /// </summary>
+            ~ScatterVisualization()
+            {
+                Console.WriteLine("DEBUG - DTOR: ScatterVisualization");
+            }
 
             public override bool ReCreate()
             {

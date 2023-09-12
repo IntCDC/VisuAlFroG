@@ -32,15 +32,15 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         // public functions
 
-        public bool Initialize(DataManager.RequestCallback_Delegate request_callback, DataManager.RegisterUpdateCallback_Delegate update_callback)
+        public bool Initialize(DataManager.RequestCallback_Delegate request_callback, DataManager.RegisterUpdateCallback_Delegate update_callback, DataManager.UnregisterCallback_Delegate unregister_callback)
         {
             if (_initialized)
             {
                 Terminate();
             }
-            if (request_callback == null)
+            if ((request_callback == null) || (update_callback == null) || (unregister_callback == null))
             {
-                Log.Default.Msg(Log.Level.Error, "Missing request data callback");
+                Log.Default.Msg(Log.Level.Error, "Missing callback(s)");
                 return false;
             }
             _timer.Start();
@@ -48,6 +48,7 @@ namespace Visualizations
             _contents = new Dictionary<Type, Dictionary<string, AbstractVisualization>>();
             _request_callback = request_callback;
             _update_callback = update_callback;
+            _unregister_callback = unregister_callback;
 
 
             // Register new visualizations here:
@@ -190,7 +191,7 @@ namespace Visualizations
         /// Provide necessary information of available window content (called by window leaf).
         /// </summary>
         /// <returns>List of available content meta data.</returns>
-        public AvailableContentsList_Type AvailableContents()
+        public AvailableContentsList_Type AvailableContentsCallback()
         {
             var content_ids = new AvailableContentsList_Type();
 
@@ -225,7 +226,7 @@ namespace Visualizations
         /// <param name="content_id">The string ID of the content if present.</param>
         /// <param name="content_type">Using string for content type to allow cross project compatibility.</param> 
         /// <returns>Tuple of content ID and the WPF Control element holding the actual content.</returns>
-        public AttachContentMetaData_Type CreateContent(string content_id, string content_type)
+        public AttachContentMetaData_Type CreateContentCallback(string content_id, string content_type)
         {
             if (!_initialized)
             {
@@ -275,14 +276,16 @@ namespace Visualizations
         /// </summary>
         /// <param name="content_id">The id of the content to be deleted.</param>
         /// <return>True on success, false otherwise.</return>
-        public bool DeleteContent(string content_id)
+        public bool DeleteContentCallback(string content_id)
         {
             // Loop over registered types
             foreach (var content_types in _contents)
             {
                 if (content_types.Value.ContainsKey(content_id))
                 {
+                    _unregister_callback(content_types.Value[content_id].UpdateCallback);
                     content_types.Value[content_id].Detach();
+                    content_types.Value[content_id].Terminate();
                     return content_types.Value.Remove(content_id);
                 }
             }
@@ -418,6 +421,8 @@ namespace Visualizations
             {
                 foreach (var content_data in content_types.Value)
                 {
+                    _unregister_callback(content_data.Value.UpdateCallback);
+                    content_data.Value.Detach();
                     terminated &= content_data.Value.Terminate();
                 }
                 content_types.Value.Clear();
@@ -434,5 +439,6 @@ namespace Visualizations
 
         private DataManager.RequestCallback_Delegate _request_callback = null;
         private DataManager.RegisterUpdateCallback_Delegate _update_callback = null;
+        private DataManager.UnregisterCallback_Delegate _unregister_callback = null;
     }
 }
