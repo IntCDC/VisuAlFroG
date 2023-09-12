@@ -57,13 +57,16 @@ namespace Visualizations
                 _timer = new TimeBenchmark();
 
                 /// TODO Move somewhere else to prevent calling it whenever the context menu is opened
+                
                 StackPanel stack = new StackPanel();
-                _content = new Grid();
-                _content_parent = new DockPanel();
                 stack.Children.Add(create_menu());
                 DockPanel.SetDock(stack, System.Windows.Controls.Dock.Top);
+
+                _content_child = new Grid();
+
+                _content_parent = new DockPanel();
                 _content_parent.Children.Add(stack);
-                _content_parent.Children.Add(_content);
+                _content_parent.Children.Add(_content_child);
             }
 
             /// <summary>
@@ -106,32 +109,6 @@ namespace Visualizations
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
             public abstract bool ReCreate();
-            /*
-            {
-                if (!_initialized)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return false;
-                }
-                if (_created)
-                {
-                    Log.Default.Msg(Log.Level.Warn, "Skipping re-creation of content");
-                    return false;
-                }
-                if (_request_data_callback == null)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Missing request data callback");
-                    return false;
-                }
-                _timer.Start();
-
-                /// PLACE YOUR STUFF HERE ...
-
-                _timer.Stop();
-                _created = true;
-                return true;
-            }
-            */
 
             /// <summary>
             /// Called when content element is being attached to a parent element.
@@ -171,7 +148,7 @@ namespace Visualizations
             {
                 if (!_attached)
                 {
-                    _content.Children.Clear();
+                    _content_child.Children.Clear();
                     _attached = false;
                 }
                 return true;
@@ -201,7 +178,7 @@ namespace Visualizations
 
                 _content_parent = null;
                 _options_menu = null;
-                _content = null;
+                _content_child = null;
 
                 _timer = null;
 
@@ -253,7 +230,7 @@ namespace Visualizations
 
             protected void AttachChildContent(Control control)
             {
-                _content.Children.Add(control);
+                _content_child.Children.Add(control);
             }
 
 
@@ -311,7 +288,7 @@ namespace Visualizations
 
             private DockPanel _content_parent = null;
             private MenuItem _options_menu = null;
-            private Grid _content = null;
+            private Grid _content_child = null;
 
             protected DataManager.RequestCallback_Delegate _request_callback;
 

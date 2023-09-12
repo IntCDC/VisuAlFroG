@@ -217,29 +217,25 @@ namespace Frontend
                 if (_detached)
                 {
                     var generator = new Random();
-
                     var sample_data = new GenericDataStructure();
 
-                    var data_branch = new GenericDataStructure();
-                    for (int i = 0; i < 20; i++) {
-                        var value = generator.Next(2, 25);
-                        var data_leaf = new GenericDataEntry();
-                        data_leaf.AddValue((double)value);
-                        data_leaf.MetaData.Index = i;
-                        data_branch.AddEntry(data_leaf);
-                    }
-                    sample_data.AddBranch(data_branch);
-
-                    data_branch = new GenericDataStructure();
-                    for (int i = 0; i < 25; i++)
+                    int value_index = 0;
+                    for (int i = 0; i < 7; i++)
                     {
-                        var value = generator.Next(2, 25);
-                        var data_leaf = new GenericDataEntry();
-                        data_leaf.AddValue((double)value);
-                        data_leaf.MetaData.Index = i;
-                        data_branch.AddEntry(data_leaf);
+                        var data_branch = new GenericDataStructure();
+                        for (int j = 0; j < 25; j++)
+                        {
+                            var value = generator.Next(0, 25);
+                            var data_leaf = new GenericDataEntry();
+                            data_leaf.AddValue((double)value);
+
+                            data_leaf.MetaData.Index = value_index;
+                            value_index++;
+
+                            data_branch.AddEntry(data_leaf);
+                        }
+                        sample_data.AddBranch(data_branch);
                     }
-                    sample_data.AddBranch(data_branch);
 
                     UpdateInputData(ref sample_data);
                 }

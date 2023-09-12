@@ -32,8 +32,6 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public properties
 
-            public DataStyles DataStyle { get; set; }    
-
             public DataManager.RequestCallback_Delegate RequestDataCallback { get; set; }
 
 
@@ -50,14 +48,6 @@ namespace Visualizations
             public virtual bool Set(ref GenericDataStructure data_parent)
             {
                 throw new InvalidOperationException("Call Set() method of derived class");
-            }
-
-            /// <summary>
-            /// TODO 
-            /// </summary>
-            protected virtual Style ApplyStyle()
-            {
-                return null;
             }
         }
     }

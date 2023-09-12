@@ -118,6 +118,7 @@ namespace Visualizations
                         if (id == UniqueID.Invalid)
                         {
                             Log.Default.Msg(Log.Level.Warn, "Invalid content id: " + id);
+                            break;
                         }
 
                         if (!_contents[type].ContainsKey(id))

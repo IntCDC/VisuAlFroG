@@ -67,6 +67,17 @@ namespace Visualizations
                 convert_data(data, data_dimension);
                 if (_data.Count > 0)
                 {
+                    // Warn if series have different amount of values
+                    int count = _data[0].DataSeries.Count;
+                    for (int i = 1; i < _data.Count; i++) 
+                    {
+                        if (count != _data[i].DataSeries.Count)
+                        {
+                            Log.Default.Msg(Log.Level.Warn, "Data series have different amount of values");
+                            break;
+                        }
+                    }
+
                     _created = true;
                 }
             }

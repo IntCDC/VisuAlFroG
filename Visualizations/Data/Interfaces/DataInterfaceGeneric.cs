@@ -4,10 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-
 using Core.Utilities;
 using SciChart.Charting.Visuals.RenderableSeries;
-
 using Visualizations.Abstracts;
 
 
@@ -36,7 +34,6 @@ namespace Visualizations
                 }
 
                 data_parent = data;
-
                 return true;
             }
         }

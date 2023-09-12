@@ -29,7 +29,7 @@ namespace Visualizations
             public sealed override List<Type> DependingServices { get { return new List<Type>() { }; } }
 
             protected DataType DataInterface { get; set; }
-            protected ContentType Content { get { return (ContentType)_scroll_view.Content; } }
+            protected ContentType Content { get { return (ContentType)_content_scrollview.Content; } }
 
 
             /* ------------------------------------------------------------------*/
@@ -46,16 +46,18 @@ namespace Visualizations
                 DataInterface = new DataType();
                 DataInterface.RequestDataCallback = _request_callback;
 
-                _scroll_view = new ScrollViewer();
-                _scroll_view.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-                _scroll_view.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+                _content_scrollview = new ScrollViewer();
+                _content_scrollview.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                _content_scrollview.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
 
-                _scroll_view.Content = new ContentType();
-                _scroll_view.Name = ID;
-                _scroll_view.Background = ColorTheme.LightBackground;
-                _scroll_view.Foreground = ColorTheme.DarkForeground;
+                _content_scrollview.Content = new ContentType();
+                _content_scrollview.Name = ID;
+                _content_scrollview.Background = ColorTheme.Brush_LightBackground;
+                _content_scrollview.Foreground = ColorTheme.Brush_DarkForeground;
 
-                _scroll_view.PreviewMouseWheel += scrollviewer_previewmousewheel;
+                _content_scrollview.PreviewMouseWheel += scrollviewer_previewmousewheel;
+
+                AttachChildContent(_content_scrollview);
 
                 _timer.Stop();
                 _initialized = true;
@@ -66,22 +68,36 @@ namespace Visualizations
                 return _initialized;
             }
 
-            public sealed override System.Windows.Controls.Panel Attach()
+            /* TEMPLATE
+            public override bool ReCreate()
             {
-                if (!_created)
+                if (!_initialized)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Creation of content required prior to execution");
-                    return null;
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return false;
                 }
-                AttachChildContent(_scroll_view);
-                return base.Attach();
+                if (_created)
+                {
+                    // Log Console does not depend on data
+                    Log.Default.Msg(Log.Level.Debug, "Content already created. Skipping re-creating content.");
+                    return false;
+                }
+                _timer.Start();
+
+                /// PLACE YOUR STUFF HERE ...
+
+                _timer.Stop();
+                _created = true;
+                return _created;
             }
+            */
+
 
             public override bool Terminate()
             {
                 if (_initialized)
                 {
-                    _scroll_view = null;
+                    _content_scrollview = null;
 
                     _initialized = false;
                 }
@@ -119,12 +135,12 @@ namespace Visualizations
 
             protected void SetScrollViewBackground(Brush background)
             {
-                _scroll_view.Background = background;
+                _content_scrollview.Background = background;
             }
 
             protected void ScrollToBottom()
             {
-                _scroll_view.ScrollToBottom();
+                _content_scrollview.ScrollToBottom();
             }
 
 
@@ -142,7 +158,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private ScrollViewer _scroll_view = null;
+            private ScrollViewer _content_scrollview = null;
         }
     }
 }

@@ -69,21 +69,21 @@ namespace Visualizations
 
             public override bool ReCreate()
             {
+                if (!_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return false;
+                }
                 if (_created)
                 {
                     // Log Console does not depend on data
                     Log.Default.Msg(Log.Level.Debug, "Content already created. Skipping re-creating content.");
                     return false;
                 }
-                if (!_initialized)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return false;
-                }
                 _timer.Start();
 
 
-                SetScrollViewBackground(ColorTheme.DarkBackground);
+                SetScrollViewBackground(ColorTheme.Brush_DarkBackground);
 
                 Content.TextWrapping = TextWrapping.Wrap;
                 Content.FontFamily = new FontFamily("Consolas");
@@ -117,17 +117,17 @@ namespace Visualizations
                 foreach (Log.MessageData msg in msglist)
                 {
                     // Default for Level.Info
-                    var font_color = ColorTheme.LogMessageInfo;
+                    var font_color = ColorTheme.Brush_LogMessageInfo;
                     switch (msg.level)
                     {
                         case (Log.Level.Warn):
-                            font_color = ColorTheme.LogMessageWarn;
+                            font_color = ColorTheme.Brush_LogMessageWarn;
                             break;
                         case (Log.Level.Error):
-                            font_color = ColorTheme.LogMessageError;
+                            font_color = ColorTheme.Brush_LogMessageError;
                             break;
                         case (Log.Level.Debug):
-                            font_color = ColorTheme.LogMessageDebug;
+                            font_color = ColorTheme.Brush_LogMessageDebug;
                             break;
                     }
                     var run = new Run(msg.message + Environment.NewLine);

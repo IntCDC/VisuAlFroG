@@ -1,32 +1,13 @@
-﻿using System;
-using Core.Abstracts;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Collections.Generic;
-using Visualizations.SciChartInterface;
+﻿using System.Windows.Controls;
 using System.Windows;
-using Core.Utilities;
-using System.Runtime.Remoting.Contexts;
 using SciChart.Charting.Visuals;
-using SciChart.Charting.Visuals.Annotations;
 using SciChart.Charting.Visuals.Axes;
-using SciChart.Charting.Model.DataSeries;
-using SciChart.Drawing;
-using SciChart.Core;
-using SciChart.Data;
-using System.Windows.Data;
 using SciChart.Charting.Visuals.RenderableSeries;
-using SciChart.Charting.Visuals.RenderableSeries.Animations;
-using SciChart.Charting.Model.ChartSeries;
-using System.ComponentModel;
-using System.Linq;
 using SciChart.Charting.Visuals.PointMarkers;
-using System.Windows.Input;
 using Visualizations.Abstracts;
-using SciChart.Charting.ChartModifiers;
-using SciChart.Core.Utility.Mouse;
-using System.Windows.Forms;
 using Visualizations.Data;
+using Core.GUI;
+using Core.Utilities;
 
 
 
@@ -51,25 +32,81 @@ namespace Visualizations
 
             public override bool ReCreate()
             {
-                if (_created)
+                if (!base.ReCreate())
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Re-creation of content should not be required");
-                    return false;
-                }
-                if (!_initialized)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return false;
-                }
-                if (DataInterface.RequestDataCallback == null)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
                 }
                 _timer.Start();
 
 
-                DataInterface.DataStyle = DataStyles.Lines;
+                // Style--------------------------------------------
+                foreach (var rs in Content.RenderableSeries)
+                {
+                    var default_style = new System.Windows.Style();
+                    default_style.TargetType = typeof(FastLineRenderableSeries);
+
+                    var new_color = ColorTheme.RandomColor();
+                    var pointmarker_default = new EllipsePointMarker()
+                    {
+                        Stroke = new_color,
+                        Fill = new_color,
+                        Width = 10.0,
+                        Height = 10.0
+                    };
+                    var pointmarker_selected = new EllipsePointMarker()
+                    {
+                        Stroke = ColorTheme.Color_StrokeSelected,
+                        StrokeThickness = 3,
+                        Fill = new_color,
+                        Width = 10.0,
+                        Height = 10.0
+                    };
+
+                    Setter setter_stroke = new Setter();
+                    setter_stroke.Property = BaseRenderableSeries.StrokeProperty;
+                    setter_stroke.Value = new_color;
+                    default_style.Setters.Add(setter_stroke);
+
+                    Setter setter_thickness = new Setter();
+                    setter_thickness.Property = BaseRenderableSeries.StrokeThicknessProperty;
+                    setter_thickness.Value = 3;
+                    default_style.Setters.Add(setter_thickness);
+
+                    Setter setter_point = new Setter();
+                    setter_point.Property = BaseRenderableSeries.PointMarkerProperty;
+                    setter_point.Value = pointmarker_default;
+                    default_style.Setters.Add(setter_point);
+
+                    Setter setter_point_selected = new Setter();
+                    setter_point_selected.Property = BaseRenderableSeries.SelectedPointMarkerProperty;
+                    setter_point_selected.Value = pointmarker_selected;
+                    default_style.Setters.Add(setter_point_selected);
+
+                    rs.Style = default_style;
+                }
+
+
+                // Options --------------------------------------------
+                var clue_select = new MenuItem();
+                clue_select.Header = "[Left Mouse] Point Select/Box-Select";
+                clue_select.IsEnabled = false;
+
+                var clue_zoom = new MenuItem();
+                clue_zoom.Header = "[Mouse Wheel] Zoom";
+                clue_zoom.IsEnabled = false;
+
+                var clue_pan = new MenuItem();
+                clue_pan.Header = "[Right Mouse] Pan";
+                clue_pan.IsEnabled = false;
+
+                var option_hint = new MenuItem();
+                option_hint.Header = "Interaction Clues";
+                option_hint.Items.Add(clue_select);
+                option_hint.Items.Add(clue_zoom);
+                option_hint.Items.Add(clue_pan);
+
+                AddOption(option_hint);
+
 
                 // Axis --------------------------------------------
                 var xAxis = new NumericAxis()
@@ -86,6 +123,7 @@ namespace Visualizations
                     DrawMajorBands = false,
                 };
                 Content.YAxis = yAxis;
+
 
                 // Modifiers ---------------------------------------
                 Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(

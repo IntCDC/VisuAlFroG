@@ -241,7 +241,7 @@ namespace Visualizations
                     }
                     else if (data_type == typeof(ParallelCoordinateDataSource<ExpandoObject>))
                     {
-                        var variety = new DataVarietySciChartParallel<GenericPCPData>();
+                        var variety = new DataVarietySciChartParallel<ExpandoObject>();
                         variety.Create(ref data, data.DataDimension(), data.ValueTypes());
                         _data_library.Add(variety.Variety, variety);
                     }

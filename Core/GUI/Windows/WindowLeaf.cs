@@ -69,12 +69,12 @@ namespace Core
                 }
 
                 _content = new Grid();
-                _content.Background = ColorTheme.LightBackground;
+                _content.Background = ColorTheme.Brush_LightBackground;
                 _content.Name = "grid_" + UniqueID.Generate();
 
                 var info_text = new TextBlock();
                 info_text.Text = "  [Right-click for Context Menu]";
-                info_text.Foreground = ColorTheme.TextDisabled;
+                info_text.Foreground = ColorTheme.Brush_TextDisabled;
                 _content.Children.Add(info_text);
 
                 // Drag and drop

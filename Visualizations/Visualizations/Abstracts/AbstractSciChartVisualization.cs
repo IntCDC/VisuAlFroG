@@ -35,7 +35,7 @@ namespace Visualizations
             public sealed override List<Type> DependingServices { get { return new List<Type>() { typeof(SciChartInterfaceService) }; } }
 
             protected DataType DataInterface { get; set; }
-            protected SurfaceType Content { get { return _content; } }
+            protected SurfaceType Content { get { return _content_surface; } }
 
 
             /* ------------------------------------------------------------------*/
@@ -52,32 +52,12 @@ namespace Visualizations
                 DataInterface = new DataType();
                 DataInterface.RequestDataCallback = _request_callback;
 
-                _content = new SurfaceType();
-                _content.Name = ID;
-                _content.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
-                _content.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
+                _content_surface = new SurfaceType();
+                _content_surface.Name = ID;
+                _content_surface.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
+                _content_surface.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
 
-
-                var clue_select = new MenuItem();
-                clue_select.Header = "Select/Box-Select [Left Mouse]";
-                clue_select.IsEnabled = false;
-
-                var clue_zoom = new MenuItem();
-                clue_zoom.Header = "Zoom [Mouse Wheel]";
-                clue_zoom.IsEnabled = false;
-
-                var clue_pan = new MenuItem();
-                clue_pan.Header = "Pan [Right Mouse]";
-                clue_pan.IsEnabled = false;
-
-                var option_hint = new MenuItem();
-                option_hint.Header = "Interaction Clues";
-                option_hint.Items.Add(clue_select);
-                option_hint.Items.Add(clue_zoom);
-                option_hint.Items.Add(clue_pan);
-
-                AddOption(option_hint);
-
+                AttachChildContent(_content_surface);
 
                 _timer.Stop();
                 _initialized = true;
@@ -88,6 +68,50 @@ namespace Visualizations
                 return _initialized;
             }
 
+            public override bool ReCreate()
+            {
+                if (!_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return false;
+                }
+                if (_created)
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Re-creating visualization");
+                    _created = false;
+                }
+                if (DataInterface.RequestDataCallback == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing request data callback");
+                    return false;
+                }
+
+                // Set data
+                if (!DataInterface.Set(_content_surface))
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unable to set data");
+                }
+                _content_surface.ZoomExtents();
+
+                return true;
+            }
+            /* TEMPLATE
+            public override bool ReCreate()
+            {
+                if (!base.ReCreate())
+                {
+                return false;
+                }
+                _timer.Start();
+
+                /// Add your stuff here
+
+                _timer.Stop();
+                _created = true;
+                return _created;
+            }
+            */
+
             public sealed override Panel Attach()
             {
                 if (!_created)
@@ -96,16 +120,8 @@ namespace Visualizations
                     return null;
                 }
 
-                // Set data
-                if (!DataInterface.Set(Content))
-                {
-                    Log.Default.Msg(Log.Level.Error, "Unable to set data");
-                }
-                Content.ZoomExtents();
+                _content_surface.ChartModifier.IsAttached = true;
 
-                _content.ChartModifier.IsAttached = true;
-
-                AttachChildContent(_content);
                 return base.Attach();
             }
 
@@ -113,10 +129,8 @@ namespace Visualizations
             {
                 if (!_attached)
                 {
-                    /// TDOD Detach data, too?
-
                     // Required to release mouse handling
-                    _content.ChartModifier.IsAttached = false;
+                    _content_surface.ChartModifier.IsAttached = false;
                 }
                 return base.Detach();
             }
@@ -125,8 +139,8 @@ namespace Visualizations
             {
                 if (_initialized)
                 {
-                    _content.Dispose();
-                    _content = null;
+                    _content_surface.Dispose();
+                    _content_surface = null;
 
                     _initialized = false;
                 }
@@ -144,7 +158,7 @@ namespace Visualizations
 
                 if (new_data)
                 {
-                    _content.ZoomExtents();
+                    _content_surface.ZoomExtents();
                 }
             }
 
@@ -152,7 +166,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private SurfaceType _content = null;
+            private SurfaceType _content_surface = null;
         }
     }
 }

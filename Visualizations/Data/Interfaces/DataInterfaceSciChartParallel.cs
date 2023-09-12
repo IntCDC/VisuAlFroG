@@ -8,8 +8,6 @@ using SciChart.Charting.Visuals;
 using SciChart.Charting.Visuals.RenderableSeries;
 using Visualizations.Varieties;
 using Visualizations.Abstracts;
-using System.Windows;
-using SciChart.Charting.ChartModifiers;
 
 
 
@@ -44,41 +42,8 @@ namespace Visualizations
                     return false;
                 }
 
-                /// TODO parent.RenderableSeriesStyle = ApplyStyle();
                 parent.ParallelCoordinateDataSource = data;
-
                 return true;
-            }
-
-
-            /* ------------------------------------------------------------------*/
-            // protected functions
-
-            protected override Style ApplyStyle()
-            {
-                var default_style = new Style();
-                default_style.TargetType = typeof(SciChartParallelCoordinateSurface);
-
-                switch (DataStyle)
-                {
-                    case (DataStyles.Lines):
-                        {
-                           
-                        }
-                        break;
-                    case (DataStyles.Columns):
-                        {
-                            
-                        }
-                        break;
-                    case (DataStyles.Points):
-                        {
-
-                        }
-                        break;
-                    default: break;
-                }
-                return default_style;
             }
         }
     }

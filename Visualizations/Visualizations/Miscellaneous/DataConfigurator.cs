@@ -49,8 +49,8 @@ namespace Visualizations
                 }
                 if (_created)
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Content already created");
-                    return false;
+                    Log.Default.Msg(Log.Level.Warn, "Re-creating visualization");
+                    _created = false;
                 }
                 if (DataInterface.RequestDataCallback == null)
                 {
@@ -68,15 +68,15 @@ namespace Visualizations
                 }
 
 
-                Content.Background = ColorTheme.DarkBackground;
+                Content.Background = ColorTheme.Brush_DarkBackground;
 
                 var text_dim = new TextBlock();
-                text_dim.Foreground = ColorTheme.LightForeground; 
+                text_dim.Foreground = ColorTheme.Brush_LightForeground; 
                 text_dim.Text = "Data Dimensionality: " + data.DataDimension().ToString();
                 Content.Children.Add(text_dim);
 
                 var text_value_types = new TextBlock();
-                text_value_types.Foreground = ColorTheme.LightForeground;
+                text_value_types.Foreground = ColorTheme.Brush_LightForeground;
                 text_value_types.Text = "Data Value Type(s): ";
                 foreach (var value_type in data.ValueTypes())
                 {
@@ -87,7 +87,7 @@ namespace Visualizations
                 _tree_root = new TreeViewItem();
                 _tree_root.Header = "Data Root";
                 _tree_root.IsExpanded = true;
-                _tree_root.Foreground = ColorTheme.LightForeground;
+                _tree_root.Foreground = ColorTheme.Brush_LightForeground;
                 create_data_tree(data, _tree_root);
                 Content.Children.Add(_tree_root);
 
@@ -133,11 +133,11 @@ namespace Visualizations
                 {
                     var tree_entry = new TreeViewItem();
                     tree_entry.Header = "Entry [" + entry_index.ToString() + "]";
-                    tree_entry.Foreground = ColorTheme.LightForeground;
+                    tree_entry.Foreground = ColorTheme.Brush_LightForeground;
 
                     var tree_values = new TreeViewItem();
                     tree_values.Header = "Values";
-                    tree_values.Foreground = ColorTheme.LightForeground;
+                    tree_values.Foreground = ColorTheme.Brush_LightForeground;
 
                     //Align child items horizontal
                     var panel_template = new ItemsPanelTemplate();
@@ -149,7 +149,7 @@ namespace Visualizations
                     foreach (var value in entry.Values)
                     {
                         var tree_value = new TreeViewItem();
-                        tree_value.Foreground = ColorTheme.LightForeground;
+                        tree_value.Foreground = ColorTheme.Brush_LightForeground;
 
                         tree_value.Header = value.ToString();
                         tree_value.MouseDoubleClick += treevalue_clicked;
@@ -158,21 +158,21 @@ namespace Visualizations
                     }
                     var tree_meta = new TreeViewItem();
                     tree_meta.Header = "Meta Data";
-                    tree_meta.Foreground = ColorTheme.LightForeground;
+                    tree_meta.Foreground = ColorTheme.Brush_LightForeground;
 
                     var tree_index = new TreeViewItem();
-                    tree_index.Foreground = ColorTheme.LightForeground;
+                    tree_index.Foreground = ColorTheme.Brush_LightForeground;
                     tree_index.Header = "Index";
                     var tree_index_value = new TreeViewItem();
-                    tree_index_value.Foreground = ColorTheme.LightForeground;
+                    tree_index_value.Foreground = ColorTheme.Brush_LightForeground;
                     tree_index_value.Header = entry.MetaData.Index.ToString();
                     tree_index.Items.Add(tree_index_value);
 
                     var tree_selected = new TreeViewItem();
-                    tree_selected.Foreground = ColorTheme.LightForeground;
+                    tree_selected.Foreground = ColorTheme.Brush_LightForeground;
                     tree_selected.Header = "IsSelected";
                     var tree_selected_value = new TreeViewItem();
-                    tree_selected_value.Foreground = ColorTheme.LightForeground;
+                    tree_selected_value.Foreground = ColorTheme.Brush_LightForeground;
                     tree_selected_value.Header = entry.MetaData.IsSelected.ToString();
                     // Set index of IsSelected to index of value to find it later
                     tree_selected_value.Name = "index_" + entry.MetaData.Index.ToString();
@@ -193,7 +193,7 @@ namespace Visualizations
                 {
                     var tree_branch = new TreeViewItem();
                     tree_branch.Header = "Branch [" + branch_index.ToString() + "]";
-                    tree_branch.Foreground = ColorTheme.LightForeground;
+                    tree_branch.Foreground = ColorTheme.Brush_LightForeground;
 
                     create_data_tree(branch, tree_branch);
 
