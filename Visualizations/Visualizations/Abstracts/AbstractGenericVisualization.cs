@@ -28,7 +28,7 @@ namespace Visualizations
             public sealed override bool MultipleInstances { get { return false; } }
             public sealed override List<Type> DependingServices { get { return new List<Type>() { }; } }
 
-            protected DataType Data { get; set; }
+            protected DataType DataInterface { get; set; }
             protected ContentType Content { get { return (ContentType)_scroll_view.Content; } }
 
 
@@ -43,8 +43,8 @@ namespace Visualizations
                 }
                 _timer.Start();
 
-                Data = new DataType();
-                Data.RequestDataCallback = _request_callback;
+                DataInterface = new DataType();
+                DataInterface.RequestDataCallback = _request_callback;
 
                 _scroll_view = new ScrollViewer();
                 _scroll_view.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;

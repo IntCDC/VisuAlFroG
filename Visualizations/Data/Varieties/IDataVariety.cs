@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-
 using Visualizations.Data;
 
 
@@ -19,14 +18,13 @@ namespace Visualizations
     {
 
         [Flags]
-        public enum DataDimensionality
+        public enum Dimension
         {
             None = 0,
             Uniform = 1,
             TwoDimensional = 2,
             ThreeDimensional = 4,
             Multidimensional = 8,
-            All = (Uniform | TwoDimensional | ThreeDimensional | Multidimensional),
         }
 
 
@@ -39,16 +37,16 @@ namespace Visualizations
 
             object Get { get; }
 
-            DataDimensionality SupportedDimensionality { get; }
+            List<Dimension> SupportedDimensions { get; }
             List<Type> SupportedValueTypes { get; }
 
 
             /* ------------------------------------------------------------------*/
             // public functions
 
-            void Update(ref GenericDataStructure data, DataDimensionality dimensionality, List<Type> value_types);
+            void Create(ref GenericDataStructure data, int data_dimension, List<Type> value_types);
 
-            void UpdateEntryAtIndex(int index, GenericDataEntry updated_entry);
+            void UpdateEntryAtIndex(GenericDataEntry updated_entry);
         }
     }
 }

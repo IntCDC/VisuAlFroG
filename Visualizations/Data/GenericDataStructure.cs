@@ -53,10 +53,13 @@ namespace Visualizations
                 return metadata_list;
             }
 
-            public DataDimensionality Dimensionality()
+            public int DataDimension()
             {
-                var dim = DataDimensionality.None;
-                get_dimensionalities(this, ref dim);
+                int dim = -1;
+                if (!get_dimension(this, ref dim))
+                {
+                    dim = -1;
+                }
                 return dim;
             }
 
@@ -87,11 +90,11 @@ namespace Visualizations
                 {
                     get_entry_at_index(b, entry_index, ref out_entry);
                 }
-                foreach (var l in branch.Entries)
+                foreach (var entry in branch.Entries)
                 {
-                    if (l.HasIndex(entry_index))
+                    if (entry.HasIndex(entry_index))
                     {
-                        out_entry = l;
+                        out_entry = entry;
                         return;
                     }
                 }
@@ -104,13 +107,13 @@ namespace Visualizations
             /// <param name="out_metadatalist"></param>
             private void list_metadata(GenericDataStructure branch, ref List<MetaData> out_metadatalist)
             {
+                foreach (var entry in branch.Entries)
+                {
+                    out_metadatalist.Add(entry.MetaData);
+                }
                 foreach (var b in branch.Branches)
                 {
                     list_metadata(b, ref out_metadatalist);
-                }
-                foreach (var l in branch.Entries)
-                {
-                    out_metadatalist.Add(l.MetaData);
                 }
             }
 
@@ -119,16 +122,26 @@ namespace Visualizations
             /// </summary>
             /// <param name="branch"></param>
             /// <param name="out_metadatalist"></param>
-            private void get_dimensionalities(GenericDataStructure branch, ref DataDimensionality out_dimensionality)
+            private bool get_dimension(GenericDataStructure branch, ref int out_dim)
             {
+                bool retval = true;
+                foreach (var entry in branch.Entries)
+                {
+                    if (out_dim == -1)
+                    {
+                        out_dim = entry.Dimension;
+                    }
+                    if (out_dim != entry.Dimension)
+                    {
+                        Log.Default.Msg(Log.Level.Warn, "Inconsistent data dimensions");
+                        retval = false;
+                    }
+                }
                 foreach (var b in branch.Branches)
                 {
-                    get_dimensionalities(b, ref out_dimensionality);
+                    return (retval & get_dimension(b, ref out_dim));
                 }
-                foreach (var l in branch.Entries)
-                {
-                    out_dimensionality |= l.Dimensionality;
-                }
+                return true;
             }
 
             /// <summary>
@@ -142,9 +155,9 @@ namespace Visualizations
                 {
                     get_valuetypes(b, ref out_valuetypes);
                 }
-                foreach (var l in branch.Entries)
+                foreach (var entry in branch.Entries)
                 {
-                    var value_types = l.ValueTypes();
+                    var value_types = entry.ValueTypes();
                     foreach (var t in value_types)
                     {
                         if (!out_valuetypes.Contains(t))

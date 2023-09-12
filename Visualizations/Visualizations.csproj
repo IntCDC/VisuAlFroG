@@ -131,7 +131,6 @@
     <Compile Include="Data\MetaData.cs" />
     <Compile Include="Data\Interfaces\DataInterfaceSciChartParallel.cs" />
     <Compile Include="Data\Interfaces\DataInterfaceSciChartSeries.cs" />
-    <Compile Include="Interaction\PointSelection.cs" />
     <Compile Include="VisualizationsManager.cs" />
     <Compile Include="Data\DataManager.cs" />
     <Compile Include="ServiceManager.cs" />

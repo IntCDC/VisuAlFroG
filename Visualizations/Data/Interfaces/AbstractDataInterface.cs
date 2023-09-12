@@ -32,7 +32,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public properties
 
-            public DataStyles DataStyle { get; set; }
+            public DataStyles DataStyle { get; set; }    
 
             public DataManager.RequestCallback_Delegate RequestDataCallback { get; set; }
 
@@ -55,7 +55,7 @@ namespace Visualizations
             /// <summary>
             /// TODO 
             /// </summary>
-            protected virtual Style GetDataStyle()
+            protected virtual Style ApplyStyle()
             {
                 return null;
             }

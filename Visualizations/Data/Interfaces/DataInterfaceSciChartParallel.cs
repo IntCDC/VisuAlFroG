@@ -9,6 +9,7 @@ using SciChart.Charting.Visuals.RenderableSeries;
 using Visualizations.Varieties;
 using Visualizations.Abstracts;
 using System.Windows;
+using SciChart.Charting.ChartModifiers;
 
 
 
@@ -22,6 +23,7 @@ namespace Visualizations
     namespace Data
     {
         public class DataInterfaceSciChartParallel<DataType> : AbstractDataInterface
+            where DataType : class
         {
             /* ------------------------------------------------------------------*/
             // public functions
@@ -42,9 +44,8 @@ namespace Visualizations
                     return false;
                 }
 
+                /// TODO parent.RenderableSeriesStyle = ApplyStyle();
                 parent.ParallelCoordinateDataSource = data;
-
-                /// TODO Set style
 
                 return true;
             }
@@ -53,10 +54,11 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // protected functions
 
-            protected override Style GetDataStyle()
+            protected override Style ApplyStyle()
             {
                 var default_style = new Style();
-                default_style.TargetType = typeof(ParallelCoordinateDataSource<DataType>);
+                default_style.TargetType = typeof(SciChartParallelCoordinateSurface);
+
                 switch (DataStyle)
                 {
                     case (DataStyles.Lines):

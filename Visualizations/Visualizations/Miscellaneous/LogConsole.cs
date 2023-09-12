@@ -11,7 +11,6 @@ using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.Runtime.Remoting.Contexts;
 using Visualizations.Abstracts;
-using Visualizations.Interaction;
 using Visualizations.Data;
 
 
@@ -92,7 +91,7 @@ namespace Visualizations
                 Content.Height = Double.NaN; // = "Auto"
 
                 var copy_option = new MenuItem();
-                copy_option.Header = "Copy";
+                copy_option.Header = "Copy to Clipboard";
                 copy_option.Click += copy_option_click;
                 AddOption(copy_option);
 

@@ -11,6 +11,7 @@ using SciChart.Charting.Model.DataSeries;
 using SciChart.Charting.Visuals.RenderableSeries;
 using Visualizations.Data;
 using System.Windows;
+using static System.Net.Mime.MediaTypeNames;
 
 
 
@@ -33,7 +34,7 @@ namespace Visualizations
             public sealed override bool MultipleInstances { get { return true; } }
             public sealed override List<Type> DependingServices { get { return new List<Type>() { typeof(SciChartInterfaceService) }; } }
 
-            protected DataType Data { get; set; }
+            protected DataType DataInterface { get; set; }
             protected SurfaceType Content { get { return _content; } }
 
 
@@ -48,14 +49,35 @@ namespace Visualizations
                 }
                 _timer.Start();
 
-                Data = new DataType();
-                Data.RequestDataCallback = _request_callback;
+                DataInterface = new DataType();
+                DataInterface.RequestDataCallback = _request_callback;
 
                 _content = new SurfaceType();
                 _content.Name = ID;
+                _content.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
+                _content.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
 
-                Content.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
-                Content.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
+
+                var clue_select = new MenuItem();
+                clue_select.Header = "Select/Box-Select [Left Mouse]";
+                clue_select.IsEnabled = false;
+
+                var clue_zoom = new MenuItem();
+                clue_zoom.Header = "Zoom [Mouse Wheel]";
+                clue_zoom.IsEnabled = false;
+
+                var clue_pan = new MenuItem();
+                clue_pan.Header = "Pan [Right Mouse]";
+                clue_pan.IsEnabled = false;
+
+                var option_hint = new MenuItem();
+                option_hint.Header = "Interaction Clues";
+                option_hint.Items.Add(clue_select);
+                option_hint.Items.Add(clue_zoom);
+                option_hint.Items.Add(clue_pan);
+
+                AddOption(option_hint);
+
 
                 _timer.Stop();
                 _initialized = true;
@@ -75,7 +97,7 @@ namespace Visualizations
                 }
 
                 // Set data
-                if (!Data.Set(Content))
+                if (!DataInterface.Set(Content))
                 {
                     Log.Default.Msg(Log.Level.Error, "Unable to set data");
                 }

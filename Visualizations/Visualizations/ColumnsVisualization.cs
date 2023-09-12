@@ -24,7 +24,6 @@ using SciChart.Charting.Visuals.PointMarkers;
 using System.Windows.Input;
 using SciChart.Charting.Visuals.PaletteProviders;
 using Visualizations.Abstracts;
-using Visualizations.Interaction;
 using SciChart.Core.Utility.Mouse;
 using SciChart.Charting.ChartModifiers;
 using Visualizations.Data;
@@ -54,7 +53,7 @@ namespace Visualizations
             {
                 if (_created)
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Re-creation of content should not be required");
+                    Log.Default.Msg(Log.Level.Warn, "Re-creation of content should not required");
                     return false;
                 }
                 if (!_initialized)
@@ -62,7 +61,7 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return false;
                 }
-                if (Data.RequestDataCallback == null)
+                if (DataInterface.RequestDataCallback == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
@@ -70,7 +69,7 @@ namespace Visualizations
                 _timer.Start();
 
 
-                Data.DataStyle = DataStyles.Columns;
+                DataInterface.DataStyle = DataStyles.Columns;
 
                 // Axis --------------------------------------------
                 var xAxis = new NumericAxis()
@@ -115,18 +114,6 @@ namespace Visualizations
                         IsEnabled = true
                     }
                 );
-
-                // Annotation --------------------------------------
-                var textAnnotation = new TextAnnotation()
-                {
-                    Text = "|----------[Interaction]----------|" + Environment.NewLine +
-                        "Left Mouse:  Select/Box-Select" + Environment.NewLine +
-                        "Mouse Wheel: Zoom" + Environment.NewLine +
-                        "Right Mouse: Pan",
-                    X1 = 6.0,
-                    Y1 = 9.0
-                };
-                Content.Annotations.Add(textAnnotation);
 
 
                 _timer.Stop();

@@ -14,7 +14,6 @@ using System.Runtime.Remoting.Contexts;
 using System.Collections.ObjectModel;
 using Visualizations.Abstracts;
 using Core.GUI;
-using Visualizations.Interaction;
 using System.Windows.Markup;
 using System.Globalization;
 using Visualizations.Data;
@@ -53,7 +52,7 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Warn, "Content already created");
                     return false;
                 }
-                if (Data.RequestDataCallback == null)
+                if (DataInterface.RequestDataCallback == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
@@ -62,7 +61,7 @@ namespace Visualizations
 
 
                 GenericDataStructure data = null;
-                if (!Data.Set(ref data))
+                if (!DataInterface.Set(ref data))
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing data");
                     return false;
@@ -73,7 +72,7 @@ namespace Visualizations
 
                 var text_dim = new TextBlock();
                 text_dim.Foreground = ColorTheme.LightForeground; 
-                text_dim.Text = "Data Dimensionality: " + data.Dimensionality().ToString();
+                text_dim.Text = "Data Dimensionality: " + data.DataDimension().ToString();
                 Content.Children.Add(text_dim);
 
                 var text_value_types = new TextBlock();
@@ -107,7 +106,7 @@ namespace Visualizations
                 }
 
                 GenericDataStructure data = null;
-                if (!Data.Set(ref data))
+                if (!DataInterface.Set(ref data))
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing data");
                     return false;
@@ -257,9 +256,9 @@ namespace Visualizations
                 {
                     update_metadata(b);
                 }
-                foreach (var l in branch.Entries)
+                foreach (var entry in branch.Entries)
                 {
-                    update_metadata_at_index(_tree_root, l.MetaData);
+                    update_metadata_at_index(_tree_root, entry.MetaData);
                 }
             }
 

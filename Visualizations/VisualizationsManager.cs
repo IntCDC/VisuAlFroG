@@ -16,7 +16,6 @@ using Visualizations.Abstracts;
 using Visualizations.Data;
 using Visualizations.Miscellaneous;
 using System.Runtime.InteropServices;
-using Visualizations.Interaction;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Runtime.Remoting.Contexts;
 
@@ -57,7 +56,8 @@ namespace Visualizations
             register_content(typeof(ScatterVisualization));
             register_content(typeof(LinesVisualization));
             register_content(typeof(ColumnsVisualization));
-            //register_content(typeof(ParallelCoordinatesVisualization));
+            register_content(typeof(ParallelCoordinatesVisualization));
+
 
             _timer.Stop();
             _initialized = true;

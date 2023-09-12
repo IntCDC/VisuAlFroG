@@ -23,10 +23,10 @@ using System.Linq;
 using SciChart.Charting.Visuals.PointMarkers;
 using System.Windows.Input;
 using Visualizations.Abstracts;
-using Visualizations.Interaction;
 using SciChart.Charting.ChartModifiers;
 using SciChart.Core.Utility.Mouse;
 using Visualizations.Data;
+using System.Dynamic;
 
 
 
@@ -38,20 +38,7 @@ namespace Visualizations
 {
     namespace Varieties
     {
-
-        ///  DEBUG
-        public class SciChartPCPData_Type
-        {
-
-            public SciChartPCPData_Type() { }
-
-            public DateTime Date { get; set; }
-            public double MinTemp { get; set; }
-            public double MaxTemp { get; set; }
-        }
-
-
-        public class ParallelCoordinatesVisualization : AbstractSciChartVisualization<SciChartParallelCoordinateSurface, DataInterfaceSciChartParallel<SciChartPCPData_Type>>
+        public class ParallelCoordinatesVisualization : AbstractSciChartVisualization<SciChartParallelCoordinateSurface, DataInterfaceSciChartParallel<ExpandoObject>>
         {
             /* ------------------------------------------------------------------*/
             // properties
@@ -74,7 +61,7 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return false;
                 }
-                if (Data.RequestDataCallback == null)
+                if (DataInterface.RequestDataCallback == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
@@ -82,27 +69,7 @@ namespace Visualizations
                 _timer.Start();
 
 
-                Content.ChartTitle = "Parallel Coordinates Plot TEST";
-                Content.DrawSplines = true;
-
-
-                // Data Series -------------------------------------
-                _pcp_source = new ParallelCoordinateDataSource<SciChartPCPData_Type>(
-                    new ParallelCoordinateDataItem<SciChartPCPData_Type, DateTime>(p => p.Date)
-                    {
-                        Title = "Time",
-                        //AxisStyle = defaultAxisStyle
-                    },
-                    new ParallelCoordinateDataItem<SciChartPCPData_Type, double>(p => p.MinTemp)
-                    {
-                        Title = "Min Temp",
-                    },
-                    new ParallelCoordinateDataItem<SciChartPCPData_Type, double>(p => p.MaxTemp)
-                    {
-                        Title = "Max Temp",
-                    }
-                );
-                Content.ParallelCoordinateDataSource = _pcp_source;
+                Content.ChartTitle = "Parallel Coordinates Plot";
 
 
                 // Modifiers ---------------------------------------
@@ -130,8 +97,14 @@ namespace Visualizations
                     new SciChart.Charting.ChartModifiers.DataPointSelectionModifier()
                     {
                         IsEnabled = true
+                    },
+                    new SciChart.Charting.ChartModifiers.ParallelAxisReorderModifier()
+                    {
+                        IsEnabled = true,
+                        //AxesReordered = on_axis_reordered
                     }
-                );
+                    //<s:ParallelAxisReorderModifier AxesReordered = "OnAxisReordered" IsEnabled = "{Binding IsChecked, Mode=OneWay, ElementName=IsReorderEnabled}" />
+                ) ;
 
 
                 _timer.Stop();
@@ -144,16 +117,12 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private functions
 
+            /*
             private void on_axis_reordered(object sender, ParallelAxisReorderArgs args)
             {
                 _pcp_source?.ReorderItems(args.OldIndex, args.NewIndex);
             }
-
-
-            /* ------------------------------------------------------------------*/
-            // private variables
-
-            private ParallelCoordinateDataSource<SciChartPCPData_Type> _pcp_source;
+            */
         }
     }
 }

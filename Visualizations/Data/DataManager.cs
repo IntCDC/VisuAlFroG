@@ -4,7 +4,6 @@ using System.ComponentModel;
 using Core.Abstracts;
 using Core.Utilities;
 using SciChart.Charting.Model.DataSeries;
-using Visualizations.Interaction;
 using System.Windows.Markup;
 using SciChart.Data.Model;
 using System.Windows.Controls;
@@ -12,6 +11,8 @@ using System.Windows;
 using Visualizations.Data;
 using Visualizations.Abstracts;
 using SciChart.Charting.Visuals;
+using SciChart.Charting.Visuals.RenderableSeries;
+using System.Dynamic;
 
 
 
@@ -76,20 +77,21 @@ namespace Visualizations
                 var variety_generic = new DataVarietyGeneric();
                 _data_library.Add(variety_generic.Variety, variety_generic);
 
-                var variety_fastline = new DataVarietySciChartSeries<SciChart.Charting.Visuals.RenderableSeries.FastLineRenderableSeries>();
+                /*
+                var variety_fastline = new DataVarietySciChartSeries<FastLineRenderableSeries>();
                 _data_library.Add(variety_fastline.Variety, variety_fastline);
 
-                var variety_fastcolumn = new DataVarietySciChartSeries<SciChart.Charting.Visuals.RenderableSeries.FastColumnRenderableSeries>();
+                var variety_fastcolumn = new DataVarietySciChartSeries<FastColumnRenderableSeries>();
                 _data_library.Add(variety_fastcolumn.Variety, variety_fastcolumn);
 
-                var variety_xyscatter = new DataVarietySciChartSeries<SciChart.Charting.Visuals.RenderableSeries.XyScatterRenderableSeries>();
+                var variety_xyscatter = new DataVarietySciChartSeries<XyScatterRenderableSeries>();
                 _data_library.Add(variety_xyscatter.Variety, variety_xyscatter);
 
-                //var variety_parallel = new DataVarietySciChartParallel<T>();
-                //_data_library.Add(variety_parallel.DataVariety, variety_parallel);
+                var variety_parallel = new DataVarietySciChartParallel<GenericPCPData>();
+                _data_library.Add(variety_parallel.Variety, variety_parallel);
 
                 /// TODO Add more library data formats here ...
-
+                */
 
                 _timer.Stop();
                 _initialized = initialized;
@@ -135,8 +137,15 @@ namespace Visualizations
 
 
                 // Collect information on input data 
-                var dimensionality = input_data.Dimensionality();
+                var data_dimension = input_data.DataDimension();
+                if (data_dimension < 1)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Invalid data dimension");
+                    return;
+                }
+
                 var value_types = input_data.ValueTypes();
+
                 // Initialize meta data
                 int index = 0;
                 init_metadata(input_data, ref index);
@@ -144,7 +153,7 @@ namespace Visualizations
                 // Update all data 
                 foreach (var pair in _data_library)
                 {
-                    pair.Value.Update(ref input_data, dimensionality, value_types);
+                    pair.Value.Create(ref input_data, data_dimension, value_types);
                 }
 
 
@@ -191,15 +200,60 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return null;
                 }
-                if (_data_library.ContainsKey(data_type))
+
+                if (!_data_library.ContainsKey(data_type))
                 {
-                    return _data_library[data_type].Get;
+                    // Get current data from generic reference
+                    GenericDataStructure data = null;
+                    try
+                    {
+                        data = _data_library[typeof(GenericDataStructure)].Get as GenericDataStructure;
+                        if (data == null)
+                        {
+                            Log.Default.Msg(Log.Level.Error, "Missing data");
+                            return null;
+                        }
+                    }
+                    catch (Exception exc)
+                    {
+                        Log.Default.Msg(Log.Level.Error, exc.Message);
+                        return null;
+                    }
+
+                    // Create new data variety
+                    if (data_type == typeof(List<FastLineRenderableSeries>))
+                    {
+                        var variety = new DataVarietySciChartSeries<FastLineRenderableSeries>();
+                        variety.Create(ref data, data.DataDimension(), data.ValueTypes());
+                        _data_library.Add(variety.Variety, variety);
+                    }
+                    else if (data_type == typeof(List<FastColumnRenderableSeries>))
+                    {
+                        var variety = new DataVarietySciChartSeries<FastColumnRenderableSeries>();
+                        variety.Create(ref data, data.DataDimension(), data.ValueTypes());
+                        _data_library.Add(variety.Variety, variety);
+                    }
+                    else if (data_type == typeof(List<XyScatterRenderableSeries>))
+                    {
+                        var variety = new DataVarietySciChartSeries<XyScatterRenderableSeries>();
+                        variety.Create(ref data, data.DataDimension(), data.ValueTypes());
+                        _data_library.Add(variety.Variety, variety);
+                    }
+                    else if (data_type == typeof(ParallelCoordinateDataSource<ExpandoObject>))
+                    {
+                        var variety = new DataVarietySciChartParallel<GenericPCPData>();
+                        variety.Create(ref data, data.DataDimension(), data.ValueTypes());
+                        _data_library.Add(variety.Variety, variety);
+                    }
+                    else
+                    {
+                        Log.Default.Msg(Log.Level.Warn, "Requested data not available for given data type: " + data_type.FullName);
+                        return null;
+                    }
+                    /// TODO Add more library data formats here ...
                 }
-                else
-                {
-                    Log.Default.Msg(Log.Level.Warn, "Requested data not available for given data type: " + data_type.FullName);
-                }
-                return null;
+
+                return _data_library[data_type].Get;
             }
 
 
@@ -247,7 +301,7 @@ namespace Visualizations
                 //...to update meta data:
                 foreach (var pair in _data_library)
                 {
-                    pair.Value.UpdateEntryAtIndex(index, entry);
+                    pair.Value.UpdateEntryAtIndex(entry);
                 }
 
                 // Notify visualizations via registered update callbacks

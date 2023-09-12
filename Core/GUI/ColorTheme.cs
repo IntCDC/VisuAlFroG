@@ -24,6 +24,11 @@ namespace Core
             // static functions
 
 
+            // DATA -----------------------------------------------------
+
+            public static Color StrokeSelected { get { return Colors.Red; } }
+            public static Color StrokeDefault { get { return Color.FromArgb(0x00, 0x00, 0x00, 0x00); } }
+
             // GENERIC -----------------------------------------------------
 
             public static Brush DarkBackground { get { return Brushes.Black; } }

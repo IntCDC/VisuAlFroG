@@ -20,7 +20,7 @@ namespace Visualizations
     namespace Abstracts
     {
         public abstract class AbstractDataVariety<DataType> : IDataVariety
-            where DataType : new()
+            where DataType : class
         {
             /* ------------------------------------------------------------------*/
             // public properties
@@ -28,16 +28,26 @@ namespace Visualizations
             public Type Variety { get { return typeof(DataType); } }
             public object Get { get { return _data; } }
 
-            public abstract DataDimensionality SupportedDimensionality { get; }
+            public abstract List<Dimension> SupportedDimensions { get; }
             public abstract List<Type> SupportedValueTypes { get; }
 
 
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public abstract void Update(ref GenericDataStructure data, DataDimensionality dimensionality, List<Type> value_types);
+            /// <summary>
+            /// TODO Use _created flag
+            /// </summary>
+            /// <param name="data"></param>
+            /// <param name="data_dimension"></param>
+            /// <param name="value_types"></param>
+            public abstract void Create(ref GenericDataStructure data, int data_dimension, List<Type> value_types);
 
-            public abstract void UpdateEntryAtIndex(int index, GenericDataEntry updated_entry);
+            /// <summary>
+            /// TODO
+            /// </summary>
+            /// <param name="updated_entry"></param>
+            public abstract void UpdateEntryAtIndex(GenericDataEntry updated_entry);
 
             /// <summary>
             /// TODO
@@ -54,6 +64,10 @@ namespace Visualizations
                         incompatible = true;
                     }
                 }
+                if (incompatible)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Incompatible data value types");
+                }
                 return !incompatible;
             }
 
@@ -62,16 +76,41 @@ namespace Visualizations
             /// </summary>
             /// <param name="dimensionality"></param>
             /// <returns></returns>
-            protected bool CompatibleDimensionality(DataDimensionality dimensionality)
+            protected bool CompatibleDimensionality(int data_dimension)
             {
-                return ((dimensionality & SupportedDimensionality) == dimensionality);
+                bool compatible = false;
+                foreach (var dim in SupportedDimensions)
+                {
+                    switch (dim)
+                    {
+                        case (Dimension.Uniform):
+                            compatible |= (data_dimension == 1);
+                            break;
+                        case (Dimension.TwoDimensional):
+                            compatible |= (data_dimension == 2);
+                            break;
+                        case (Dimension.ThreeDimensional):
+                            compatible |= (data_dimension == 3);
+                            break;
+                        case (Dimension.Multidimensional):
+                            compatible |= (data_dimension > 0);
+                            break;
+                        default: break;
+                    }
+                }
+                if (!compatible)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Incompatible data dimension");
+                }
+                return compatible;
             }
 
 
             /* ------------------------------------------------------------------*/
             // private variables
 
-            protected DataType _data = new DataType();
+            protected DataType _data = default(DataType);
+            protected bool _created = false;
         }
     }
 }

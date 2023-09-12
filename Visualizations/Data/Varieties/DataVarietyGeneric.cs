@@ -5,59 +5,76 @@ using System.Text;
 using System.Threading.Tasks;
 using Visualizations.Data;
 using Visualizations.Abstracts;
-
+using Core.Utilities;
 
 
 /*
  *  Generic data variety
  * 
  */
-using DataType = Visualizations.Data.GenericDataStructure;
-using Core.Utilities;
-
 namespace Visualizations
 {
     namespace Data
     {
-        public class DataVarietyGeneric : AbstractDataVariety<DataType>
+        public class DataVarietyGeneric : AbstractDataVariety<GenericDataStructure>
         {
             /* ------------------------------------------------------------------*/
             // public properties
 
-            public sealed override DataDimensionality SupportedDimensionality { get { return (DataDimensionality.All); } }
-            public sealed override List<Type> SupportedValueTypes { get { return new List<Type>() { typeof(string), typeof(double), typeof(int) }; } }
+            public sealed override List<Dimension> SupportedDimensions
+            {
+                get
+                {
+                    return new List<Dimension>() { Dimension.Uniform, Dimension.TwoDimensional, Dimension.ThreeDimensional, Dimension.Multidimensional };
+                }
+            }
+
+            public sealed override List<Type> SupportedValueTypes
+            {
+                get
+                {
+                    return new List<Type>() { typeof(string), typeof(double), typeof(float), typeof(int), typeof(uint), typeof(long), typeof(ulong) };
+                }
+            }
 
 
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public override void Update(ref GenericDataStructure data, DataDimensionality dimensionality, List<Type> value_types)
+            public override void Create(ref GenericDataStructure data, int data_dimension, List<Type> value_types)
             {
-                Log.Default.Msg(Log.Level.Debug, "Dimensionality Flag: " + Convert.ToString((int)SupportedDimensionality, 2));
-                if (!CompatibleDimensionality(dimensionality))
-                {
-                    Log.Default.Msg(Log.Level.Error, "Incompatible data dimensionality");
+                _created = false;
+                if (!CompatibleDimensionality(data_dimension) || !CompatibleValueTypes(value_types)) {
                     return;
                 }
-                if (!CompatibleValueTypes(value_types))
+                if (data == null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Incompatible data value types");
                     return;
                 }
+
                 _data = data;
+                _created = true;
             }
 
-            public override void UpdateEntryAtIndex(int index, GenericDataEntry updated_entry)
+            public override void UpdateEntryAtIndex(GenericDataEntry updated_entry)
             {
+                if (!_created)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Creation of data required prior to execution");
+                    return;
+                }
                 /* Not required for meta data update
                 var entry = _data.EntryAtIndex(index);
                 if (entry != null)
                 {
                     entry.MetaData = updated_entry.MetaData;
                 }
+                else 
+                {
                 Log.Default.Msg(Log.Level.Debug, "Can not find data entry at index: " + index.ToString());
+                }
                 */
-            }
+                }
         }
     }
 }

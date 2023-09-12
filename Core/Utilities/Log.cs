@@ -127,9 +127,9 @@ namespace Core
                 listener_messages.Add(msgdata);
 
                 // Call listeners
-                foreach (var l in _listeners)
+                foreach (var listener in _listeners)
                 {
-                    l(listener_messages);
+                    listener(listener_messages);
                 }
                 Console.WriteLine(message);
 #if DEBUG

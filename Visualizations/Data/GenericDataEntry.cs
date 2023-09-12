@@ -24,18 +24,7 @@ namespace Visualizations
 
             public MetaData MetaData { get { return _metadata; } set { _metadata = value; } }
 
-            public DataDimensionality Dimensionality
-            {
-                get
-                {
-                    var dim = DataDimensionality.None;
-                    dim = (_values.Count == 1) ? (dim | DataDimensionality.Uniform) : (dim);
-                    dim = (_values.Count == 2) ? (dim | DataDimensionality.TwoDimensional) : (dim);
-                    dim = (_values.Count == 3) ? (dim | DataDimensionality.ThreeDimensional) : (dim);
-                    dim = (_values.Count > 3) ? (dim | DataDimensionality.Multidimensional) : (dim);
-                    return dim;
-                }
-            }
+            public int Dimension { get { return _values.Count; } }
 
 
             /* ------------------------------------------------------------------*/
