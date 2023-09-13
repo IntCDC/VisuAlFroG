@@ -31,14 +31,6 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            /// <summary>
-            /// DEBUG
-            /// </summary>
-            ~ScatterVisualization()
-            {
-                Console.WriteLine("DEBUG - DTOR: ScatterVisualization");
-            }
-
             public override bool ReCreate()
             {
                 if (!base.ReCreate())
@@ -127,37 +119,46 @@ namespace Visualizations
 
                 // Modifiers ---------------------------------------
                 Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
-                    new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier()
-                    {
-                        IsEnabled = false
-                    },
-                    new SciChart.Charting.ChartModifiers.ZoomExtentsModifier()
-                    {
-                        IsEnabled = false
-                    },
-                    new SciChart.Charting.ChartModifiers.ZoomPanModifier()
-                    {
-                        IsEnabled = true,
-                        ExecuteOn = SciChart.Charting.ChartModifiers.ExecuteOn.MouseRightButton,
-                        ClipModeX = SciChart.Charting.ClipMode.None
-                    },
-                    new SciChart.Charting.ChartModifiers.MouseWheelZoomModifier()
-                    {
-                        IsEnabled = true,
-                        ActionType = SciChart.Charting.ActionType.Zoom,
-                        XyDirection = SciChart.Charting.XyDirection.XYDirection
-                    },
-                    new SciChart.Charting.ChartModifiers.DataPointSelectionModifier()
-                    {
-                        IsEnabled = true
-                    }
-                );
+                   new SciChart.Charting.ChartModifiers.DataPointSelectionModifier()
+                   {
+                       IsEnabled = true
+                   },
+                   new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier()
+                   {
+                       IsEnabled = false
+                   },
+                   new SciChart.Charting.ChartModifiers.ZoomExtentsModifier()
+                   {
+                       IsEnabled = false
+                   },
+                   new SciChart.Charting.ChartModifiers.ZoomPanModifier()
+                   {
+                       IsEnabled = true,
+                       ExecuteOn = SciChart.Charting.ChartModifiers.ExecuteOn.MouseRightButton,
+                       ClipModeX = SciChart.Charting.ClipMode.None
+                   },
+                   new SciChart.Charting.ChartModifiers.MouseWheelZoomModifier()
+                   {
+                       IsEnabled = true,
+                       ActionType = SciChart.Charting.ActionType.Zoom,
+                       XyDirection = SciChart.Charting.XyDirection.XYDirection
+                   }
+               );
 
 
                 _timer.Stop();
                 _created = true;
                 return _created;
             }
+
+            /// <summary>
+            /// DEBUG
+            /// </summary>
+            ~ScatterVisualization()
+            {
+                Console.WriteLine("DEBUG - DTOR: ScatterVisualization");
+            }
+
         }
     }
 }

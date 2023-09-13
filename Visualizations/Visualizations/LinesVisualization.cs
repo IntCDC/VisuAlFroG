@@ -9,6 +9,7 @@ using Visualizations.Data;
 using Core.GUI;
 using Core.Utilities;
 using System;
+using SciChart.Charting.ChartModifiers;
 
 
 
@@ -30,14 +31,6 @@ namespace Visualizations
 
             /* ------------------------------------------------------------------*/
             // public functions
-
-            /// <summary>
-            /// DEBUG
-            /// </summary>
-            ~LinesVisualization()
-            {
-                Console.WriteLine("DEBUG - DTOR: LinesVisualization");
-            }
 
             public override bool ReCreate()
             {
@@ -136,6 +129,10 @@ namespace Visualizations
 
                 // Modifiers ---------------------------------------
                 Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
+                    new SciChart.Charting.ChartModifiers.DataPointSelectionModifier()
+                    {
+                        IsEnabled = true
+                    },
                     new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier()
                     {
                         IsEnabled = false
@@ -155,10 +152,6 @@ namespace Visualizations
                         IsEnabled = true,
                         ActionType = SciChart.Charting.ActionType.Zoom,
                         XyDirection = SciChart.Charting.XyDirection.XYDirection
-                    },
-                    new SciChart.Charting.ChartModifiers.DataPointSelectionModifier()
-                    {
-                        IsEnabled = true,
                     }
                 );
 
@@ -166,6 +159,14 @@ namespace Visualizations
                 _timer.Stop();
                 _created = true;
                 return _created;
+            }
+
+            /// <summary>
+            /// DEBUG
+            /// </summary>
+            ~LinesVisualization()
+            {
+                Console.WriteLine("DEBUG - DTOR: LinesVisualization");
             }
         }
     }

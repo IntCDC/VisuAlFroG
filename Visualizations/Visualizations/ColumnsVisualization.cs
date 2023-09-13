@@ -33,14 +33,6 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            /// <summary>
-            /// DEBUG
-            /// </summary>
-            ~ColumnsVisualization()
-            {
-                Console.WriteLine("DEBUG - DTOR: ColumnsVisualization");
-            }
-
             public override bool ReCreate()
             {
                 if (!base.ReCreate())
@@ -137,6 +129,10 @@ namespace Visualizations
 
                 // Modifiers ---------------------------------------
                 Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
+                    new SciChart.Charting.ChartModifiers.DataPointSelectionModifier()
+                    {
+                        IsEnabled = true
+                    },
                     new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier()
                     {
                         IsEnabled = false
@@ -156,10 +152,6 @@ namespace Visualizations
                         IsEnabled = true,
                         ActionType = SciChart.Charting.ActionType.Zoom,
                         XyDirection = SciChart.Charting.XyDirection.XYDirection
-                    },
-                    new SciChart.Charting.ChartModifiers.DataPointSelectionModifier()
-                    {
-                        IsEnabled = true
                     }
                 );
 
@@ -167,6 +159,14 @@ namespace Visualizations
                 _timer.Stop();
                 _created = true;
                 return _created;
+            }
+
+            /// <summary>
+            /// DEBUG
+            /// </summary>
+            ~ColumnsVisualization()
+            {
+                Console.WriteLine("DEBUG - DTOR: ColumnsVisualization");
             }
         }
     }

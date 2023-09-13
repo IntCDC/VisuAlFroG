@@ -59,17 +59,6 @@ namespace Frontend
             }
 
             /// <summary>
-            /// Dtor.
-            /// </summary>
-            ~MainWindow()
-            {
-                _configurationservice.Terminate();
-                _basemanager.Terminate();
-                _winmanager.Terminate();
-                _menubar.Terminate();
-            }
-
-            /// <summary>
             /// Callback to trigger reloading the interface (= Grasshopper).
             /// </summary>
             /// <param name="reload_callback">Reload callback provided by the interface.</param>

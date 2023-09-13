@@ -158,9 +158,16 @@ namespace Visualizations
 
 
                 // Notify visualizations via registered update callbacks
-                foreach (var updated_callback in _updated_callbacks)
+                if (_updated_callbacks != null)
                 {
-                    updated_callback(true);
+                    foreach (var updated_callback in _updated_callbacks)
+                    {
+                        updated_callback(true);
+                    }
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "callback list for registered update callbacks");
                 }
 
                 _timer.Stop();
@@ -180,6 +187,11 @@ namespace Visualizations
             /// </summary>
             public void RegisterUpdateCallback(UpdateCallback_Delegate update_callback)
             {
+                if (_updated_callbacks == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "callback list for registered update callbacks");
+                    return;
+                }
                 if (_updated_callbacks.Contains(update_callback))
                 {
                     Log.Default.Msg(Log.Level.Debug, "Callback for updated data already registered");
@@ -193,16 +205,18 @@ namespace Visualizations
             /// </summary>
             public void UnregisterUpdateCallback(UpdateCallback_Delegate update_callback)
             {
-                /// XXX Required since DataManager might be deleted before VisualizationsManager
-                if (_updated_callbacks != null)
+                if (_updated_callbacks == null)
                 {
-                    if (_updated_callbacks.Contains(update_callback))
-                    {
-                        _updated_callbacks.Remove(update_callback);
-                        return;
-                    }
-                    Log.Default.Msg(Log.Level.Debug, "Callback for updated data already removed");
+                    /// XXX Throws error when called during shutdown ...
+                    // Log.Default.Msg(Log.Level.Error, "callback list for registered update callbacks");
+                    return;
                 }
+                if (_updated_callbacks.Contains(update_callback))
+                {
+                    _updated_callbacks.Remove(update_callback);
+                    return;
+                }
+                Log.Default.Msg(Log.Level.Debug, "Callback for updated data already removed");
             }
 
             /// <summary>
@@ -279,6 +293,7 @@ namespace Visualizations
 
             /// <summary>
             /// Callback provided for getting notified on changed meta data 
+            /// !!! This function is called for every single change !!!
             /// </summary>
             /// <param name="sender">The sender object.</param>
             /// <param name="e">The property changed event arguments.</param>
@@ -292,22 +307,66 @@ namespace Visualizations
                 }
                 int index = sender_selection.Index;
 
-                // Use GenericDataStructure as reference ...
-                GenericDataStructure data = null;
-                GenericDataEntry entry = null;
                 try
                 {
-                    data = _data_library[typeof(GenericDataStructure)].Get as GenericDataStructure;
-                    entry = data.EntryAtIndex(index);
+                    // Use GenericDataStructure as reference
+                    var data = _data_library[typeof(GenericDataStructure)].Get as GenericDataStructure;
                     if (data == null)
                     {
                         Log.Default.Msg(Log.Level.Error, "Missing data");
                         return;
                     }
+
+                    var entry = data.EntryAtIndex(index);
                     if (entry == null)
                     {
                         Log.Default.Msg(Log.Level.Error, "Missing data entry");
                         return;
+                    }
+
+                    // Update meta data in all data series
+                    foreach (var pair in _data_library)
+                    {
+                        pair.Value.UpdateEntryAtIndex(entry);
+                    }
+
+                    // Notify visualizations via registered update callbacks
+                    if (_updated_callbacks != null)
+                    {
+                        foreach (var updated_callback in _updated_callbacks)
+                        {
+                            updated_callback(false);
+                        }
+                    }
+                    else
+                    {
+                        Log.Default.Msg(Log.Level.Error, "Missing callback list for registered update callbacks ");
+                    }
+
+                    // Send changed output data to interface
+                    if (_outputdata_callback != null)
+                    {
+                        /// TODO XXX Call only once per selection
+
+                        var metadata_list = data.ListMetaData();
+
+                        var out_data = new GenericDataStructure();
+                        foreach (var meta_data in metadata_list)
+                        {
+                            if (meta_data.IsSelected)
+                            {
+                                var metadata_entry = new GenericDataEntry();
+                                metadata_entry.AddValue(meta_data.IsSelected);
+                                metadata_entry.AddValue(meta_data.Index);
+                                out_data.AddEntry(metadata_entry);
+                            }
+                        }
+                        _outputdata_callback(ref out_data);
+                    }
+                    else
+                    {
+                        /// XXX Silently continue in detached mode...
+                        // Log.Default.Msg(Log.Level.Warn, "Missing callback to propagate updated output data.");
                     }
                 }
                 catch (Exception exc)
@@ -315,40 +374,6 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Error, exc.Message);
                     return;
                 }
-                //...to update meta data:
-                foreach (var pair in _data_library)
-                {
-                    pair.Value.UpdateEntryAtIndex(entry);
-                }
-
-                // Notify visualizations via registered update callbacks
-                foreach (var updated_callback in _updated_callbacks)
-                {
-                    updated_callback(false);
-                }
-
-                // Send changed output data
-                /*
-                if (_outputdata_callback != null)
-                {
-                    var metadata_list = data.ListMetaData();
-
-                    var out_data = new GenericDataStructure();
-                    foreach (var meta_data in metadata_list)
-                    {
-                        var metadata_entry = new GenericDataEntry();
-                        metadata_entry.AddValue(meta_data.IsSelected);
-                        metadata_entry.AddValue(meta_data.Index);
-
-                        out_data.AddEntry(metadata_entry);
-                    }
-                    _outputdata_callback(ref out_data);
-                }
-                else
-                {
-                    Log.Default.Msg(Log.Level.Warn, "Missing callback to propagate updated output data.");
-                }
-                */
             }
 
             /// <summary>

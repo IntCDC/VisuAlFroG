@@ -33,14 +33,6 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            /// <summary>
-            /// DEBUG
-            /// </summary>
-            ~ParallelCoordinatesVisualization()
-            {
-                Console.WriteLine("DEBUG - DTOR: ParallelCoordinatesVisualization");
-            }
-
             public override bool ReCreate()
             {
                 if (!base.ReCreate())
@@ -130,6 +122,7 @@ namespace Visualizations
                 reorder_modifier.AxesReordered += parallelaxisreordermodifier_axesreordered;
 
                 Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
+                    reorder_modifier,
                     new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier()
                     {
                         IsEnabled = false
@@ -149,14 +142,21 @@ namespace Visualizations
                         IsEnabled = true,
                         ActionType = SciChart.Charting.ActionType.Zoom,
                         XyDirection = SciChart.Charting.XyDirection.XYDirection
-                    },
-                    reorder_modifier
+                    }                   
                 );
 
 
                 _timer.Stop();
                 _created = true;
                 return _created;
+            }
+
+            /// <summary>
+            /// DEBUG
+            /// </summary>
+            ~ParallelCoordinatesVisualization()
+            {
+                Console.WriteLine("DEBUG - DTOR: ParallelCoordinatesVisualization");
             }
 
 

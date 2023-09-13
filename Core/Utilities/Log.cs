@@ -131,6 +131,7 @@ namespace Core
                 {
                     listener(listener_messages);
                 }
+
                 Console.WriteLine(message);
 #if DEBUG
 #else

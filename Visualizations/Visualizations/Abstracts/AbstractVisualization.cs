@@ -148,7 +148,10 @@ namespace Visualizations
             {
                 if (!_attached)
                 {
-                    _content_child.Children.Clear();
+                    if (_content_child != null)
+                    {
+                        _content_child.Children.Clear();
+                    }
                     _attached = false;
                 }
                 return true;

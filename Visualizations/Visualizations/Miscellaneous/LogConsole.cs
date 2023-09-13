@@ -37,14 +37,6 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            /// <summary>
-            /// DEBUG
-            /// </summary>
-            ~LogConsole()
-            {
-                Console.WriteLine("DEBUG - DTOR: LogConsole");
-            }
-
             public override bool Initialize()
             {
                 var init = base.Initialize();
@@ -118,9 +110,28 @@ namespace Visualizations
                     }
                     var run = new Run(msg.message + Environment.NewLine);
                     run.Foreground = font_color;
-                    Content.Inlines.Add(run);
-                    ScrollToBottom();
+
+                    try
+                    {
+                        /// XXX Throws System.InvalidOperationException 
+                        /// The calling thread cannot access this object because a different thread owns it
+                        /// Occurs during shutdown when there are
+                        Content.Inlines.Add(run);
+                        ScrollToBottom();
+                    }
+                    catch (Exception exc)
+                    {
+                        Console.WriteLine(exc.Message);
+                    }
                 }
+            }
+
+            /// <summary>
+            /// DEBUG
+            /// </summary>
+            ~LogConsole()
+            {
+                Console.WriteLine("DEBUG - DTOR: LogConsole");
             }
 
 

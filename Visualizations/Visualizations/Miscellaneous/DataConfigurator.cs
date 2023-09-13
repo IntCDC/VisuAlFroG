@@ -40,14 +40,6 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            /// <summary>
-            /// DEBUG
-            /// </summary>
-            ~DataConfigurator()
-            {
-                Console.WriteLine("DEBUG - DTOR: DataConfigurator");
-            }
-
             public override bool ReCreate()
             {
                 if (!_initialized)
@@ -125,6 +117,13 @@ namespace Visualizations
                 return true;
             }
 
+            /// <summary>
+            /// DEBUG
+            /// </summary>
+            ~DataConfigurator()
+            {
+                Console.WriteLine("DEBUG - DTOR: DataConfigurator");
+            }
 
             /* ------------------------------------------------------------------*/
             // private functions

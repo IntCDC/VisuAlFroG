@@ -41,7 +41,6 @@ namespace Interface
             {
                 _runtimemessages = new RuntimeMessages(this);
                 _timer = new TimeBenchmark();
-                _input_data = new GH_Structure<IGH_Goo>();
                 _exec_count = 0;
             }
 
@@ -97,23 +96,22 @@ namespace Interface
                 else
                 {
                     // Read input data
-                    var new_input_data = new GH_Structure<IGH_Goo>();
-                    if (!DataAccess.GetDataTree(0, out _input_data))
+                    var input_data = new GH_Structure<IGH_Goo>();
+                    if (!DataAccess.GetDataTree(0, out input_data))
                     {
-                        _runtimemessages.Add(Log.Level.Error, "Missing input data");
+                        _runtimemessages.Add(Log.Level.Error, "Unable to read input data");
                         return;
                     }
-                    _runtimemessages.Add(Log.Level.Debug, "Data Count: " + _input_data.DataCount.ToString() + " | Type: " + _input_data.GetType().FullName);
-                    /// DEBUG Log.Default.Msg(Log.Level.Warn, input_data.DataDescription(true, true)); // -> Same as Grasshopper Panel output
+                    _runtimemessages.Add(Log.Level.Debug, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().FullName);
+                     /// DEBUG Log.Default.Msg(Log.Level.Warn, input_data.DataDescription(true, true)); // -> Same as Grasshopper Panel output
 
-                    /// TODO Is this working ???
-                    if (_input_data != new_input_data) {
-                    // Convert and pass on input data 
-                        var input_data_converted = DataConverter.ConvertFromGHStructure(ref _input_data);
+                    if (!input_data.IsEmpty) {
+                        // Convert and pass on input data 
+                        var input_data_converted = DataConverter.ConvertFromGHStructure(ref input_data);
                         _window.UpdateInputData(ref input_data_converted);
                     } else 
                     {
-                        _runtimemessages.Add(Log.Level.Info, "Skipping unchanged input data");
+                        _runtimemessages.Add(Log.Level.Info, "Skipping empty input data");
                     }
                 }
 
@@ -181,7 +179,6 @@ namespace Interface
             private MainWindow _window = null;
             private GH_Structure<IGH_Goo> _output_data = null;
             private RuntimeMessages _runtimemessages = null;
-            private GH_Structure<IGH_Goo> _input_data = null;
 
             /// DEBUG
             private int _exec_count = 0;
