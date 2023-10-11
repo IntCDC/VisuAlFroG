@@ -17,6 +17,8 @@ namespace Core
     namespace Utilities
     {
 
+
+
         public class Log
         {
 
@@ -38,6 +40,11 @@ namespace Core
             }
 
             public delegate void LogListener_Delegate(List<MessageData> msglist);
+
+            /* ------------------------------------------------------------------*/
+            // public properties
+
+            public bool DisableDebug { get; set; } = false;
 
 
             /* ------------------------------------------------------------------*/
@@ -82,8 +89,15 @@ namespace Core
 #if DEBUG
 #else
                 // Ignore debug messages on release build
-                if (level != Level.Debug) {
+                if (level == Level.Debug) {
+                    return;
+                }
 #endif
+                if ((level == Level.Debug) && DisableDebug)
+                {
+                    return;
+                }
+
                 var stacktrace = custom_stacktrace;
                 if (stacktrace == null)
                 {
@@ -133,10 +147,6 @@ namespace Core
                 }
 
                 Console.WriteLine(message);
-#if DEBUG
-#else
-                }
-#endif
             }
 
             /// <summary>
