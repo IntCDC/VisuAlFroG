@@ -1,4 +1,4 @@
-# Visual Analysis Framework for Grasshopper (VisFroG)
+# Visual Analytics Framework for Grasshopper (VisFroG)
 
 <!-- BADGES ------------------------------------------------------------------>
 
