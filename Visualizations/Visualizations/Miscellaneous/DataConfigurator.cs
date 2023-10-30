@@ -159,7 +159,7 @@ namespace Visualizations
                         tree_value.Foreground = ColorTheme.Brush_LightForeground;
 
                         tree_value.Header = value.ToString();
-                        tree_value.MouseDoubleClick += treevalue_clicked;
+                        tree_value.MouseDoubleClick += event_treevalue_clicked;
                         tree_value.Tag = entry.MetaData;
                         tree_values.Items.Add(tree_value);
                     }
@@ -214,7 +214,7 @@ namespace Visualizations
             /// </summary>
             /// <param name="sender"></param>
             /// <param name="e"></param>
-            private void treevalue_clicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
+            private void event_treevalue_clicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
             {
                 var treevalue = sender as TreeViewItem;
                 if (treevalue != null)

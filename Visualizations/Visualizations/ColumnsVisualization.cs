@@ -49,35 +49,11 @@ namespace Visualizations
                     default_style.TargetType = typeof(FastColumnRenderableSeries);
 
                     var new_color = ColorTheme.RandomColor();
-                    var pointmarker_default = new EllipsePointMarker()
-                    {
-                        Stroke = new_color,
-                        Fill = new_color,
-                        Width = 10.0,
-                        Height = 10.0
-                    };
-                    var pointmarker_selected = new EllipsePointMarker()
-                    {
-                        Stroke = ColorTheme.Color_StrokeSelected,
-                        StrokeThickness = 3,
-                        Fill = new_color,
-                        Width = 10.0,
-                        Height = 10.0
-                    };
 
                     Setter setter_stroke = new Setter();
                     setter_stroke.Property = BaseRenderableSeries.PaletteProviderProperty;
                     setter_stroke.Value = new StrokePalette();
                     default_style.Setters.Add(setter_stroke);
-
-                    /*var gradient = new LinearGradientBrush();
-                    gradient.StartPoint = new Point(0.0, 0.0);
-                    gradient.EndPoint = new Point(1.0, 1.0);
-                    gradient.GradientStops = new GradientStopCollection();
-                    var gs1 = new GradientStop() { Color = Colors.Blue, Offset = 0.2 };
-                    gradient.GradientStops.Add(gs1);
-                    var gs2 = new GradientStop() { Color = Colors.Green, Offset = 0.8 };
-                    gradient.GradientStops.Add(gs2);*/
 
                     Setter setter_gradient = new Setter();
                     setter_gradient.Property = FastColumnRenderableSeries.FillProperty;

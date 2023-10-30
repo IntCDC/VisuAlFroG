@@ -297,7 +297,7 @@ namespace Visualizations
             /// </summary>
             /// <param name="sender">The sender object.</param>
             /// <param name="e">The property changed event arguments.</param>
-            private void metadata_changed(object sender, PropertyChangedEventArgs e)
+            private void event_metadata_changed(object sender, PropertyChangedEventArgs e)
             {
                 var sender_selection = sender as MetaData;
                 if ((sender_selection == null) || (e.PropertyName != "IsSelected"))
@@ -387,7 +387,7 @@ namespace Visualizations
                 {
                     entry.MetaData.IsSelected = false;
                     entry.MetaData.Index = entry_index;
-                    entry.MetaData.PropertyChanged += metadata_changed;
+                    entry.MetaData.PropertyChanged += event_metadata_changed;
 
                     entry_index++;
                 }

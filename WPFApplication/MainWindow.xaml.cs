@@ -134,6 +134,9 @@ namespace Frontend
                 _timer.Start();
                 /// Cursor = Cursors.Wait;
 
+                // Explicitly disable debug messages
+                Log.Default.DisableDebug = true;
+
                 // Window setup
                 InitializeComponent();
                 base.Title = app_name;
@@ -147,17 +150,20 @@ namespace Frontend
                 _configurationservice = new ConfigurationService();
                 _basemanager = new Visualizations.BaseManager();
                 _winmanager = new WindowManager();
+                _colortheme = new ColorTheme();
                 _menubar = new MenuBar();
 
                 bool initialized = _configurationservice.Initialize();
                 initialized &= _basemanager.Initialize();
                 initialized &= _winmanager.Initialize(_basemanager.GetContentCallbacks());
-                initialized &= _menubar.Initialize(this.Close, _configurationservice.Save, _configurationservice.Load);
+                initialized &= _colortheme.Initialize();
+                initialized &= _menubar.Initialize(this.Close, _colortheme.SetColorStyle, _configurationservice.Save, _configurationservice.Load);
 
                 // Register additional callbacks
                 ///  Do not reorder since applying configuration might be order dependent!
                 _configurationservice.RegisterConfiguration(_basemanager.Name, _basemanager.CollectConfigurations, _basemanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_winmanager.Name, _winmanager.CollectConfigurations, _winmanager.ApplyConfigurations);
+                _configurationservice.RegisterConfiguration(_colortheme.Name, _colortheme.CollectConfigurations, _colortheme.ApplyConfigurations);
 
                 // Get callbacks
                 _inputdata_callback = _basemanager.GetInputDataCallback();
@@ -239,7 +245,7 @@ namespace Frontend
             /// </summary>
             /// <param name="sender">Sender object.</param>
             /// <param name="routedEventArgs">Routed event arguments.</param>
-            private void on_loaded(object sender, RoutedEventArgs routedEventArgs)
+            private void event_loaded(object sender, RoutedEventArgs routedEventArgs)
             {
                 // so far unused ...
             }
@@ -249,7 +255,7 @@ namespace Frontend
             /// </summary>
             /// <param name="sender">Sender object.</param>
             /// <param name="args">Event arguments.</param>
-            private void once_per_frame(object sender, EventArgs args)
+            private void event_once_per_frame(object sender, EventArgs args)
             {
                 // so far unused ...
             }
@@ -265,6 +271,7 @@ namespace Frontend
             private ConfigurationService _configurationservice = null;
             private Visualizations.BaseManager _basemanager = null;
             private WindowManager _winmanager = null;
+            private ColorTheme _colortheme = null;
             private MenuBar _menubar = null;
 
             private ReloadInterface_Delegate _reloadinterface_callback = null;

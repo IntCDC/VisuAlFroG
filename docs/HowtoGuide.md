@@ -35,7 +35,7 @@ Building and running *VisFroG* requires following software being installed befor
 > - Upon account creation, the free [trial version of SciChart](https://www.scichart.com/getting-started/scichart-wpf/) can be used for 30 days
 
 > **Warn**
-> The .NET SDK version of Rhino and Grasshopper should not be larger than the version of the desktop application.
+> - The .NET SDK version of Rhino and Grasshopper should not be larger than the version of the desktop application.
 
 
 <!-- ###################################################################### -->

@@ -58,9 +58,15 @@ namespace Visualizations
                 foreach (var data_series in data)
                 {
                     data_series.Name = UniqueID.Generate();
+                    data_series.SelectionChanged += event_selection_changed;
                     parent.RenderableSeries.Add(data_series);
                 }
                 return true;
+            }
+
+            private void event_selection_changed(object sender, EventArgs e)
+            {
+                throw new NotImplementedException();
             }
         }
     }

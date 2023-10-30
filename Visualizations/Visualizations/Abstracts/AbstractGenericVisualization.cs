@@ -55,7 +55,7 @@ namespace Visualizations
                 _content_scrollview.Background = ColorTheme.Brush_LightBackground;
                 _content_scrollview.Foreground = ColorTheme.Brush_DarkForeground;
 
-                _content_scrollview.PreviewMouseWheel += scrollviewer_previewmousewheel;
+                _content_scrollview.PreviewMouseWheel += event_scrollviewer_mousewheel;
 
                 AttachChildContent(_content_scrollview);
 
@@ -147,7 +147,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private functions
 
-            private void scrollviewer_previewmousewheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+            private void event_scrollviewer_mousewheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
             {
                 ScrollViewer scv = (ScrollViewer)sender;
                 scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);

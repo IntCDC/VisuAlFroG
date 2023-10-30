@@ -70,9 +70,8 @@ namespace Visualizations
 
                 var copy_option = new MenuItem();
                 copy_option.Header = "Copy to Clipboard";
-                copy_option.Click += copy_option_click;
+                copy_option.Click += event_option_click;
                 AddOption(copy_option);
-
 
                 _timer.Stop();
                 _created = true;
@@ -138,7 +137,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private functions
 
-            private void copy_option_click(object sender, RoutedEventArgs e)
+            private void event_option_click(object sender, RoutedEventArgs e)
             {
                 string complete_log = "";
                 foreach (var inline in Content.Inlines)

@@ -11,6 +11,9 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Core.Utilities;
 using System;
+using SciChart.Charting.Visuals.Axes;
+using System.Windows.Shapes;
+using System.Runtime.Remoting.Messaging;
 
 
 
@@ -57,10 +60,14 @@ namespace Visualizations
 
                 Content.Style = title_style;
 
-
                 // Label Style
                 var label_style = new System.Windows.Style();
                 label_style.TargetType = typeof(DefaultTickLabel);
+
+                Setter setter_fontcolor = new Setter();
+                setter_fontcolor.Property = DefaultTickLabel.ForegroundProperty;
+                setter_fontcolor.Value = ColorTheme.Brush_LightForeground;
+                label_style.Setters.Add(setter_fontcolor);
 
                 Setter setter_fontsize = new Setter();
                 setter_fontsize.Property = DefaultTickLabel.FontSizeProperty;
@@ -69,11 +76,10 @@ namespace Visualizations
 
                 Setter setter_fontweight = new Setter();
                 setter_fontweight.Property = DefaultTickLabel.FontWeightProperty;
-                setter_fontweight.Value = FontWeights.Bold;
+                setter_fontweight.Value = FontWeights.SemiBold;
                 label_style.Setters.Add(setter_fontweight);
 
                 Content.LabelStyle = label_style;
-
 
                 // Render Series Style
                 var render_style = new System.Windows.Style();
@@ -81,20 +87,29 @@ namespace Visualizations
 
                 Setter setter_strokethickness = new Setter();
                 setter_strokethickness.Property = BaseRenderableSeries.StrokeThicknessProperty;
-                setter_strokethickness.Value = 2;
+                setter_strokethickness.Value = 3;
                 render_style.Setters.Add(setter_strokethickness);
 
-                Setter setter_stroke = new Setter();
+                var setter_stroke = new Setter();
                 setter_stroke.Property = BaseRenderableSeries.StrokeProperty;
-                setter_stroke.Value = ColorTheme.Color_LightForeground;
+                setter_stroke.Value = ColorTheme.Color_StrokeDefault;
                 render_style.Setters.Add(setter_stroke);
+
+                Trigger trigger = new Trigger();
+                trigger.Property = BaseRenderableSeries.IsSelectedProperty;
+                trigger.Value = true;
+                Setter setter_trigger = new Setter();
+                setter_trigger.Property = BaseRenderableSeries.StrokeProperty;
+                setter_trigger.Value = ColorTheme.Color_StrokeSelected;
+                trigger.Setters.Add(setter_trigger);
+                render_style.Triggers.Add(trigger);
 
                 Content.RenderableSeriesStyle = render_style;
 
 
                 // Options --------------------------------------------
                 var clue_select = new MenuItem();
-                clue_select.Header = "[Left Mouse] Drag & Drop Axes";
+                clue_select.Header = "[Left Mouse] Select Series | Drag & Drop Axes";
                 clue_select.IsEnabled = false;
 
                 var clue_zoom = new MenuItem();
@@ -115,34 +130,42 @@ namespace Visualizations
 
 
                 // Modifiers ---------------------------------------
-                var reorder_modifier = new SciChart.Charting.ChartModifiers.ParallelAxisReorderModifier()
+                var modifier_reorder_axes = new SciChart.Charting.ChartModifiers.ParallelAxisReorderModifier()
                 {
                     IsEnabled = true
                 };
-                reorder_modifier.AxesReordered += parallelaxisreordermodifier_axesreordered;
+                modifier_reorder_axes.AxesReordered += event_axes_reordered;
+
+                var modifier_selection = new SciChart.Charting.ChartModifiers.SeriesSelectionModifier()
+                {
+                    IsEnabled = true
+                };
+                modifier_selection.SelectionChanged += event_selection_changed;
 
                 Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
-                    reorder_modifier,
-                    new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier()
-                    {
-                        IsEnabled = false
-                    },
-                    new SciChart.Charting.ChartModifiers.ZoomExtentsModifier()
-                    {
-                        IsEnabled = false
-                    },
+                    modifier_reorder_axes,
+                    modifier_selection,
                     new SciChart.Charting.ChartModifiers.ZoomPanModifier()
                     {
                         IsEnabled = true,
                         ExecuteOn = SciChart.Charting.ChartModifiers.ExecuteOn.MouseRightButton,
-                        ClipModeX = SciChart.Charting.ClipMode.None
+                        ClipModeX = SciChart.Charting.ClipMode.None,
                     },
                     new SciChart.Charting.ChartModifiers.MouseWheelZoomModifier()
                     {
                         IsEnabled = true,
                         ActionType = SciChart.Charting.ActionType.Zoom,
                         XyDirection = SciChart.Charting.XyDirection.XYDirection
-                    }                   
+                    },
+                    new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier()
+                    {
+                        IsEnabled = false,
+                        IsXAxisOnly = true
+                    },
+                    new SciChart.Charting.ChartModifiers.ZoomExtentsModifier()
+                    {
+                        IsEnabled = false
+                    }
                 );
 
 
@@ -163,11 +186,16 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private functions
 
-
-            private void parallelaxisreordermodifier_axesreordered(object sender, ParallelAxisReorderArgs e)
+            private void event_axes_reordered(object sender, ParallelAxisReorderArgs e)
             {
                 var pcp_source = Content.ParallelCoordinateDataSource as ParallelCoordinateDataSource<ExpandoObject>;
                 pcp_source.ReorderItems(e.OldIndex, e.NewIndex);
+            }
+
+            private void event_selection_changed(object sender, EventArgs e)
+            {
+                /// TODO
+                Log.Default.Msg(Log.Level.Info, "event_selection_changed...");
             }
         }
     }

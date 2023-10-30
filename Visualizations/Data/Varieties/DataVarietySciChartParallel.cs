@@ -9,6 +9,13 @@ using SciChart.Charting.Visuals.RenderableSeries;
 using Core.Utilities;
 using Visualizations.Varieties;
 using System.Dynamic;
+using System.Windows.Controls;
+using System.Windows;
+using SciChart.Charting.Visuals;
+using SciChart.Charting.Visuals.Axes;
+using System.Windows.Media;
+using System.Windows.Shapes;
+using Core.GUI;
 
 
 
@@ -89,17 +96,19 @@ namespace Visualizations
                 int index = 0;
                 foreach (var kvp in value_dict)
                 {
-                    string property_name = kvp.Key; 
-                    item_list[index] = new ParallelCoordinateDataItem<DataType, double>(p => 
-                        {   var p_dict = p as IDictionary<string, object>; 
-                            return (double)p_dict[property_name]; 
+                    string property_name = kvp.Key;
+                    item_list[index] = new ParallelCoordinateDataItem<DataType, double>(p =>
+                        {
+                            var p_dict = p as IDictionary<string, object>;
+                            return (double)p_dict[property_name];
                         })
                     {
-                        Title = kvp.Key
-                        //AxisStyle = defaultAxisStyle
+                        Title = kvp.Key,
+                        AxisStyle = axes_style()
                     };
                     index++;
-                    if (index >= item_count) {
+                    if (index >= item_count)
+                    {
                         break;
                     }
                 }
@@ -124,6 +133,11 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // private functions
 
+            /// <summary>
+            /// TODO
+            /// </summary>
+            /// <param name="branch"></param>
+            /// <param name="value_list"></param>
             private void convert_data(GenericDataStructure branch, ref List<DataType> value_list)
             {
                 // For each branch add all entries as one pcp value
@@ -136,7 +150,8 @@ namespace Visualizations
                     {
                         foreach (var value in entry.Values)
                         {
-                            data_entry_dict.Add(get_property_name(index), (double)value);
+                            /// TODO The property names are hard coded and should be replaced by names provided in the data set (e.g. branch name?)
+                            data_entry_dict.Add(generate_property_name(index), (double)value);
                         }
                         index++;
                     }
@@ -149,11 +164,74 @@ namespace Visualizations
                 }
             }
 
+            /// <summary>
+            /// TODO
+            /// </summary>
+            /// <returns></returns>
+            private Style axes_style()
+            {
+                var axis_style = new System.Windows.Style();
+                axis_style.TargetType = typeof(AxisBase);
 
-            /* ------------------------------------------------------------------*/
-            // private functions
+                Setter setter_boder = new Setter();
+                setter_boder.Property = AxisBase.BorderBrushProperty;
+                setter_boder.Value = ColorTheme.Brush_LightForeground;
+                axis_style.Setters.Add(setter_boder);
 
-            private string get_property_name(int index)
+                Setter setter_boder_thickness = new Setter();
+                setter_boder_thickness.Property = AxisBase.BorderThicknessProperty;
+                setter_boder_thickness.Value = new Thickness(1, 0, 0, 0);
+                axis_style.Setters.Add(setter_boder_thickness);
+
+                // Major Line
+                Setter setter_major_line = new Setter();
+                setter_major_line.Property = AxisBase.MajorTickLineStyleProperty;
+
+                var line_style = new System.Windows.Style();
+                line_style.TargetType = typeof(Line);
+
+                Setter setter_stroke = new Setter();
+                setter_stroke.Property = Line.StrokeProperty;
+                setter_stroke.Value = ColorTheme.Brush_LightForeground;
+                line_style.Setters.Add(setter_stroke);
+
+                Setter setter_x2 = new Setter();
+                setter_x2.Property = Line.X2Property;
+                setter_x2.Value = 9.0;
+                line_style.Setters.Add(setter_x2);
+
+                setter_major_line.Value = line_style;
+                axis_style.Setters.Add(setter_major_line);
+
+                // Minor Line
+                Setter setter_minor_line = new Setter();
+                setter_minor_line.Property = AxisBase.MinorTickLineStyleProperty;
+
+                line_style = new System.Windows.Style();
+                line_style.TargetType = typeof(Line);
+
+                setter_stroke = new Setter();
+                setter_stroke.Property = Line.StrokeProperty;
+                setter_stroke.Value = ColorTheme.Brush_LightForeground;
+                line_style.Setters.Add(setter_stroke);
+
+                setter_x2 = new Setter();
+                setter_x2.Property = Line.X2Property;
+                setter_x2.Value = 3.0;
+                line_style.Setters.Add(setter_x2);
+
+                setter_minor_line.Value = line_style;
+                axis_style.Setters.Add(setter_minor_line);
+
+                return axis_style;
+            }
+
+            /// <summary>
+            /// TODO
+            /// </summary>
+            /// <param name="index"></param>
+            /// <returns></returns>
+            private string generate_property_name(int index)
             {
                 return ("p" + index.ToString());
             }

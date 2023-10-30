@@ -78,10 +78,10 @@ namespace Core
                 _content.Children.Add(info_text);
 
                 // Drag and drop
-                _content.MouseMove += content_mousemove;
+                _content.MouseMove += event_content_mousemove;
                 _content.AllowDrop = true;
-                _content.DragOver += content_dragover;
-                _content.Drop += content_drop;
+                _content.DragOver += event_content_dragover;
+                _content.Drop += event_content_drop;
 
                 /// DEBUG background color
                  /*
@@ -164,7 +164,7 @@ namespace Core
                 ContextMenu contextmenu = new ContextMenu();
                 contextmenu.Style = ColorTheme.ContextMenuStyle();
                 // Create context menu when loaded for updated availability of content
-                contextmenu.Loaded += contextmenu_loaded;
+                contextmenu.Loaded += event_contextmenu_loaded;
                 _content.ContextMenu = contextmenu;
             }
 
@@ -173,7 +173,7 @@ namespace Core
             /// </summary>
             /// <param name="sender">The sender object.</param>
             /// <param name="e">The routed event arguments.</param>
-            private void contextmenu_loaded(object sender, RoutedEventArgs e)
+            private void event_contextmenu_loaded(object sender, RoutedEventArgs e)
             {
                 var contextmenu = sender as ContextMenu;
                 if (contextmenu == null)
@@ -188,13 +188,13 @@ namespace Core
                 item_horizontal_top.Style = ColorTheme.MenuItemStyle("align-top.png");
                 item_horizontal_top.Header = "Align Top";
                 item_horizontal_top.Name = _item_id_hori_top;
-                item_horizontal_top.Click += menuitem_click;
+                item_horizontal_top.Click += event_menuitem_click;
 
                 var item_horizontal_bottom = new MenuItem();
                 item_horizontal_bottom.Style = ColorTheme.MenuItemStyle("align-bottom.png");
                 item_horizontal_bottom.Header = "Align Bottom";
                 item_horizontal_bottom.Name = _item_id_hori_bottom;
-                item_horizontal_bottom.Click += menuitem_click;
+                item_horizontal_bottom.Click += event_menuitem_click;
 
                 var item_horizontal = new MenuItem();
                 item_horizontal.Style = ColorTheme.MenuItemStyle("split-horizontal.png");
@@ -208,13 +208,13 @@ namespace Core
                 item_vertical_left.Style = ColorTheme.MenuItemStyle("align-left.png");
                 item_vertical_left.Header = "Align Left";
                 item_vertical_left.Name = _item_id_vert_Left;
-                item_vertical_left.Click += menuitem_click;
+                item_vertical_left.Click += event_menuitem_click;
 
                 var item_vertical_right = new MenuItem();
                 item_vertical_right.Style = ColorTheme.MenuItemStyle("align-right.png");
                 item_vertical_right.Header = "Align Right";
                 item_vertical_right.Name = _item_id_vert_right;
-                item_vertical_right.Click += menuitem_click;
+                item_vertical_right.Click += event_menuitem_click;
 
                 var item_vertical = new MenuItem();
                 item_vertical.Style = ColorTheme.MenuItemStyle("split-vertical.png");
@@ -228,7 +228,7 @@ namespace Core
                 item_delete.Style = ColorTheme.MenuItemStyle("delete-window.png");
                 item_delete.Header = "Delete Window";
                 item_delete.Name = _item_id_window_delete;
-                item_delete.Click += menuitem_click;
+                item_delete.Click += event_menuitem_click;
                 item_delete.IsEnabled = (!_parent_is_root);
                 contextmenu.Items.Add(item_delete);
 
@@ -259,7 +259,7 @@ namespace Core
                         content_item.Style = ColorTheme.MenuItemStyle("single-instance.png");
                         content_item.ToolTip = "Only single instance";
                     }
-                    content_item.Click += menuitem_click;
+                    content_item.Click += event_menuitem_click;
                     item_content_add.Items.Add(content_item);
                 }
                 if (item_content_add.Items.IsEmpty)
@@ -272,7 +272,7 @@ namespace Core
                 item_content_delete.Style = ColorTheme.MenuItemStyle("delete-content.png");
                 item_content_delete.Header = "Delete Content";
                 item_content_delete.Name = _item_id_delete_content;
-                item_content_delete.Click += menuitem_click;
+                item_content_delete.Click += event_menuitem_click;
                 if (_attached_content == null)
                 {
                     item_content_delete.IsEnabled = false;
@@ -291,7 +291,7 @@ namespace Core
             /// </summary>
             /// <param name="sender">The sender object.</param>
             /// <param name="e">The routed event arguments.</param>
-            private void menuitem_click(object sender, RoutedEventArgs e)
+            private void event_menuitem_click(object sender, RoutedEventArgs e)
             {
                 var sender_content = sender as MenuItem;
                 if (sender_content == null)
@@ -366,7 +366,7 @@ namespace Core
             /// </summary>
             /// <param name="sender">The sender object.</param>
             /// <param name="e">The mouse event arguments.</param>
-            private void content_mousemove(object sender, MouseEventArgs e)
+            private void event_content_mousemove(object sender, MouseEventArgs e)
             {
                 var sender_grid = sender as Grid;
                 if (sender_grid == null)
@@ -387,7 +387,7 @@ namespace Core
             /// </summary>
             /// <param name="sender">The sender object.</param>
             /// <param name="e">The drag event arguments.</param>
-            private void content_dragover(object sender, DragEventArgs e)
+            private void event_content_dragover(object sender, DragEventArgs e)
             {
                 var sender_grid = sender as Grid;
                 if (sender_grid == null)
@@ -412,7 +412,7 @@ namespace Core
             /// </summary>
             /// <param name="sender">The sender object.</param>
             /// <param name="e">The drag event arguments.</param>
-            private void content_drop(object sender, DragEventArgs e)
+            private void event_content_drop(object sender, DragEventArgs e)
             {
                 var sender_grid = sender as Grid;
                 if (sender_grid == null)
