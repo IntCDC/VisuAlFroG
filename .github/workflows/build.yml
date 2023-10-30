@@ -23,7 +23,7 @@ jobs:
       with:
         nuget-api-key: ${{ secrets.NuGetAPIKey }}
         nuget-version: '5.x'
-    - run: nuget restore VisFroG.sln
+    - run: nuget restore VisuAlFroG.sln
 
     - name: Build app for release
-      run: msbuild VisFroG.sln -target:rebuild -verbosity:normal -property:Configuration=Release 
+      run: msbuild VisuAlFroG.sln -target:rebuild -verbosity:normal -property:Configuration=Release 
