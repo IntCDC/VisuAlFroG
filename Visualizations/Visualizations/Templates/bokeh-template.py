@@ -1,6 +1,6 @@
 
 import locale
-# Required to prevent error message 'Python.Runtime.PythonException: 'unknown locale: en-US'' when starting VisFrog via Grasshopper
+# Required to prevent error message 'Python.Runtime.PythonException: 'unknown locale: en-US'' when starting VisuAlFroG via Grasshopper
 locale.setlocale(locale.LC_ALL, "C")
 
 import os

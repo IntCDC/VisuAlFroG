@@ -15,14 +15,14 @@ using Visualizations.Data;
 
 
 /*
- * VisFrog Grasshopper Component
+ * VisuAlFroG Grasshopper Component
  * 
  */
 namespace Interface
 {
     namespace GrasshopperComponent
     {
-        public class VisFroG : GH_Component
+        public class VisuAlFroG : GH_Component
         {
             /* ------------------------------------------------------------------*/
             // public functions
@@ -34,10 +34,10 @@ namespace Interface
             /// Subcategory the panel. If you use non-existing tab or panel names, 
             /// new tabs/panels will automatically be created.
             /// </summary>
-            public VisFroG()
-              : base("Visualization Framework for Grasshopper", "VisFroG",
-                "Visualization framework providing the concept of visual analytics pipeline within grasshopper.",
-                "Visual Analysis", "VisFroG")
+            public VisuAlFroG()
+              : base("Visual Analytics Framework for Grasshopper", "VisuAlFroG",
+                "Visual analytics framework providing the concept of visual analytics pipeline within grasshopper.",
+                "Visual Analytics", "VisuAlFroG")
             {
                 _runtimemessages = new RuntimeMessages(this);
                 _timer = new TimeBenchmark();

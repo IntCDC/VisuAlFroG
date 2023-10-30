@@ -125,7 +125,7 @@ namespace Core
                 _content.Items.Add(item_info);
 
                 var hyper_link = new Hyperlink();
-                hyper_link.NavigateUri = new Uri("https://github.com/IntCDC/VisFroG");
+                hyper_link.NavigateUri = new Uri("https://github.com/IntCDC/VisuAlFroG");
                 hyper_link.RequestNavigate += event_hyperlink_requestnavigate;
                 hyper_link.Inlines.Add("GitHub Repository");
                 hyper_link.Style = ColorTheme.HyperlinkStyle();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 
 
@@ -28,7 +28,7 @@ namespace Core
 
             /// <summary>
             ///  [STATIC] Returns the location from which the application is executed            
-            ///  E.g. location of the GHA plug-in: "C:\Users\...\AppData\Roaming\Grasshopper\Libraries\VisFrog"
+            ///  E.g. location of the GHA plug-in: "C:\Users\...\AppData\Roaming\Grasshopper\Libraries\VisuAlFroG"
             /// </summary>
             /// <returns>The absolute path as string.</returns>
             public static string Path()
@@ -46,7 +46,7 @@ namespace Core
             public static string FileName(string body, string extension)
             {
                 // Append unified prefix
-                const string prefix = "visfrog_";
+                const string prefix = "visualfrog_";
                 return prefix + body + "." + extension; ;
             }
 

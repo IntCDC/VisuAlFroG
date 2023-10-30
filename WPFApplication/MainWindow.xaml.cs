@@ -40,7 +40,7 @@ namespace Frontend
             /// <summary>
             /// Ctor. Used for detached execution.
             /// </summary>
-            public MainWindow() : this("[detached] Visualization Framework for Grasshopper (VisFroG)", true) { }
+            public MainWindow() : this("[detached] Visual Analytics Framework for Grasshopper (VisuAlFroG)", true) { }
 
             /// <summary>
             /// Ctor.
