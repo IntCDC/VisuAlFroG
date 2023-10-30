@@ -1,4 +1,4 @@
-# Visualization Framework for Grasshopper (VisFroG)
+# Visual Analysis Framework for Grasshopper (VisFroG)
 
 <!-- BADGES ------------------------------------------------------------------>
 
@@ -13,7 +13,7 @@
 
 ## Description
 
-*VisFroG* is a visualization framework that provides various visualization types to support visual analytics for the algorithmic modelling software [Grasshopper](https://www.grasshopper3d.com/). 
+*VisFroG* is a framework that provides various visualizations to support visual analytics for the algorithmic modelling software [Grasshopper](https://www.grasshopper3d.com/). 
 Grasshopper for its part is a plug-in of the commercial 3D computer graphics and computer-aided design application software [Rhinoceros](https://www.rhino3d.com/).
 The basic architecture of *VisFroG* consists of a core framework providing general functionality and a module-based extension mechanism that easily allows to integrate new visualizations.
 
