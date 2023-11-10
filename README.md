@@ -1,4 +1,4 @@
- # ![logo64](https://github.com/IntCDC/VisuAlFroG/assets/30432154/b5d66ebb-b3ef-4e84-9627-bed319db06a5) Visual Analytics Framework for Grasshopper (VisuAlFroG)
+ # <img src="https://github.com/IntCDC/VisuAlFroG/assets/30432154/e8baed3d-1409-4be4-ada0-9702a55a06d7" width="35"> Visual Analytics Framework for Grasshopper - VisuAlFroG
 
 <!-- BADGES ------------------------------------------------------------------>
 
