@@ -24,6 +24,7 @@ Currently, it is planned to offer the integration of visualizations that can be 
 - [d3.js](https://d3js.org/)
 - [Bokeh](https://bokeh.org/)
 
+![visualfrog](https://github.com/IntCDC/VisuAlFroG/assets/30432154/75f2307c-752b-46ff-9b3d-ea3fe6984650)
 
 ## Documentation
 
