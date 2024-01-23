@@ -7,6 +7,7 @@ using Core.Abstracts;
 using System.Windows;
 using Core.GUI;
 using Visualizations.Data;
+using System.Windows.Documents;
 
 
 
@@ -226,7 +227,7 @@ namespace Visualizations
             /// </summary>
             protected void AddOption(MenuItem option)
             {
-                option.Style = ColorTheme.MenuItemStyle();
+                option.Style = ColorTheme.MenuItemIconStyle();
                 _options_menu.Items.Add(option);
                 _options_menu.IsEnabled = true;
             }
@@ -257,7 +258,8 @@ namespace Visualizations
             private Grid create_menu()
             {
                 var menu_grid = new Grid();
-                menu_grid.Style = ColorTheme.ContentMenuStyle();
+                menu_grid.Height = 20.0;
+                menu_grid.SetResourceReference(Grid.BackgroundProperty, "Brush_MenuBarBackground");
 
                 var column_label = new ColumnDefinition();
                 column_label.Width = new GridLength(0.0, GridUnitType.Auto);
@@ -270,12 +272,12 @@ namespace Visualizations
                 Grid.SetColumn(text, 0);
                 menu_grid.Children.Add(text);
                 text.Text = Name;
-                text.Style = ColorTheme.CaptionStyle();
+                text.Style = ColorTheme.ContentMenuCaptionStyle();
 
                 var menu = new Menu();
                 Grid.SetColumn(menu, 1);
                 menu_grid.Children.Add(menu);
-                menu.Style = ColorTheme.MenuStyle();
+                menu.Style = ColorTheme.MenuBarStyle();
 
                 _options_menu = new MenuItem();
                 _options_menu.Header = "Options";

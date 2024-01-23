@@ -175,7 +175,7 @@ namespace Visualizations
 
                 Setter setter_boder = new Setter();
                 setter_boder.Property = AxisBase.BorderBrushProperty;
-                setter_boder.Value = ColorTheme.Brush_LightForeground;
+                setter_boder.Value = new DynamicResourceExtension("Brush_Foreground");
                 axis_style.Setters.Add(setter_boder);
 
                 Setter setter_boder_thickness = new Setter();
@@ -192,7 +192,7 @@ namespace Visualizations
 
                 Setter setter_stroke = new Setter();
                 setter_stroke.Property = Line.StrokeProperty;
-                setter_stroke.Value = ColorTheme.Brush_LightForeground;
+                setter_stroke.Value = new DynamicResourceExtension("Brush_Foreground");
                 line_style.Setters.Add(setter_stroke);
 
                 Setter setter_x2 = new Setter();
@@ -212,7 +212,7 @@ namespace Visualizations
 
                 setter_stroke = new Setter();
                 setter_stroke.Property = Line.StrokeProperty;
-                setter_stroke.Value = ColorTheme.Brush_LightForeground;
+                setter_stroke.Value = new DynamicResourceExtension("Brush_Foreground");
                 line_style.Setters.Add(setter_stroke);
 
                 setter_x2 = new Setter();

@@ -10,6 +10,7 @@ using Core.Abstracts;
 using System.Text;
 using System.Runtime.Remoting.Contexts;
 using Core.GUI;
+using System.Collections.Generic;
 
 
 
@@ -30,6 +31,11 @@ namespace Core
             /// Callback provided by the main WPF application on closing. 
             /// </summary>
             public delegate void WindowClose_Delegate();
+
+            /// <summary>
+            /// Callback to mark color theme menu item
+            /// </summary>
+            public delegate void MarkColorTheme_Delegate(ColorTheme.PredefinedThemes color_theme);
 
 
             /* ------------------------------------------------------------------*/
@@ -54,7 +60,7 @@ namespace Core
                 _theme_callback = theme_callback;
 
                 _content = new Menu();
-                _content.Style = ColorTheme.MenuStyle();
+                _content.Style = ColorTheme.MenuBarStyle();
 
                 _timer.Stop();
                 _initialized = true;
@@ -74,50 +80,55 @@ namespace Core
                 item_file.Header = "File";
                 _content.Items.Add(item_file);
 
-                var item_close = new MenuItem();
-                item_close.Header = "Close";
-                item_close.Name = _item_id_close;
-                item_close.Click += event_menuitem_click;
-                item_close.Style = ColorTheme.MenuItemStyle();
-                item_file.Items.Add(item_close);
-
                 var item_configurations = new MenuItem();
                 item_configurations.Header = "Configuration";
-                item_configurations.Style = ColorTheme.MenuItemStyle();
+                item_configurations.Style = ColorTheme.MenuItemIconStyle();
                 item_file.Items.Add(item_configurations);
 
                 var item_save = new MenuItem();
                 item_save.Header = "Save";
                 item_save.Name = _item_id_save;
                 item_save.Click += event_menuitem_click;
-                item_save.Style = ColorTheme.MenuItemStyle();
+                item_save.Style = ColorTheme.MenuItemIconStyle();
                 item_configurations.Items.Add(item_save);
 
                 var item_load = new MenuItem();
                 item_load.Header = "Load";
                 item_load.Name = _item_id_load;
                 item_load.Click += event_menuitem_click;
-                item_load.Style = ColorTheme.MenuItemStyle();
+                item_load.Style = ColorTheme.MenuItemIconStyle();
                 item_configurations.Items.Add(item_load);
+
+                item_file.Items.Add(new Separator());
+
+                var item_close = new MenuItem();
+                item_close.Header = "Exit";
+                item_close.Name = _item_id_close;
+                item_close.Click += event_menuitem_click;
+                item_close.Style = ColorTheme.MenuItemIconStyle();
+                item_file.Items.Add(item_close);
 
                 // ----------------------------------------
                 var item_style = new MenuItem();
                 item_style.Header = "Style";
                 _content.Items.Add(item_style);
 
-                var item_theme1 = new MenuItem();
-                item_theme1.Header = "Light Blue";
-                item_theme1.Name = _item_id_theme1;
-                item_theme1.Click += event_menuitem_click;
-                item_theme1.Style = ColorTheme.MenuItemStyle();
-                item_style.Items.Add(item_theme1);
+                var theme_values = Enum.GetValues(typeof(ColorTheme.PredefinedThemes));
+                foreach (ColorTheme.PredefinedThemes theme in theme_values)
+                {
+                    var item_theme = new MenuItem();
+                    item_theme.Header = Enum.GetName(theme.GetType(), theme);
+                    item_theme.Name = "item_theme_" + UniqueID.Generate();
+                    item_theme.Click += event_menuitem_click;
+                    item_theme.IsCheckable = true;
+                    item_theme.Style = ColorTheme.MenuItemIconStyle();
+                    item_style.Items.Add(item_theme);
 
-                var item_theme2 = new MenuItem();
-                item_theme2.Header = "Dark Contrast";
-                item_theme2.Name = _item_id_theme2;
-                item_theme2.Click += event_menuitem_click;
-                item_theme2.Style = ColorTheme.MenuItemStyle();
-                item_style.Items.Add(item_theme2);
+                    _item_themes.Add(item_theme.Name, new Tuple<MenuItem, ColorTheme.PredefinedThemes>(item_theme, theme));
+                }
+                // Add manually since default theme in ColorTheme is set in Initialize when this menu is not yet available
+                MarkColorTheme(ColorTheme.DefaultColorTheme);
+
 
                 // ----------------------------------------
                 var item_info = new MenuItem();
@@ -131,7 +142,7 @@ namespace Core
                 hyper_link.Style = ColorTheme.HyperlinkStyle();
 
                 var item_github_link = new MenuItem();
-                item_github_link.Style = ColorTheme.MenuItemStyle("github.png");
+                item_github_link.Style = ColorTheme.MenuItemIconStyle("github.png");
                 item_github_link.Header = hyper_link;
                 item_info.Items.Add(item_github_link);
 
@@ -151,6 +162,18 @@ namespace Core
                     _initialized = false;
                 }
                 return true;
+            }
+
+            public void MarkColorTheme(ColorTheme.PredefinedThemes color_theme) 
+            {
+                foreach (var item_theme in _item_themes)
+                {
+                    item_theme.Value.Item1.IsChecked = false;
+                    if (color_theme == item_theme.Value.Item2)
+                    {
+                        item_theme.Value.Item1.IsChecked = true;
+                    }
+                }
             }
 
 
@@ -192,20 +215,20 @@ namespace Core
                         _load_callback();
                     }
                 }
-                else if (content_id == _item_id_theme1)
+                else
                 {
-                    if (_theme_callback != null)
+                    // color themes
+                    foreach (var item_theme in _item_themes)
                     {
-                        _theme_callback(ColorTheme.ColorStyle.LightBlue);
+                        item_theme.Value.Item1.IsChecked = false;
+                        if ((content_id == item_theme.Key) && (_theme_callback != null))
+                        {
+                            _theme_callback(item_theme.Value.Item2);
+                            item_theme.Value.Item1.IsChecked = true;
+                        }
                     }
                 }
-                else if (content_id == _item_id_theme2)
-                {
-                    if (_theme_callback != null)
-                    {
-                        _theme_callback(ColorTheme.ColorStyle.DarkContrast);
-                    }
-                }
+
             }
 
             /// <summary>
@@ -234,8 +257,7 @@ namespace Core
             private readonly string _item_id_save = "item_save_" + UniqueID.Generate();
             private readonly string _item_id_load = "item_load_" + UniqueID.Generate();
 
-            private readonly string _item_id_theme1 = "item_theme1_" + UniqueID.Generate();
-            private readonly string _item_id_theme2 = "item_theme2_" + UniqueID.Generate();
+            private Dictionary<string, Tuple<MenuItem, ColorTheme.PredefinedThemes>> _item_themes = new Dictionary<string, Tuple<MenuItem, ColorTheme.PredefinedThemes>>();
         }
     }
 }

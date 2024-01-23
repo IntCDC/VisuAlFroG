@@ -1,0 +1,30 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Color x:Key="Color_StrokeSelected">Red</Color>
+	<Color x:Key="Color_StrokeDefault">LightYellow</Color>
+	<SolidColorBrush x:Key="Brush_StrokeSelected" Color="Red"/>
+	<SolidColorBrush x:Key="Brush_StrokeDefault" Color="LightYellow"/>
+
+	<Color x:Key="Color_Foreground">DarkSlateGray</Color>
+	<Color x:Key="Color_Background">AliceBlue</Color>
+	<SolidColorBrush x:Key="Brush_Foreground" Color="DarkSlateGray"/>
+	<SolidColorBrush x:Key="Brush_Background" Color="AliceBlue"/>
+
+	<SolidColorBrush x:Key="Brush_TextDisabled" Color="DimGray"/>
+	
+	<SolidColorBrush x:Key="Brush_LogMessageInfo" Color="Black"/>
+	<SolidColorBrush x:Key="Brush_LogMessageDebug" Color="Gray"/>
+	<SolidColorBrush x:Key="Brush_LogMessageWarn" Color="Yellow"/>
+	<SolidColorBrush x:Key="Brush_LogMessageError" Color="IndianRed"/>
+	
+	<SolidColorBrush x:Key="Brush_GridSplitterBackground" Color="SteelBlue"/>
+	<SolidColorBrush x:Key="Brush_GridSplitterHovered" Color="SkyBlue"/>
+	
+	<SolidColorBrush x:Key="Brush_MenuBarForeground" Color="White"/>
+	<SolidColorBrush x:Key="Brush_MenuBarBackground" Color="SteelBlue"/>
+	<SolidColorBrush x:Key="Brush_MenuBarBorder" Color="SteelBlue"/>
+
+	<SolidColorBrush x:Key="Brush_MenuItemForeground" Color="Black"/>
+	
+</ResourceDictionary>

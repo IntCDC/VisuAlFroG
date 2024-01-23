@@ -61,7 +61,7 @@ namespace Visualizations
                 _timer.Start();
 
 
-                SetScrollViewBackground(ColorTheme.Brush_DarkBackground);
+                SetScrollViewBackground("Brush_Background");
 
                 Content.TextWrapping = TextWrapping.Wrap;
                 Content.FontFamily = new FontFamily("Consolas");
@@ -93,22 +93,20 @@ namespace Visualizations
                 // Is called before Initialize() therefore _textblock needs to be not null
                 foreach (Log.MessageData msg in msglist)
                 {
-                    // Default for Level.Info
-                    var font_color = ColorTheme.Brush_LogMessageInfo;
+                    var run = new Run(msg.message + Environment.NewLine);
+                    run.SetResourceReference(Run.ForegroundProperty, "Brush_LogMessageInfo");
                     switch (msg.level)
                     {
                         case (Log.Level.Warn):
-                            font_color = ColorTheme.Brush_LogMessageWarn;
+                            run.SetResourceReference(Run.ForegroundProperty, "Brush_LogMessageWarn");
                             break;
                         case (Log.Level.Error):
-                            font_color = ColorTheme.Brush_LogMessageError;
+                            run.SetResourceReference(Run.ForegroundProperty, "Brush_LogMessageError");
                             break;
                         case (Log.Level.Debug):
-                            font_color = ColorTheme.Brush_LogMessageDebug;
+                            run.SetResourceReference(Run.ForegroundProperty, "Brush_LogMessageDebug");
                             break;
                     }
-                    var run = new Run(msg.message + Environment.NewLine);
-                    run.Foreground = font_color;
 
                     try
                     {

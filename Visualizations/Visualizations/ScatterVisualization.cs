@@ -56,12 +56,12 @@ namespace Visualizations
                     };
                     var pointmarker_selected = new EllipsePointMarker()
                     {
-                        Stroke = ColorTheme.Color_StrokeSelected,
                         StrokeThickness = 3,
                         Fill = new_color,
                         Width = 10.0,
                         Height = 10.0
                     };
+                    pointmarker_selected.SetResourceReference(EllipsePointMarker.StrokeProperty, "Color_StrokeSelected");
 
                     Setter setter_point = new Setter();
                     setter_point.Property = BaseRenderableSeries.PointMarkerProperty;

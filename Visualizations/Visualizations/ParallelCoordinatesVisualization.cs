@@ -66,7 +66,7 @@ namespace Visualizations
 
                 Setter setter_fontcolor = new Setter();
                 setter_fontcolor.Property = DefaultTickLabel.ForegroundProperty;
-                setter_fontcolor.Value = ColorTheme.Brush_LightForeground;
+                setter_fontcolor.Value = new DynamicResourceExtension("Brush_Foreground");
                 label_style.Setters.Add(setter_fontcolor);
 
                 Setter setter_fontsize = new Setter();
@@ -92,7 +92,7 @@ namespace Visualizations
 
                 var setter_stroke = new Setter();
                 setter_stroke.Property = BaseRenderableSeries.StrokeProperty;
-                setter_stroke.Value = ColorTheme.Color_StrokeDefault;
+                setter_stroke.Value = new DynamicResourceExtension("Color_StrokeDefault");
                 render_style.Setters.Add(setter_stroke);
 
                 Trigger trigger = new Trigger();
@@ -100,7 +100,7 @@ namespace Visualizations
                 trigger.Value = true;
                 Setter setter_trigger = new Setter();
                 setter_trigger.Property = BaseRenderableSeries.StrokeProperty;
-                setter_trigger.Value = ColorTheme.Color_StrokeSelected;
+                setter_trigger.Value = new DynamicResourceExtension("Color_StrokeSelected");
                 trigger.Setters.Add(setter_trigger);
                 render_style.Triggers.Add(trigger);
 

@@ -7,6 +7,7 @@ using Core.Utilities;
 using System.Windows.Media;
 using Visualizations.Data;
 using System.Runtime.Remoting.Contexts;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
 
 
 
@@ -52,8 +53,8 @@ namespace Visualizations
 
                 _content_scrollview.Content = new ContentType();
                 _content_scrollview.Name = ID;
-                _content_scrollview.Background = ColorTheme.Brush_LightBackground;
-                _content_scrollview.Foreground = ColorTheme.Brush_DarkForeground;
+                _content_scrollview.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
+                _content_scrollview.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
 
                 _content_scrollview.PreviewMouseWheel += event_scrollviewer_mousewheel;
 
@@ -133,9 +134,9 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // protected functions
 
-            protected void SetScrollViewBackground(Brush background)
+            protected void SetScrollViewBackground(string background_color_resource_name)
             {
-                _content_scrollview.Background = background;
+                _content_scrollview.SetResourceReference(ScrollViewer.BackgroundProperty, background_color_resource_name);
             }
 
             protected void ScrollToBottom()

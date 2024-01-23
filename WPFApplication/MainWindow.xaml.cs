@@ -156,7 +156,7 @@ namespace Frontend
                 bool initialized = _configurationservice.Initialize();
                 initialized &= _basemanager.Initialize();
                 initialized &= _winmanager.Initialize(_basemanager.GetContentCallbacks());
-                initialized &= _colortheme.Initialize();
+                initialized &= _colortheme.Initialize(App.Current.Resources, _menubar.MarkColorTheme);
                 initialized &= _menubar.Initialize(this.Close, _colortheme.SetColorStyle, _configurationservice.Save, _configurationservice.Load);
 
                 // Register additional callbacks

@@ -93,7 +93,7 @@
     <Compile Include="GUI\Windows\WindowLeaf.cs" />
     <Compile Include="Abstracts\AbstractService.cs" />
     <Compile Include="GUI\Windows\WindowManager.cs" />
-    <Compile Include="GUI\ColorTheme.cs" />
+    <Compile Include="GUI\Themes\ColorTheme.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Abstracts\ContenTypeAliases.cs" />
     <Compile Include="Utilities\WorkingDirectory.cs" />
@@ -104,6 +104,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="GUI\Themes\LightBlue.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GUI\Themes\DarkContrast.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

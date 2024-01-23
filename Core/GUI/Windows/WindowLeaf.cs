@@ -69,12 +69,12 @@ namespace Core
                 }
 
                 _content = new Grid();
-                _content.Background = ColorTheme.Brush_LightBackground;
+                _content.SetResourceReference(Grid.BackgroundProperty, "Brush_Background");
                 _content.Name = "grid_" + UniqueID.Generate();
 
                 var info_text = new TextBlock();
                 info_text.Text = "  [Right-click for Context Menu]";
-                info_text.Foreground = ColorTheme.Brush_TextDisabled;
+                info_text.SetResourceReference(TextBlock.ForegroundProperty, "Brush_TextDisabled");
                 _content.Children.Add(info_text);
 
                 // Drag and drop
@@ -185,19 +185,19 @@ namespace Core
 
                 // Horizontal 
                 var item_horizontal_top = new MenuItem();
-                item_horizontal_top.Style = ColorTheme.MenuItemStyle("align-top.png");
+                item_horizontal_top.Style = ColorTheme.MenuItemIconStyle("align-top.png");
                 item_horizontal_top.Header = "Align Top";
                 item_horizontal_top.Name = _item_id_hori_top;
                 item_horizontal_top.Click += event_menuitem_click;
 
                 var item_horizontal_bottom = new MenuItem();
-                item_horizontal_bottom.Style = ColorTheme.MenuItemStyle("align-bottom.png");
+                item_horizontal_bottom.Style = ColorTheme.MenuItemIconStyle("align-bottom.png");
                 item_horizontal_bottom.Header = "Align Bottom";
                 item_horizontal_bottom.Name = _item_id_hori_bottom;
                 item_horizontal_bottom.Click += event_menuitem_click;
 
                 var item_horizontal = new MenuItem();
-                item_horizontal.Style = ColorTheme.MenuItemStyle("split-horizontal.png");
+                item_horizontal.Style = ColorTheme.MenuItemIconStyle("split-horizontal.png");
                 item_horizontal.Header = "Horizontal Split";
                 item_horizontal.Items.Add(item_horizontal_top);
                 item_horizontal.Items.Add(item_horizontal_bottom);
@@ -205,19 +205,19 @@ namespace Core
 
                 // Vertical
                 var item_vertical_left = new MenuItem();
-                item_vertical_left.Style = ColorTheme.MenuItemStyle("align-left.png");
+                item_vertical_left.Style = ColorTheme.MenuItemIconStyle("align-left.png");
                 item_vertical_left.Header = "Align Left";
                 item_vertical_left.Name = _item_id_vert_Left;
                 item_vertical_left.Click += event_menuitem_click;
 
                 var item_vertical_right = new MenuItem();
-                item_vertical_right.Style = ColorTheme.MenuItemStyle("align-right.png");
+                item_vertical_right.Style = ColorTheme.MenuItemIconStyle("align-right.png");
                 item_vertical_right.Header = "Align Right";
                 item_vertical_right.Name = _item_id_vert_right;
                 item_vertical_right.Click += event_menuitem_click;
 
                 var item_vertical = new MenuItem();
-                item_vertical.Style = ColorTheme.MenuItemStyle("split-vertical.png");
+                item_vertical.Style = ColorTheme.MenuItemIconStyle("split-vertical.png");
                 item_vertical.Header = "Vertical Split";
                 item_vertical.Items.Add(item_vertical_left);
                 item_vertical.Items.Add(item_vertical_right);
@@ -225,7 +225,7 @@ namespace Core
 
                 // Enable deletion of child only if it is not root
                 var item_delete = new MenuItem();
-                item_delete.Style = ColorTheme.MenuItemStyle("delete-window.png");
+                item_delete.Style = ColorTheme.MenuItemIconStyle("delete-window.png");
                 item_delete.Header = "Delete Window";
                 item_delete.Name = _item_id_window_delete;
                 item_delete.Click += event_menuitem_click;
@@ -235,7 +235,7 @@ namespace Core
                 contextmenu.Items.Add(new Separator());
 
                 var item_content_add = new MenuItem();
-                item_content_add.Style = ColorTheme.MenuItemStyle("add-content.png");
+                item_content_add.Style = ColorTheme.MenuItemIconStyle("add-content.png");
                 item_content_add.Header = "Add Content";
                 // Call Available Contents
                 AvailableContentsList_Type available_child_content = _content_callbacks.Item1();
@@ -243,7 +243,7 @@ namespace Core
                 {
                     // Item index: 1=name, 2=available, 3=is-multi, 4=type
                     var content_item = new MenuItem();
-                    content_item.Style = ColorTheme.MenuItemStyle();
+                    content_item.Style = ColorTheme.MenuItemIconStyle();
 
                     // Replacement of spaces is necessary for Name property
                     content_item.Header = content_data.Item1;
@@ -251,12 +251,12 @@ namespace Core
                     content_item.IsEnabled = content_data.Item2; // Available
                     if (content_data.Item3) // Multiple instances allowed
                     {
-                        content_item.Style = ColorTheme.MenuItemStyle("multi-instance.png");
+                        content_item.Style = ColorTheme.MenuItemIconStyle("multi-instance.png");
                         content_item.ToolTip = "Multiple instances";
                     }
                     else
                     {
-                        content_item.Style = ColorTheme.MenuItemStyle("single-instance.png");
+                        content_item.Style = ColorTheme.MenuItemIconStyle("single-instance.png");
                         content_item.ToolTip = "Only single instance";
                     }
                     content_item.Click += event_menuitem_click;
@@ -269,7 +269,7 @@ namespace Core
                 contextmenu.Items.Add(item_content_add);
 
                 var item_content_delete = new MenuItem();
-                item_content_delete.Style = ColorTheme.MenuItemStyle("delete-content.png");
+                item_content_delete.Style = ColorTheme.MenuItemIconStyle("delete-content.png");
                 item_content_delete.Header = "Delete Content";
                 item_content_delete.Name = _item_id_delete_content;
                 item_content_delete.Click += event_menuitem_click;
@@ -280,7 +280,7 @@ namespace Core
                 contextmenu.Items.Add(item_content_delete);
 
                 var item_content_dad = new MenuItem();
-                item_content_dad.Style = ColorTheme.MenuItemStyle("drag-and-drop.png");
+                item_content_dad.Style = ColorTheme.MenuItemIconStyle("drag-and-drop.png");
                 item_content_dad.Header = "Content Swap: Drag&Drop [Middle Mouse Button]";
                 item_content_dad.IsEnabled = false;
                 contextmenu.Items.Add(item_content_dad);
