@@ -1,11 +1,13 @@
 # Developer Guide
 
+[Back to README](#README.md)
+
 <!-- TOC -->
 
 ## Contents
 
 - [Custom Visualization](#custom-visualization)
-- [Code Style](#code-formatting)
+- [Code Style](#code-style)
 - [Resource Files](#resource-files)
 
 <!-- /TOC -->

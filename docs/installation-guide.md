@@ -1,6 +1,8 @@
 
 # Installation Guide
 
+[Back to README](#README.md)
+
 <!-- TOC -->
 
 ## Contents
@@ -16,7 +18,7 @@
 
 
 <!-- ###################################################################### -->
-## Build from Source
+## Building from Source
 
 <!-- ###################################################################### -->
 ### Prerequisites
@@ -59,6 +61,7 @@ The following software is required to be installed beforehand:
 7. Paste the previously copied folder.
 8. Continue with step **5.** of [Installation of Pre-Compiled Binaries](#installation-of-pre-compiled-binaries).
   
+--
 
 9. Set `GrasshopperComponent` as StartUp project and select the Configuration `Debug` `x64` before starting the debugging.
 10. After `Rhino` opened automaticall, start `Grasshopper`.
