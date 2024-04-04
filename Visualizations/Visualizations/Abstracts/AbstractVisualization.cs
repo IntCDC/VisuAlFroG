@@ -272,12 +272,12 @@ namespace Visualizations
                 Grid.SetColumn(text, 0);
                 menu_grid.Children.Add(text);
                 text.Text = Name;
-                text.Style = ColorTheme.ContentMenuCaptionStyle();
+                text.Style = ColorTheme.ContentCaptionStyle();
 
                 var menu = new Menu();
                 Grid.SetColumn(menu, 1);
                 menu_grid.Children.Add(menu);
-                menu.Style = ColorTheme.MenuBarStyle();
+                menu.Style = ColorTheme.ContentMenuStyle();
 
                 _options_menu = new MenuItem();
                 _options_menu.Header = "Options";

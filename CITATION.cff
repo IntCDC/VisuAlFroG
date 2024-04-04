@@ -2,22 +2,27 @@
 # Visit https://bit.ly/cffinit to generate yours today!
 
 cff-version: 1.2.0
-title: VisFroG
+title: VisuAlFroG
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
 type: software
 authors:
-  - given-names: Moataz
-    family-names: Abdelaal
-    email: moataz.abdealaal@visus.uni-stuttgart.de
-    affiliation: University of Stuttgart
-    orcid: 'https://orcid.org/0000-0003-4630-7916'
   - given-names: Matthias
     family-names: Braun
     email: matthias.braun@intcdc.uni-stuttgart.de
     affiliation: University of Stuttgart
     orcid: 'https://orcid.org/0000-0001-8591-3690'
+  - given-names: Max
+    family-names: Zorn
+    email: max-benjamin.zorn@icd.uni-stuttgart.de
+    affiliation: University of Stuttgart
+    orcid: 'https://orcid.org/0000-0003-0109-1963'
+  - given-names: Moataz
+    family-names: Abdelaal
+    email: moataz.abdealaal@visus.uni-stuttgart.de
+    affiliation: University of Stuttgart
+    orcid: 'https://orcid.org/0000-0003-4630-7916'    
   - given-names: Thomas
     family-names: Wortmann
     email: thomas.wortmann@icd.uni-stuttgart.de
@@ -28,30 +33,28 @@ authors:
     orcid: 'https://orcid.org/0000-0003-1174-1026'
     email: daniel.weiskopf@visus.uni-stuttgart.de
     affiliation: University of Stuttgart
-  - given-names: Max
-    family-names: Zorn
-    email: max-benjamin.zorn@icd.uni-stuttgart.de
-    affiliation: University of Stuttgart
-    orcid: 'https://orcid.org/0000-0003-0109-1963'
-repository-code: 'https://github.com/IntCDC/VisFroG'
+repository-code: 'https://github.com/IntCDC/VisuAlFroG'
 abstract: >-
-  VisFroG is a visualization framework that provides various
+  VisuAlFroG is a framework that provides various
   visualization types to support visual analytics for the
   algorithmic modelling software Grasshopper. Grasshopper
   for its part is a plug-in of the commercial 3D computer
   graphics and computer-aided design application software
-  Rhinoceros (Rhino3D). The basic architecture of VisFroG
+  Rhinoceros 3D. The basic architecture of VisuAlFroG
   consists of a core framework providing general
   functionality and a module based extension mechanism that
-  easily allows to integrate new visualizations.
+  easily allows to integrate new visualizations from external
+  libraries.
 keywords:
-  - visualization framework
-  - grasshopper plugin
-  - visual analytics
-  - research software
+  - framework
+  - grasshopper
+  - visual-analytics
+  - research-software
+  - computational-design 
+  - computing-in-architecture 
 license: MIT
 version: '0.1'
 contact:
   - email: "rdm@intcdc.uni-stuttgart.de"
     name: "IntCDC Research Data Management"
-license-url: "https://github.com/IntCDC/VisFroG/blob/main/LICENSE"
+license-url: "https://github.com/IntCDC/VisuAlFroG/blob/main/LICENSE"

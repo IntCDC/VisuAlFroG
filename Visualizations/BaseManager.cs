@@ -32,7 +32,7 @@ namespace Visualizations
         public BaseManager()
         {
             _servicemanager = new ServiceManager();
-            _contentmanager = new VisualizationsManager();
+            _contentmanager = new ContentManager();
             _datamanager = new DataManager();
         }
 
@@ -109,7 +109,7 @@ namespace Visualizations
         // private variables
 
         private ServiceManager _servicemanager = null;
-        private VisualizationsManager _contentmanager = null;
+        private ContentManager _contentmanager = null;
         private DataManager _datamanager = null;
     }
 }

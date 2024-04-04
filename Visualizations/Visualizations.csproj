@@ -150,7 +150,7 @@
     <Compile Include="Data\MetaData.cs" />
     <Compile Include="Data\Interfaces\DataInterfaceSciChartParallel.cs" />
     <Compile Include="Data\Interfaces\DataInterfaceSciChartSeries.cs" />
-    <Compile Include="VisualizationsManager.cs" />
+    <Compile Include="ContentManager.cs" />
     <Compile Include="Data\DataManager.cs" />
     <Compile Include="ServiceManager.cs" />
     <Compile Include="Visualizations\Abstracts\AbstractSciChartVisualization.cs" />
@@ -187,7 +187,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Visualizations\Templates\bokeh-template.py" />
+    <Resource Include="resources\templates\bokeh-template.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

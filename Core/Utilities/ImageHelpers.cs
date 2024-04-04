@@ -32,14 +32,10 @@ namespace Core
             /// <returns>The image source.</returns>
             public static ImageSource ImageSourceFromFile(WorkingDirectory.Locations resource_location, string filename)
             {
-                var file_path = WorkingDirectory.ResourcePath(resource_location, filename);
-                if (!File.Exists(file_path))
-                {
-                    Log.Default.Msg(Log.Level.Error, "File not found: " + file_path);
-                }
+                var file_uri = WorkingDirectory.GetResourcePath(resource_location, filename);
                 try
                 {
-                    return new BitmapImage(new Uri(file_path, UriKind.RelativeOrAbsolute));
+                    return new BitmapImage(file_uri);
                 }
                 catch (Exception exc)
                 {

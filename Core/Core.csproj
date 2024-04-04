@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -106,12 +106,35 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="GUI\Themes\LightBlue.xaml">
+    <Resource Include="resources\color-themes\LightBlue.xaml">
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="GUI\Themes\DarkContrast.xaml">
+    </Resource>
+    <Resource Include="resources\color-themes\Dark.xaml">
       <Generator>MSBuild:Compile</Generator>
-    </Page>
+      <SubType>Designer</SubType>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="resources\logo-icons\logo24.png" />
+    <Resource Include="resources\logo-icons\logo32.png" />
+    <Resource Include="resources\logo-icons\logo64.png" />
+    <Resource Include="resources\menu-icons\add-content.png" />
+    <Resource Include="resources\menu-icons\align-bottom.png" />
+    <Resource Include="resources\menu-icons\align-left.png" />
+    <Resource Include="resources\menu-icons\align-right.png" />
+    <Resource Include="resources\menu-icons\align-top.png" />
+    <Resource Include="resources\menu-icons\delete-content.png" />
+    <Resource Include="resources\menu-icons\delete-window.png" />
+    <Resource Include="resources\menu-icons\drag-and-drop.png" />
+    <Resource Include="resources\menu-icons\github.png" />
+    <Resource Include="resources\menu-icons\multi-instance.png" />
+    <Resource Include="resources\menu-icons\single-instance.png" />
+    <Resource Include="resources\menu-icons\split-horizontal.png" />
+    <Resource Include="resources\menu-icons\split-vertical.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>

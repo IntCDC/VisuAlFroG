@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using System.Threading.Tasks;
+using System.Text;
 using System.Windows.Forms;
+
 using Core.Abstracts;
 using Core.Utilities;
+
 using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
-using System.Collections;
 
 
 /*
@@ -26,9 +24,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public delegates
 
-            public delegate bool Save_Delegate();
+            public delegate bool SaveCallback_Delegate();
 
-            public delegate bool Load_Delegate();
+            public delegate bool LoadCallback_Delegate();
 
             public delegate string RegisterCollect_Delegate();
 
@@ -196,7 +194,7 @@ namespace Core
                 save_file_dialog.FilterIndex = 1;
                 save_file_dialog.RestoreDirectory = true;
                 save_file_dialog.AddExtension = true;
-                save_file_dialog.FileName = WorkingDirectory.FileName("configuration", "json");
+                save_file_dialog.FileName = WorkingDirectory.CreateFileName("configuration", "json");
 
                 if (save_file_dialog.ShowDialog() == DialogResult.OK)
                 {
@@ -227,7 +225,7 @@ namespace Core
                     open_file_dialog.Filter = "JSON files (*.json)|*.json";
                     open_file_dialog.FilterIndex = 1;
                     open_file_dialog.RestoreDirectory = true;
-                    open_file_dialog.FileName = WorkingDirectory.FileName("configuration", "json");
+                    open_file_dialog.FileName = WorkingDirectory.CreateFileName("configuration", "json");
 
                     if (open_file_dialog.ShowDialog() == DialogResult.OK)
                     {

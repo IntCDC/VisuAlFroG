@@ -37,7 +37,7 @@ namespace Interface
             public VisuAlFroG()
               : base("Visual Analytics Framework for Grasshopper", "VisuAlFroG",
                 "Visual analytics framework providing the concept of visual analytics pipeline within grasshopper.",
-                "Visual Analytics", "VisuAlFroG")
+                "Visual Analytics", " ")
             {
                 _runtimemessages = new RuntimeMessages(this);
                 _timer = new TimeBenchmark();
@@ -201,8 +201,9 @@ namespace Interface
             /// Icons need to be 24x24 pixels.
             /// You can add image files to your project resources and access them like this:
             /// return Resources.IconForThisComponent;
-            /// </summary>
+            /// </summary>            
             protected override System.Drawing.Bitmap Icon => new System.Drawing.Bitmap("resources/logo24.png");
+            // NOTE: Logo icons are copied to output directory via post build event.
 
             /// <summary>
             /// Each component must have a unique Guid to identify it. 

@@ -33,7 +33,7 @@ namespace Core
             public enum PredefinedThemes
             {
                 LightBlue,
-                DarkContrast
+                Dark
             }
 
 
@@ -52,7 +52,8 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public properties
 
-            public static ColorTheme.PredefinedThemes DefaultColorTheme { get { return ColorTheme.PredefinedThemes.LightBlue; } }
+            public static ColorTheme.PredefinedThemes DefaultColorTheme { get { return ColorTheme.PredefinedThemes.Dark; } }
+            public static double GridSplitterSize { get { return 7.0; } }
 
 
             /* ------------------------------------------------------------------*/
@@ -104,8 +105,6 @@ namespace Core
 
             //  GRID SPLITTER -------------------
 
-            public static double GridSplitterSize { get { return 5.0; } }
-
             public static Style GridSplitterStyle()
             {
                 var style = new Style();
@@ -151,10 +150,38 @@ namespace Core
                 setter_border.Value = new DynamicResourceExtension("Brush_MenuBarBorder");
                 style.Setters.Add(setter_border);
 
+                Setter setter_thickness = new Setter();
+                setter_thickness.Property = Menu.BorderThicknessProperty;
+                setter_thickness.Value = new Thickness(0, 0, 0, 2); ;
+                style.Setters.Add(setter_thickness);
+
                 return style;
             }
 
-            public static Style ContentMenuCaptionStyle()
+            public static Style ContentMenuStyle()
+            {
+                var style = new Style();
+                style.TargetType = typeof(Menu);
+
+                Setter setter_foreground = new Setter();
+                setter_foreground.Property = TextBlock.ForegroundProperty;
+                setter_foreground.Value = new DynamicResourceExtension("Brush_MenuBarForeground");
+                style.Setters.Add(setter_foreground);
+
+                Setter setter_background = new Setter();
+                setter_background.Property = Menu.BackgroundProperty;
+                setter_background.Value = new DynamicResourceExtension("Brush_MenuBarBackground");
+                style.Setters.Add(setter_background);
+
+                Setter setter_thickness = new Setter();
+                setter_thickness.Property = Menu.BorderThicknessProperty;
+                setter_thickness.Value = new Thickness(0, 0, 0, 0); ;
+                style.Setters.Add(setter_thickness);
+
+                return style;
+            }
+
+            public static Style ContentCaptionStyle()
             {
                 var style = new Style();
                 style.TargetType = typeof(TextBlock);
@@ -344,20 +371,20 @@ namespace Core
             public void SetColorStyle(PredefinedThemes theme)
             {
                 _app_resource.Clear();
-
-                ResourceDictionary theme_resource = null;
+                Uri theme_uri = null;
                 switch (theme)
                 {
                     case (PredefinedThemes.LightBlue):
-                        theme_resource = new ResourceDictionary() { Source = new Uri("T:/02-Management/09_Datamanagement/RSE/VisuAlFrog/repository/VisuAlFroG/Core/GUI/Themes/LightBlue.xaml", UriKind.Absolute) };
+                        theme_uri = WorkingDirectory.GetResourcePath(WorkingDirectory.Locations.Themes, "LightBlue.xaml");
                         break;
-                    case (PredefinedThemes.DarkContrast):
-                        theme_resource = new ResourceDictionary() { Source = new Uri("T:/02-Management/09_Datamanagement/RSE/VisuAlFrog/repository/VisuAlFroG/Core/GUI/Themes/DarkContrast.xaml", UriKind.Absolute) };
+                    case (PredefinedThemes.Dark):
+                        theme_uri = WorkingDirectory.GetResourcePath(WorkingDirectory.Locations.Themes, "Dark.xaml");
                         break;
                     default:
                         Log.Default.Msg(Log.Level.Error, "Unknown predefined color theme");
                         return;
                 }
+                ResourceDictionary theme_resource = new ResourceDictionary() { Source = theme_uri };
 
                 _mark_color_theme_callback(theme);
                 _app_resource.MergedDictionaries.Add(theme_resource);

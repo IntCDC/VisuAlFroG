@@ -18,12 +18,12 @@
 	<SolidColorBrush x:Key="Brush_LogMessageWarn" Color="Yellow"/>
 	<SolidColorBrush x:Key="Brush_LogMessageError" Color="IndianRed"/>
 	
-	<SolidColorBrush x:Key="Brush_GridSplitterBackground" Color="SteelBlue"/>
+	<SolidColorBrush x:Key="Brush_GridSplitterBackground" Color="LightSteelBlue"/>
 	<SolidColorBrush x:Key="Brush_GridSplitterHovered" Color="SkyBlue"/>
 	
 	<SolidColorBrush x:Key="Brush_MenuBarForeground" Color="White"/>
 	<SolidColorBrush x:Key="Brush_MenuBarBackground" Color="SteelBlue"/>
-	<SolidColorBrush x:Key="Brush_MenuBarBorder" Color="SteelBlue"/>
+	<SolidColorBrush x:Key="Brush_MenuBarBorder" Color="LightSteelBlue"/>
 
 	<SolidColorBrush x:Key="Brush_MenuItemForeground" Color="Black"/>
 	

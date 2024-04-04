@@ -15,27 +15,28 @@
 ## Description
 
 *VisuAlFroG* is a framework that provides various visualizations to support visual analytics for the algorithmic modelling software [Grasshopper](https://www.grasshopper3d.com/). 
-Grasshopper for its part is a plug-in of the commercial 3D computer graphics and computer-aided design application software [Rhinoceros](https://www.rhino3d.com/).
+Grasshopper for its part is a plug-in of the commercial 3D computer graphics and computer-aided design application software [Rhinoceros](https://www.rhino3d.com/) (short Rhino3D).
 The basic architecture of *VisuAlFroG* consists of a core framework providing general functionality and a module-based extension mechanism that easily allows to integrate new visualizations.
+New custom visualizations can be based on the following supported visualization libraries: [WPF](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/?view=netdesktop-7.0), [SciChart](https://www.scichart.com/), [d3.js](https://d3js.org/), and [Bokeh](https://bokeh.org/).
+Predefined standard visualizations like *Scatter Plot*, *Line Chart*, *Column/Bar Chart*, and *Parallel Coordinates Plot (PCP)* are provided based on the SciChart library.
 
-Currently, it is planned to offer the integration of visualizations that can be based on:
-- [WPF](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/?view=netdesktop-7.0)
-- [SciChart](https://www.scichart.com/)
-- [d3.js](https://d3js.org/)
-- [Bokeh](https://bokeh.org/)
 
+<!-- Teaser Image -->
 ![visualfrog](https://github.com/IntCDC/VisuAlFroG/assets/30432154/75f2307c-752b-46ff-9b3d-ea3fe6984650)
+
 
 ## Documentation
 
-- [How-to Guide](docs/HowtoGuide.md)
-- [Developer Guide](docs/DeveloperGuide.md)
+- The [Installation Guide](docs/installation-guide.md) provides useful information on how to build from source code and how to install the binary files to be used in Grasshopper.
+- The [Developer Guide](docs/developer-guide.md) provides detailed information on how to add custom visualizations, for example.
 
 
 ## License
 
 See the [license](LICENSE) file.
+The *VisuAlFroG Developer Team* consists of all people listed as contributors of this repository.
 
+<!--
 For *external dependencies* different licenses apply:
 - RhinoCommon (.NET plugin SDK for Rhino): [MIT](https://developer.rhino3d.com/)
 - Grasshopper .NET plugin: [MIT](https://developer.rhino3d.com/)
@@ -47,22 +48,18 @@ For *external dependencies* different licenses apply:
 - OwinSelfHost: [Microsoft Software License Terms](https://www.nuget.org/packages/Microsoft.AspNet.WebApi.OwinSelfHost/5.2.9/license)
 - EntityFramework: [Apache 2.0](https://licenses.nuget.org/Apache-2.0)
 - other transitive dependencies are published under [MIT](https://licenses.nuget.org/MIT), [Apache 2.0](https://licenses.nuget.org/Apache-2.0), or the [Microsoft Software License Terms](https://dotnet.microsoft.com/en-us/dotnet_library_license.htm)
-
+-->
 
 ## Citation
 
-Choose from GitHub citation prompt *Cite this repository* on the right.
+Choose from GitHub citation prompt *Cite this repository* on the right for different formats.
 The [citation](CITATION.cff) is based on the [Citation Cite Format](https://citation-file-format.github.io/) (CFF) and has been generated with [CFFINIT](https://citation-file-format.github.io/cff-initializer-javascript/#/).
 
 
 ## Acknowledgements
 
 - This project is supported by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) under Germany's Excellence Strategy – EXC 2120/1 – 390831618
-- Special thanks to [SciChart](https://www.scichart.com/contact-us/) for permission to distribute licensed SciChart as part of the compiled form of this software.
+- Special thanks to [SciChart](https://www.scichart.com/contact-us/) for the permission to distribute licensed SciChart as part of the compiled form of this software.
 - Thanks to the [Bokeh Development Team](https://github.com/bokeh/bokeh).
 
 ----
-
-> **Note**
-> Internal information and documentation can be found on the [Confluence project page](https://wisman.izus.uni-stuttgart.de/display/IntCDCMan/Visual+Analytics+Framework+for+Grasshopper).
-

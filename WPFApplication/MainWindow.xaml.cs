@@ -142,7 +142,7 @@ namespace Frontend
                 base.Title = app_name;
                 base.Width = 1280;
                 base.Height = 720;
-                base.Icon = ImageHelper.ImageSourceFromFile(WorkingDirectory.Locations.Resource, "logo64.png");
+                base.Icon = ImageHelper.ImageSourceFromFile(WorkingDirectory.Locations.LogoIcons, "logo64.png");
                 // base.Loaded += on_loaded;
                 // CompositionTarget.Rendering += once_per_frame;
 

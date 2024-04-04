@@ -24,7 +24,7 @@ def Start():
 
 print("Python Version: " + sys.version)
 
-output_file(PythonCallback.GetBokehOutputFilePath())
+output_file(PythonCallback.GetOutputFile())
 
 x = [[1,2,4], [3,5,6], [7,9,7], [5,7,6]]
 y = [[4,2,1], [6,5,8], [3,9,6], [2,2,1]]

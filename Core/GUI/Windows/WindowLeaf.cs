@@ -72,10 +72,7 @@ namespace Core
                 _content.SetResourceReference(Grid.BackgroundProperty, "Brush_Background");
                 _content.Name = "grid_" + UniqueID.Generate();
 
-                var info_text = new TextBlock();
-                info_text.Text = "  [Right-click for Context Menu]";
-                info_text.SetResourceReference(TextBlock.ForegroundProperty, "Brush_TextDisabled");
-                _content.Children.Add(info_text);
+                delete_content();
 
                 // Drag and drop
                 _content.MouseMove += event_content_mousemove;
@@ -346,6 +343,11 @@ namespace Core
             private void delete_content(bool only_detach = false)
             {
                 _content.Children.Clear();
+
+                var info_text = new TextBlock();
+                info_text.Text = "    [Right-click for Context Menu]";
+                info_text.SetResourceReference(TextBlock.ForegroundProperty, "Brush_TextDisabled");
+                _content.Children.Add(info_text);
 
                 if (_attached_content != null)
                 {

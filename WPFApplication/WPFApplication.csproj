@@ -185,7 +185,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>robocopy "$(SolutionDir)resources" "$(ProjectDir)$(OutDir)resources" /E
-if %25errorlevel%25 leq 3 exit 0 else exit %25errorlevel%25</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

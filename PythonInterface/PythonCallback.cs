@@ -32,9 +32,9 @@ namespace Visualizations
             /// [STATIC] Callback called from within Python script to get output file for Bokeh (DEBUG).
             /// </summary>
             /// <returns></returns>
-            public static string GetBokehOutputFilePath()
+            public static string GetOutputFile()
             {
-                return WorkingDirectory.FilePath("bokeh", "html");
+                return WorkingDirectory.CreateFilePath("bokeh", "html");
             }
 
         }

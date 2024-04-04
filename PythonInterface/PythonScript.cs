@@ -33,7 +33,8 @@ namespace Visualizations
             {
                 try
                 {
-                    _source = File.ReadAllText(@"bokeh-template.py");
+                    Uri template_uri = WorkingDirectory.GetResourcePath(WorkingDirectory.Locations.Visualizations, "bokeh-template.py");
+                    _source = File.ReadAllText(template_uri.ToString());
                     if (!string.IsNullOrEmpty(_source))
                     {
                         _initialized = true;

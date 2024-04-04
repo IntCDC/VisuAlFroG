@@ -41,7 +41,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public bool Initialize(WindowClose_Delegate close_callback, ColorTheme.SetColorStyle_Delegate theme_callback, ConfigurationService.Save_Delegate save_callback, ConfigurationService.Load_Delegate load_callback)
+            public bool Initialize(WindowClose_Delegate close_callback, ColorTheme.SetColorStyle_Delegate theme_callback, ConfigurationService.SaveCallback_Delegate save_callback, ConfigurationService.LoadCallback_Delegate load_callback)
             {
                 if (_initialized)
                 {
@@ -249,8 +249,8 @@ namespace Core
 
             private Menu _content = null;
             private WindowClose_Delegate _close_callback = null;
-            private ConfigurationService.Save_Delegate _save_callback = null;
-            private ConfigurationService.Load_Delegate _load_callback = null;
+            private ConfigurationService.SaveCallback_Delegate _save_callback = null;
+            private ConfigurationService.LoadCallback_Delegate _load_callback = null;
             private ColorTheme.SetColorStyle_Delegate _theme_callback = null;
 
             private readonly string _item_id_close = "item_close_" + UniqueID.Generate();

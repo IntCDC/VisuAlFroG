@@ -27,7 +27,7 @@ using System.Runtime.Remoting.Contexts;
  */
 namespace Visualizations
 {
-    public class VisualizationsManager : AbstractService
+    public class ContentManager : AbstractService
     {
         /* ------------------------------------------------------------------*/
         // public functions
