@@ -87,16 +87,16 @@ namespace Core
             public void Msg(Log.Level level, string log, StackTrace custom_stacktrace = null)
             {
 #if DEBUG
+                if ((level == Level.Debug) && DisableDebug)
+                {
+                    return;
+                }
 #else
                 // Ignore debug messages on release build
                 if (level == Level.Debug) {
                     return;
                 }
 #endif
-                if ((level == Level.Debug) && DisableDebug)
-                {
-                    return;
-                }
 
                 var stacktrace = custom_stacktrace;
                 if (stacktrace == null)

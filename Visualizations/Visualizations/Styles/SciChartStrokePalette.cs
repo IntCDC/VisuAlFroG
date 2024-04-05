@@ -40,6 +40,7 @@ namespace Visualizations
             /// <returns></returns>
             public Color? OverrideStrokeColor(IRenderableSeries rSeries, int index, IPointMetadata meta_data)
             {
+                /// XXX This is not working because DynamicResourceExtension dows not reference 'hard' object ...?
                 object Color_StrokeSelected = new DynamicResourceExtension("Color_StrokeSelected");
                 object Color_StrokeDefault = new DynamicResourceExtension("Color_StrokeDefault");
                 return ((meta_data != null) && (meta_data.IsSelected)) ? (Color)Color_StrokeSelected : (Color)Color_StrokeDefault;

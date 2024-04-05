@@ -38,8 +38,8 @@ namespace Visualizations
 
                 //Setup Python Environment
                 /// TODO Get path to Python DLL dynamically
-                string environment_path = @"C:\ProgramData\Anaconda3";
-                string python_dll = "python38.dll";
+                string environment_path = @"C:\Program Files\Python311";
+                string python_dll = "python311.dll";
                 string python_paths = $"{environment_path}\\Lib\\site-packages;{environment_path}\\Lib;{environment_path}\\DLLs";
 
                 if (string.IsNullOrEmpty(Runtime.PythonDLL))
@@ -57,6 +57,11 @@ namespace Visualizations
                     _script._StringID = DateTime.Now.ToLongTimeString();
                     _worker = new Thread(_script.Execute);
                     _worker.Name = "PythonScript";
+
+                    /// DEBUG 
+                    /*
+                    _worker.Start();
+                    */
 
                     initialized = true;
                 }

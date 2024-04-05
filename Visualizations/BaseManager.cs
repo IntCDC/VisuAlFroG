@@ -59,6 +59,13 @@ namespace Visualizations
                 var new_service = (AbstractService)Activator.CreateInstance(service_type);
                 _servicemanager.AddService(new_service);
             }
+
+            /// DEBUG
+            
+            _servicemanager.AddService(new PythonInterfaceService());
+            _servicemanager.AddService(new WebAPIService());
+            
+            
             initialized &= _servicemanager.Initialize();
 
             _timer.Stop();

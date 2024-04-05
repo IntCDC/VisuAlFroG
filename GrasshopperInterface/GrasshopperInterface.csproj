@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <Version>1.0</Version>
-    <Title>GrasshopperComponent</Title>
-    <Description>Description of GrasshopperComponent</Description>
+    <Title>GrasshopperInterface</Title>
+    <Description>Description of GrasshopperInterface</Description>
     <TargetExt>.gha</TargetExt>
     <UseWpf>true</UseWpf>
     <Platforms>x86;x64</Platforms>
@@ -13,11 +13,11 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
-    <RunPostBuildEvent>Always</RunPostBuildEvent>   
+    <RunPostBuildEvent>Always</RunPostBuildEvent>      
   </PropertyGroup>
-
+  
   <ItemGroup>
-    <PackageReference Include="Grasshopper" Version="7.34.23267.11001" IncludeAssets="compile;build" />
+    <PackageReference Include="Grasshopper" Version="8.5.24072.13001" IncludeAssets="compile;build" />
     <PackageReference Include="Microsoft.AspNet.WebApi.OwinSelfHost" Version="5.3.0" />
     <PackageReference Include="Microsoft.Owin.Host.HttpListener" Version="4.2.2" />
     <PackageReference Include="Microsoft.Owin.Hosting" Version="4.2.2" />
@@ -29,28 +29,14 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
+    <EmbeddedResource Include="resources\logo\logo24.png" />
+    <EmbeddedResource Include="resources\logo\logo32.png" />
   </ItemGroup>
   
   <PropertyGroup Condition="$(Configuration) == 'Debug' AND $([MSBuild]::IsOSPlatform(Windows))">
-    <StartProgram>C:\Program Files\Rhino 7\System\Rhino.exe</StartProgram>
+    <StartProgram>C:\Program Files\Rhino 8\System\Rhino.exe</StartProgram>
     <StartArguments></StartArguments>
     <StartAction>Program</StartAction>
   </PropertyGroup>
-  
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="robocopy &quot;$(SolutionDir)Core/resources/logo-icons&quot; &quot;$(OutDir)logo&quot; /E&#xD;&#xA;if %25errorlevel%25 leq 3 exit 0 else exit %25errorlevel%25" />
-  </Target>
 
 </Project>

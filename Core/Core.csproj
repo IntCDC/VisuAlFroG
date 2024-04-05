@@ -115,9 +115,6 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="resources\logo-icons\logo24.png" />
-    <Resource Include="resources\logo-icons\logo32.png" />
-    <Resource Include="resources\logo-icons\logo64.png" />
     <Resource Include="resources\menu-icons\add-content.png" />
     <Resource Include="resources\menu-icons\align-bottom.png" />
     <Resource Include="resources\menu-icons\align-left.png" />
@@ -131,6 +128,9 @@
     <Resource Include="resources\menu-icons\single-instance.png" />
     <Resource Include="resources\menu-icons\split-horizontal.png" />
     <Resource Include="resources\menu-icons\split-vertical.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="resources\logo-icons\logo64.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -19,11 +19,9 @@ namespace Core
 
             public enum Locations
             {
-                Resources,
                 LogoIcons,
                 MenuIcons,
                 Themes,
-                Visualizations,
             }
 
 
@@ -73,8 +71,10 @@ namespace Core
             /// <returns>The absolute resource file path.</returns>
             public static Uri GetResourcePath(Locations resource, string filename)
             {
-                string resource_path = "resources"; // = Resources
-                string assembly_name = "Core";      // Assembly.GetCallingAssembly().GetName().Name;
+                // name of top level resource directory
+                string resource_path = "resources"; 
+                string assembly_name = Assembly.GetCallingAssembly().GetName().Name; // "Core"
+
                 switch (resource)
                 {
                     case (Locations.LogoIcons):
@@ -86,11 +86,11 @@ namespace Core
                     case (Locations.Themes):
                         resource_path = System.IO.Path.Combine(resource_path, "color-themes");
                         break;
-                    case (Locations.Visualizations):
-                        assembly_name = "Visualizations";
-                        resource_path = System.IO.Path.Combine(resource_path, "templates");
-                        break;
+                    default:
+                        Log.Default.Msg(Log.Level.Error, "Unknown resource location.");
+                        return new Uri("");
                 }
+
                 string file_path = System.IO.Path.Combine("pack://application:,,,/" + assembly_name + ";component", resource_path, filename);
                 return new Uri(file_path, UriKind.RelativeOrAbsolute);
             }

@@ -32,6 +32,7 @@
 *WIP*...
 
 
+-----
 <!-- ###################################################################### -->
 ## Code Style
 
@@ -39,6 +40,7 @@ Reccomendations for code formatting are stored in `.editorconfig` and are automa
 In *Visual Studio*, look at the info messages in the *Error List* after building *VisuAlFroG* and adjust code according to recommendations.
 
 
+-----
 <!-- ###################################################################### -->
 ## Resource Files
 

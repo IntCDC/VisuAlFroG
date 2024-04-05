@@ -1,16 +1,16 @@
-using Grasshopper;
-using Grasshopper.Kernel;
-using Rhino.Geometry;
 using System;
-using GrasshopperComponent.Utilities;
-using Frontend.Application;
-using Core.Utilities;
 using System.Resources;
 using System.Linq;
 using System.Collections.Generic;
+using Rhino.Geometry;
+using Grasshopper;
+using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
 using Grasshopper.Kernel.Types;
+using GrasshopperComponent.Utilities;
 using Visualizations.Data;
+using Frontend.Application;
+using Core.Utilities;
 
 
 
@@ -20,7 +20,7 @@ using Visualizations.Data;
  */
 namespace Interface
 {
-    namespace GrasshopperComponent
+    namespace GrasshopperInterface
     {
         public class VisuAlFroG : GH_Component
         {
@@ -37,7 +37,7 @@ namespace Interface
             public VisuAlFroG()
               : base("Visual Analytics Framework for Grasshopper", "VisuAlFroG",
                 "Visual analytics framework providing the concept of visual analytics pipeline within grasshopper.",
-                "Visual Analytics", " ")
+                "Visual Analytics", "Frameworks")
             {
                 _runtimemessages = new RuntimeMessages(this);
                 _timer = new TimeBenchmark();
@@ -203,8 +203,15 @@ namespace Interface
             /// You can add image files to your project resources and access them like this:
             /// return Resources.IconForThisComponent;
             /// </summary>            
-            protected override System.Drawing.Bitmap Icon => new System.Drawing.Bitmap("logo/logo24.png");
-            // NOTE: Logo icons are copied to output directory via post build event.
+            protected override System.Drawing.Bitmap Icon
+            {
+                get {
+                    var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                    var stream = assembly.GetManifestResourceStream("GrasshopperInterface.resources.logo.logo24.png");
+                    return new System.Drawing.Bitmap(stream);
+
+                }
+            }
 
             /// <summary>
             /// Each component must have a unique Guid to identify it. 

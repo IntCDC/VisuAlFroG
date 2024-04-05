@@ -51,7 +51,7 @@ namespace Visualizations
                     var new_color = ColorTheme.RandomColor();
 
                     Setter setter_stroke = new Setter();
-                    setter_stroke.Property = BaseRenderableSeries.PaletteProviderProperty;
+                    setter_stroke.Property = FastColumnRenderableSeries.PaletteProviderProperty;
                     setter_stroke.Value = new StrokePalette();
                     default_style.Setters.Add(setter_stroke);
 

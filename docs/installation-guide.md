@@ -24,12 +24,11 @@
 ### Prerequisites
 
 The following software is required to be installed beforehand:
-- [Microsoft *Visual Studio* 2022](https://visualstudio.microsoft.com/vs/) (VisualStudio.17.Release/17.4.4+33213.308 Enterprise, Microsoft .NET Framework Version 4.8.04084)
-- [Rhinoceros 3D](https://www.rhino3d.com/)(includes [Grasshopper](https://www.grasshopper3d.com/)) (Version 7 SR31, 7.31.23166.15001, 2023-06-15, Educational Lab License)
-- [SciChart](https://www.scichart.com/) (Version 7.0.2.27161)
-*Optional:*
-- [Python](https://www.python.org/downloads/)                             (Version 3.8 and above)
-- [Bokeh](https://bokeh.org/)                                             (Version 3.1.1, see [First Steps](https://docs.bokeh.org/en/latest/docs/first_steps.html#first-steps))
+- [Microsoft *Visual Studio* 2022](https://visualstudio.microsoft.com/vs/)  |  VisualStudio.17.Release/17.9.0+34607.119 Enterprise, Microsoft .NET Framework Version 4.8.09037)
+- [Rhinoceros 3D](https://www.rhino3d.com/)(includes [Grasshopper](https://www.grasshopper3d.com/))  |  Version 8 SR5, 8.5.24072.13001, 2024-03-12, Educational Lab License)
+- [SciChart](https://www.scichart.com/)  |  Version 8.3.0.28019
+- [Python](https://www.python.org/downloads/)  |  Version 3.11.5 (3.9 and above)
+- [Bokeh](https://bokeh.org/)  |  Version 3.4.0, see [First Steps](https://docs.bokeh.org/en/latest/docs/first_steps.html#first-steps))
 
 (The appended version numbers show the last tested versions)
 
@@ -69,6 +68,7 @@ The following software is required to be installed beforehand:
 12. There will be a new `Visual Analysis` tab providing the `VisuAlFroG` component. 
 
 
+-----
 <!-- ###################################################################### -->
 ### Installation of Pre-Compiled Binaries
 
@@ -81,9 +81,25 @@ The following software is required to be installed beforehand:
 
 
 <!-- ###################################################################### -->
-### Test Example
+#### Test Example
 
 The successful installation can be tested by opening the provided Grasshopper example: `..\example\VisualizeDataExample.gh`.
 
 
+-----
 <!-- ###################################################################### -->
+### Known Issues
+
+- Rhino ** Version 8** uses .NET Core by (default)[https://www.rhino3d.com/en/docs/guides/netcore/]. 
+**VisuAlFroG** requires the legacy .NET Framework, instead.
+Therefore, Rhino need to be changed to always use .NET Framework.
+In the command line type `SetDotNetRuntime` and then enter `Runtime=NETFramework` and confirm.
+Restart Rhino to take changes effect.
+
+Following errors indicate the problem mentioned above:
+- When debugging VisuAlFroG in Visual Studio the following error occurs: *A fatal error has occurred and debugging needs to be terminated. The debugger was configured to use the Desktop CLR (.NETFramework) Managed debugger, but the target process loaded the CoreCLR (.Net Core) runtime. To debug this project, configure it to use the 'Managed (CoreCLR)' debugger.*
+- When VisuAlFroG is placed in Grasshopper library folder and then Grasshopper is started the following errors occur: 
+  - Object: VisuAlFroG (level 1) Exception has been thrown by the target of an invocation. TargetInvocationException
+  - Object: VisuAlFroG (level 2) Could not load file or assembly 'VisuAlFroG_WPF, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'. FileNotFoundException
+
+-----

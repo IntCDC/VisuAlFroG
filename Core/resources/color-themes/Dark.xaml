@@ -6,8 +6,6 @@
 	<SolidColorBrush x:Key="Brush_StrokeSelected" Color="Red"/>
 	<SolidColorBrush x:Key="Brush_StrokeDefault" Color="LightYellow"/>
 
-	<Color x:Key="Color_Foreground">WhiteSmoke</Color>
-	<Color x:Key="Color_Background">Black</Color>
 	<SolidColorBrush x:Key="Brush_Foreground" Color="WhiteSmoke"/>
 	<SolidColorBrush x:Key="Brush_Background" Color="Black"/>
 

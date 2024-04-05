@@ -7,11 +7,11 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("VisuAlFroG_WPF")]
+[assembly: AssemblyTitle("VisuAlFroGApp")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Universität Stuttgart")]
-[assembly: AssemblyProduct("VisuAlFroG_WPF")]
+[assembly: AssemblyProduct("VisuAlFroGApp")]
 [assembly: AssemblyCopyright("Copyright © Universität Stuttgart 2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

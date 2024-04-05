@@ -12,13 +12,11 @@ using Core.Abstracts;
  */
 /* TEST
 Execute:
-    bool received_response = false;
     var response = _client.GetAsync(_base_address + "api/request").Result;
     if (response != null)
     {
         Log.Default.Msg(Log.Level.Debug, response.ToString());
         Log.Default.Msg(Log.Level.Debug, response.Content.ReadAsStringAsync().Result);
-        received_response = true;
     }
 */
 namespace Visualizations
@@ -52,6 +50,16 @@ namespace Visualizations
                 // Actually start web API and create new client
                 WebApp.Start<StartUp>(url: _base_address);
                 _client = new HttpClient();
+
+                /// DEBUG
+                /*
+                var response = _client.GetAsync(_base_address + "api/request").Result;
+                if (response != null)
+                {
+                    Log.Default.Msg(Log.Level.Debug, response.ToString());
+                    Log.Default.Msg(Log.Level.Debug, response.Content.ReadAsStringAsync().Result);
+                }
+                */
 
                 _timer.Stop();
                 _initialized = true;

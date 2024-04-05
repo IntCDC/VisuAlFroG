@@ -1,7 +1,9 @@
-﻿using Grasshopper;
+﻿using Core.Utilities;
+using Grasshopper;
 using Grasshopper.Kernel;
 using System;
 using System.Drawing;
+using System.Reflection;
 
 
 
@@ -11,7 +13,7 @@ using System.Drawing;
  */
 namespace Interface
 {
-    namespace GrasshopperComponent
+    namespace GrasshopperInterface
     {
         public class VisuAlFroGInfo : GH_AssemblyInfo
         {
@@ -22,8 +24,15 @@ namespace Interface
             public override string Name => "VisuAlFroG";
 
             // Return a 24x24 pixel bitmap to represent this GHA library.
-            public override Bitmap Icon => new Bitmap("logo/logo32.png");
-            // NOTE: Logo icons are copied to output directory via post build event.
+            public override Bitmap Icon
+            {
+                get
+                {
+                    var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                    var stream = assembly.GetManifestResourceStream("GrasshopperInterface.resources.logo.logo32.png");
+                    return new System.Drawing.Bitmap(stream);
+                }
+            }
 
             // Return a short string describing the purpose of this GHA library.
             public override string Description => "Visual analytics framework providing the concept of visual analytics pipeline within grasshopper.";
