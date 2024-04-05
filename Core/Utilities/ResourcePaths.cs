@@ -5,13 +5,14 @@ using System.Windows;
 
 
 /*
- * Path to application artifacts and file generation
+ * Get paths to application resources or generate file paths for output files
+ * 
  */
 namespace Core
 {
     namespace Utilities
     {
-        public class WorkingDirectory
+        public class ResourcePaths
         {
             /* ------------------------------------------------------------------*/
             // public types
@@ -61,7 +62,7 @@ namespace Core
             /// <returns>The absolute file path.</returns>
             public static string CreateFilePath(string body, string extension)
             {
-                return System.IO.Path.Combine(Utilities.WorkingDirectory.GetWorkingDirectory(), Utilities.WorkingDirectory.CreateFileName(body, extension));
+                return System.IO.Path.Combine(Utilities.ResourcePaths.GetWorkingDirectory(), Utilities.ResourcePaths.CreateFileName(body, extension));
             }
 
             /// <summary>

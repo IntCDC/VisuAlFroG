@@ -1,8 +1,7 @@
-# This CITATION.cff file was generated with cffinit.
-# Visit https://bit.ly/cffinit to generate yours today!
+# This CITATION.cff file was generated with cffinit https://bit.ly/cffinit 
 
 cff-version: 1.2.0
-title: VisuAlFroG
+title: Visual Analytics Framework for Grasshopper (VisuAlFroG)
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
@@ -22,7 +21,7 @@ authors:
     family-names: Abdelaal
     email: moataz.abdealaal@visus.uni-stuttgart.de
     affiliation: University of Stuttgart
-    orcid: 'https://orcid.org/0000-0003-4630-7916'    
+    orcid: 'https://orcid.org/0000-0003-4630-7916'
   - given-names: Thomas
     family-names: Wortmann
     email: thomas.wortmann@icd.uni-stuttgart.de
@@ -43,18 +42,19 @@ abstract: >-
   Rhinoceros 3D. The basic architecture of VisuAlFroG
   consists of a core framework providing general
   functionality and a module based extension mechanism that
-  easily allows to integrate new visualizations from external
-  libraries.
+  easily allows to integrate new visualizations based on
+  external libraries.
 keywords:
   - framework
   - grasshopper
   - visual-analytics
   - research-software
-  - computational-design 
-  - computing-in-architecture 
+  - computational-design
+  - computing-in-architecture
 license: MIT
 version: '0.1'
+# Extra fields
 contact:
-  - email: "rdm@intcdc.uni-stuttgart.de"
-    name: "IntCDC Research Data Management"
-license-url: "https://github.com/IntCDC/VisuAlFroG/blob/main/LICENSE"
+  - email: rdm@intcdc.uni-stuttgart.de
+    name: IntCDC Research Data Management
+license-url: 'https://github.com/IntCDC/VisuAlFroG/blob/main/LICENSE'

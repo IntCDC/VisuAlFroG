@@ -50,7 +50,7 @@
   </PropertyGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="robocopy &quot;$(SolutionDir)Core/resources/logo-icons&quot; &quot;$(OutDir)resources&quot; /E&#xD;&#xA;if %25errorlevel%25 leq 3 exit 0 else exit %25errorlevel%25" />
+    <Exec Command="robocopy &quot;$(SolutionDir)Core/resources/logo-icons&quot; &quot;$(OutDir)logo&quot; /E&#xD;&#xA;if %25errorlevel%25 leq 3 exit 0 else exit %25errorlevel%25" />
   </Target>
 
 </Project>

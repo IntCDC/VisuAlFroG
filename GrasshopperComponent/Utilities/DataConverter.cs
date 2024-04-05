@@ -57,7 +57,9 @@ namespace GrasshopperComponent
                                 }
                                 catch (Exception exc)
                                 {
-                                    ///Log.Default.Msg(Log.Level.Error, exc.Message);
+                                    //Log.Default.Msg(Log.Level.Error, exc.Message);
+                                    
+                                    // Default: Add as string
                                     output_entry.AddValue(value_string);
                                 }
                             }

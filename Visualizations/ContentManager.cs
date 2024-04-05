@@ -1,23 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using Core.Utilities;
 using Core.Abstracts;
 using Visualizations.Varieties;
 using System.Reflection;
-using System.Windows;
 using SciChart.Core.Extensions;
-using SciChart.Charting.Visuals;
 using Core.GUI;
 using Visualizations.Abstracts;
 using Visualizations.Data;
 using Visualizations.Miscellaneous;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Runtime.Remoting.Contexts;
 
 
 

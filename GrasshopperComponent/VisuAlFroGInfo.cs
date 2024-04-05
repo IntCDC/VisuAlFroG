@@ -22,7 +22,7 @@ namespace Interface
             public override string Name => "VisuAlFroG";
 
             // Return a 24x24 pixel bitmap to represent this GHA library.
-            public override Bitmap Icon => new Bitmap("resources/logo32.png");
+            public override Bitmap Icon => new Bitmap("logo/logo32.png");
             // NOTE: Logo icons are copied to output directory via post build event.
 
             // Return a short string describing the purpose of this GHA library.

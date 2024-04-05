@@ -3,13 +3,8 @@ using System.Windows.Controls;
 using Core.Utilities;
 using System.Windows.Documents;
 using System;
-using System.Diagnostics;
 using System.Windows.Navigation;
-using System.Diagnostics.Tracing;
 using Core.Abstracts;
-using System.Text;
-using System.Runtime.Remoting.Contexts;
-using Core.GUI;
 using System.Collections.Generic;
 
 

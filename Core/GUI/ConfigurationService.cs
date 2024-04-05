@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-
 using Core.Abstracts;
 using Core.Utilities;
-
 using Newtonsoft.Json;
 
 
@@ -194,7 +192,7 @@ namespace Core
                 save_file_dialog.FilterIndex = 1;
                 save_file_dialog.RestoreDirectory = true;
                 save_file_dialog.AddExtension = true;
-                save_file_dialog.FileName = WorkingDirectory.CreateFileName("configuration", "json");
+                save_file_dialog.FileName = ResourcePaths.CreateFileName("configuration", "json");
 
                 if (save_file_dialog.ShowDialog() == DialogResult.OK)
                 {
@@ -225,7 +223,7 @@ namespace Core
                     open_file_dialog.Filter = "JSON files (*.json)|*.json";
                     open_file_dialog.FilterIndex = 1;
                     open_file_dialog.RestoreDirectory = true;
-                    open_file_dialog.FileName = WorkingDirectory.CreateFileName("configuration", "json");
+                    open_file_dialog.FileName = ResourcePaths.CreateFileName("configuration", "json");
 
                     if (open_file_dialog.ShowDialog() == DialogResult.OK)
                     {

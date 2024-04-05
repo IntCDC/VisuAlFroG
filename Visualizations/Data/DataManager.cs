@@ -3,14 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Core.Abstracts;
 using Core.Utilities;
-using SciChart.Charting.Model.DataSeries;
-using System.Windows.Markup;
-using SciChart.Data.Model;
-using System.Windows.Controls;
-using System.Windows;
-using Visualizations.Data;
 using Visualizations.Abstracts;
-using SciChart.Charting.Visuals;
 using SciChart.Charting.Visuals.RenderableSeries;
 using System.Dynamic;
 
@@ -71,27 +64,9 @@ namespace Visualizations
 
                 _updated_callbacks = new List<UpdateCallback_Delegate>();
 
-                // Register all supported data varieties
                 _data_library = new Dictionary<Type, IDataVariety>();
-
                 var variety_generic = new DataVarietyGeneric();
                 _data_library.Add(variety_generic.Variety, variety_generic);
-
-                /*
-                var variety_fastline = new DataVarietySciChartSeries<FastLineRenderableSeries>();
-                _data_library.Add(variety_fastline.Variety, variety_fastline);
-
-                var variety_fastcolumn = new DataVarietySciChartSeries<FastColumnRenderableSeries>();
-                _data_library.Add(variety_fastcolumn.Variety, variety_fastcolumn);
-
-                var variety_xyscatter = new DataVarietySciChartSeries<XyScatterRenderableSeries>();
-                _data_library.Add(variety_xyscatter.Variety, variety_xyscatter);
-
-                var variety_parallel = new DataVarietySciChartParallel<GenericPCPData>();
-                _data_library.Add(variety_parallel.Variety, variety_parallel);
-
-                /// TODO Add more library data formats here ...
-                */
 
                 _timer.Stop();
                 _initialized = initialized;

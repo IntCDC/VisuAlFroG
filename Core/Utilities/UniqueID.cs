@@ -6,6 +6,7 @@ using System.Windows.Markup;
 
 /*
  * Generate unique ID string
+ * 
  */
 namespace Core
 {

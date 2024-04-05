@@ -6,6 +6,7 @@
  * Benchmark Timer
  * 
  * Only executed in DEBUG build
+ * 
  */
 namespace Core
 {

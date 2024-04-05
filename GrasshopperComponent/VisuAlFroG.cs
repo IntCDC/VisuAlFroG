@@ -102,13 +102,14 @@ namespace Interface
                         _runtimemessages.Add(Log.Level.Error, "Unable to read input data");
                         return;
                     }
-                    _runtimemessages.Add(Log.Level.Debug, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().FullName);
-                     /// DEBUG Log.Default.Msg(Log.Level.Warn, input_data.DataDescription(true, true)); // -> Same as Grasshopper Panel output
-
                     if (!input_data.IsEmpty) {
+                        _runtimemessages.Add(Log.Level.Debug, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().FullName);
+                        /// DEBUG Log.Default.Msg(Log.Level.Warn, input_data.DataDescription(true, true)); // -> Same as Grasshopper Panel output
+
                         // Convert and pass on input data 
                         var input_data_converted = DataConverter.ConvertFromGHStructure(ref input_data);
                         _window.UpdateInputData(ref input_data_converted);
+
                     } else 
                     {
                         _runtimemessages.Add(Log.Level.Info, "Skipping empty input data");
@@ -202,7 +203,7 @@ namespace Interface
             /// You can add image files to your project resources and access them like this:
             /// return Resources.IconForThisComponent;
             /// </summary>            
-            protected override System.Drawing.Bitmap Icon => new System.Drawing.Bitmap("resources/logo24.png");
+            protected override System.Drawing.Bitmap Icon => new System.Drawing.Bitmap("logo/logo24.png");
             // NOTE: Logo icons are copied to output directory via post build event.
 
             /// <summary>

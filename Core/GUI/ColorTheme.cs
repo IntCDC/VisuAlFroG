@@ -2,17 +2,9 @@
 using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using System.Windows.Shapes;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Documents;
 using Core.Utilities;
 using Core.Abstracts;
-using Core.GUI;
 
 
 
@@ -253,7 +245,7 @@ namespace Core
                 {
                     Setter setter_icon = new Setter();
                     setter_icon.Property = MenuItem.IconProperty;
-                    setter_icon.Value = ImageHelper.ImageFromFile(WorkingDirectory.Locations.MenuIcons, icon_filename);
+                    setter_icon.Value = ImageLoader.ImageFromFile(ResourcePaths.Locations.MenuIcons, icon_filename);
                     style.Setters.Add(setter_icon);
                 }
 
@@ -375,10 +367,10 @@ namespace Core
                 switch (theme)
                 {
                     case (PredefinedThemes.LightBlue):
-                        theme_uri = WorkingDirectory.GetResourcePath(WorkingDirectory.Locations.Themes, "LightBlue.xaml");
+                        theme_uri = ResourcePaths.GetResourcePath(ResourcePaths.Locations.Themes, "LightBlue.xaml");
                         break;
                     case (PredefinedThemes.Dark):
-                        theme_uri = WorkingDirectory.GetResourcePath(WorkingDirectory.Locations.Themes, "Dark.xaml");
+                        theme_uri = ResourcePaths.GetResourcePath(ResourcePaths.Locations.Themes, "Dark.xaml");
                         break;
                     default:
                         Log.Default.Msg(Log.Level.Error, "Unknown predefined color theme");

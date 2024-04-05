@@ -34,7 +34,7 @@ namespace Visualizations
             /// <returns></returns>
             public static string GetOutputFile()
             {
-                return WorkingDirectory.CreateFilePath("bokeh", "html");
+                return ResourcePaths.CreateFilePath("bokeh", "html");
             }
 
         }
