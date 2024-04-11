@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Core.Utilities;
 using Core.Abstracts;
-using Visualizations.SciChartInterface;
 
 
 

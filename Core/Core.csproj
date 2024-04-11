@@ -83,10 +83,18 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstracts\AbstractDataType.cs" />
+    <Compile Include="Abstracts\AbstractVisualization.cs" />
     <Compile Include="Abstracts\AbstractWindow.cs" />
     <Compile Include="Abstracts\IAbstractContent.cs" />
     <Compile Include="Abstracts\IAbstractService.cs" />
     <Compile Include="Abstracts\IAbstractConfiguration.cs" />
+    <Compile Include="Abstracts\IDataVariety.cs" />
+    <Compile Include="Data\DataManager.cs" />
+    <Compile Include="Data\DataTypeGeneric.cs" />
+    <Compile Include="Data\GenericDataEntry.cs" />
+    <Compile Include="Data\GenericDataStructure.cs" />
+    <Compile Include="Data\MetaDataGeneric.cs" />
     <Compile Include="GUI\MenuBar.cs" />
     <Compile Include="GUI\ConfigurationService.cs" />
     <Compile Include="GUI\Windows\WindowBranch.cs" />

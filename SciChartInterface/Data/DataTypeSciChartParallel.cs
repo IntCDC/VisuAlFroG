@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Visualizations.Data;
-using Visualizations.Abstracts;
 using SciChart.Charting.Visuals.RenderableSeries;
 using Core.Utilities;
-using Visualizations.Varieties;
 using System.Dynamic;
-using System.Windows.Controls;
 using System.Windows;
-using SciChart.Charting.Visuals;
 using SciChart.Charting.Visuals.Axes;
-using System.Windows.Media;
 using System.Windows.Shapes;
-using Core.GUI;
+using Core.Abstracts;
+using Core.Data;
 
 
 
@@ -23,11 +16,11 @@ using Core.GUI;
  *  SciChart data variety for parallel coordinates 
  * 
  */
-namespace Visualizations
+namespace SciChartInterface
 {
     namespace Data
     {
-        public class DataVarietySciChartParallel<DataType> : AbstractDataVariety<ParallelCoordinateDataSource<DataType>>
+        public class DataTypeSciChartParallel<DataType> : AbstractDataType<ParallelCoordinateDataSource<DataType>>
             where DataType : IDynamicMetaObjectProvider, new()
         {
             /* ------------------------------------------------------------------*/

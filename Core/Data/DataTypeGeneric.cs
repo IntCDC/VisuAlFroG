@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Visualizations.Data;
-using Visualizations.Abstracts;
 using Core.Utilities;
+using Core.Abstracts;
+
 
 
 /*
  *  Generic data variety
  * 
  */
-namespace Visualizations
+namespace Core
 {
     namespace Data
     {
-        public class DataVarietyGeneric : AbstractDataVariety<GenericDataStructure>
+        public class DataTypeGeneric : AbstractDataType<GenericDataStructure>
         {
             /* ------------------------------------------------------------------*/
             // public properties

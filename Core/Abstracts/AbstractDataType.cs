@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-
+using Core.Data;
 using Core.Utilities;
-
-using Visualizations.Data;
 
 
 
@@ -15,11 +9,11 @@ using Visualizations.Data;
  *  Abstract data variety
  * 
  */
-namespace Visualizations
+namespace Core
 {
     namespace Abstracts
     {
-        public abstract class AbstractDataVariety<DataType> : IDataVariety
+        public abstract class AbstractDataType<DataType> : IDataVariety
             where DataType : class
         {
             /* ------------------------------------------------------------------*/

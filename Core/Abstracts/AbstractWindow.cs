@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Controls;
-using Core.Utilities;
+﻿using System.Windows.Controls;
 using Core.GUI;
-using System.Threading;
 
 
 

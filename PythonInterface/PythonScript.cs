@@ -33,7 +33,7 @@ namespace Visualizations
             {
                 try
                 {
-                    _source = File.ReadAllText("resources/templates/bokeh-template.py");
+                    _source = File.ReadAllText("./template/bokeh-template.py");
                     if (!string.IsNullOrEmpty(_source))
                     {
                         _initialized = true;

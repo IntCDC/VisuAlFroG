@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Remoting.Contexts;
 using System.Windows.Controls;
 using Core.Utilities;
-using Core.Abstracts;
 using System.Windows;
 using Core.GUI;
-using Visualizations.Data;
-using System.Windows.Documents;
+using Core.Data;
 
 
 
@@ -15,11 +12,11 @@ using System.Windows.Documents;
  * Abstract Visualization
  * 
  */
-namespace Visualizations
+namespace Core
 {
     namespace Abstracts
     {
-        public abstract class AbstractVisualization : IAbstractService, IAbstractContent
+        public abstract class AbstractVisualization : IAbstractContent
         {
 
             /* ------------------------------------------------------------------*/
@@ -44,10 +41,19 @@ namespace Visualizations
             public abstract List<Type> DependingServices { get; }
             public bool IsAttached { get { return _attached; } }
             public string ID { get { return _id; } set { _id = value; } }
-
+            public DataManager.RequestCallback_Delegate RequestDataCallback { get; set; }
 
             /* ------------------------------------------------------------------*/
             // public functions
+
+
+            /// <summary>
+            ///  Get the type of the required data variety
+            ///  TODO To be implemented by specific visualization
+            /// </summary>
+            /// <returns>Returns the data type</returns>
+            public abstract Type GetDataType();
+
 
             /// <summary>
             /// Ctor.
@@ -75,12 +81,11 @@ namespace Visualizations
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
             /// <exception cref="InvalidOperationException">...throw error when method of base class is called instead.</exception>
-            public virtual bool Initialize()
+            public virtual bool Initialize(DataManager.RequestCallback_Delegate request_callback)
             {
                 throw new InvalidOperationException("Call Initialize() method of derived class");
             }
             /* TEMPLATE
-            public override bool Initialize()
             {
                 if (_initialized)
                 {
@@ -201,22 +206,22 @@ namespace Visualizations
             */
 
             /// <summary>
+            /// TODO One variant of the following SetData method must be implemented
+            /// </summary>
+            public virtual bool GetData(object data_parent)
+            {
+                throw new InvalidOperationException("Call SetData() method of derived class");
+            }
+            public virtual bool GetData(ref GenericDataStructure data_parent)
+            {
+                throw new InvalidOperationException("Call SetData() method of derived class");
+            }
+
+            /// <summary>
             /// TODO Called when updated data is available
             /// </summary>
             /// <param name="new_data">True if new data is available, false if existing data has been updated.</param>
             public abstract void UpdateCallback(bool new_data);
-
-            /// <summary>
-            /// TODO Call when visualization needs the actual data
-            /// </summary>
-            public void RequestCallback(DataManager.RequestCallback_Delegate request_callback)
-            {
-                if (_initialized)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Required to be called prior to initialization");
-                }
-                _request_callback = request_callback;
-            }
 
 
             /* ------------------------------------------------------------------*/
@@ -294,8 +299,6 @@ namespace Visualizations
             private DockPanel _content_parent = null;
             private MenuItem _options_menu = null;
             private Grid _content_child = null;
-
-            protected DataManager.RequestCallback_Delegate _request_callback;
 
             /// DEBUG
             protected TimeBenchmark _timer = null;

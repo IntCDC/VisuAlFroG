@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Core.Utilities;
+using Core.Abstracts;
 
 
 
@@ -11,7 +9,7 @@ using Core.Utilities;
  * Generic data structure
  * 
  */
-namespace Visualizations
+namespace Core
 {
     namespace Data
     {
@@ -39,9 +37,9 @@ namespace Visualizations
                 return entry;
             }
 
-            public List<MetaData> ListMetaData()
+            public List<MetaDataGeneric> ListMetaData()
             {
-                List<MetaData> metadata_list = new List<MetaData>();
+                List<MetaDataGeneric> metadata_list = new List<MetaDataGeneric>();
                 list_metadata(this, ref metadata_list);
                 return metadata_list;
             }
@@ -98,7 +96,7 @@ namespace Visualizations
             /// </summary>
             /// <param name="branch"></param>
             /// <param name="out_metadatalist"></param>
-            private void list_metadata(GenericDataStructure branch, ref List<MetaData> out_metadatalist)
+            private void list_metadata(GenericDataStructure branch, ref List<MetaDataGeneric> out_metadatalist)
             {
                 foreach (var entry in branch.Entries)
                 {

@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Utilities;
 using Core.Abstracts;
-using Visualizations.Varieties;
+using Visualizations.Generic;
 using System.Reflection;
 using SciChart.Core.Extensions;
 using Core.GUI;
-using Visualizations.Abstracts;
-using Visualizations.Data;
-using Visualizations.Miscellaneous;
+using Core.Data;
 
 
 
@@ -24,7 +22,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         // public functions
 
-        public bool Initialize(DataManager.RequestCallback_Delegate request_callback, DataManager.RegisterUpdateCallback_Delegate update_callback, DataManager.UnregisterCallback_Delegate unregister_callback)
+        public bool Initialize(DataManager.RequestCallback_Delegate request_callback, DataManager.RegisterUpdateTypeCallback_Delegate update_callback, DataManager.UnregisterUpdateCallback_Delegate unregister_callback)
         {
             if (_initialized)
             {
@@ -38,9 +36,9 @@ namespace Visualizations
             _timer.Start();
 
             _contents = new Dictionary<Type, Dictionary<string, AbstractVisualization>>();
-            _request_callback = request_callback;
-            _update_callback = update_callback;
-            _unregister_callback = unregister_callback;
+            _data_request_callback = request_callback;
+            _register_data_update_type_callback = update_callback;
+            _unregister_data_update_callback = unregister_callback;
 
 
             // Register new visualizations here:
@@ -64,8 +62,8 @@ namespace Visualizations
             {
                 terminated &= clear_contents();
 
-                _request_callback = null;
-                _update_callback = null;
+                _data_request_callback = null;
+                _register_data_update_type_callback = null;
 
                 _initialized = false;
             }
@@ -275,7 +273,7 @@ namespace Visualizations
             {
                 if (content_types.Value.ContainsKey(content_id))
                 {
-                    _unregister_callback(content_types.Value[content_id].UpdateCallback);
+                    _unregister_data_update_callback(content_types.Value[content_id].UpdateCallback);
                     content_types.Value[content_id].Detach();
                     content_types.Value[content_id].Terminate();
                     return content_types.Value.Remove(content_id);
@@ -338,10 +336,9 @@ namespace Visualizations
         private AbstractVisualization create_content(Type type)
         {
             var content = (AbstractVisualization)Activator.CreateInstance(type);
-            content.RequestCallback(_request_callback);
-            if (content.Initialize())
+            if (content.Initialize(_data_request_callback))
             {
-                _update_callback(content.UpdateCallback);
+                _register_data_update_type_callback(content.UpdateCallback, content.GetDataType());
                 if (content.ReCreate())
                 {
                     return content;
@@ -413,7 +410,7 @@ namespace Visualizations
             {
                 foreach (var content_data in content_types.Value)
                 {
-                    _unregister_callback(content_data.Value.UpdateCallback);
+                    _unregister_data_update_callback(content_data.Value.UpdateCallback);
                     content_data.Value.Detach();
                     terminated &= content_data.Value.Terminate();
                 }
@@ -429,8 +426,8 @@ namespace Visualizations
         // Separate dictionary for each content type
         private Dictionary<Type, Dictionary<string, AbstractVisualization>> _contents = null;
 
-        private DataManager.RequestCallback_Delegate _request_callback = null;
-        private DataManager.RegisterUpdateCallback_Delegate _update_callback = null;
-        private DataManager.UnregisterCallback_Delegate _unregister_callback = null;
+        private DataManager.RequestCallback_Delegate _data_request_callback = null;
+        private DataManager.RegisterUpdateTypeCallback_Delegate _register_data_update_type_callback = null;
+        private DataManager.UnregisterUpdateCallback_Delegate _unregister_data_update_callback = null;
     }
 }

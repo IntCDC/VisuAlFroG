@@ -105,7 +105,7 @@ namespace Core
                 try
                 {
                     _window_root.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.None, 0.6);
-                    _window_root.Children.Item2.Leaf.CreateContent(UniqueID.Invalid, "Visualizations.Miscellaneous.LogConsole");
+                    _window_root.Children.Item2.Leaf.CreateContent(UniqueID.Invalid, "Visualizations.Generic.LogConsole");
                 }
                 catch (Exception exc)
                 {

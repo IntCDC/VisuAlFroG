@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Animation;
-using Grasshopper.Kernel.Special;
 using Core.Utilities;
+using Core.Data;
 using Grasshopper.Kernel.Types;
 using System.Globalization;
 using Grasshopper.Kernel.Data;
-using GrasshopperComponent.Utilities;
-using Visualizations.Data;
 
 
 

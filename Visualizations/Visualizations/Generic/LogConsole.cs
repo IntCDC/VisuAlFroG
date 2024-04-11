@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.IO;
 using Core.Utilities;
-using Core.GUI;
-using Core.Abstracts;
 using System.Windows.Media;
 using System.Windows.Documents;
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
-using System.Runtime.Remoting.Contexts;
-using Visualizations.Abstracts;
-using Visualizations.Data;
+using Core.Data;
 
 
 
@@ -19,14 +13,15 @@ using Visualizations.Data;
  * Log Window Content
  * 
  * TODO Optimize performance for huge amount of messages 
- * -> only add last x Inlines to fill screen and 
- * implement separate scrolling (with mouse wheel...)
+ * -> only add last x Inlines to fill screen and implement separate scrolling (with mouse wheel...)
+ * 
+ * Requested data is NOT used ...
  */
 namespace Visualizations
 {
-    namespace Miscellaneous
+    namespace Generic
     {
-        public class LogConsole : AbstractGenericVisualization<System.Windows.Controls.TextBlock, DataInterfaceGeneric<GenericDataStructure>>
+        public class LogConsole : AbstractGenericVisualization<System.Windows.Controls.TextBlock>
         {
             /* ------------------------------------------------------------------*/
             // properties
@@ -37,9 +32,14 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public override bool Initialize()
+            public override Type GetDataType()
             {
-                var init = base.Initialize();
+                return typeof(GenericDataStructure);
+            }
+
+            public override bool Initialize(DataManager.RequestCallback_Delegate request_callback)
+            {
+                var init = base.Initialize(request_callback);
                 // ! Initialize base class before registering listener
                 Log.Default.RegisterListener(this.LogListener);
                 return init;

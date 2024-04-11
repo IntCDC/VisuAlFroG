@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
-using System.Windows.Markup;
-using Core.GUI;
 using Core.Utilities;
-using System.Windows.Media;
-using Visualizations.Data;
-using System.Runtime.Remoting.Contexts;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
+using Core.Abstracts;
+using Core.Data;
 
 
 
@@ -17,11 +13,10 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
  */
 namespace Visualizations
 {
-    namespace Abstracts
+    namespace Generic
     {
-        public abstract class AbstractGenericVisualization<ContentType, DataType> : AbstractVisualization
+        public abstract class AbstractGenericVisualization<ContentType> : AbstractVisualization
             where ContentType : System.Windows.FrameworkElement, new()
-            where DataType : AbstractDataInterface, new()
         {
             /* ------------------------------------------------------------------*/
             // properties
@@ -29,14 +24,13 @@ namespace Visualizations
             public sealed override bool MultipleInstances { get { return false; } }
             public sealed override List<Type> DependingServices { get { return new List<Type>() { }; } }
 
-            protected DataType DataInterface { get; set; }
             protected ContentType Content { get { return (ContentType)_content_scrollview.Content; } }
 
 
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public override bool Initialize()
+            public override bool Initialize(DataManager.RequestCallback_Delegate request_callback)
             {
                 if (_initialized)
                 {
@@ -44,8 +38,7 @@ namespace Visualizations
                 }
                 _timer.Start();
 
-                DataInterface = new DataType();
-                DataInterface.RequestDataCallback = _request_callback;
+                this.RequestDataCallback = request_callback;
 
                 _content_scrollview = new ScrollViewer();
                 _content_scrollview.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
@@ -122,11 +115,29 @@ namespace Visualizations
             }
 
             /// <summary>
+            /// --- Default implementation ---
             /// Called when existing data has been updated
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
-            public virtual bool Update() 
+            public virtual bool Update() {
+                return true;
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="data_parent"></param>
+            /// <returns></returns>
+            public override bool GetData(ref GenericDataStructure data_parent)
             {
+                var data = (GenericDataStructure)RequestDataCallback(typeof(GenericDataStructure));
+                if (data == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing data for: " + typeof(GenericDataStructure).FullName);
+                    return false;
+                }
+
+                data_parent = data;
                 return true;
             }
 

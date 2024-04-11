@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Core.Abstracts;
 using Core.Utilities;
-using Visualizations.Abstracts;
-using SciChart.Charting.Visuals.RenderableSeries;
 using System.Dynamic;
+using System.ComponentModel.DataAnnotations;
 
 
 
@@ -13,7 +12,7 @@ using System.Dynamic;
  * Data Manager
  * 
  */
-namespace Visualizations
+namespace Core
 {
     namespace Data
     {
@@ -40,8 +39,8 @@ namespace Visualizations
             /// <summary>
             /// Callback to register callback for getting notified on any data update
             /// </summary>
-            public delegate void RegisterUpdateCallback_Delegate(UpdateCallback_Delegate update_callback);
-            public delegate void UnregisterCallback_Delegate(UpdateCallback_Delegate update_callback);
+            public delegate void RegisterUpdateTypeCallback_Delegate(UpdateCallback_Delegate update_callback, Type data_type);
+            public delegate void UnregisterUpdateCallback_Delegate(UpdateCallback_Delegate update_callback);
 
             /// <summary>
             /// Callback called on updated data
@@ -65,7 +64,7 @@ namespace Visualizations
                 _updated_callbacks = new List<UpdateCallback_Delegate>();
 
                 _data_library = new Dictionary<Type, IDataVariety>();
-                var variety_generic = new DataVarietyGeneric();
+                var variety_generic = new DataTypeGeneric();
                 _data_library.Add(variety_generic.Variety, variety_generic);
 
                 _timer.Stop();
@@ -160,11 +159,12 @@ namespace Visualizations
             /// <summary>
             /// Notify registered callers on updated input data. Called by visualizations.
             /// </summary>
-            public void RegisterUpdateCallback(UpdateCallback_Delegate update_callback)
+            public void RegisterUpdateTypeCallback(UpdateCallback_Delegate update_callback, Type data_type)
             {
+                // Register update callback of calling visualization
                 if (_updated_callbacks == null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "callback list for registered update callbacks");
+                    Log.Default.Msg(Log.Level.Error, "No callback list for registered update callbacks");
                     return;
                 }
                 if (_updated_callbacks.Contains(update_callback))
@@ -173,6 +173,42 @@ namespace Visualizations
                     return;
                 }
                 _updated_callbacks.Add(update_callback);
+
+                // Register data type of calling visualization
+                if (!_data_library.ContainsKey(data_type))
+                {
+                    // Get current data from generic reference
+                    GenericDataStructure data = null;
+                    try
+                    {
+                        data = _data_library[typeof(GenericDataStructure)].Get as GenericDataStructure;
+                        if (data == null)
+                        {
+                            Log.Default.Msg(Log.Level.Error, "Missing data");
+                            return;
+                        }
+                    }
+                    catch (Exception exc)
+                    {
+                        Log.Default.Msg(Log.Level.Error, exc.Message);
+                        return;
+                    }
+
+                    // Create new data variety
+                    if (!_data_library.ContainsKey(data_type))
+                    {
+                        var variety = (IDataVariety)Activator.CreateInstance(data_type);
+                        if (variety == null)
+                        {
+                            Log.Default.Msg(Log.Level.Error, "Expected data type of IDataVariety but received: " + data_type.FullName);
+                            return;
+                        }
+                        variety.Create(ref data, data.DataDimension(), data.ValueTypes());
+                        _data_library.Add(variety.Variety, variety);
+
+                        Log.Default.Msg(Log.Level.Info, "Added data type: " + data_type.FullName);
+                    }
+                }
             }
 
             /// <summary>
@@ -180,6 +216,7 @@ namespace Visualizations
             /// </summary>
             public void UnregisterUpdateCallback(UpdateCallback_Delegate update_callback)
             {
+                // Unregister data update callback of calling visualization
                 if (_updated_callbacks == null)
                 {
                     /// XXX Throws error when called during shutdown ...
@@ -192,6 +229,8 @@ namespace Visualizations
                     return;
                 }
                 Log.Default.Msg(Log.Level.Debug, "Callback for updated data already removed");
+
+                /// Do not unregister data type since it might be used by other visualizations or later when visualization is created again...
             }
 
             /// <summary>
@@ -209,54 +248,9 @@ namespace Visualizations
 
                 if (!_data_library.ContainsKey(data_type))
                 {
-                    // Get current data from generic reference
-                    GenericDataStructure data = null;
-                    try
-                    {
-                        data = _data_library[typeof(GenericDataStructure)].Get as GenericDataStructure;
-                        if (data == null)
-                        {
-                            Log.Default.Msg(Log.Level.Error, "Missing data");
-                            return null;
-                        }
-                    }
-                    catch (Exception exc)
-                    {
-                        Log.Default.Msg(Log.Level.Error, exc.Message);
-                        return null;
-                    }
+                    Log.Default.Msg(Log.Level.Warn, "Requested data not available for given data type: " + data_type.FullName);
+                    return null;
 
-                    // Create new data variety
-                    if (data_type == typeof(List<FastLineRenderableSeries>))
-                    {
-                        var variety = new DataVarietySciChartSeries<FastLineRenderableSeries>();
-                        variety.Create(ref data, data.DataDimension(), data.ValueTypes());
-                        _data_library.Add(variety.Variety, variety);
-                    }
-                    else if (data_type == typeof(List<FastColumnRenderableSeries>))
-                    {
-                        var variety = new DataVarietySciChartSeries<FastColumnRenderableSeries>();
-                        variety.Create(ref data, data.DataDimension(), data.ValueTypes());
-                        _data_library.Add(variety.Variety, variety);
-                    }
-                    else if (data_type == typeof(List<XyScatterRenderableSeries>))
-                    {
-                        var variety = new DataVarietySciChartSeries<XyScatterRenderableSeries>();
-                        variety.Create(ref data, data.DataDimension(), data.ValueTypes());
-                        _data_library.Add(variety.Variety, variety);
-                    }
-                    else if (data_type == typeof(ParallelCoordinateDataSource<ExpandoObject>))
-                    {
-                        var variety = new DataVarietySciChartParallel<ExpandoObject>();
-                        variety.Create(ref data, data.DataDimension(), data.ValueTypes());
-                        _data_library.Add(variety.Variety, variety);
-                    }
-                    else
-                    {
-                        Log.Default.Msg(Log.Level.Warn, "Requested data not available for given data type: " + data_type.FullName);
-                        return null;
-                    }
-                    /// TODO Add more library data formats here ...
                 }
 
                 return _data_library[data_type].Get;
@@ -268,13 +262,13 @@ namespace Visualizations
 
             /// <summary>
             /// Callback provided for getting notified on changed meta data 
-            /// !!! This function is called for every single change !!!
+            /// !!! This function is currently called for every single change !!!
             /// </summary>
             /// <param name="sender">The sender object.</param>
             /// <param name="e">The property changed event arguments.</param>
             private void event_metadata_changed(object sender, PropertyChangedEventArgs e)
             {
-                var sender_selection = sender as MetaData;
+                var sender_selection = sender as MetaDataGeneric;
                 if ((sender_selection == null) || (e.PropertyName != "IsSelected"))
                 {
                     Log.Default.Msg(Log.Level.Error, "Unknown sender");

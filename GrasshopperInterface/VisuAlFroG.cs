@@ -1,16 +1,12 @@
 using System;
-using System.Resources;
-using System.Linq;
-using System.Collections.Generic;
-using Rhino.Geometry;
-using Grasshopper;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
 using Grasshopper.Kernel.Types;
 using GrasshopperComponent.Utilities;
-using Visualizations.Data;
 using Frontend.Application;
 using Core.Utilities;
+using Core.Data;
+using Core.Abstracts;
 
 
 

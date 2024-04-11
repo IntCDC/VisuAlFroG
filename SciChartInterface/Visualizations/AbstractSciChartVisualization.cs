@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Runtime.Remoting.Contexts;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Collections.Generic;
 using Core.Abstracts;
-using Visualizations.SciChartInterface;
 using Core.Utilities;
 using SciChart.Charting.Visuals;
-using SciChart.Charting.Model.DataSeries;
-using SciChart.Charting.Visuals.RenderableSeries;
-using Visualizations.Data;
 using System.Windows;
-using static System.Net.Mime.MediaTypeNames;
+using Core.Data;
+using SciChart.Charting.Visuals.RenderableSeries;
 
 
 
@@ -19,13 +14,13 @@ using static System.Net.Mime.MediaTypeNames;
  * Abstract Visualization for SciChart based visualizations relying on the SciChartSurface.
  * 
  */
-namespace Visualizations
+namespace SciChartInterface
 {
-    namespace Abstracts
+    namespace Visualizations
     {
         public abstract class AbstractSciChartVisualization<SurfaceType, DataType> : AbstractVisualization
             where SurfaceType : SciChartSurface, new()
-            where DataType : AbstractDataInterface, new()
+            where DataType : class, new()
 
         {
             /* ------------------------------------------------------------------*/
@@ -34,14 +29,12 @@ namespace Visualizations
             public sealed override bool MultipleInstances { get { return true; } }
             public sealed override List<Type> DependingServices { get { return new List<Type>() { typeof(SciChartInterfaceService) }; } }
 
-            protected DataType DataInterface { get; set; }
             protected SurfaceType Content { get { return _content_surface; } }
-
 
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public override bool Initialize()
+            public override bool Initialize(DataManager.RequestCallback_Delegate request_callback)
             {
                 if (_initialized)
                 {
@@ -49,8 +42,7 @@ namespace Visualizations
                 }
                 _timer.Start();
 
-                DataInterface = new DataType();
-                DataInterface.RequestDataCallback = _request_callback;
+                this.RequestDataCallback = request_callback;
 
                 _content_surface = new SurfaceType();
                 _content_surface.Name = ID;
@@ -80,14 +72,14 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Warn, "Re-creating visualization");
                     _created = false;
                 }
-                if (DataInterface.RequestDataCallback == null)
+                if (this.RequestDataCallback == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
                 }
 
                 // Set data
-                if (!DataInterface.Set(_content_surface))
+                if (!this.GetData(_content_surface))
                 {
                     Log.Default.Msg(Log.Level.Error, "Unable to set data");
                 }
@@ -160,6 +152,69 @@ namespace Visualizations
                 {
                     _content_surface.ZoomExtents();
                 }
+            }
+
+            public override bool GetData(object data_parent)
+            {
+                if (data_parent as SciChartSurface != null)
+                {
+                    var parent = data_parent as SciChartSurface;
+                    var data = (List<DataType>)RequestDataCallback(typeof(List<DataType>));
+                    if (data == null)
+                    {
+                        Log.Default.Msg(Log.Level.Error, "Missing data for: " + typeof(DataType).FullName);
+                        return false;
+                    }
+                    if (data.Count == 0)
+                    {
+                        Log.Default.Msg(Log.Level.Error, "Missing data");
+                        return false;
+                    }
+
+                    foreach (var data_series in data)
+                    {
+                        var renderable_series = data_series as BaseRenderableSeries;
+                        if (renderable_series != null)
+                        {
+                            renderable_series.Name = UniqueID.Generate();
+                            renderable_series.SelectionChanged += event_selection_changed;
+                            parent.RenderableSeries.Add(renderable_series);
+                        }
+                        else
+                        {
+                            Log.Default.Msg(Log.Level.Error, "Can not convert to BaseRenderableSeries...");
+                        }
+                    }
+                }
+                else if (data_parent as SciChartParallelCoordinateSurface != null)
+                {
+                    var parent = data_parent as SciChartParallelCoordinateSurface;
+                    var data = (ParallelCoordinateDataSource<DataType>)RequestDataCallback(typeof(ParallelCoordinateDataSource<DataType>));
+                    if (data == null)
+                    {
+                        Log.Default.Msg(Log.Level.Error, "Missing data for: " + typeof(DataType).FullName);
+                        return false;
+                    }
+
+                    parent.ParallelCoordinateDataSource = data;
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Can not convert data parent parameter to required type");
+                    return false;
+                }
+                return true;
+            }
+
+            /// <summary>
+            /// TODO
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+            /// <exception cref="NotImplementedException"></exception>
+            private void event_selection_changed(object sender, EventArgs e)
+            {
+                throw new NotImplementedException();
             }
 
 

@@ -1,20 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Visualizations.PythonInterface;
 using Visualizations.WebAPI;
-using Visualizations.SciChartInterface;
-using Visualizations.Data;
-using System.Net.Http;
-using Microsoft.Owin.Hosting;
-using Core.Utilities;
 using Core.Abstracts;
-using System.Windows.Controls;
-using Visualizations.Varieties;
-using Core.GUI;
-using Visualizations.Abstracts;
+using Core.Data;
 
 
 
@@ -47,7 +35,7 @@ namespace Visualizations
             _timer.Start();
 
             // Content Manager
-            bool initialized = _contentmanager.Initialize(_datamanager.RequestDataCallback, _datamanager.RegisterUpdateCallback, _datamanager.UnregisterUpdateCallback);
+            bool initialized = _contentmanager.Initialize(_datamanager.RequestDataCallback, _datamanager.RegisterUpdateTypeCallback, _datamanager.UnregisterUpdateCallback);
             var required_services = _contentmanager.DependingServices();
 
             // Data Manager

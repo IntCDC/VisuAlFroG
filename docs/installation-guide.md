@@ -86,7 +86,6 @@ The following software is required to be installed beforehand:
 The successful installation can be tested by opening the provided Grasshopper example: `..\example\VisualizeDataExample.gh`.
 
 
------
 <!-- ###################################################################### -->
 ### Known Issues
 
@@ -102,4 +101,7 @@ Following errors indicate the problem mentioned above:
   - Object: VisuAlFroG (level 1) Exception has been thrown by the target of an invocation. TargetInvocationException
   - Object: VisuAlFroG (level 2) Could not load file or assembly 'VisuAlFroG_WPF, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'. FileNotFoundException
 
------
+
+<!-- ###################################################################### -->
+
+

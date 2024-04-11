@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Drawing;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
 using Core.Utilities;
-using Core.Abstracts;
-using Visualizations;
 using Core.GUI;
-using System.Windows.Input;
-using Visualizations.Data;
+using Core.Data;
 
 
 

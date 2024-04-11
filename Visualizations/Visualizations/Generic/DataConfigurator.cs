@@ -1,22 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Media;
 using System.Windows;
-using Core.Abstracts;
 using Core.Utilities;
-using System.Windows.Forms;
-using System.Runtime.Remoting.Contexts;
-using System.Collections.ObjectModel;
-using Visualizations.Abstracts;
-using Core.GUI;
-using System.Windows.Markup;
-using System.Globalization;
-using Visualizations.Data;
+using Core.Data;
+using Core.Abstracts;
 
 
 
@@ -26,10 +13,10 @@ using Visualizations.Data;
  */
 namespace Visualizations
 {
-    namespace Miscellaneous
+    namespace Generic
 
     {
-        public class DataConfigurator : AbstractGenericVisualization<System.Windows.Controls.StackPanel, DataInterfaceGeneric<GenericDataStructure>>
+        public class DataConfigurator : AbstractGenericVisualization<System.Windows.Controls.StackPanel>
         {
             /* ------------------------------------------------------------------*/
             // properties
@@ -39,6 +26,11 @@ namespace Visualizations
 
             /* ------------------------------------------------------------------*/
             // public functions
+
+            public override Type GetDataType() 
+            { 
+                return typeof(GenericDataStructure);
+            }
 
             public override bool ReCreate()
             {
@@ -52,7 +44,7 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Warn, "Re-creating visualization");
                     _created = false;
                 }
-                if (DataInterface.RequestDataCallback == null)
+                if (this.RequestDataCallback == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
@@ -61,7 +53,7 @@ namespace Visualizations
 
 
                 GenericDataStructure data = null;
-                if (!DataInterface.Set(ref data))
+                if (!this.GetData(ref data))
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing data");
                     return false;
@@ -106,7 +98,7 @@ namespace Visualizations
                 }
 
                 GenericDataStructure data = null;
-                if (!DataInterface.Set(ref data))
+                if (!this.GetData(ref data))
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing data");
                     return false;
@@ -219,7 +211,7 @@ namespace Visualizations
                 var treevalue = sender as TreeViewItem;
                 if (treevalue != null)
                 {
-                    var meta_data = treevalue.Tag as MetaData;
+                    var meta_data = treevalue.Tag as MetaDataGeneric;
                     if (meta_data != null)
                     {
                         meta_data.IsSelected = !meta_data.IsSelected;
@@ -235,7 +227,7 @@ namespace Visualizations
             /// </summary>
             /// <param name="tree"></param>
             /// <param name="meta_data"></param>
-            private void update_metadata_at_index(TreeViewItem tree, MetaData meta_data)
+            private void update_metadata_at_index(TreeViewItem tree, MetaDataGeneric meta_data)
             {
                 foreach (var treeobject in tree.Items)
                 {

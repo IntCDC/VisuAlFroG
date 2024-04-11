@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Visualizations.Data;
-using Visualizations.Abstracts;
+using Core.Abstracts;
 using SciChart.Charting.Visuals.RenderableSeries;
 using Core.Utilities;
+using Core.Data;
 
 
 
@@ -17,11 +15,11 @@ using Core.Utilities;
 using SciChartUniformDataType = SciChart.Charting.Model.DataSeries.UniformXyDataSeries<double>;
 using SciChartXYDataType = SciChart.Charting.Model.DataSeries.XyDataSeries<double, double>;
 
-namespace Visualizations
+namespace SciChartInterface
 {
     namespace Data
     {
-        public class DataVarietySciChartSeries<DataType> : AbstractDataVariety<List<DataType>>
+        public class DataTypeSciChartSeries<DataType> : AbstractDataType<List<DataType>>
             where DataType : BaseRenderableSeries, new()
         {
             /* ------------------------------------------------------------------*/
@@ -94,20 +92,20 @@ namespace Visualizations
                 {
                     for (int i = 0; i < d.DataSeries.Count; i++)
                     {
-                        if (updated_entry.MetaData.Index == ((MetaData)d.DataSeries.Metadata[i]).Index)
+                        if (updated_entry.MetaData.Index == ((MetaDataSciChart)d.DataSeries.Metadata[i]).Index)
                         {
                             using (d.DataSeries.SuspendUpdates())
                             {
                                 var uniform_series = d.DataSeries as SciChartUniformDataType;
                                 if (uniform_series != null)
                                 {
-                                    uniform_series.Update(i, (double)d.DataSeries.YValues[i], updated_entry.MetaData);
+                                    uniform_series.Update(i, (double)d.DataSeries.YValues[i], updated_entry.MetaData as MetaDataSciChart);
                                     break;
                                 }
                                 var xy_series = d.DataSeries as SciChartXYDataType;
                                 if (xy_series != null)
                                 {
-                                    xy_series.Update(i, (double)d.DataSeries.YValues[i], updated_entry.MetaData);
+                                    xy_series.Update(i, (double)d.DataSeries.YValues[i], updated_entry.MetaData as MetaDataSciChart);
                                     break;
                                 }
                                 Log.Default.Msg(Log.Level.Error, "Unable to convert data series to known type");
@@ -134,7 +132,7 @@ namespace Visualizations
                         var series = new SciChartUniformDataType();
                         foreach (var entry in branch.Entries)
                         {
-                            series.Append((double)entry.Values[0], entry.MetaData);
+                            series.Append((double)entry.Values[0], entry.MetaData as MetaDataSciChart);
                         }
                         data_series.DataSeries = series;
 
@@ -144,7 +142,7 @@ namespace Visualizations
                         var series = new SciChartXYDataType();
                         foreach (var entry in branch.Entries)
                         {
-                            series.Append((double)entry.Values[0], (double)entry.Values[1], entry.MetaData);
+                            series.Append((double)entry.Values[0], (double)entry.Values[1], entry.MetaData as MetaDataSciChart);
                         }
                         data_series.DataSeries = series;
                     }

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
-using Core.GUI;
 using SciChart.Charting.Model.DataSeries;
 using SciChart.Charting.Visuals.PaletteProviders;
 using SciChart.Charting.Visuals.RenderableSeries;
@@ -16,10 +10,11 @@ using SciChart.Charting.Visuals.RenderableSeries;
  * SciChart specific stroke palette for column plots
  * 
  */
-namespace Visualizations
+
+namespace SciChartInterface
 {
-    namespace Styles
-    {
+    namespace Visualizations
+    { 
         public class StrokePalette : IStrokePaletteProvider
         {
             /* ------------------------------------------------------------------*/
@@ -40,10 +35,10 @@ namespace Visualizations
             /// <returns></returns>
             public Color? OverrideStrokeColor(IRenderableSeries rSeries, int index, IPointMetadata meta_data)
             {
-                /// XXX This is not working because DynamicResourceExtension dows not reference 'hard' object ...?
-                object Color_StrokeSelected = new DynamicResourceExtension("Color_StrokeSelected");
-                object Color_StrokeDefault = new DynamicResourceExtension("Color_StrokeDefault");
-                return ((meta_data != null) && (meta_data.IsSelected)) ? (Color)Color_StrokeSelected : (Color)Color_StrokeDefault;
+                /// XXX This is not working because DynamicResourceExtension does not reference 'hard' object ...?
+                var Object_StrokeSelected = new DynamicResourceExtension("Color_StrokeSelected");
+                var Object_StrokeDefault = new DynamicResourceExtension("Color_StrokeDefault");
+                return null; /// XXX  ((meta_data != null) && (meta_data.IsSelected)) ? Color_StrokeSelected : Color_StrokeDefault;
             }
         }
     }

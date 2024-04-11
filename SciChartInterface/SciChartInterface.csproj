@@ -91,6 +91,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\MetaDataSciChart.cs" />
+    <Compile Include="Data\DataTypeSciChartParallel.cs" />
+    <Compile Include="Data\DataTypeSciChartSeries.cs" />
     <Compile Include="SciChartInterfaceService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -106,6 +109,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="SciChartRuntimeLicenseKey.cs" />
+    <Compile Include="Visualizations\AbstractSciChartVisualization.cs" />
+    <Compile Include="Visualizations\SciChartStrokePalette.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

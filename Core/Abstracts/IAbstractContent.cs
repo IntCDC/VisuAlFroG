@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using Core.Data;
 
 
 
@@ -50,6 +51,12 @@ namespace Core
             // interface functions
 
             /// <summary>
+            /// Initialize the content.
+            /// </summary>
+            /// <returns>True on success, false otherwise.</returns>
+            bool Initialize(DataManager.RequestCallback_Delegate request_callback);
+
+            /// <summary>
             /// Create the content. To be called only once.
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
@@ -66,6 +73,12 @@ namespace Core
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
             bool Detach();
+
+            /// <summary>
+            /// Terminate the content. Should implement counterpart to Initialize().
+            /// </summary>
+            /// <returns>True on success, false otherwise.</returns>
+            bool Terminate();
         }
     }
 }
