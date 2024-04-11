@@ -18,7 +18,7 @@ using Core.Data;
  */
 namespace Visualizations
 {
-    public class LinesVisualization : AbstractSciChartVisualization<SciChartSurface, FastLineRenderableSeries>
+    public class LinesVisualization : AbstractSciChartSeries<SciChartSurface, FastLineRenderableSeries>
     {
         /* ------------------------------------------------------------------*/
         // properties
@@ -28,11 +28,6 @@ namespace Visualizations
 
         /* ------------------------------------------------------------------*/
         // public functions
-
-        public override Type GetDataType()
-        {
-            return typeof(DataTypeSciChartSeries<FastLineRenderableSeries>);
-        }
 
         public override bool ReCreate()
         {

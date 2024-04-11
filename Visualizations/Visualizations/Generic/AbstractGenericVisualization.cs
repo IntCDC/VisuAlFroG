@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Windows.Controls;
 using Core.Utilities;
-using Core.Abstracts;
 using Core.Data;
+using Core.Abstracts;
 
 
 
@@ -29,6 +29,11 @@ namespace Visualizations
 
             /* ------------------------------------------------------------------*/
             // public functions
+
+            public override Type GetDataType()
+            {
+                return typeof(DataTypeGeneric);
+            }
 
             public override bool Initialize(DataManager.RequestCallback_Delegate request_callback)
             {
@@ -130,7 +135,7 @@ namespace Visualizations
             /// <returns></returns>
             public override bool GetData(ref GenericDataStructure data_parent)
             {
-                var data = (GenericDataStructure)RequestDataCallback(typeof(GenericDataStructure));
+                var data = (GenericDataStructure)RequestDataCallback(GetDataType());
                 if (data == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing data for: " + typeof(GenericDataStructure).FullName);

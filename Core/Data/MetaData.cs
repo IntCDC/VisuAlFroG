@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Core.Abstracts;
+﻿using SciChart.Charting.Model.DataSeries;
 
 
 
 /*
- * Meta data for generic data
+ * Meta data
+ * 
+ * XXX Depends on SciChart.Charting.Model.DataSeries.IPointMetadata
+ * TODO: How to avoid this?
  * 
  */
 namespace Core
@@ -17,7 +14,7 @@ namespace Core
     namespace Data
     {
 
-        public class MetaDataGeneric
+        public class MetaData : IPointMetadata
         {
 
             /* ------------------------------------------------------------------*/

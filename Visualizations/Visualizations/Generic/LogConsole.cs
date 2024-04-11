@@ -6,6 +6,8 @@ using System.Windows.Media;
 using System.Windows.Documents;
 using System.Collections.Generic;
 using Core.Data;
+using Core.Abstracts;
+
 
 
 
@@ -31,11 +33,6 @@ namespace Visualizations
 
             /* ------------------------------------------------------------------*/
             // public functions
-
-            public override Type GetDataType()
-            {
-                return typeof(GenericDataStructure);
-            }
 
             public override bool Initialize(DataManager.RequestCallback_Delegate request_callback)
             {

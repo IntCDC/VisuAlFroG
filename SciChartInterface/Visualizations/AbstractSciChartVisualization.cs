@@ -7,6 +7,7 @@ using SciChart.Charting.Visuals;
 using System.Windows;
 using Core.Data;
 using SciChart.Charting.Visuals.RenderableSeries;
+using SciChartInterface.Data;
 
 
 
@@ -18,9 +19,8 @@ namespace SciChartInterface
 {
     namespace Visualizations
     {
-        public abstract class AbstractSciChartVisualization<SurfaceType, DataType> : AbstractVisualization
+        public abstract class AbstractSciChartVisualization<SurfaceType> : AbstractVisualization
             where SurfaceType : SciChartSurface, new()
-            where DataType : class, new()
 
         {
             /* ------------------------------------------------------------------*/
@@ -152,69 +152,6 @@ namespace SciChartInterface
                 {
                     _content_surface.ZoomExtents();
                 }
-            }
-
-            public override bool GetData(object data_parent)
-            {
-                if (data_parent as SciChartSurface != null)
-                {
-                    var parent = data_parent as SciChartSurface;
-                    var data = (List<DataType>)RequestDataCallback(typeof(List<DataType>));
-                    if (data == null)
-                    {
-                        Log.Default.Msg(Log.Level.Error, "Missing data for: " + typeof(DataType).FullName);
-                        return false;
-                    }
-                    if (data.Count == 0)
-                    {
-                        Log.Default.Msg(Log.Level.Error, "Missing data");
-                        return false;
-                    }
-
-                    foreach (var data_series in data)
-                    {
-                        var renderable_series = data_series as BaseRenderableSeries;
-                        if (renderable_series != null)
-                        {
-                            renderable_series.Name = UniqueID.Generate();
-                            renderable_series.SelectionChanged += event_selection_changed;
-                            parent.RenderableSeries.Add(renderable_series);
-                        }
-                        else
-                        {
-                            Log.Default.Msg(Log.Level.Error, "Can not convert to BaseRenderableSeries...");
-                        }
-                    }
-                }
-                else if (data_parent as SciChartParallelCoordinateSurface != null)
-                {
-                    var parent = data_parent as SciChartParallelCoordinateSurface;
-                    var data = (ParallelCoordinateDataSource<DataType>)RequestDataCallback(typeof(ParallelCoordinateDataSource<DataType>));
-                    if (data == null)
-                    {
-                        Log.Default.Msg(Log.Level.Error, "Missing data for: " + typeof(DataType).FullName);
-                        return false;
-                    }
-
-                    parent.ParallelCoordinateDataSource = data;
-                }
-                else
-                {
-                    Log.Default.Msg(Log.Level.Error, "Can not convert data parent parameter to required type");
-                    return false;
-                }
-                return true;
-            }
-
-            /// <summary>
-            /// TODO
-            /// </summary>
-            /// <param name="sender"></param>
-            /// <param name="e"></param>
-            /// <exception cref="NotImplementedException"></exception>
-            private void event_selection_changed(object sender, EventArgs e)
-            {
-                throw new NotImplementedException();
             }
 
 

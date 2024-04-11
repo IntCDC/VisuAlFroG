@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Core.Abstracts;
+using Core.Abstracts;
 using Core.Utilities;
-using System.Dynamic;
-using System.ComponentModel.DataAnnotations;
 
 
 
@@ -65,7 +64,7 @@ namespace Core
 
                 _data_library = new Dictionary<Type, IDataVariety>();
                 var variety_generic = new DataTypeGeneric();
-                _data_library.Add(variety_generic.Variety, variety_generic);
+                _data_library.Add(variety_generic.GetType(), variety_generic);
 
                 _timer.Stop();
                 _initialized = initialized;
@@ -181,7 +180,7 @@ namespace Core
                     GenericDataStructure data = null;
                     try
                     {
-                        data = _data_library[typeof(GenericDataStructure)].Get as GenericDataStructure;
+                        data = _data_library[typeof(DataTypeGeneric)].Get as GenericDataStructure;
                         if (data == null)
                         {
                             Log.Default.Msg(Log.Level.Error, "Missing data");
@@ -204,7 +203,7 @@ namespace Core
                             return;
                         }
                         variety.Create(ref data, data.DataDimension(), data.ValueTypes());
-                        _data_library.Add(variety.Variety, variety);
+                        _data_library.Add(variety.GetType(), variety);
 
                         Log.Default.Msg(Log.Level.Info, "Added data type: " + data_type.FullName);
                     }
@@ -268,7 +267,7 @@ namespace Core
             /// <param name="e">The property changed event arguments.</param>
             private void event_metadata_changed(object sender, PropertyChangedEventArgs e)
             {
-                var sender_selection = sender as MetaDataGeneric;
+                var sender_selection = sender as MetaData;
                 if ((sender_selection == null) || (e.PropertyName != "IsSelected"))
                 {
                     Log.Default.Msg(Log.Level.Error, "Unknown sender");
@@ -279,7 +278,7 @@ namespace Core
                 try
                 {
                     // Use GenericDataStructure as reference
-                    var data = _data_library[typeof(GenericDataStructure)].Get as GenericDataStructure;
+                    var data = _data_library[typeof(DataTypeGeneric)].Get as GenericDataStructure;
                     if (data == null)
                     {
                         Log.Default.Msg(Log.Level.Error, "Missing data");

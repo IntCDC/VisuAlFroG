@@ -29,8 +29,6 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public properties
 
-            Type Variety { get; }
-
             object Get { get; }
 
             List<Dimension> SupportedDimensions { get; }

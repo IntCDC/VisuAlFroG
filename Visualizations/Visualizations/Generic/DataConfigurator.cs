@@ -3,7 +3,6 @@ using System.Windows.Controls;
 using System.Windows;
 using Core.Utilities;
 using Core.Data;
-using Core.Abstracts;
 
 
 
@@ -26,11 +25,6 @@ namespace Visualizations
 
             /* ------------------------------------------------------------------*/
             // public functions
-
-            public override Type GetDataType() 
-            { 
-                return typeof(GenericDataStructure);
-            }
 
             public override bool ReCreate()
             {
@@ -211,7 +205,7 @@ namespace Visualizations
                 var treevalue = sender as TreeViewItem;
                 if (treevalue != null)
                 {
-                    var meta_data = treevalue.Tag as MetaDataGeneric;
+                    var meta_data = treevalue.Tag as MetaData;
                     if (meta_data != null)
                     {
                         meta_data.IsSelected = !meta_data.IsSelected;
@@ -227,7 +221,7 @@ namespace Visualizations
             /// </summary>
             /// <param name="tree"></param>
             /// <param name="meta_data"></param>
-            private void update_metadata_at_index(TreeViewItem tree, MetaDataGeneric meta_data)
+            private void update_metadata_at_index(TreeViewItem tree, MetaData meta_data)
             {
                 foreach (var treeobject in tree.Items)
                 {

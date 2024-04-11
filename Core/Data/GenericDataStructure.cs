@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Core.Utilities;
-using Core.Abstracts;
 
 
 
@@ -37,9 +36,9 @@ namespace Core
                 return entry;
             }
 
-            public List<MetaDataGeneric> ListMetaData()
+            public List<MetaData> ListMetaData()
             {
-                List<MetaDataGeneric> metadata_list = new List<MetaDataGeneric>();
+                List<MetaData> metadata_list = new List<MetaData>();
                 list_metadata(this, ref metadata_list);
                 return metadata_list;
             }
@@ -96,7 +95,7 @@ namespace Core
             /// </summary>
             /// <param name="branch"></param>
             /// <param name="out_metadatalist"></param>
-            private void list_metadata(GenericDataStructure branch, ref List<MetaDataGeneric> out_metadatalist)
+            private void list_metadata(GenericDataStructure branch, ref List<MetaData> out_metadatalist)
             {
                 foreach (var entry in branch.Entries)
                 {

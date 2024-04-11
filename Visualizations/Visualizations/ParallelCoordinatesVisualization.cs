@@ -18,7 +18,7 @@ using SciChartInterface.Data;
  */
 namespace Visualizations
 {
-    public class ParallelCoordinatesVisualization : AbstractSciChartVisualization<SciChartParallelCoordinateSurface, ExpandoObject>
+    public class ParallelCoordinatesVisualization : AbstractSciChartParallel<SciChartParallelCoordinateSurface, ExpandoObject>
     {
         /* ------------------------------------------------------------------*/
         // properties
@@ -28,11 +28,6 @@ namespace Visualizations
 
         /* ------------------------------------------------------------------*/
         // public functions
-
-        public override Type GetDataType()
-        {
-            return typeof(DataTypeSciChartParallel<ExpandoObject>);
-        }
 
         public override bool ReCreate()
         {

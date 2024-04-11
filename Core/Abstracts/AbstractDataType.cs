@@ -19,7 +19,12 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public properties
 
-            public Type Variety { get { return typeof(DataType); } }
+            /*
+            public Type GetDataType() {
+                return typeof(DataType);
+            }
+            */
+
             public object Get { get { return _data; } }
 
             public abstract List<Dimension> SupportedDimensions { get; }

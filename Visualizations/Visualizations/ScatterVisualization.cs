@@ -18,7 +18,7 @@ using Core.Data;
  */
 namespace Visualizations
 {
-    public class ScatterVisualization : AbstractSciChartVisualization<SciChartSurface, XyScatterRenderableSeries>
+    public class ScatterVisualization : AbstractSciChartSeries<SciChartSurface, XyScatterRenderableSeries>
     {
         /* ------------------------------------------------------------------*/
         // properties
@@ -28,11 +28,6 @@ namespace Visualizations
 
         /* ------------------------------------------------------------------*/
         // public functions
-
-        public override Type GetDataType()
-        {
-            return typeof(DataTypeSciChartSeries<XyScatterRenderableSeries>);
-        }
 
         public override bool ReCreate()
         {

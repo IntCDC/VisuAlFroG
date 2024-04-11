@@ -91,7 +91,6 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\MetaDataSciChart.cs" />
     <Compile Include="Data\DataTypeSciChartParallel.cs" />
     <Compile Include="Data\DataTypeSciChartSeries.cs" />
     <Compile Include="SciChartInterfaceService.cs" />
@@ -109,6 +108,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="SciChartRuntimeLicenseKey.cs" />
+    <Compile Include="Visualizations\AbstractSciChartParallel.cs" />
+    <Compile Include="Visualizations\AbstractSciChartSeries.cs" />
     <Compile Include="Visualizations\AbstractSciChartVisualization.cs" />
     <Compile Include="Visualizations\SciChartStrokePalette.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

@@ -19,7 +19,7 @@ using Core.Abstracts;
  */
 namespace Visualizations
 {
-    public class ColumnsVisualization : AbstractSciChartVisualization<SciChartSurface, FastColumnRenderableSeries>
+    public class ColumnsVisualization : AbstractSciChartSeries<SciChartSurface, FastColumnRenderableSeries>
     {
         /* ------------------------------------------------------------------*/
         // properties
@@ -29,11 +29,6 @@ namespace Visualizations
 
         /* ------------------------------------------------------------------*/
         // public functions
-
-        public override Type GetDataType()
-        {
-            return typeof(DataTypeSciChartSeries<FastColumnRenderableSeries>);
-        }
 
         public override bool ReCreate()
         {
