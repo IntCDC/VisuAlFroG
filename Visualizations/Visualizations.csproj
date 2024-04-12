@@ -139,7 +139,7 @@
     <Compile Include="ContentManager.cs" />
     <Compile Include="ServiceManager.cs" />
     <Compile Include="Visualizations\ColumnsVisualization.cs" />
-    <Compile Include="Visualizations\Generic\AbstractGenericVisualization.cs" />
+    <Compile Include="Visualizations\WPFInterface\AbstractGenericVisualization.cs" />
     <Compile Include="Visualizations\Generic\DataConfigurator.cs" />
     <Compile Include="Visualizations\LinesVisualization.cs" />
     <Compile Include="Visualizations\Generic\LogConsole.cs" />
@@ -151,6 +151,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Visualizations\WPFInterface\template\Custom-WPF-Visualization.cs.template" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">

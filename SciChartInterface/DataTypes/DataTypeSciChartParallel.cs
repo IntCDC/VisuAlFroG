@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using SciChart.Charting.Visuals.RenderableSeries;
 using Core.Utilities;
 using System.Dynamic;
@@ -18,7 +17,7 @@ using Core.Data;
  */
 namespace SciChartInterface
 {
-    namespace Data
+    namespace DataTypes
     {
         public class DataTypeSciChartParallel<DataType> : AbstractDataType<ParallelCoordinateDataSource<DataType>>
             where DataType : IDynamicMetaObjectProvider, new()

@@ -7,7 +7,7 @@ using SciChart.Charting.Visuals;
 using System.Windows;
 using Core.Data;
 using SciChart.Charting.Visuals.RenderableSeries;
-using SciChartInterface.Data;
+using SciChartInterface.DataTypes;
 
 
 
@@ -17,7 +17,7 @@ using SciChartInterface.Data;
  */
 namespace SciChartInterface
 {
-    namespace Visualizations
+    namespace AbstractVisualizations
     {
         public abstract class AbstractSciChartSeries<SurfaceType, DataType> : AbstractSciChartVisualization<SurfaceType>
             where SurfaceType : SciChartSurface, new()

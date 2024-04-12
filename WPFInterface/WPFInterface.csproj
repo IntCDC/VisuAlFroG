@@ -46,8 +46,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractVisualizations\AbstractGenericVisualization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="template\Custom-WPF-Visualization.cs.template" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DataTypes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{8da3258e-49cf-483f-a100-3a12304bde0e}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

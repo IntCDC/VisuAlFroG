@@ -13,7 +13,7 @@ using Core.Abstracts;
  */
 namespace Visualizations
 {
-    namespace Generic
+    namespace WPFInterface
     {
         public abstract class AbstractGenericVisualization<ContentType> : AbstractVisualization
             where ContentType : System.Windows.FrameworkElement, new()

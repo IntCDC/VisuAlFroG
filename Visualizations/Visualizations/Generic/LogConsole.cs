@@ -7,141 +7,141 @@ using System.Windows.Documents;
 using System.Collections.Generic;
 using Core.Data;
 using Core.Abstracts;
-
+using Visualizations.WPFInterface;
 
 
 
 /*
  * Log Window Content
  * 
+ * Default window content set in WindowManager.CreateDefault()
+ * 
+ * -----
+ * 
  * TODO Optimize performance for huge amount of messages 
  * -> only add last x Inlines to fill screen and implement separate scrolling (with mouse wheel...)
  * 
- * Requested data is NOT used ...
  */
 namespace Visualizations
 {
-    namespace Generic
+    public class LogConsole : AbstractGenericVisualization<System.Windows.Controls.TextBlock>
     {
-        public class LogConsole : AbstractGenericVisualization<System.Windows.Controls.TextBlock>
+        /* ------------------------------------------------------------------*/
+        // properties
+
+        public override string Name { get { return "Log Console"; } }
+
+
+        /* ------------------------------------------------------------------*/
+        // public functions
+
+        public override bool Initialize(DataManager.RequestCallback_Delegate request_callback)
         {
-            /* ------------------------------------------------------------------*/
-            // properties
+            var init = base.Initialize(request_callback);
+            // ! Initialize base class before registering listener
+            Log.Default.RegisterListener(this.LogListener);
+            return init;
+        }
 
-            public override string Name { get { return "Log Console"; } }
-
-
-            /* ------------------------------------------------------------------*/
-            // public functions
-
-            public override bool Initialize(DataManager.RequestCallback_Delegate request_callback)
+        public override bool ReCreate()
+        {
+            if (!_initialized)
             {
-                var init = base.Initialize(request_callback);
-                // ! Initialize base class before registering listener
-                Log.Default.RegisterListener(this.LogListener);
-                return init;
+                Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                return false;
             }
-
-            public override bool ReCreate()
+            if (_created)
             {
-                if (!_initialized)
+                // Log Console does not depend on data
+                Log.Default.Msg(Log.Level.Debug, "Content already created. Skipping re-creating content.");
+                return false;
+            }
+            _timer.Start();
+
+
+            SetScrollViewBackground("Brush_Background");
+
+            Content.TextWrapping = TextWrapping.Wrap;
+            Content.FontFamily = new FontFamily("Consolas");
+            Content.Width = Double.NaN; // = "Auto"
+            Content.Height = Double.NaN; // = "Auto"
+
+            var copy_option = new MenuItem();
+            copy_option.Header = "Copy to Clipboard";
+            copy_option.Click += event_option_click;
+            AddOption(copy_option);
+
+            _timer.Stop();
+            _created = true;
+            return _created;
+        }
+
+        public override bool Terminate()
+        {
+            Log.Default.UnRegisterListener(this.LogListener);
+            return base.Terminate();
+        }
+
+        /// <summary>
+        /// Log listener callback which should be called whenever new messages are available.
+        /// </summary>
+        /// <param name="msglist">provide only the new log messages</param>
+        public void LogListener(List<Log.MessageData> msglist)
+        {
+            // Is called before Initialize() therefore _textblock needs to be not null
+            foreach (Log.MessageData msg in msglist)
+            {
+                var run = new Run(msg.message + Environment.NewLine);
+                run.SetResourceReference(Run.ForegroundProperty, "Brush_LogMessageInfo");
+                switch (msg.level)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return false;
+                    case (Log.Level.Warn):
+                        run.SetResourceReference(Run.ForegroundProperty, "Brush_LogMessageWarn");
+                        break;
+                    case (Log.Level.Error):
+                        run.SetResourceReference(Run.ForegroundProperty, "Brush_LogMessageError");
+                        break;
+                    case (Log.Level.Debug):
+                        run.SetResourceReference(Run.ForegroundProperty, "Brush_LogMessageDebug");
+                        break;
                 }
-                if (_created)
+
+                try
                 {
-                    // Log Console does not depend on data
-                    Log.Default.Msg(Log.Level.Debug, "Content already created. Skipping re-creating content.");
-                    return false;
+                    /// XXX Throws System.InvalidOperationException 
+                    /// The calling thread cannot access this object because a different thread owns it
+                    /// Occurs during shutdown when there are
+                    Content.Inlines.Add(run);
+                    ScrollToBottom();
                 }
-                _timer.Start();
-
-
-                SetScrollViewBackground("Brush_Background");
-
-                Content.TextWrapping = TextWrapping.Wrap;
-                Content.FontFamily = new FontFamily("Consolas");
-                Content.Width = Double.NaN; // = "Auto"
-                Content.Height = Double.NaN; // = "Auto"
-
-                var copy_option = new MenuItem();
-                copy_option.Header = "Copy to Clipboard";
-                copy_option.Click += event_option_click;
-                AddOption(copy_option);
-
-                _timer.Stop();
-                _created = true;
-                return _created;
-            }
-
-            public override bool Terminate()
-            {
-                Log.Default.UnRegisterListener(this.LogListener);
-                return base.Terminate();
-            }
-
-            /// <summary>
-            /// Log listener callback which should be called whenever new messages are available.
-            /// </summary>
-            /// <param name="msglist">provide only the new log messages</param>
-            public void LogListener(List<Log.MessageData> msglist)
-            {
-                // Is called before Initialize() therefore _textblock needs to be not null
-                foreach (Log.MessageData msg in msglist)
+                catch (Exception exc)
                 {
-                    var run = new Run(msg.message + Environment.NewLine);
-                    run.SetResourceReference(Run.ForegroundProperty, "Brush_LogMessageInfo");
-                    switch (msg.level)
-                    {
-                        case (Log.Level.Warn):
-                            run.SetResourceReference(Run.ForegroundProperty, "Brush_LogMessageWarn");
-                            break;
-                        case (Log.Level.Error):
-                            run.SetResourceReference(Run.ForegroundProperty, "Brush_LogMessageError");
-                            break;
-                        case (Log.Level.Debug):
-                            run.SetResourceReference(Run.ForegroundProperty, "Brush_LogMessageDebug");
-                            break;
-                    }
-
-                    try
-                    {
-                        /// XXX Throws System.InvalidOperationException 
-                        /// The calling thread cannot access this object because a different thread owns it
-                        /// Occurs during shutdown when there are
-                        Content.Inlines.Add(run);
-                        ScrollToBottom();
-                    }
-                    catch (Exception exc)
-                    {
-                        Console.WriteLine(exc.Message);
-                    }
+                    Console.WriteLine(exc.Message);
                 }
             }
+        }
 
-            /// <summary>
-            /// DEBUG
-            /// </summary>
-            ~LogConsole()
+        /// <summary>
+        /// DEBUG
+        /// </summary>
+        ~LogConsole()
+        {
+            Console.WriteLine("DEBUG - DTOR: LogConsole");
+        }
+
+
+        /* ------------------------------------------------------------------*/
+        // private functions
+
+        private void event_option_click(object sender, RoutedEventArgs e)
+        {
+            string complete_log = "";
+            foreach (var inline in Content.Inlines)
             {
-                Console.WriteLine("DEBUG - DTOR: LogConsole");
+                var text_range = new TextRange(inline.ContentStart, inline.ContentEnd);
+                complete_log += text_range.Text;
             }
-
-
-            /* ------------------------------------------------------------------*/
-            // private functions
-
-            private void event_option_click(object sender, RoutedEventArgs e)
-            {
-                string complete_log = "";
-                foreach (var inline in Content.Inlines)
-                {
-                    var text_range = new TextRange(inline.ContentStart, inline.ContentEnd);
-                    complete_log += text_range.Text;
-                }
-                Clipboard.SetText(complete_log);
-            }
+            Clipboard.SetText(complete_log);
         }
     }
 }

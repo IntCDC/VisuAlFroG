@@ -7,7 +7,7 @@ using SciChart.Charting.Visuals;
 using System.Windows;
 using Core.Data;
 using SciChart.Charting.Visuals.RenderableSeries;
-using SciChartInterface.Data;
+using SciChartInterface.DataTypes;
 using System.Dynamic;
 
 
@@ -18,7 +18,7 @@ using System.Dynamic;
  */
 namespace SciChartInterface
 {
-    namespace Visualizations
+    namespace AbstractVisualizations
     {
         public abstract class AbstractSciChartParallel<SurfaceType, DataType> : AbstractSciChartVisualization<SurfaceType>
             where SurfaceType : SciChartSurface, new()

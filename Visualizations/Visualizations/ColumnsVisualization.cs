@@ -6,8 +6,9 @@ using System.Windows.Media;
 using System.Windows;
 using System.Windows.Controls;
 using System;
-using SciChartInterface.Visualizations;
-using SciChartInterface.Data;
+using SciChartInterface.AbstractVisualizations;
+using SciChartInterface.DataTypes;
+using SciChartInterface;
 using Core.Data;
 using Core.Abstracts;
 

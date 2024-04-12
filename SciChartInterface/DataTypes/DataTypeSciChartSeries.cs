@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Core.Abstracts;
 using SciChart.Charting.Visuals.RenderableSeries;
 using Core.Utilities;
@@ -17,7 +16,7 @@ using SciChartXYDataType = SciChart.Charting.Model.DataSeries.XyDataSeries<doubl
 
 namespace SciChartInterface
 {
-    namespace Data
+    namespace DataTypes
     {
         public class DataTypeSciChartSeries<DataType> : AbstractDataType<List<DataType>>
             where DataType : BaseRenderableSeries, new()

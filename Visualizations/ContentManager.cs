@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Utilities;
 using Core.Abstracts;
-using Visualizations.Generic;
+using Visualizations.WPFInterface;
 using System.Reflection;
 using SciChart.Core.Extensions;
 using Core.GUI;
