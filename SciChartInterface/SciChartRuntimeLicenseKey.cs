@@ -1,12 +1,9 @@
 // SciChart runtime license key
 
-namespace Visualizations
+namespace SciChartInterface
 {
-    namespace SciChartInterface
+    class SciChartRuntimeLicense
     {
-        class SciChartRuntimeLicense
-        {
-            public static string Key = "INSERT YOUR SCICHART LICENCE KEY HERE";
-        }
+        public static string Key = "INSERT YOUR SCICHART LICENCE KEY HERE";
     }
 }
