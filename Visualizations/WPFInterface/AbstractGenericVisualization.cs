@@ -16,7 +16,7 @@ namespace Visualizations
     namespace WPFInterface
     {
         public abstract class AbstractGenericVisualization<ContentType> : AbstractVisualization
-            where ContentType : System.Windows.FrameworkElement, new()
+            where ContentType : System.Windows.Controls.Control, new()
         {
             /* ------------------------------------------------------------------*/
             // properties
@@ -24,7 +24,7 @@ namespace Visualizations
             public sealed override bool MultipleInstances { get { return false; } }
             public sealed override List<Type> DependingServices { get { return new List<Type>() { }; } }
 
-            protected ContentType Content { get { return (ContentType)_content_scrollview.Content; } }
+            protected ContentType Content { get; } = new ContentType();
 
 
             /* ------------------------------------------------------------------*/
@@ -44,19 +44,7 @@ namespace Visualizations
                 _timer.Start();
 
                 this.RequestDataCallback = request_callback;
-
-                _content_scrollview = new ScrollViewer();
-                _content_scrollview.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-                _content_scrollview.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-
-                _content_scrollview.Content = new ContentType();
-                _content_scrollview.Name = ID;
-                _content_scrollview.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
-                _content_scrollview.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
-
-                _content_scrollview.PreviewMouseWheel += event_scrollviewer_mousewheel;
-
-                AttachChildContent(_content_scrollview);
+                AttachChildContent(Content);
 
                 _timer.Stop();
                 _initialized = true;
@@ -96,14 +84,12 @@ namespace Visualizations
             {
                 if (_initialized)
                 {
-                    _content_scrollview = null;
-
                     _initialized = false;
                 }
                 return base.Terminate();
             }
 
-            public override void UpdateCallback(bool new_data)
+            public override void Update(bool new_data)
             {
                 if (!_created)
                 {
@@ -114,8 +100,9 @@ namespace Visualizations
                 {
                     ReCreate();
                 }
-                else {
-                    Update();
+                else
+                {
+                    UpdateData();
                 }
             }
 
@@ -124,7 +111,8 @@ namespace Visualizations
             /// Called when existing data has been updated
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
-            public virtual bool Update() {
+            public virtual bool UpdateData()
+            {
                 return true;
             }
 
@@ -146,36 +134,6 @@ namespace Visualizations
                 return true;
             }
 
-
-            /* ------------------------------------------------------------------*/
-            // protected functions
-
-            protected void SetScrollViewBackground(string background_color_resource_name)
-            {
-                _content_scrollview.SetResourceReference(ScrollViewer.BackgroundProperty, background_color_resource_name);
-            }
-
-            protected void ScrollToBottom()
-            {
-                _content_scrollview.ScrollToBottom();
-            }
-
-
-            /* ------------------------------------------------------------------*/
-            // private functions
-
-            private void event_scrollviewer_mousewheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
-            {
-                ScrollViewer scv = (ScrollViewer)sender;
-                scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);
-                e.Handled = true;
-            }
-
-
-            /* ------------------------------------------------------------------*/
-            // private variables
-
-            private ScrollViewer _content_scrollview = null;
         }
     }
 }

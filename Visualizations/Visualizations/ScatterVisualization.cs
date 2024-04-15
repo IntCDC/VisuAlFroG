@@ -6,8 +6,8 @@ using Core.GUI;
 using System.Windows;
 using System.Windows.Controls;
 using System;
-using SciChartInterface.AbstractVisualizations;
-using SciChartInterface.DataTypes;
+using SciChartInterface.Abstracts;
+using SciChartInterface.Data;
 using Core.Data;
 
 

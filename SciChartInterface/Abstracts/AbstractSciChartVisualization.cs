@@ -7,7 +7,7 @@ using SciChart.Charting.Visuals;
 using System.Windows;
 using Core.Data;
 using SciChart.Charting.Visuals.RenderableSeries;
-using SciChartInterface.DataTypes;
+using SciChartInterface.Data;
 
 
 
@@ -17,7 +17,7 @@ using SciChartInterface.DataTypes;
  */
 namespace SciChartInterface
 {
-    namespace AbstractVisualizations
+    namespace Abstracts
     {
         public abstract class AbstractSciChartVisualization<SurfaceType> : AbstractVisualization
             where SurfaceType : SciChartSurface, new()
@@ -139,13 +139,15 @@ namespace SciChartInterface
                 return base.Terminate();
             }
 
-            public override void UpdateCallback(bool new_data)
+            public override void Update(bool new_data)
             {
+                /*
                 if (!_created)
                 {
                     Log.Default.Msg(Log.Level.Error, "Creation required prior to execution");
                     return;
                 }
+                */
                 // New data does not require any further update of the SciChart visualizations
 
                 if (new_data)

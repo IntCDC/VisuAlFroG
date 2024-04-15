@@ -15,16 +15,14 @@ using Visualizations.WPFInterface;
  * Log Window Content
  * 
  * Default window content set in WindowManager.CreateDefault()
+ * Control Hierarchy: ScrollViewer(Content) -> TextBlick(_text_block)
  * 
- * -----
- * 
- * TODO Optimize performance for huge amount of messages 
- * -> only add last x Inlines to fill screen and implement separate scrolling (with mouse wheel...)
+ * XXX TODO Optimize performance for huge amount of messages -> render only visible lines (required full copy of all messages?)
  * 
  */
 namespace Visualizations
 {
-    public class LogConsole : AbstractGenericVisualization<System.Windows.Controls.TextBlock>
+    public class LogConsole : AbstractGenericVisualization<ScrollViewer>
     {
         /* ------------------------------------------------------------------*/
         // properties
@@ -34,14 +32,6 @@ namespace Visualizations
 
         /* ------------------------------------------------------------------*/
         // public functions
-
-        public override bool Initialize(DataManager.RequestCallback_Delegate request_callback)
-        {
-            var init = base.Initialize(request_callback);
-            // ! Initialize base class before registering listener
-            Log.Default.RegisterListener(this.LogListener);
-            return init;
-        }
 
         public override bool ReCreate()
         {
@@ -59,17 +49,29 @@ namespace Visualizations
             _timer.Start();
 
 
-            SetScrollViewBackground("Brush_Background");
+            _text_block = new TextBlock();
+            _text_block.TextWrapping = TextWrapping.Wrap;
+            _text_block.FontFamily = new FontFamily("Consolas");
+            _text_block.Width = Double.NaN; // = "Auto"
+            _text_block.Height = Double.NaN; // = "Auto"
 
-            Content.TextWrapping = TextWrapping.Wrap;
-            Content.FontFamily = new FontFamily("Consolas");
-            Content.Width = Double.NaN; // = "Auto"
-            Content.Height = Double.NaN; // = "Auto"
+            Content.Name = ID;
+            Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
+            Content.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
+            Content.PreviewMouseWheel += event_scrollviewer_mousewheel;
+            Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
+            Content.Content = _text_block;
 
             var copy_option = new MenuItem();
             copy_option.Header = "Copy to Clipboard";
             copy_option.Click += event_option_click;
             AddOption(copy_option);
+
+            // Call after _text_block has been created
+            Log.Default.RegisterListener(this.LogListener);
+
 
             _timer.Stop();
             _created = true;
@@ -85,7 +87,7 @@ namespace Visualizations
         /// <summary>
         /// Log listener callback which should be called whenever new messages are available.
         /// </summary>
-        /// <param name="msglist">provide only the new log messages</param>
+        /// <param name="msglist">Provides only the new log messages</param>
         public void LogListener(List<Log.MessageData> msglist)
         {
             // Is called before Initialize() therefore _textblock needs to be not null
@@ -108,11 +110,12 @@ namespace Visualizations
 
                 try
                 {
-                    /// XXX Throws System.InvalidOperationException 
-                    /// The calling thread cannot access this object because a different thread owns it
-                    /// Occurs during shutdown when there are
-                    Content.Inlines.Add(run);
-                    ScrollToBottom();
+                    if (_text_block == null) {
+                        Log.Default.Msg(Log.Level.Error, "Text Block element is null");
+                        return;
+                    }
+                    _text_block.Inlines.Add(run);
+                    scroll_bottom();
                 }
                 catch (Exception exc)
                 {
@@ -136,12 +139,37 @@ namespace Visualizations
         private void event_option_click(object sender, RoutedEventArgs e)
         {
             string complete_log = "";
-            foreach (var inline in Content.Inlines)
+            foreach (var inline in _text_block.Inlines)
             {
                 var text_range = new TextRange(inline.ContentStart, inline.ContentEnd);
                 complete_log += text_range.Text;
             }
             Clipboard.SetText(complete_log);
         }
+
+        private void event_scrollviewer_mousewheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            ScrollViewer scv = (ScrollViewer)sender;
+            scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);
+            scv.UpdateLayout();
+            e.Handled = true;
+        }
+
+        protected void set_scroll_background(string background_color_resource_name)
+        {
+            Content.SetResourceReference(ScrollViewer.BackgroundProperty, background_color_resource_name);
+        }
+
+        protected void scroll_bottom()
+        {
+            Content.ScrollToBottom();
+        }
+
+
+        /* ------------------------------------------------------------------*/
+        // private variables
+
+        private TextBlock _text_block = null;
+
     }
 }

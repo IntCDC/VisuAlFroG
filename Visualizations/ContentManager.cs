@@ -273,7 +273,7 @@ namespace Visualizations
             {
                 if (content_types.Value.ContainsKey(content_id))
                 {
-                    _unregister_data_update_callback(content_types.Value[content_id].UpdateCallback);
+                    _unregister_data_update_callback(content_types.Value[content_id].Update);
                     content_types.Value[content_id].Detach();
                     content_types.Value[content_id].Terminate();
                     return content_types.Value.Remove(content_id);
@@ -338,7 +338,7 @@ namespace Visualizations
             var content = (AbstractVisualization)Activator.CreateInstance(type);
             if (content.Initialize(_data_request_callback))
             {
-                _register_data_update_type_callback(content.UpdateCallback, content.GetDataType());
+                _register_data_update_type_callback(content.Update, content.GetDataType());
                 if (content.ReCreate())
                 {
                     return content;
@@ -410,7 +410,7 @@ namespace Visualizations
             {
                 foreach (var content_data in content_types.Value)
                 {
-                    _unregister_data_update_callback(content_data.Value.UpdateCallback);
+                    _unregister_data_update_callback(content_data.Value.Update);
                     content_data.Value.Detach();
                     terminated &= content_data.Value.Terminate();
                 }

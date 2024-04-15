@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
 using Core.Abstracts;
 using Core.Abstracts;
 using Core.Utilities;
@@ -57,14 +59,11 @@ namespace Core
                 }
                 _timer.Start();
 
+                
+                _updated_callbacks = new List<UpdateCallback_Delegate>();
+                _data_library = new Dictionary<Type, IDataVariety>();
                 bool initialized = true;
 
-
-                _updated_callbacks = new List<UpdateCallback_Delegate>();
-
-                _data_library = new Dictionary<Type, IDataVariety>();
-                var variety_generic = new DataTypeGeneric();
-                _data_library.Add(variety_generic.GetType(), variety_generic);
 
                 _timer.Stop();
                 _initialized = initialized;
@@ -108,39 +107,33 @@ namespace Core
                 _timer.Start();
                 Log.Default.Msg(Log.Level.Info, "Reading input data ...");
 
-
-                // Collect information on input data 
-                var data_dimension = input_data.DataDimension();
-                if (data_dimension < 1)
+                // Update generic data type...
+                /// -> Initializes meta data!
+                if (!_data_library.ContainsKey(typeof(DataTypeGeneric)))
                 {
-                    Log.Default.Msg(Log.Level.Error, "Invalid data dimension");
-                    return;
+                    var variety_generic = new DataTypeGeneric(event_metadata_changed);
+                    _data_library.Add(variety_generic.GetType(), variety_generic);
                 }
+                _data_library[typeof(DataTypeGeneric)].Create(ref input_data, input_data.DataDimension(), input_data.ValueTypes());
+                var data = _data_library[typeof(DataTypeGeneric)].Get as GenericDataStructure;
 
-                var value_types = input_data.ValueTypes();
-
-                // Initialize meta data
-                int index = 0;
-                init_metadata(input_data, ref index);
-
-                // Update all data 
+                // ...then update all other data types
                 foreach (var pair in _data_library)
                 {
-                    pair.Value.Create(ref input_data, data_dimension, value_types);
-                }
-
-
-                // Notify visualizations via registered update callbacks
-                if (_updated_callbacks != null)
-                {
-                    foreach (var updated_callback in _updated_callbacks)
-                    {
-                        updated_callback(true);
+                    if (pair.Key != typeof(DataTypeGeneric)) { 
+                        pair.Value.Create(ref input_data, data.DataDimension(), data.ValueTypes());
                     }
                 }
-                else
+
+                // Notify visualizations via registered update callbacks
+                if (_updated_callbacks == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "callback list for registered update callbacks");
+                    return;
+                }
+                foreach (var updated_callback in _updated_callbacks)
+                {
+                    updated_callback(true);
                 }
 
                 _timer.Stop();
@@ -176,37 +169,29 @@ namespace Core
                 // Register data type of calling visualization
                 if (!_data_library.ContainsKey(data_type))
                 {
-                    // Get current data from generic reference
-                    GenericDataStructure data = null;
-                    try
+                    // Create new data variety
+                    var variety = (IDataVariety)Activator.CreateInstance(data_type, (PropertyChangedEventHandler)event_metadata_changed);
+                    if (variety == null)
                     {
-                        data = _data_library[typeof(DataTypeGeneric)].Get as GenericDataStructure;
-                        if (data == null)
-                        {
-                            Log.Default.Msg(Log.Level.Error, "Missing data");
-                            return;
-                        }
-                    }
-                    catch (Exception exc)
-                    {
-                        Log.Default.Msg(Log.Level.Error, exc.Message);
+                        Log.Default.Msg(Log.Level.Error, "Expected data type of IDataVariety but received: " + data_type.FullName);
                         return;
                     }
+                    _data_library.Add(variety.GetType(), variety);
 
-                    // Create new data variety
-                    if (!_data_library.ContainsKey(data_type))
+                    // Get current data from generic reference
+                    if (!_data_library.ContainsKey(typeof(DataTypeGeneric)))
                     {
-                        var variety = (IDataVariety)Activator.CreateInstance(data_type);
-                        if (variety == null)
-                        {
-                            Log.Default.Msg(Log.Level.Error, "Expected data type of IDataVariety but received: " + data_type.FullName);
-                            return;
-                        }
-                        variety.Create(ref data, data.DataDimension(), data.ValueTypes());
-                        _data_library.Add(variety.GetType(), variety);
-
-                        Log.Default.Msg(Log.Level.Info, "Added data type: " + data_type.FullName);
+                        Log.Default.Msg(Log.Level.Error, "Missing generic data");
+                        return;
                     }
+                    var data = _data_library[typeof(DataTypeGeneric)].Get as GenericDataStructure;
+                    // If there is already data present, create the data for the new type
+                    if (data != null)
+                    {
+                        variety.Create(ref data, data.DataDimension(), data.ValueTypes());
+                    }
+
+                    Log.Default.Msg(Log.Level.Info, "Added new data type: " + data_type.FullName);
                 }
             }
 
@@ -218,8 +203,7 @@ namespace Core
                 // Unregister data update callback of calling visualization
                 if (_updated_callbacks == null)
                 {
-                    /// XXX Throws error when called during shutdown ...
-                    // Log.Default.Msg(Log.Level.Error, "callback list for registered update callbacks");
+                    Log.Default.Msg(Log.Level.Error, "callback list for registered update callbacks");
                     return;
                 }
                 if (_updated_callbacks.Contains(update_callback))
@@ -229,7 +213,7 @@ namespace Core
                 }
                 Log.Default.Msg(Log.Level.Debug, "Callback for updated data already removed");
 
-                /// Do not unregister data type since it might be used by other visualizations or later when visualization is created again...
+                /// XXX Do not unregister data type since it might be used by other visualization(s) or later when visualization is created again...
             }
 
             /// <summary>
@@ -267,7 +251,7 @@ namespace Core
             /// <param name="e">The property changed event arguments.</param>
             private void event_metadata_changed(object sender, PropertyChangedEventArgs e)
             {
-                var sender_selection = sender as MetaData;
+                var sender_selection = sender as IMetaData;
                 if ((sender_selection == null) || (e.PropertyName != "IsSelected"))
                 {
                     Log.Default.Msg(Log.Level.Error, "Unknown sender");
@@ -277,47 +261,39 @@ namespace Core
 
                 try
                 {
-                    // Use GenericDataStructure as reference
-                    var data = _data_library[typeof(DataTypeGeneric)].Get as GenericDataStructure;
-                    if (data == null)
-                    {
-                        Log.Default.Msg(Log.Level.Error, "Missing data");
-                        return;
-                    }
-
-                    var entry = data.EntryAtIndex(index);
-                    if (entry == null)
-                    {
-                        Log.Default.Msg(Log.Level.Error, "Missing data entry");
-                        return;
-                    }
-
                     // Update meta data in all data series
                     foreach (var pair in _data_library)
                     {
-                        pair.Value.UpdateEntryAtIndex(entry);
+                        pair.Value.UpdateMetaData(sender_selection);
                     }
 
                     // Notify visualizations via registered update callbacks
-                    if (_updated_callbacks != null)
-                    {
-                        foreach (var updated_callback in _updated_callbacks)
-                        {
-                            updated_callback(false);
-                        }
-                    }
-                    else
+                    if (_updated_callbacks == null)
                     {
                         Log.Default.Msg(Log.Level.Error, "Missing callback list for registered update callbacks ");
+                        return;
+                    }
+                    foreach (var updated_callback in _updated_callbacks)
+                    {
+                        updated_callback(false);
                     }
 
-                    // Send changed output data to interface
+
+
+
+
+                    // Send changed output data to interface ---------------------
+                    /// TODO XXX Call only once per selection
                     if (_outputdata_callback != null)
                     {
-                        /// TODO XXX Call only once per selection
-
+                        // Use GenericDataStructure as reference
+                        if (!_data_library.ContainsKey(typeof(DataTypeGeneric)))
+                        {
+                            Log.Default.Msg(Log.Level.Error, "Missing generic data");
+                            return;
+                        }
+                        var data = _data_library[typeof(DataTypeGeneric)].Get as GenericDataStructure;
                         var metadata_list = data.ListMetaData();
-
                         var out_data = new GenericDataStructure();
                         foreach (var meta_data in metadata_list)
                         {
@@ -331,37 +307,15 @@ namespace Core
                         }
                         _outputdata_callback(ref out_data);
                     }
-                    else
-                    {
-                        /// XXX Silently continue in detached mode...
-                        // Log.Default.Msg(Log.Level.Warn, "Missing callback to propagate updated output data.");
-                    }
+                    // ---------------------------------------------------------
+
+
+
                 }
                 catch (Exception exc)
                 {
                     Log.Default.Msg(Log.Level.Error, exc.Message);
                     return;
-                }
-            }
-
-            /// <summary>
-            /// Recursively initialize meta data.
-            /// </summary>
-            /// <param name="data">The data branch.</param>
-            /// <param name="index">The entry index</param>
-            private void init_metadata(GenericDataStructure data, ref int entry_index)
-            {
-                foreach (var entry in data.Entries)
-                {
-                    entry.MetaData.IsSelected = false;
-                    entry.MetaData.Index = entry_index;
-                    entry.MetaData.PropertyChanged += event_metadata_changed;
-
-                    entry_index++;
-                }
-                foreach (var branch in data.Branches)
-                {
-                    init_metadata(branch, ref entry_index);
                 }
             }
 

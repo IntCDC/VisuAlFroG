@@ -1,12 +1,9 @@
-﻿using SciChart.Charting.Model.DataSeries;
+﻿using System.ComponentModel;
 
 
 
 /*
- * Meta data
- * 
- * XXX Depends on SciChart.Charting.Model.DataSeries.IPointMetadata
- * TODO: How to avoid this?
+ * Generic meta data
  * 
  */
 namespace Core
@@ -14,7 +11,7 @@ namespace Core
     namespace Data
     {
 
-        public class MetaData : IPointMetadata
+        public class MetaDataGeneric : IMetaData
         {
 
             /* ------------------------------------------------------------------*/
@@ -23,7 +20,7 @@ namespace Core
             /// <summary>
             /// Event to indicated changed properties.
             /// </summary>
-            public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler PropertyChanged;
 
 
             /* ------------------------------------------------------------------*/
@@ -44,9 +41,9 @@ namespace Core
                 {
                     bool call_property_change = (_selected != value);
                     _selected = value;
-                    if (call_property_change)
+                    if (call_property_change && (PropertyChanged != null))
                     {
-                        PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("IsSelected"));
+                        PropertyChanged(this, new PropertyChangedEventArgs("IsSelected"));
                     }
                 }
             }

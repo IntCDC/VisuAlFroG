@@ -7,8 +7,8 @@ using SciChart.Charting.Visuals.Axes.LabelProviders;
 using System.Windows.Controls;
 using Core.Utilities;
 using System;
-using SciChartInterface.AbstractVisualizations;
-using SciChartInterface.DataTypes;
+using SciChartInterface.Abstracts;
+using SciChartInterface.Data;
 
 
 

@@ -4,16 +4,19 @@ using System.Windows;
 using Core.Utilities;
 using Core.Data;
 using Visualizations.WPFInterface;
+using System.Net.Mime;
 
 
 
 /*
  *  Data Browser
  * 
+ * Control Hierarchy: ScrollViewer(Content) -> StackPanel(_stack_panel) -> TextBlock,TextBlock,TreeViewItem(_tree_root)
+ * 
  */
 namespace Visualizations
 {
-    public class DataConfigurator : AbstractGenericVisualization<System.Windows.Controls.StackPanel>
+    public class DataConfigurator : AbstractGenericVisualization<ScrollViewer>
     {
         /* ------------------------------------------------------------------*/
         // properties
@@ -52,12 +55,12 @@ namespace Visualizations
             }
 
 
-            Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
+            _stack_panel = new StackPanel();
 
             var text_dim = new TextBlock();
             text_dim.SetResourceReference(TextBlock.ForegroundProperty, "Brush_Foreground");
             text_dim.Text = "Data Dimensionality: " + data.DataDimension().ToString();
-            Content.Children.Add(text_dim);
+            _stack_panel.Children.Add(text_dim);
 
             var text_value_types = new TextBlock();
             text_value_types.SetResourceReference(TextBlock.ForegroundProperty, "Brush_Foreground");
@@ -66,14 +69,23 @@ namespace Visualizations
             {
                 text_value_types.Text += value_type.ToString() + " ";
             }
-            Content.Children.Add(text_value_types);
+            _stack_panel.Children.Add(text_value_types);
 
             _tree_root = new TreeViewItem();
             _tree_root.Header = "Data Root";
             _tree_root.IsExpanded = true;
             _tree_root.SetResourceReference(TreeViewItem.ForegroundProperty, "Brush_Foreground");
             create_data_tree(data, _tree_root);
-            Content.Children.Add(_tree_root);
+            _stack_panel.Children.Add(_tree_root);
+
+            Content.Name = ID;
+            Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
+            Content.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
+            Content.PreviewMouseWheel += event_scrollviewer_mousewheel;
+            Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
+            Content.Content = _stack_panel;
 
 
             _timer.Stop();
@@ -81,7 +93,7 @@ namespace Visualizations
             return _created;
         }
 
-        public override bool Update()
+        public override bool UpdateData()
         {
             if (!_created)
             {
@@ -203,7 +215,7 @@ namespace Visualizations
             var treevalue = sender as TreeViewItem;
             if (treevalue != null)
             {
-                var meta_data = treevalue.Tag as MetaData;
+                var meta_data = treevalue.Tag as MetaDataGeneric;
                 if (meta_data != null)
                 {
                     meta_data.IsSelected = !meta_data.IsSelected;
@@ -219,7 +231,7 @@ namespace Visualizations
         /// </summary>
         /// <param name="tree"></param>
         /// <param name="meta_data"></param>
-        private void update_metadata_at_index(TreeViewItem tree, MetaData meta_data)
+        private void update_metadata_at_index(TreeViewItem tree, MetaDataGeneric meta_data)
         {
             foreach (var treeobject in tree.Items)
             {
@@ -253,10 +265,29 @@ namespace Visualizations
             }
         }
 
+        private void event_scrollviewer_mousewheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            ScrollViewer scv = (ScrollViewer)sender;
+            scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);
+            scv.UpdateLayout();
+            e.Handled = true;
+        }
+
+        protected void SetScrollViewBackground(string background_color_resource_name)
+        {
+            Content.SetResourceReference(ScrollViewer.BackgroundProperty, background_color_resource_name);
+        }
+
+        protected void ScrollToBottom()
+        {
+            Content.ScrollToBottom();
+        }
+
         /* ------------------------------------------------------------------*/
         // private variables
 
         private TreeViewItem _tree_root = null;
+        private StackPanel _stack_panel = null;
 
     }
 }

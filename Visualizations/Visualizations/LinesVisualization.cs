@@ -6,8 +6,8 @@ using SciChart.Charting.Visuals.RenderableSeries;
 using SciChart.Charting.Visuals.PointMarkers;
 using Core.GUI;
 using System;
-using SciChartInterface.AbstractVisualizations;
-using SciChartInterface.DataTypes;
+using SciChartInterface.Abstracts;
+using SciChartInterface.Data;
 using Core.Abstracts;
 using Core.Data;
 

@@ -8,6 +8,7 @@ using SciChart.Charting.Visuals.Axes;
 using System.Windows.Shapes;
 using Core.Abstracts;
 using Core.Data;
+using System.ComponentModel;
 
 
 
@@ -17,7 +18,7 @@ using Core.Data;
  */
 namespace SciChartInterface
 {
-    namespace DataTypes
+    namespace Data
     {
         public class DataTypeSciChartParallel<DataType> : AbstractDataType<ParallelCoordinateDataSource<DataType>>
             where DataType : IDynamicMetaObjectProvider, new()
@@ -46,6 +47,8 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // public functions
 
+            public DataTypeSciChartParallel(PropertyChangedEventHandler meta_data_update_handler) : base(meta_data_update_handler) { }
+
             public override void Create(ref GenericDataStructure data, int data_dimension, List<Type> value_types)
             {
                 _created = false;
@@ -60,9 +63,9 @@ namespace SciChartInterface
 
                 dynamic tmp = new ExpandoObject();
 
-                // Convert data
+                // Convert and create required data
                 List<DataType> value_list = new List<DataType>();
-                convert_data(data, ref value_list);
+                create_data(data, ref value_list);
                 if (value_list.Count == 0)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing values...");
@@ -110,7 +113,7 @@ namespace SciChartInterface
                 _created = true;
             }
 
-            public override void UpdateEntryAtIndex(GenericDataEntry updated_entry)
+            public override void UpdateMetaData(IMetaData updated_meta_data)
             {
                 if (!_created)
                 {
@@ -130,7 +133,7 @@ namespace SciChartInterface
             /// </summary>
             /// <param name="branch"></param>
             /// <param name="value_list"></param>
-            private void convert_data(GenericDataStructure branch, ref List<DataType> value_list)
+            private void create_data(GenericDataStructure branch, ref List<DataType> value_list)
             {
                 // For each branch add all entries as one pcp value
                 if (branch.Entries.Count > 0)
@@ -152,7 +155,7 @@ namespace SciChartInterface
 
                 foreach (var b in branch.Branches)
                 {
-                    convert_data(b, ref value_list);
+                    create_data(b, ref value_list);
                 }
             }
 

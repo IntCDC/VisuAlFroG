@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+
 using Core.Data;
 using Core.Utilities;
 
@@ -34,6 +36,11 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
+            public AbstractDataType(PropertyChangedEventHandler meta_data_update_handler) 
+            {
+                _meta_data_update_handler = meta_data_update_handler;
+            }
+
             /// <summary>
             /// TODO Use _created flag
             /// </summary>
@@ -46,7 +53,7 @@ namespace Core
             /// TODO
             /// </summary>
             /// <param name="updated_entry"></param>
-            public abstract void UpdateEntryAtIndex(GenericDataEntry updated_entry);
+            public abstract void UpdateMetaData(IMetaData updated_meta_data);
 
             /// <summary>
             /// TODO
@@ -110,6 +117,7 @@ namespace Core
 
             protected DataType _data = default(DataType);
             protected bool _created = false;
+            protected PropertyChangedEventHandler _meta_data_update_handler = null;
         }
     }
 }

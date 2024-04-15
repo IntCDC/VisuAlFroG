@@ -67,18 +67,6 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="SciChart.Charting, Version=8.3.0.28019, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
-      <HintPath>..\packages\SciChart.8.3.0.28019\lib\net462\SciChart.Charting.dll</HintPath>
-    </Reference>
-    <Reference Include="SciChart.Core, Version=8.3.0.28019, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
-      <HintPath>..\packages\SciChart.8.3.0.28019\lib\net462\SciChart.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="SciChart.Data, Version=8.3.0.28019, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
-      <HintPath>..\packages\SciChart.8.3.0.28019\lib\net462\SciChart.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="SciChart.Drawing, Version=8.3.0.28019, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
-      <HintPath>..\packages\SciChart.8.3.0.28019\lib\net462\SciChart.Drawing.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -102,11 +90,12 @@
     <Compile Include="Abstracts\IAbstractService.cs" />
     <Compile Include="Abstracts\IAbstractConfiguration.cs" />
     <Compile Include="Abstracts\IDataVariety.cs" />
+    <Compile Include="Abstracts\IMetaData.cs" />
     <Compile Include="Data\DataManager.cs" />
     <Compile Include="Data\DataTypeGeneric.cs" />
     <Compile Include="Data\GenericDataEntry.cs" />
     <Compile Include="Data\GenericDataStructure.cs" />
-    <Compile Include="Data\MetaData.cs" />
+    <Compile Include="Data\MetaDataGeneric.cs" />
     <Compile Include="GUI\MenuBar.cs" />
     <Compile Include="GUI\ConfigurationService.cs" />
     <Compile Include="GUI\Windows\WindowBranch.cs" />

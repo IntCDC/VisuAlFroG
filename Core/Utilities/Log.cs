@@ -137,10 +137,9 @@ namespace Core
                 msgdata.message = message;
                 _messages.Add(msgdata);
 
-                List<MessageData> listener_messages = new List<MessageData>();
-                listener_messages.Add(msgdata);
-
                 // Call listeners
+                var listener_messages = new List<MessageData>();
+                listener_messages.Add(msgdata);
                 foreach (var listener in _listeners)
                 {
                     listener(listener_messages);

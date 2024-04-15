@@ -18,7 +18,7 @@ namespace Core
 
             public List<object> Values { get { return _values; } }
 
-            public MetaData MetaData { get { return _metadata; } set { _metadata = value; } }
+            public MetaDataGeneric MetaData { get { return _metadata; } set { _metadata = value; } }
 
             public int Dimension { get { return _values.Count; } }
 
@@ -60,7 +60,7 @@ namespace Core
             // private variables
 
             private List<object> _values = new List<object>();
-            private MetaData _metadata = new MetaData();
+            private MetaDataGeneric _metadata = new MetaDataGeneric();
         }
     }
 }

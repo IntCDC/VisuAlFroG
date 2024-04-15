@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Core.Data;
 
 
@@ -40,7 +41,7 @@ namespace Core
 
             void Create(ref GenericDataStructure data, int data_dimension, List<Type> value_types);
 
-            void UpdateEntryAtIndex(GenericDataEntry updated_entry);
+            void UpdateMetaData(IMetaData updated_meta_data);
         }
     }
 }

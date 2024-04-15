@@ -13,10 +13,11 @@ using Core.Data;
  */
 using SciChartUniformDataType = SciChart.Charting.Model.DataSeries.UniformXyDataSeries<double>;
 using SciChartXYDataType = SciChart.Charting.Model.DataSeries.XyDataSeries<double, double>;
+using System.ComponentModel;
 
 namespace SciChartInterface
 {
-    namespace DataTypes
+    namespace Data
     {
         public class DataTypeSciChartSeries<DataType> : AbstractDataType<List<DataType>>
             where DataType : BaseRenderableSeries, new()
@@ -45,6 +46,8 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // public functions
 
+            public DataTypeSciChartSeries(PropertyChangedEventHandler meta_data_update_handler) : base(meta_data_update_handler) { }
+
             public override void Create(ref GenericDataStructure data, int data_dimension, List<Type> value_types)
             {
                 _created = false;
@@ -61,12 +64,13 @@ namespace SciChartInterface
                     _data = new List<DataType>();
                 }
 
-                convert_data(data, data_dimension);
+                // Convert and create required data
+                create_data(data, data_dimension);
                 if (_data.Count > 0)
                 {
                     // Warn if series have different amount of values
                     int count = _data[0].DataSeries.Count;
-                    for (int i = 1; i < _data.Count; i++) 
+                    for (int i = 1; i < _data.Count; i++)
                     {
                         if (count != _data[i].DataSeries.Count)
                         {
@@ -74,12 +78,11 @@ namespace SciChartInterface
                             break;
                         }
                     }
-
                     _created = true;
                 }
             }
 
-            public override void UpdateEntryAtIndex(GenericDataEntry updated_entry)
+            public override void UpdateMetaData(IMetaData updated_meta_data)
             {
                 if (!_created)
                 {
@@ -87,31 +90,20 @@ namespace SciChartInterface
                     return;
                 }
 
-                foreach (var d in _data)
+                foreach (var data_series in _data)
                 {
-                    for (int i = 0; i < d.DataSeries.Count; i++)
+                    using (data_series.DataSeries.SuspendUpdates())
                     {
-                        if (updated_entry.MetaData.Index == ((MetaData)d.DataSeries.Metadata[i]).Index)
+                        int series_count = data_series.DataSeries.Count;
+                        for (int i = 0; i < series_count; i++)
                         {
-                            using (d.DataSeries.SuspendUpdates())
+                            if (updated_meta_data.Index == ((MetaDataSciChart)data_series.DataSeries.Metadata[i]).Index)
                             {
-                                var uniform_series = d.DataSeries as SciChartUniformDataType;
-                                if (uniform_series != null)
-                                {
-                                    uniform_series.Update(i, (double)d.DataSeries.YValues[i], updated_entry.MetaData);
-                                    break;
-                                }
-                                var xy_series = d.DataSeries as SciChartXYDataType;
-                                if (xy_series != null)
-                                {
-                                    xy_series.Update(i, (double)d.DataSeries.YValues[i], updated_entry.MetaData);
-                                    break;
-                                }
-                                Log.Default.Msg(Log.Level.Error, "Unable to convert data series to known type");
+                                ((MetaDataSciChart)data_series.DataSeries.Metadata[i]).IsSelected = updated_meta_data.IsSelected;
                             }
                         }
                     }
-                    d.InvalidateVisual();
+                    data_series.InvalidateVisual();
                 }
             }
 
@@ -119,19 +111,23 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // private functions
 
-            private void convert_data(GenericDataStructure branch, int data_dimension)
+            private void create_data(GenericDataStructure branch, int data_dimension)
             {
                 // For each branch add all leafs to one data series
                 if (branch.Entries.Count > 0)
                 {
                     DataType data_series = new DataType();
+                    data_series.Name = UniqueID.Generate();
+                    data_series.AntiAliasing = true;
 
+                    /// XXX TODO Each dimension requires separate DataType!?
                     if (data_dimension == 1)
                     {
                         var series = new SciChartUniformDataType();
                         foreach (var entry in branch.Entries)
                         {
-                            series.Append((double)entry.Values[0], entry.MetaData as MetaData);
+                            var meta_data = new MetaDataSciChart(entry.MetaData.Index, entry.MetaData.IsSelected, _meta_data_update_handler);
+                            series.Append((double)entry.Values[0], meta_data);
                         }
                         data_series.DataSeries = series;
 
@@ -141,7 +137,8 @@ namespace SciChartInterface
                         var series = new SciChartXYDataType();
                         foreach (var entry in branch.Entries)
                         {
-                            series.Append((double)entry.Values[0], (double)entry.Values[1], entry.MetaData as MetaData);
+                            var meta_data = new MetaDataSciChart(entry.MetaData.Index, entry.MetaData.IsSelected, _meta_data_update_handler);
+                            series.Append((double)entry.Values[0], (double)entry.Values[1], meta_data);
                         }
                         data_series.DataSeries = series;
                     }
@@ -150,7 +147,7 @@ namespace SciChartInterface
 
                 foreach (var b in branch.Branches)
                 {
-                    convert_data(b, data_dimension);
+                    create_data(b, data_dimension);
                 }
             }
         }

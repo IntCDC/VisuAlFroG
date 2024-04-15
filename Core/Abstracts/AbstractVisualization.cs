@@ -222,7 +222,7 @@ namespace Core
             /// TODO Called when updated data is available
             /// </summary>
             /// <param name="new_data">True if new data is available, false if existing data has been updated.</param>
-            public abstract void UpdateCallback(bool new_data);
+            public abstract void Update(bool new_data);
 
 
             /* ------------------------------------------------------------------*/

@@ -36,20 +36,17 @@ namespace Core
                 return entry;
             }
 
-            public List<MetaData> ListMetaData()
+            public List<MetaDataGeneric> ListMetaData()
             {
-                List<MetaData> metadata_list = new List<MetaData>();
+                List<MetaDataGeneric> metadata_list = new List<MetaDataGeneric>();
                 list_metadata(this, ref metadata_list);
                 return metadata_list;
             }
 
             public int DataDimension()
             {
-                int dim = -1;
-                if (!get_dimension(this, ref dim))
-                {
-                    dim = -1;
-                }
+                int dim = 0;
+                get_dimension(this, ref dim);
                 return dim;
             }
 
@@ -95,7 +92,7 @@ namespace Core
             /// </summary>
             /// <param name="branch"></param>
             /// <param name="out_metadatalist"></param>
-            private void list_metadata(GenericDataStructure branch, ref List<MetaData> out_metadatalist)
+            private void list_metadata(GenericDataStructure branch, ref List<MetaDataGeneric> out_metadatalist)
             {
                 foreach (var entry in branch.Entries)
                 {
@@ -111,13 +108,14 @@ namespace Core
             /// TODO
             /// </summary>
             /// <param name="branch"></param>
-            /// <param name="out_metadatalist"></param>
+            /// <param name="out_dim"></param>
+            /// <returns></returns>
             private bool get_dimension(GenericDataStructure branch, ref int out_dim)
             {
                 bool retval = true;
                 foreach (var entry in branch.Entries)
                 {
-                    if (out_dim == -1)
+                    if (out_dim == 0)
                     {
                         out_dim = entry.Dimension;
                     }
