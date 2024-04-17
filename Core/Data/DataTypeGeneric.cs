@@ -41,9 +41,14 @@ namespace Core
 
             public DataTypeGeneric(PropertyChangedEventHandler meta_data_update_handler) : base(meta_data_update_handler) { }
 
-            public override void Create(ref GenericDataStructure data, int data_dimension, List<Type> value_types)
+            public override void Initialize(ref GenericDataStructure data, uint data_dimension, List<Type> value_types)
             {
-                _created = false;
+                if (_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Warn, "DataTypeGeneric already initialized");
+                    return;
+                }
+                _initialized = false;
                 if (!CompatibleDimensionality(data_dimension) || !CompatibleValueTypes(value_types)) {
                     return;
                 }
@@ -56,12 +61,12 @@ namespace Core
                 int index = 0;
                 init_metadata(_data, ref index);
 
-                _created = true;
+                _initialized = true;
             }
 
-            public override void UpdateMetaData(IMetaData updated_meta_data)
+            public override void UpdateMetaDataEntry(IMetaData updated_meta_data)
             {
-                if (!_created)
+                if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Creation of data required prior to execution");
                     return;
@@ -101,7 +106,6 @@ namespace Core
                     init_metadata(branch, ref index);
                 }
             }
-
         }
     }
 }

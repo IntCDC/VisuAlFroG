@@ -338,7 +338,7 @@ namespace Visualizations
             var content = (AbstractVisualization)Activator.CreateInstance(type);
             if (content.Initialize(_data_request_callback))
             {
-                _register_data_update_type_callback(content.Update, content.GetDataType());
+                _register_data_update_type_callback(content.Update, content.RequiredDataType);
                 if (content.ReCreate())
                 {
                     return content;

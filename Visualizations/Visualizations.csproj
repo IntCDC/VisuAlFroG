@@ -139,7 +139,7 @@
     <Compile Include="ContentManager.cs" />
     <Compile Include="ServiceManager.cs" />
     <Compile Include="Visualizations\ColumnsVisualization.cs" />
-    <Compile Include="WPFInterface\AbstractGenericVisualization.cs" />
+    <Compile Include="WPFInterface\AbstractWPFVisualization.cs" />
     <Compile Include="Visualizations\Generic\DataConfigurator.cs" />
     <Compile Include="Visualizations\LinesVisualization.cs" />
     <Compile Include="Visualizations\Generic\LogConsole.cs" />

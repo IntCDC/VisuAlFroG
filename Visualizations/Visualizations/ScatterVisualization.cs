@@ -1,5 +1,4 @@
 ﻿using SciChart.Charting.Visuals;
-using SciChart.Charting.Visuals.Axes;
 using SciChart.Charting.Visuals.RenderableSeries;
 using SciChart.Charting.Visuals.PointMarkers;
 using Core.GUI;
@@ -7,8 +6,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System;
 using SciChartInterface.Abstracts;
-using SciChartInterface.Data;
-using Core.Data;
 
 
 
@@ -31,11 +28,12 @@ namespace Visualizations
 
         public override bool ReCreate()
         {
+            _timer.Start();
+
             if (!base.ReCreate())
             {
                 return false;
             }
-            _timer.Start();
 
 
             // Style--------------------------------------------
@@ -95,53 +93,6 @@ namespace Visualizations
             option_hint.Items.Add(clue_pan);
 
             AddOption(option_hint);
-
-
-            // Axis --------------------------------------------
-            var xAxis = new NumericAxis()
-            {
-                AxisTitle = "Sample No",
-                GrowBy = new SciChart.Data.Model.DoubleRange(0.2, 0.2),
-                DrawMajorBands = false
-            };
-            Content.XAxis = xAxis;
-
-            var yAxis = new NumericAxis()
-            {
-                AxisTitle = "Value",
-                GrowBy = new SciChart.Data.Model.DoubleRange(0.2, 0.2),
-                DrawMajorBands = false,
-            };
-            Content.YAxis = yAxis;
-
-
-            // Modifiers ---------------------------------------
-            Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
-                new SciChart.Charting.ChartModifiers.DataPointSelectionModifier()
-                {
-                    IsEnabled = true
-                },
-                new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier()
-                {
-                    IsEnabled = false
-                },
-                new SciChart.Charting.ChartModifiers.ZoomExtentsModifier()
-                {
-                    IsEnabled = false
-                },
-                new SciChart.Charting.ChartModifiers.ZoomPanModifier()
-                {
-                    IsEnabled = true,
-                    ExecuteOn = SciChart.Charting.ChartModifiers.ExecuteOn.MouseRightButton,
-                    ClipModeX = SciChart.Charting.ClipMode.None
-                },
-                new SciChart.Charting.ChartModifiers.MouseWheelZoomModifier()
-                {
-                    IsEnabled = true,
-                    ActionType = SciChart.Charting.ActionType.Zoom,
-                    XyDirection = SciChart.Charting.XyDirection.XYDirection
-                }
-            );
 
 
             _timer.Stop();

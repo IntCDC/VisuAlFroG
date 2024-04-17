@@ -40,20 +40,15 @@ namespace Core
             public abstract string Name { get; }
             public abstract bool MultipleInstances { get; }
             public abstract List<Type> DependingServices { get; }
+            public abstract Type RequiredDataType { get; }
+
             public bool IsAttached { get { return _attached; } }
             public string ID { get { return _id; } set { _id = value; } }
             public DataManager.RequestCallback_Delegate RequestDataCallback { get; set; }
 
+
             /* ------------------------------------------------------------------*/
             // public functions
-
-
-            /// <summary>
-            ///  Get the type of the required data variety
-            ///  TODO To be implemented by specific visualization
-            /// </summary>
-            /// <returns>Returns the data type</returns>
-            public abstract Type GetDataType();
 
 
             /// <summary>
@@ -207,13 +202,13 @@ namespace Core
             */
 
             /// <summary>
-            /// TODO One variant of the following SetData method must be implemented
+            /// TODO One variant of the following GetData method must be implemented
             /// </summary>
-            public virtual bool GetData(object data_parent)
+            protected virtual bool GetData(object data_parent)
             {
                 throw new InvalidOperationException("Call SetData() method of derived class");
             }
-            public virtual bool GetData(ref GenericDataStructure data_parent)
+            protected virtual bool GetData(ref GenericDataStructure data_parent)
             {
                 throw new InvalidOperationException("Call SetData() method of derived class");
             }

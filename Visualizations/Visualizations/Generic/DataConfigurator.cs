@@ -5,6 +5,7 @@ using Core.Utilities;
 using Core.Data;
 using Visualizations.WPFInterface;
 using System.Net.Mime;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 
 
@@ -16,7 +17,7 @@ using System.Net.Mime;
  */
 namespace Visualizations
 {
-    public class DataConfigurator : AbstractGenericVisualization<ScrollViewer>
+    public class DataConfigurator : AbstractWPFVisualization<ScrollViewer>
     {
         /* ------------------------------------------------------------------*/
         // properties
@@ -48,12 +49,11 @@ namespace Visualizations
 
 
             GenericDataStructure data = null;
-            if (!this.GetData(ref data))
+            if (!GetData(ref data))
             {
                 Log.Default.Msg(Log.Level.Error, "Missing data");
                 return false;
             }
-
 
             _stack_panel = new StackPanel();
 
@@ -93,24 +93,28 @@ namespace Visualizations
             return _created;
         }
 
-        public override bool UpdateData()
+        public override void Update(bool new_data)
         {
             if (!_created)
             {
                 Log.Default.Msg(Log.Level.Error, "Creation required prior to execution");
-                return false;
+                return;
             }
 
-            GenericDataStructure data = null;
-            if (!this.GetData(ref data))
+            if (new_data)
             {
-                Log.Default.Msg(Log.Level.Error, "Missing data");
-                return false;
+                ReCreate();
             }
+            else {
 
-            update_metadata(data);
-
-            return true;
+                GenericDataStructure data = null;
+                if (!GetData(ref data))
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing data");
+                    return;
+                }
+                update_metadata(data);
+            }
         }
 
         /// <summary>

@@ -25,7 +25,7 @@ namespace Core
         }
 
 
-        public interface IDataVariety
+        public interface IDataType
         {
             /* ------------------------------------------------------------------*/
             // public properties
@@ -39,9 +39,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            void Create(ref GenericDataStructure data, int data_dimension, List<Type> value_types);
+            void Initialize(ref GenericDataStructure data, uint data_dimension, List<Type> value_types);
 
-            void UpdateMetaData(IMetaData updated_meta_data);
+            void UpdateMetaDataEntry(IMetaData updated_meta_data);
         }
     }
 }

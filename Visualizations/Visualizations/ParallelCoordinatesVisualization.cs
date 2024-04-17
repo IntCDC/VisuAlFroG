@@ -8,7 +8,6 @@ using System.Windows.Controls;
 using Core.Utilities;
 using System;
 using SciChartInterface.Abstracts;
-using SciChartInterface.Data;
 
 
 
@@ -31,11 +30,12 @@ namespace Visualizations
 
         public override bool ReCreate()
         {
+            _timer.Start();
+
             if (!base.ReCreate())
             {
                 return false;
             }
-            _timer.Start();
 
 
             // Style--------------------------------------------
@@ -122,46 +122,6 @@ namespace Visualizations
             AddOption(option_hint);
 
 
-            // Modifiers ---------------------------------------
-            var modifier_reorder_axes = new SciChart.Charting.ChartModifiers.ParallelAxisReorderModifier()
-            {
-                IsEnabled = true
-            };
-            modifier_reorder_axes.AxesReordered += event_axes_reordered;
-
-            var modifier_selection = new SciChart.Charting.ChartModifiers.SeriesSelectionModifier()
-            {
-                IsEnabled = true
-            };
-            modifier_selection.SelectionChanged += event_selection_changed;
-
-            Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
-                modifier_reorder_axes,
-                modifier_selection,
-                new SciChart.Charting.ChartModifiers.ZoomPanModifier()
-                {
-                    IsEnabled = true,
-                    ExecuteOn = SciChart.Charting.ChartModifiers.ExecuteOn.MouseRightButton,
-                    ClipModeX = SciChart.Charting.ClipMode.None,
-                },
-                new SciChart.Charting.ChartModifiers.MouseWheelZoomModifier()
-                {
-                    IsEnabled = true,
-                    ActionType = SciChart.Charting.ActionType.Zoom,
-                    XyDirection = SciChart.Charting.XyDirection.XYDirection
-                },
-                new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier()
-                {
-                    IsEnabled = false,
-                    IsXAxisOnly = true
-                },
-                new SciChart.Charting.ChartModifiers.ZoomExtentsModifier()
-                {
-                    IsEnabled = false
-                }
-            );
-
-
             _timer.Stop();
             _created = true;
             return _created;
@@ -173,22 +133,6 @@ namespace Visualizations
         ~ParallelCoordinatesVisualization()
         {
             Console.WriteLine("DEBUG - DTOR: ParallelCoordinatesVisualization");
-        }
-
-
-        /* ------------------------------------------------------------------*/
-        // private functions
-
-        private void event_axes_reordered(object sender, ParallelAxisReorderArgs e)
-        {
-            var pcp_source = Content.ParallelCoordinateDataSource as ParallelCoordinateDataSource<ExpandoObject>;
-            pcp_source.ReorderItems(e.OldIndex, e.NewIndex);
-        }
-
-        private void event_selection_changed(object sender, EventArgs e)
-        {
-            /// TODO
-            Log.Default.Msg(Log.Level.Info, "event_selection_changed...");
         }
     }
 }

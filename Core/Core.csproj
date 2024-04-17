@@ -89,7 +89,7 @@
     <Compile Include="Abstracts\IAbstractContent.cs" />
     <Compile Include="Abstracts\IAbstractService.cs" />
     <Compile Include="Abstracts\IAbstractConfiguration.cs" />
-    <Compile Include="Abstracts\IDataVariety.cs" />
+    <Compile Include="Abstracts\IDataType.cs" />
     <Compile Include="Abstracts\IMetaData.cs" />
     <Compile Include="Data\DataManager.cs" />
     <Compile Include="Data\DataTypeGeneric.cs" />

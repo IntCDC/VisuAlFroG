@@ -198,7 +198,8 @@ namespace Frontend
                     Log.Default.Msg(Log.Level.Error, "Invalid menu bar content");
                 }
                 _subwindows_element.Children.Add(winmanager_content);
-                _winmanager.CreateDefault();
+
+                /// XXX _winmanager.CreateDefault();
 
 
                 /// DEBUG Load sample data in detached mode ...

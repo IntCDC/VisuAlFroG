@@ -15,17 +15,11 @@ namespace Core
 {
     namespace Abstracts
     {
-        public abstract class AbstractDataType<DataType> : IDataVariety
+        public abstract class AbstractDataType<DataType> : IDataType
             where DataType : class
         {
             /* ------------------------------------------------------------------*/
             // public properties
-
-            /*
-            public Type GetDataType() {
-                return typeof(DataType);
-            }
-            */
 
             public object Get { get { return _data; } }
 
@@ -42,18 +36,18 @@ namespace Core
             }
 
             /// <summary>
-            /// TODO Use _created flag
+            /// TODO Use _initialized flag
             /// </summary>
             /// <param name="data"></param>
             /// <param name="data_dimension"></param>
             /// <param name="value_types"></param>
-            public abstract void Create(ref GenericDataStructure data, int data_dimension, List<Type> value_types);
+            public abstract void Initialize(ref GenericDataStructure data, uint data_dimension, List<Type> value_types);
 
             /// <summary>
             /// TODO
             /// </summary>
             /// <param name="updated_entry"></param>
-            public abstract void UpdateMetaData(IMetaData updated_meta_data);
+            public abstract void UpdateMetaDataEntry(IMetaData updated_meta_data);
 
             /// <summary>
             /// TODO
@@ -63,7 +57,7 @@ namespace Core
             protected bool CompatibleValueTypes(List<Type> value_types)
             {
                 bool incompatible = false;
-                foreach (var t in value_types)
+                foreach (Type t in value_types)
                 {
                     if (!SupportedValueTypes.Contains(t))
                     {
@@ -82,10 +76,10 @@ namespace Core
             /// </summary>
             /// <param name="dimensionality"></param>
             /// <returns></returns>
-            protected bool CompatibleDimensionality(int data_dimension)
+            protected bool CompatibleDimensionality(uint data_dimension)
             {
                 bool compatible = false;
-                foreach (var dim in SupportedDimensions)
+                foreach (Dimension dim in SupportedDimensions)
                 {
                     switch (dim)
                     {
@@ -116,7 +110,7 @@ namespace Core
             // private variables
 
             protected DataType _data = default(DataType);
-            protected bool _created = false;
+            protected bool _initialized = false;
             protected PropertyChangedEventHandler _meta_data_update_handler = null;
         }
     }

@@ -48,9 +48,14 @@ namespace SciChartInterface
 
             public DataTypeSciChartSeries(PropertyChangedEventHandler meta_data_update_handler) : base(meta_data_update_handler) { }
 
-            public override void Create(ref GenericDataStructure data, int data_dimension, List<Type> value_types)
+            public override void Initialize(ref GenericDataStructure data, uint data_dimension, List<Type> value_types)
             {
-                _created = false;
+                if (_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Warn, "DataTypeGeneric already initialized");
+                    return;
+                }
+                _initialized = false;
                 if (!CompatibleDimensionality(data_dimension) || !CompatibleValueTypes(value_types) || (value_types.Count > 1))
                 {
                     return;
@@ -63,9 +68,10 @@ namespace SciChartInterface
                 {
                     _data = new List<DataType>();
                 }
+                _data.Clear();
 
                 // Convert and create required data
-                create_data(data, data_dimension);
+                init_data(data, data_dimension);
                 if (_data.Count > 0)
                 {
                     // Warn if series have different amount of values
@@ -78,13 +84,13 @@ namespace SciChartInterface
                             break;
                         }
                     }
-                    _created = true;
+                    _initialized = true;
                 }
             }
 
-            public override void UpdateMetaData(IMetaData updated_meta_data)
+            public override void UpdateMetaDataEntry(IMetaData updated_meta_data)
             {
-                if (!_created)
+                if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Creation of data required prior to execution");
                     return;
@@ -111,7 +117,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // private functions
 
-            private void create_data(GenericDataStructure branch, int data_dimension)
+            private void init_data(GenericDataStructure branch, uint data_dimension)
             {
                 // For each branch add all leafs to one data series
                 if (branch.Entries.Count > 0)
@@ -120,7 +126,6 @@ namespace SciChartInterface
                     data_series.Name = UniqueID.Generate();
                     data_series.AntiAliasing = true;
 
-                    /// XXX TODO Each dimension requires separate DataType!?
                     if (data_dimension == 1)
                     {
                         var series = new SciChartUniformDataType();
@@ -147,7 +152,7 @@ namespace SciChartInterface
 
                 foreach (var b in branch.Branches)
                 {
-                    create_data(b, data_dimension);
+                    init_data(b, data_dimension);
                 }
             }
         }

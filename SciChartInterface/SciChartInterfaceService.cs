@@ -25,6 +25,7 @@ namespace SciChartInterface
 
             // Paste your SciChart runtime license key in SciChartInterface\SciChartRuntimeLicenseKey.cs
             SciChartSurface.SetRuntimeLicenseKey(SciChartRuntimeLicense.Key);
+
             try
             {
                 // Loading SciChartSurface for the first time takes some time to initialize.

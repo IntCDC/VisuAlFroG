@@ -22,7 +22,7 @@ using Visualizations.WPFInterface;
  */
 namespace Visualizations
 {
-    public class LogConsole : AbstractGenericVisualization<ScrollViewer>
+    public class LogConsole : AbstractWPFVisualization<ScrollViewer>
     {
         /* ------------------------------------------------------------------*/
         // properties

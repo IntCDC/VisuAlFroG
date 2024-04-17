@@ -49,9 +49,14 @@ namespace SciChartInterface
 
             public DataTypeSciChartParallel(PropertyChangedEventHandler meta_data_update_handler) : base(meta_data_update_handler) { }
 
-            public override void Create(ref GenericDataStructure data, int data_dimension, List<Type> value_types)
+            public override void Initialize(ref GenericDataStructure data, uint data_dimension, List<Type> value_types)
             {
-                _created = false;
+                if (_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Warn, "DataTypeGeneric already initialized");
+                    return;
+                }
+                _initialized = false;
                 if (!CompatibleDimensionality(data_dimension) || !CompatibleValueTypes(value_types))
                 {
                     return;
@@ -60,8 +65,7 @@ namespace SciChartInterface
                 {
                     return;
                 }
-
-                dynamic tmp = new ExpandoObject();
+                _data = null;
 
                 // Convert and create required data
                 List<DataType> value_list = new List<DataType>();
@@ -75,7 +79,6 @@ namespace SciChartInterface
                 // Warn if series have different amount of values
                 var value_dict = value_list[0] as IDictionary<string, object>;
                 int item_count = value_dict.Count;
-
                 for (int i = 1; i < value_list.Count; i++)
                 {
                     value_dict = value_list[i] as IDictionary<string, object>;
@@ -87,7 +90,8 @@ namespace SciChartInterface
                 }
 
                 ParallelCoordinateDataItem<DataType, double>[] item_list = new ParallelCoordinateDataItem<DataType, double>[item_count];
-                // Initialize data source
+
+                // Initialize property names
                 int index = 0;
                 foreach (var kvp in value_dict)
                 {
@@ -110,18 +114,18 @@ namespace SciChartInterface
                 _data = new ParallelCoordinateDataSource<DataType>(item_list);
                 _data.SetValues(value_list);
 
-                _created = true;
+                _initialized = true;
             }
 
-            public override void UpdateMetaData(IMetaData updated_meta_data)
+            public override void UpdateMetaDataEntry(IMetaData updated_meta_data)
             {
-                if (!_created)
+                if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Creation of data required prior to execution");
                     return;
                 }
 
-                ///_data.Invalidate();
+                /// TODO
             }
 
 
@@ -146,6 +150,7 @@ namespace SciChartInterface
                         foreach (var value in entry.Values)
                         {
                             /// TODO The property names are hard coded and should be replaced by names provided in the data set (e.g. branch name?)
+                            /// XXX What about: entry.MetaData
                             data_entry_dict.Add(generate_property_name(index), (double)value);
                         }
                         index++;

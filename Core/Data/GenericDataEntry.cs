@@ -20,7 +20,7 @@ namespace Core
 
             public MetaDataGeneric MetaData { get { return _metadata; } set { _metadata = value; } }
 
-            public int Dimension { get { return _values.Count; } }
+            public uint Dimension { get { return (uint)_values.Count; } }
 
 
             /* ------------------------------------------------------------------*/

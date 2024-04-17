@@ -43,9 +43,9 @@ namespace Core
                 return metadata_list;
             }
 
-            public int DataDimension()
+            public uint DataDimension()
             {
-                int dim = 0;
+                uint dim = 0;
                 get_dimension(this, ref dim);
                 return dim;
             }
@@ -110,7 +110,7 @@ namespace Core
             /// <param name="branch"></param>
             /// <param name="out_dim"></param>
             /// <returns></returns>
-            private bool get_dimension(GenericDataStructure branch, ref int out_dim)
+            private bool get_dimension(GenericDataStructure branch, ref uint out_dim)
             {
                 bool retval = true;
                 foreach (var entry in branch.Entries)

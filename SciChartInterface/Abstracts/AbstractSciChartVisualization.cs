@@ -60,33 +60,6 @@ namespace SciChartInterface
                 return _initialized;
             }
 
-            public override bool ReCreate()
-            {
-                if (!_initialized)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return false;
-                }
-                if (_created)
-                {
-                    Log.Default.Msg(Log.Level.Warn, "Re-creating visualization");
-                    _created = false;
-                }
-                if (this.RequestDataCallback == null)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Missing request data callback");
-                    return false;
-                }
-
-                // Set data
-                if (!this.GetData(_content_surface))
-                {
-                    Log.Default.Msg(Log.Level.Error, "Unable to set data");
-                }
-                _content_surface.ZoomExtents();
-
-                return true;
-            }
             /* TEMPLATE
             public override bool ReCreate()
             {
@@ -141,14 +114,11 @@ namespace SciChartInterface
 
             public override void Update(bool new_data)
             {
-                /*
                 if (!_created)
                 {
                     Log.Default.Msg(Log.Level.Error, "Creation required prior to execution");
                     return;
                 }
-                */
-                // New data does not require any further update of the SciChart visualizations
 
                 if (new_data)
                 {

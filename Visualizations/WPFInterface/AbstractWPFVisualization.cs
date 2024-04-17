@@ -15,7 +15,7 @@ namespace Visualizations
 {
     namespace WPFInterface
     {
-        public abstract class AbstractGenericVisualization<ContentType> : AbstractVisualization
+        public abstract class AbstractWPFVisualization<ContentType> : AbstractVisualization
             where ContentType : System.Windows.Controls.Control, new()
         {
             /* ------------------------------------------------------------------*/
@@ -23,6 +23,7 @@ namespace Visualizations
 
             public sealed override bool MultipleInstances { get { return false; } }
             public sealed override List<Type> DependingServices { get { return new List<Type>() { }; } }
+            public sealed override Type RequiredDataType { get; } = typeof(DataTypeGeneric);
 
             protected ContentType Content { get; } = new ContentType();
 
@@ -30,10 +31,6 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public override Type GetDataType()
-            {
-                return typeof(DataTypeGeneric);
-            }
 
             public override bool Initialize(DataManager.RequestCallback_Delegate request_callback)
             {
@@ -96,34 +93,26 @@ namespace Visualizations
                     Log.Default.Msg(Log.Level.Error, "Creation required prior to execution");
                     return;
                 }
+                /*
                 if (new_data)
                 {
                     ReCreate();
                 }
-                else
-                {
-                    UpdateData();
-                }
+                */
             }
 
-            /// <summary>
-            /// --- Default implementation ---
-            /// Called when existing data has been updated
-            /// </summary>
-            /// <returns>True on success, false otherwise.</returns>
-            public virtual bool UpdateData()
-            {
-                return true;
-            }
+
+            /* ------------------------------------------------------------------*/
+            // protected functions
 
             /// <summary>
             /// 
             /// </summary>
             /// <param name="data_parent"></param>
             /// <returns></returns>
-            public override bool GetData(ref GenericDataStructure data_parent)
+            protected override bool GetData(ref GenericDataStructure data_parent)
             {
-                var data = (GenericDataStructure)RequestDataCallback(GetDataType());
+                var data = (GenericDataStructure)RequestDataCallback(RequiredDataType);
                 if (data == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing data for: " + typeof(GenericDataStructure).FullName);
