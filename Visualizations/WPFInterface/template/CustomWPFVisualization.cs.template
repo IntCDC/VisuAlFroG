@@ -1,0 +1,209 @@
+﻿using System;
+using System.Windows.Controls;
+using System.Windows;
+using Core.Utilities;
+using Visualizations.WPFInterface;
+using Core.Data;
+using Core.Abstracts;
+using System.Windows.Input;
+using System.Windows.Shapes;
+using System.Windows.Media;
+using System.Collections.Generic;
+
+
+/*
+
+INSTRUCTIONS for creating own custom WPF visualization:
+
+see https://github.com/IntCDC/VisuAlFroG/blob/main/docs/developer-guide.md
+
+*/
+
+
+/*
+ *  Custom C#/WPF Visualization
+ * 
+ */
+namespace Visualizations
+{
+
+    public class CustomWPFVisualization : AbstractWPFVisualization<Canvas>
+    {
+        /* ------------------------------------------------------------------*/
+        // properties
+
+        public override string Name { get { return "CustomWPFVisualization"; } }
+        public override bool MultipleInstances { get { return true; } }
+
+        /* ------------------------------------------------------------------*/
+        // public functions
+
+        public override bool Create()
+        {
+            if (!_initialized)
+            {
+                Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                return false;
+            }
+            _timer.Start();
+
+            Content.Width  = 0.0; // = full width of parent
+            Content.Height = 0.0; // = full height of parent
+            Content.Children.Clear();
+
+            if (GetData(out GenericDataStructure data))
+            {
+                if (data.DataDimension() <= 1)
+                {
+                    initialize_elements(data);
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Data dimension >1 is not supported");
+                }
+            }
+
+
+            _timer.Stop();
+            _created = true;
+            return _created;
+        }
+
+        public override void Update(bool new_data)
+        {
+            if (!_created)
+            {
+                Log.Default.Msg(Log.Level.Error, "Creation required prior to execution");
+                return;
+            }
+
+            if (new_data)
+            {
+                // Re-creation of content is required for new data
+                Create();
+            }
+            else
+            {
+                update_metadata();
+            }
+        }
+
+
+        /* ------------------------------------------------------------------*/
+        // private functions
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void update_metadata()
+        {
+            foreach (var element in _data_element)
+            {
+                update_element_metadata(element);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
+        void update_element_metadata(Rectangle element)
+        {
+            var meta_data = element.Tag as MetaDataGeneric;
+            if (meta_data == null)
+            {
+                Log.Default.Msg(Log.Level.Error, "Wrong 'Tag' object type...");
+                return;
+            }
+            int index = meta_data.Index;
+            foreach (var entry in _data_element)
+            {
+                var entry_meta_data = entry.Tag as MetaDataGeneric;
+                if (entry_meta_data.Index == index)
+                {
+                    entry.SetResourceReference(Rectangle.StrokeProperty, ((meta_data.IsSelected) ? ("Brush_StrokeSelected") : ("Brush_StrokeDefault")));
+                }
+            }
+        }
+
+        void initialize_elements(GenericDataStructure branch)
+        {
+            foreach (var b in branch.Branches)
+            {
+                initialize_elements(b);
+            }
+            foreach (var e in branch.Entries)
+            {
+                add_element(e);
+
+            }
+        }
+
+        void add_element(GenericDataEntry entry)
+        {
+            var dim = entry.Dimension;
+
+            var element = new Rectangle();
+            element.StrokeThickness = 2;
+
+            element.HorizontalAlignment = HorizontalAlignment.Center;
+            element.VerticalAlignment = VerticalAlignment.Center;
+            element.Height = 10;
+            element.Width = 10;
+            element.Fill = Brushes.Blue;
+
+            element.Tag = entry.MetaData;
+            element.SetResourceReference(Rectangle.StrokeProperty, ((entry.MetaData.IsSelected) ? ("Brush_StrokeSelected") : ("Brush_StrokeDefault")));
+            element.MouseLeftButtonUp += mouse_button_down;
+
+            double height_center = Content.ActualHeight / 2.0;
+            double width_center = Content.ActualWidth / 2.0;
+
+            double radius = 10.0;
+            double offset = (double)entry.Values[0] * 2.0;
+            double angle = ((dim == 1) ? (entry.MetaData.Index * 10 / Math.PI) : ((double)entry.Values[1]));
+            double distance = angle / Math.PI / 10.0;
+            double X = width_center + (radius * distance) * Math.Cos(angle) + offset;
+            double Y = height_center + (radius * distance) * Math.Sin(angle) + offset;
+
+            Canvas.SetLeft(element, X);
+            Canvas.SetTop(element, Y);
+
+            Content.Children.Add(element);
+            _data_element.Add(element);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void mouse_button_down(object sender, MouseButtonEventArgs e)
+        {
+            var element = sender as Rectangle;
+            if (element != null)
+            {
+                var meta_data = element.Tag as MetaDataGeneric;
+                if (meta_data != null)
+                {
+                    meta_data.IsSelected = !meta_data.IsSelected;
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Wrong 'Tag' object type...");
+                }
+                update_element_metadata(element);
+            }
+            else
+            {
+                Log.Default.Msg(Log.Level.Error, "Wrong sender type...");
+            }
+        }
+
+        /* ------------------------------------------------------------------*/
+        // private variables
+
+        private List<Rectangle> _data_element = new List<Rectangle>();
+
+    }
+}

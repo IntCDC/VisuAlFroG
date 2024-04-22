@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System;
 using SciChartInterface.Abstracts;
 using SciChartInterface;
+using Core.Utilities;
 
 
 
@@ -27,42 +28,42 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         // public functions
 
-        public override bool ReCreate()
+        public override void Update(bool new_data)
         {
-            _timer.Start();
-
-            if (!base.ReCreate())
+            if (!_created)
             {
-                return false;
+                Log.Default.Msg(Log.Level.Error, "Creation required prior to execution");
+                return;
             }
 
-
-            // Style--------------------------------------------
-            foreach (var rs in Content.RenderableSeries)
+            if (new_data)
             {
-                var default_style = new System.Windows.Style();
-                default_style.TargetType = typeof(FastColumnRenderableSeries);
+                GetData(Content);
 
-                var new_color = ColorTheme.RandomColor();
+                // Data Style--------------------------------------------
+                foreach (var rs in Content.RenderableSeries)
+                {
+                    var default_style = new System.Windows.Style();
+                    default_style.TargetType = typeof(FastColumnRenderableSeries);
 
-                Setter setter_stroke = new Setter();
-                setter_stroke.Property = FastColumnRenderableSeries.PaletteProviderProperty;
-                setter_stroke.Value = new StrokePalette();
-                default_style.Setters.Add(setter_stroke);
+                    var new_color = ColorTheme.RandomColor();
 
-                Setter setter_gradient = new Setter();
-                setter_gradient.Property = FastColumnRenderableSeries.FillProperty;
-                setter_gradient.Value = new SolidColorBrush(ColorTheme.RandomColor()); // gradient;
-                default_style.Setters.Add(setter_gradient);
+                    Setter setter_stroke = new Setter();
+                    setter_stroke.Property = FastColumnRenderableSeries.PaletteProviderProperty;
+                    setter_stroke.Value = new StrokePalette();
+                    default_style.Setters.Add(setter_stroke);
 
-                rs.Style = default_style;
+                    Setter setter_gradient = new Setter();
+                    setter_gradient.Property = FastColumnRenderableSeries.FillProperty;
+                    setter_gradient.Value = new SolidColorBrush(ColorTheme.RandomColor()); // gradient;
+                    default_style.Setters.Add(setter_gradient);
+
+                    rs.Style = default_style;
+                }
             }
-
-
-            _timer.Stop();
-            _created = true;
-            return _created;
+            Content.ZoomExtents();
         }
+
 
         /// <summary>
         /// DEBUG

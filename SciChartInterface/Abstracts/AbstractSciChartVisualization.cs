@@ -60,23 +60,6 @@ namespace SciChartInterface
                 return _initialized;
             }
 
-            /* TEMPLATE
-            public override bool ReCreate()
-            {
-                if (!base.ReCreate())
-                {
-                return false;
-                }
-                _timer.Start();
-
-                /// Add your stuff here
-
-                _timer.Stop();
-                _created = true;
-                return _created;
-            }
-            */
-
             public sealed override Panel Attach()
             {
                 if (!_created)
@@ -102,33 +85,30 @@ namespace SciChartInterface
 
             public override bool Terminate()
             {
-                if (_initialized)
+                if (_created)
                 {
                     _content_surface.Dispose();
                     _content_surface = null;
 
-                    _initialized = false;
+                    _created = false;
                 }
                 return base.Terminate();
             }
 
-            public override void Update(bool new_data)
-            {
-                if (!_created)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Creation required prior to execution");
-                    return;
-                }
 
-                if (new_data)
-                {
-                    _content_surface.ZoomExtents();
-                }
+            /* ------------------------------------------------------------------*/
+            // protected functions
+
+            protected abstract bool GetData(SciChartSurface data_parent);
+
+            protected sealed override bool GetData<DataParentType>(out DataParentType data_parent)
+            {
+                throw new InvalidOperationException("Call alternatively implemented GetData() method");
             }
 
 
             /* ------------------------------------------------------------------*/
-            // private variables
+                // private variables
 
             private SurfaceType _content_surface = null;
         }

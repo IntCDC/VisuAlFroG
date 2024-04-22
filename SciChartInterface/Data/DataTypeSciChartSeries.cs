@@ -48,22 +48,26 @@ namespace SciChartInterface
 
             public DataTypeSciChartSeries(PropertyChangedEventHandler meta_data_update_handler) : base(meta_data_update_handler) { }
 
-            public override void Initialize(ref GenericDataStructure data, uint data_dimension, List<Type> value_types)
+            public override void Update(GenericDataStructure data)
             {
-                if (_initialized)
+                _loaded = false;
+                if (_data != null)
                 {
-                    Log.Default.Msg(Log.Level.Warn, "DataTypeGeneric already initialized");
-                    return;
+                    _data.Clear();
                 }
-                _initialized = false;
-                if (!CompatibleDimensionality(data_dimension) || !CompatibleValueTypes(value_types) || (value_types.Count > 1))
-                {
-                    return;
-                }
+                _data = null;
+
                 if (data == null)
                 {
+                    Log.Default.Msg(Log.Level.Error, "Missing data");
                     return;
                 }
+
+                if (!CompatibleDimensionality(data.DataDimension()) || !CompatibleValueTypes(data.ValueTypes()))
+                {
+                    return;
+                }
+
                 if (_data == null)
                 {
                     _data = new List<DataType>();
@@ -71,7 +75,7 @@ namespace SciChartInterface
                 _data.Clear();
 
                 // Convert and create required data
-                init_data(data, data_dimension);
+                init_data(data);
                 if (_data.Count > 0)
                 {
                     // Warn if series have different amount of values
@@ -84,13 +88,13 @@ namespace SciChartInterface
                             break;
                         }
                     }
-                    _initialized = true;
+                    _loaded = true;
                 }
             }
 
             public override void UpdateMetaDataEntry(IMetaData updated_meta_data)
             {
-                if (!_initialized)
+                if (!_loaded)
                 {
                     Log.Default.Msg(Log.Level.Error, "Creation of data required prior to execution");
                     return;
@@ -117,7 +121,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // private functions
 
-            private void init_data(GenericDataStructure branch, uint data_dimension)
+            private void init_data(GenericDataStructure branch)
             {
                 // For each branch add all leafs to one data series
                 if (branch.Entries.Count > 0)
@@ -126,7 +130,7 @@ namespace SciChartInterface
                     data_series.Name = UniqueID.Generate();
                     data_series.AntiAliasing = true;
 
-                    if (data_dimension == 1)
+                    if (branch.DataDimension() == 1)
                     {
                         var series = new SciChartUniformDataType();
                         foreach (var entry in branch.Entries)
@@ -137,7 +141,7 @@ namespace SciChartInterface
                         data_series.DataSeries = series;
 
                     }
-                    else if (data_dimension == 2)
+                    else if (branch.DataDimension() == 2)
                     {
                         var series = new SciChartXYDataType();
                         foreach (var entry in branch.Entries)
@@ -152,7 +156,7 @@ namespace SciChartInterface
 
                 foreach (var b in branch.Branches)
                 {
-                    init_data(b, data_dimension);
+                    init_data(b);
                 }
             }
         }

@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+
 using Core.Abstracts;
 using Core.Utilities;
+
 using Newtonsoft.Json;
+
+using static System.Net.Mime.MediaTypeNames;
 
 
 /*
@@ -24,7 +28,7 @@ namespace Core
 
             public delegate bool SaveCallback_Delegate();
 
-            public delegate bool LoadCallback_Delegate();
+            public delegate bool LoadCallback_Delegate(string configuratio_file = "");
 
             public delegate string RegisterCollect_Delegate();
 
@@ -156,19 +160,37 @@ namespace Core
             /// <summary>
             /// Request loading of configurations from a JSON file.
             /// </summary>
+            /// <param name="configuration_file">The configuration file. If empty file dialog is opened.</param>
             /// <returns>True on success, false otherwise.</returns>
-            public bool Load()
+            public bool Load(string configuration_file = "")
             {
-                string configurations = openfile_dialog();
-                var _deserialize_structure = Deserialize<Dictionary<string, string>>(configurations);
-
-                foreach (var apply_callback in _deserialize_structure)
+                string config_file = configuration_file;
+                if (config_file == "")
                 {
-                    if (_apply_callbacks.ContainsKey(apply_callback.Key))
+                    config_file = openfile_dialog();
+                }
+
+                try
+                {
+                    var fileStream = new FileStream(config_file, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    using (StreamReader reader = new StreamReader(fileStream))
                     {
-                        // Call callback for applying configurations
-                        _apply_callbacks[apply_callback.Key](apply_callback.Value);
+                        string config_content = reader.ReadToEnd();
+                        var _deserialize_structure = Deserialize<Dictionary<string, string>>(config_content);
+                        foreach (var apply_callback in _deserialize_structure)
+                        {
+                            if (_apply_callbacks.ContainsKey(apply_callback.Key))
+                            {
+                                // Call callback for applying configurations
+                                _apply_callbacks[apply_callback.Key](apply_callback.Value);
+                            }
+                        }
+                        return true;
                     }
+                }
+                catch (Exception exc)
+                {
+                    Log.Default.Msg(Log.Level.Error, exc.Message);
                 }
                 return false;
             }
@@ -213,8 +235,8 @@ namespace Core
             /// <returns>The content of the file as string.</returns>
             private string openfile_dialog()
             {
-                var input_content = string.Empty;
-                var input_filename = string.Empty;
+                var input_content = "";
+                var input_filename = "";
 
                 using (System.Windows.Forms.OpenFileDialog open_file_dialog = new System.Windows.Forms.OpenFileDialog())
                 {
@@ -227,13 +249,7 @@ namespace Core
 
                     if (open_file_dialog.ShowDialog() == DialogResult.OK)
                     {
-                        input_filename = open_file_dialog.FileName;
-
-                        var fileStream = open_file_dialog.OpenFile();
-                        using (StreamReader reader = new StreamReader(fileStream))
-                        {
-                            input_content = reader.ReadToEnd();
-                        }
+                        return open_file_dialog.FileName;
                     }
                 }
                 return input_content;

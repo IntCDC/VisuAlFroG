@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Utilities;
 using Core.Abstracts;
-using Visualizations.WPFInterface;
 using System.Reflection;
 using SciChart.Core.Extensions;
 using Core.GUI;
@@ -48,6 +47,7 @@ namespace Visualizations
             register_content(typeof(LinesVisualization));
             register_content(typeof(ColumnsVisualization));
             register_content(typeof(ParallelCoordinatesVisualization));
+            /// DEBUG register_content(typeof(CustomWPFVisualization));
 
 
             _timer.Stop();
@@ -339,8 +339,9 @@ namespace Visualizations
             if (content.Initialize(_data_request_callback))
             {
                 _register_data_update_type_callback(content.Update, content.RequiredDataType);
-                if (content.ReCreate())
+                if (content.Create())
                 {
+                    content.Update(true);
                     return content;
                 }
             }

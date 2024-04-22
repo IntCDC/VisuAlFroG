@@ -41,7 +41,7 @@ namespace Core
             /// <param name="data"></param>
             /// <param name="data_dimension"></param>
             /// <param name="value_types"></param>
-            public abstract void Initialize(ref GenericDataStructure data, uint data_dimension, List<Type> value_types);
+            public abstract void Update(GenericDataStructure data);
 
             /// <summary>
             /// TODO
@@ -110,7 +110,7 @@ namespace Core
             // private variables
 
             protected DataType _data = default(DataType);
-            protected bool _initialized = false;
+            protected bool _loaded = false;
             protected PropertyChangedEventHandler _meta_data_update_handler = null;
         }
     }

@@ -28,12 +28,13 @@ namespace Visualizations
         // properties
 
         public override string Name { get { return "Log Console"; } }
+        public override bool MultipleInstances { get { return false; } }
 
 
         /* ------------------------------------------------------------------*/
         // public functions
 
-        public override bool ReCreate()
+        public override bool Create()
         {
             if (!_initialized)
             {
@@ -51,7 +52,7 @@ namespace Visualizations
 
             _text_block = new TextBlock();
             _text_block.TextWrapping = TextWrapping.Wrap;
-            _text_block.FontFamily = new FontFamily("Consolas");
+            _text_block.FontFamily = new FontFamily("Consolas"); // Use mono space font for better formatting
             _text_block.Width = Double.NaN; // = "Auto"
             _text_block.Height = Double.NaN; // = "Auto"
 
@@ -76,6 +77,16 @@ namespace Visualizations
             _timer.Stop();
             _created = true;
             return _created;
+        }
+
+        public override void Update(bool new_data)
+        {
+            if (!_created)
+            {
+                Log.Default.Msg(Log.Level.Error, "Creation required prior to execution");
+                return;
+            }
+            // Nothing to do here...
         }
 
         public override bool Terminate()

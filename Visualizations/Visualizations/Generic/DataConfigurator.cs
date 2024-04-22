@@ -23,70 +23,61 @@ namespace Visualizations
         // properties
 
         public override string Name { get { return "Data Configurator"; } }
+        public override bool MultipleInstances { get { return false; } }
 
 
         /* ------------------------------------------------------------------*/
         // public functions
 
-        public override bool ReCreate()
+        public override bool Create()
         {
             if (!_initialized)
             {
                 Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                 return false;
             }
-            if (_created)
-            {
-                Log.Default.Msg(Log.Level.Warn, "Re-creating visualization");
-                _created = false;
-            }
-            if (this.RequestDataCallback == null)
-            {
-                Log.Default.Msg(Log.Level.Error, "Missing request data callback");
-                return false;
-            }
             _timer.Start();
 
 
-            GenericDataStructure data = null;
-            if (!GetData(ref data))
+            _stack_panel = null;
+            _tree_root = null;
+            Content.Content = null;
+
+            /// No data is OK, just do nothing hen...
+            if (GetData(out GenericDataStructure data))
             {
-                Log.Default.Msg(Log.Level.Error, "Missing data");
-                return false;
+                _stack_panel = new StackPanel();
+
+                var text_dim = new TextBlock();
+                text_dim.SetResourceReference(TextBlock.ForegroundProperty, "Brush_Foreground");
+                text_dim.Text = "Data Dimensionality: " + data.DataDimension().ToString();
+                _stack_panel.Children.Add(text_dim);
+
+                var text_value_types = new TextBlock();
+                text_value_types.SetResourceReference(TextBlock.ForegroundProperty, "Brush_Foreground");
+                text_value_types.Text = "Data Value Type(s): ";
+                foreach (var value_type in data.ValueTypes())
+                {
+                    text_value_types.Text += value_type.ToString() + " ";
+                }
+                _stack_panel.Children.Add(text_value_types);
+
+                _tree_root = new TreeViewItem();
+                _tree_root.Header = "Data Root";
+                _tree_root.IsExpanded = true;
+                _tree_root.SetResourceReference(TreeViewItem.ForegroundProperty, "Brush_Foreground");
+                create_data_tree(data, _tree_root);
+                _stack_panel.Children.Add(_tree_root);
+
+                Content.Name = ID;
+                Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+                Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
+                Content.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
+                Content.PreviewMouseWheel += event_scrollviewer_mousewheel;
+                Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
+                Content.Content = _stack_panel;
             }
-
-            _stack_panel = new StackPanel();
-
-            var text_dim = new TextBlock();
-            text_dim.SetResourceReference(TextBlock.ForegroundProperty, "Brush_Foreground");
-            text_dim.Text = "Data Dimensionality: " + data.DataDimension().ToString();
-            _stack_panel.Children.Add(text_dim);
-
-            var text_value_types = new TextBlock();
-            text_value_types.SetResourceReference(TextBlock.ForegroundProperty, "Brush_Foreground");
-            text_value_types.Text = "Data Value Type(s): ";
-            foreach (var value_type in data.ValueTypes())
-            {
-                text_value_types.Text += value_type.ToString() + " ";
-            }
-            _stack_panel.Children.Add(text_value_types);
-
-            _tree_root = new TreeViewItem();
-            _tree_root.Header = "Data Root";
-            _tree_root.IsExpanded = true;
-            _tree_root.SetResourceReference(TreeViewItem.ForegroundProperty, "Brush_Foreground");
-            create_data_tree(data, _tree_root);
-            _stack_panel.Children.Add(_tree_root);
-
-            Content.Name = ID;
-            Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-            Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-            Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
-            Content.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
-            Content.PreviewMouseWheel += event_scrollviewer_mousewheel;
-            Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
-            Content.Content = _stack_panel;
-
 
             _timer.Stop();
             _created = true;
@@ -103,12 +94,12 @@ namespace Visualizations
 
             if (new_data)
             {
-                ReCreate();
+                // Re-creation of content is required for new data
+                Create();
             }
-            else {
-
-                GenericDataStructure data = null;
-                if (!GetData(ref data))
+            else
+            {
+                if (!GetData(out GenericDataStructure data))
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing data");
                     return;

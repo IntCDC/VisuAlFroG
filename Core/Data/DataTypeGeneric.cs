@@ -41,32 +41,31 @@ namespace Core
 
             public DataTypeGeneric(PropertyChangedEventHandler meta_data_update_handler) : base(meta_data_update_handler) { }
 
-            public override void Initialize(ref GenericDataStructure data, uint data_dimension, List<Type> value_types)
+            public override void Update(GenericDataStructure data)
             {
-                if (_initialized)
-                {
-                    Log.Default.Msg(Log.Level.Warn, "DataTypeGeneric already initialized");
-                    return;
-                }
-                _initialized = false;
-                if (!CompatibleDimensionality(data_dimension) || !CompatibleValueTypes(value_types)) {
-                    return;
-                }
+                _loaded = false;
+                _data = null;
+
                 if (data == null)
                 {
+                    Log.Default.Msg(Log.Level.Error, "Missing data");
                     return;
                 }
 
+                if (!CompatibleDimensionality(data.DataDimension()) || !CompatibleValueTypes(data.ValueTypes())) {
+                    return;
+                }
                 _data = data;
+
                 int index = 0;
                 init_metadata(_data, ref index);
 
-                _initialized = true;
+                _loaded = true;
             }
 
             public override void UpdateMetaDataEntry(IMetaData updated_meta_data)
             {
-                if (!_initialized)
+                if (!_loaded)
                 {
                     Log.Default.Msg(Log.Level.Error, "Creation of data required prior to execution");
                     return;

@@ -90,7 +90,7 @@ namespace Visualizations
 
         public DataManager.InputData_Delegate GetInputDataCallback()
         {
-            return _datamanager.GetInputDataCallback;
+            return _datamanager.SetInputDataCallback;
         }
 
         public void SetOutputDataCallback(DataManager.OutputData_Delegate _outputdata_callback)

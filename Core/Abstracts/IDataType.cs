@@ -39,7 +39,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            void Initialize(ref GenericDataStructure data, uint data_dimension, List<Type> value_types);
+            void Update(GenericDataStructure data);
 
             void UpdateMetaDataEntry(IMetaData updated_meta_data);
         }

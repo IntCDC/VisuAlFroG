@@ -40,8 +40,7 @@ namespace GrasshopperComponent
                         var type = input_value.GetType();
                         if (type == typeof(GH_String))
                         {
-                            string value_string;
-                            if (input_value.CastTo<string>(out value_string))
+                            if (input_value.CastTo<string>(out string value_string))
                             {
                                 // TODO Add more conversions
                                 try

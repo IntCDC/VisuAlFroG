@@ -4,6 +4,9 @@ using System.Windows;
 using Core.Utilities;
 using Core.GUI;
 using Core.Data;
+using System.Collections.Generic;
+using System.Windows.Input;
+using System.IO;
 
 
 
@@ -33,14 +36,14 @@ namespace Frontend
             /// <summary>
             /// Ctor. Used for detached execution.
             /// </summary>
-            public MainWindow() : this("[detached] Visual Analytics Framework for Grasshopper (VisuAlFroG)", true) { }
+            public MainWindow() : this("[detached] Visual Analytics Framework for Grasshopper (VisuAlFroG)", "", true) { }
 
             /// <summary>
             /// Ctor.
             /// </summary>
             /// <param name="app_name"></param>
             /// <param name="detached"></param>
-            public MainWindow(string app_name, bool detached = false)
+            public MainWindow(string app_name, string configuration_file = "", bool detached = false)
             {
                 /// DEBUG get C# version, see compile output (C# Language Version 7.3)
                 // #error version
@@ -48,7 +51,7 @@ namespace Frontend
                 _soft_close = !detached;
                 _detached = detached;
                 initialize(app_name);
-                create();
+                create(configuration_file);
             }
 
             /// <summary>
@@ -128,7 +131,7 @@ namespace Frontend
                 /// Cursor = Cursors.Wait;
 
                 // Explicitly disable debug messages
-                Log.Default.DisableDebug = true;
+                Log.Default.DisableDebug = false;
 
                 // Window setup
                 InitializeComponent();
@@ -139,6 +142,9 @@ namespace Frontend
                 // base.Loaded += on_loaded;
                 // CompositionTarget.Rendering += once_per_frame;
 
+                // Read cmd line arguments
+                bool initialized = cmdline_arguments();
+
                 // Initialize managers and services
                 _configurationservice = new ConfigurationService();
                 _basemanager = new Visualizations.BaseManager();
@@ -146,7 +152,7 @@ namespace Frontend
                 _colortheme = new ColorTheme();
                 _menubar = new MenuBar();
 
-                bool initialized = _configurationservice.Initialize();
+                initialized &= _configurationservice.Initialize();
                 initialized &= _basemanager.Initialize();
                 initialized &= _winmanager.Initialize(_basemanager.GetContentCallbacks());
                 initialized &= _colortheme.Initialize(App.Current.Resources, _menubar.MarkColorTheme);
@@ -161,6 +167,7 @@ namespace Frontend
                 // Get callbacks
                 _inputdata_callback = _basemanager.GetInputDataCallback();
 
+
                 /// Cursor = Cursors.Arrow;
                 _timer.Stop();
                 _initialized = initialized;
@@ -174,8 +181,9 @@ namespace Frontend
             /// <summary>
             /// Create the WPF content of the application.
             /// </summary>
+            /// <param name="configuration_file">The configuration file loaded on startup.</param> 
             /// <returns>True on successful creation of the content, false otherwise</returns>
-            public bool create()
+            public bool create(string configuration_file)
             {
                 if (!_initialized)
                 {
@@ -183,7 +191,8 @@ namespace Frontend
                     return false;
                 }
                 _timer.Start();
-                /// Cursor = Cursors.Wait;
+                ///Cursor = Cursors.Wait;
+
 
                 var menubar_content = _menubar.Attach();
                 if (menubar_content == null)
@@ -199,7 +208,22 @@ namespace Frontend
                 }
                 _subwindows_element.Children.Add(winmanager_content);
 
-                /// XXX _winmanager.CreateDefault();
+
+                // Load startup configuration from file
+                string config_file = configuration_file;
+                if (_cmdline_args.ContainsKey("config"))
+                {
+                    // Command line overwrites ctor parameter
+                    config_file = _cmdline_args["config"];
+                }
+                if (config_file != "")
+                {
+                    _configurationservice.Load(config_file);
+                }
+                else
+                {
+                    _winmanager.CreateDefault();
+                }
 
 
                 /// DEBUG Load sample data in detached mode ...
@@ -229,9 +253,47 @@ namespace Frontend
                     UpdateInputData(ref sample_data);
                 }
 
-                /// Cursor = Cursors.Arrow;
+
+                ///Cursor = Cursors.Arrow;
                 _timer.Stop();
                 return true;
+            }
+
+            public bool cmdline_arguments()
+            {
+
+                // Parse command line arguments
+                string[] args = Environment.GetCommandLineArgs();
+                for (int index = 1; index < args.Length; index += 2)
+                {
+                    /*
+                     Supported command line arguments:
+                     -h --help     Help text on valid commandline parameters
+                     -c --config   Configuration file path
+                     */
+
+                    // TODO Proper check!
+                    bool valid_arguments = true;
+
+                    Log.Default.Msg(Log.Level.Warn, "Unexpected command line argument(s).");
+
+                    string arg = args[index].Replace("-", "");
+                    _cmdline_args.Add(arg, args[index + 1]);
+
+                }
+
+
+                return true;
+            }
+
+            void print_usage_inforamtion()
+            {
+                Log.Default.Msg(Log.Level.Info,
+                    "VisualFroG.exe [[OPTION] | [OPTION] [PARAMETER]]...\n " +
+                    "Options: " +
+                    "    -c, -config CONFIGURATION_FILE_PATH    Provide the absolute or relative file path to a configuration file that should be loaded on startup." +
+                    "    -h, --help                             Print this message."
+                    );
             }
 
             /// <summary>
@@ -257,6 +319,8 @@ namespace Frontend
 
             /* ------------------------------------------------------------------*/
             // local variables
+
+            private Dictionary<string, string> _cmdline_args = new Dictionary<string, string>();
 
             private bool _initialized = false;
             private bool _soft_close = false;

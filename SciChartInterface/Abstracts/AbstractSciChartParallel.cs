@@ -35,7 +35,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public override bool ReCreate()
+            public override bool Create()
             {
                 if (!_initialized)
                 {
@@ -44,14 +44,33 @@ namespace SciChartInterface
                 }
                 if (_created)
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Re-creating visualization");
-                    _created = false;
-                }
-                if (this.RequestDataCallback == null)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Missing request data callback");
+                    // Log Console does not depend on data
+                    Log.Default.Msg(Log.Level.Warn, "Content already created. Skipping re-creating content.");
                     return false;
                 }
+                _timer.Start();
+
+
+                // Options --------------------------------------------
+                var clue_select = new MenuItem();
+                clue_select.Header = "[Left Mouse] Select Series | Drag & Drop Axes";
+                clue_select.IsEnabled = false;
+
+                var clue_zoom = new MenuItem();
+                clue_zoom.Header = "[Mouse Wheel] Zoom";
+                clue_zoom.IsEnabled = false;
+
+                var clue_pan = new MenuItem();
+                clue_pan.Header = "[Right Mouse] Pan";
+                clue_pan.IsEnabled = false;
+
+                var option_hint = new MenuItem();
+                option_hint.Header = "Interaction Clues";
+                option_hint.Items.Add(clue_select);
+                option_hint.Items.Add(clue_zoom);
+                option_hint.Items.Add(clue_pan);
+
+                AddOption(option_hint);
 
 
                 // Modifiers ---------------------------------------
@@ -93,33 +112,30 @@ namespace SciChartInterface
                     }
                 );
 
-
-                // Set data -----------------------------------------
-                if (!GetData(Content))
-                {
-                    Log.Default.Msg(Log.Level.Error, "Unable to set data");
-                }
-
-
                 Content.ZoomExtents();
-                return true;
+
+                _timer.Stop();
+                _created = true;
+                return _created;
             }
 
 
             /* ------------------------------------------------------------------*/
             // protected functions
 
-            protected override bool GetData(object data_parent)
+            protected override bool GetData(SciChartSurface data_parent)
             {
                 var parent = data_parent as SciChartParallelCoordinateSurface;
+                parent.ParallelCoordinateDataSource = null;
+
                 var data = (ParallelCoordinateDataSource<DataType>)RequestDataCallback(RequiredDataType);
-                if (data == null)
+                if (data != null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Missing data for: " + typeof(DataType).FullName);
-                    return false;
+                    parent.ParallelCoordinateDataSource = data;
+                    return true;
                 }
-                parent.ParallelCoordinateDataSource = data;
-                return true;
+                /// Log.Default.Msg(Log.Level.Error, "Missing data for: " + typeof(ParallelCoordinateDataSource<DataType>).FullName);
+                return false;
             }
 
 

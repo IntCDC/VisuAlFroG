@@ -48,6 +48,9 @@ namespace Interface
                 pManager.AddGenericParameter("Generic Input Data", "Input Data", "Generic input data for visualization.", GH_ParamAccess.tree);
                 /// DEBUG
                 pManager[0].Optional = true;
+
+                pManager.AddGenericParameter("Configuration File Path", "Config File", "File path to configuration to load on startup.", GH_ParamAccess.item);
+                pManager[1].Optional = true;
             }
 
             /// <summary>
@@ -72,8 +75,15 @@ namespace Interface
                 // Lazy init required!
                 if (_window == null)
                 {
+
+                    string configuration_file = "";
+                    if (!DataAccess.GetData<string>(0, ref configuration_file))
+                    {
+                        _runtimemessages.Add(Log.Level.Error, "Unable to read configuration parameter");
+                    }
+
                     string app_name = base.Name + " (" + base.NickName + ")";
-                    _window = new MainWindow(app_name);
+                    _window = new MainWindow(app_name, configuration_file);
                     _window.SetReloadInterface(reload_instance);
                     _window.SetOutputDataCallback(retrieve_output_data);
                 }
@@ -92,8 +102,7 @@ namespace Interface
                 else
                 {
                     // Read input data
-                    var input_data = new GH_Structure<IGH_Goo>();
-                    if (!DataAccess.GetDataTree(0, out input_data))
+                    if (!DataAccess.GetDataTree(0, out GH_Structure<IGH_Goo> input_data))
                     {
                         _runtimemessages.Add(Log.Level.Error, "Unable to read input data");
                         return;

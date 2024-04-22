@@ -30,7 +30,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public override bool ReCreate()
+            public override bool Create()
             {
                 if (!_initialized)
                 {
@@ -39,14 +39,11 @@ namespace SciChartInterface
                 }
                 if (_created)
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Re-creating visualization");
-                    _created = false;
-                }
-                if (this.RequestDataCallback == null)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Missing request data callback");
+                    // Log Console does not depend on data
+                    Log.Default.Msg(Log.Level.Warn, "Content already created. Skipping re-creating content.");
                     return false;
                 }
+                _timer.Start();
 
 
                 // Options --------------------------------------------
@@ -117,42 +114,41 @@ namespace SciChartInterface
                     }
                 );
 
-                // Set data -----------------------------------------
-                data_point_selection.UpdateState();
-                if (!GetData(Content))
-                {
-                    Log.Default.Msg(Log.Level.Error, "Unable to set data");
-                }
-                data_point_selection.UpdateState();
-
                 Content.ZoomExtents();
-                return true;
+
+                _timer.Stop();
+                _created = true;
+                return _created;
             }
+
 
             /* ------------------------------------------------------------------*/
             // protected functions
 
-            protected override bool GetData(object data_parent)
+            /// </summary>
+            /// <param name="data_parent"></param>
+            /// <returns></returns>
+            protected override bool GetData(SciChartSurface data_parent)
             {
-                var parent = data_parent as SciChartSurface;
-                var data = (List<DataType>)RequestDataCallback(RequiredDataType);
-                if (data == null)
+                data_parent.RenderableSeries.Clear();
+
+                if (this.RequestDataCallback == null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Missing data for: " + typeof(DataType).FullName);
-                    return false;
-                }
-                if (data.Count == 0)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Missing data");
+                    Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
                 }
 
-                parent.RenderableSeries.Clear();
-                foreach (var data_series in data)
+                var data = (List<DataType>)RequestDataCallback(RequiredDataType);
+                if (data != null)
                 {
-                    parent.RenderableSeries.Add(data_series);
+                    foreach (var data_series in data)
+                    {
+                        data_parent.RenderableSeries.Add(data_series);
+                    }
+                    return true;
                 }
-                return true;
+                ///Log.Default.Msg(Log.Level.Error, "Missing data for: " + typeof(List<DataType>).FullName);
+                return false;
             }
         }
     }

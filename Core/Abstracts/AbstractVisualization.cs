@@ -6,6 +6,7 @@ using System.Windows;
 using Core.Abstracts;
 using Core.GUI;
 using Core.Data;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 
 
@@ -110,7 +111,28 @@ namespace Core
             /// Called to actually (re-)create the WPF content on any changes
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
-            public abstract bool ReCreate();
+            public abstract bool Create();
+            /* TEMPLATE
+                if (!_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return false;
+                }
+                if (_created)
+                {
+                    // Log Console does not depend on data
+                    Log.Default.Msg(Log.Level.Debug, "Content already created. Skipping re-creating content.");
+                    return false;
+                }
+                _timer.Start();
+
+                /// PLACE YOUR STUFF HERE ...
+
+                _timer.Stop();
+                _created = true;
+                return _created;
+            }
+            */
 
             /// <summary>
             /// Called when content element is being attached to a parent element.
@@ -177,8 +199,8 @@ namespace Core
             {
                 _id = UniqueID.Invalid;
 
-                _initialized = false;
                 _created = false;
+                _initialized = false;
                 _attached = false;
 
                 _content_parent = null;
@@ -202,18 +224,6 @@ namespace Core
             */
 
             /// <summary>
-            /// TODO One variant of the following GetData method must be implemented
-            /// </summary>
-            protected virtual bool GetData(object data_parent)
-            {
-                throw new InvalidOperationException("Call SetData() method of derived class");
-            }
-            protected virtual bool GetData(ref GenericDataStructure data_parent)
-            {
-                throw new InvalidOperationException("Call SetData() method of derived class");
-            }
-
-            /// <summary>
             /// TODO Called when updated data is available
             /// </summary>
             /// <param name="new_data">True if new data is available, false if existing data has been updated.</param>
@@ -222,6 +232,29 @@ namespace Core
 
             /* ------------------------------------------------------------------*/
             // protected functions
+
+            /// </summary>
+            /// <param name="data_parent"></param>
+            /// <returns></returns>
+            protected virtual bool GetData<DataParentType>(out DataParentType data_parent)
+            {
+                data_parent = default(DataParentType);
+
+                if (this.RequestDataCallback == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing request data callback");
+                    return false;
+                }
+
+                var data = (DataParentType)RequestDataCallback(RequiredDataType);
+                if (data != null)
+                {
+                    data_parent = data;
+                    return true;
+                }
+                /// Log.Default.Msg(Log.Level.Error, "No data for: " + typeof(DataParentType).FullName);
+                return false;
+            }
 
             /// <summary>
             /// Add new option to menu of visualization.
@@ -233,7 +266,7 @@ namespace Core
                 _options_menu.IsEnabled = true;
             }
 
-            protected void AttachChildContent(Control control)
+            protected void AttachChildContent(UIElement control)
             {
                 _content_child.Children.Add(control);
             }

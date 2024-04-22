@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
-
 using Core.Abstracts;
 using Core.Utilities;
 
@@ -43,7 +42,7 @@ namespace Core
             public delegate void UnregisterUpdateCallback_Delegate(UpdateCallback_Delegate update_callback);
 
             /// <summary>
-            /// Callback called on updated data
+            /// Callback called on update data
             /// </summary>
             public delegate void UpdateCallback_Delegate(bool new_data);
 
@@ -59,8 +58,12 @@ namespace Core
                 _timer.Start();
 
 
-                _updated_callbacks = new List<UpdateCallback_Delegate>();
+                _update_callbacks = new List<UpdateCallback_Delegate>();
+
                 _data_library = new Dictionary<Type, IDataType>();
+                var variety_generic = new DataTypeGeneric(event_metadata_changed);
+                _data_library.Add(variety_generic.GetType(), variety_generic);
+
                 bool initialized = true;
 
 
@@ -79,8 +82,8 @@ namespace Core
                     _data_library.Clear();
                     _data_library = null;
 
-                    _updated_callbacks.Clear();
-                    _updated_callbacks = null;
+                    _update_callbacks.Clear();
+                    _update_callbacks = null;
 
                     _initialized = false;
                 }
@@ -91,7 +94,7 @@ namespace Core
             /// Callback to propagate new input data to the data manager.
             /// </summary>
             /// <param name="input_data">Reference to the new input data.</param>
-            public void GetInputDataCallback(ref GenericDataStructure input_data)
+            public void SetInputDataCallback(ref GenericDataStructure input_data)
             {
                 if (!_initialized)
                 {
@@ -107,13 +110,7 @@ namespace Core
                 Log.Default.Msg(Log.Level.Info, "Reading input data ...");
 
                 // Update generic data type...
-                /// -> Initializes meta data!
-                if (!_data_library.ContainsKey(typeof(DataTypeGeneric)))
-                {
-                    var variety_generic = new DataTypeGeneric(event_metadata_changed);
-                    _data_library.Add(variety_generic.GetType(), variety_generic);
-                }
-                _data_library[typeof(DataTypeGeneric)].Initialize(ref input_data, input_data.DataDimension(), input_data.ValueTypes());
+                _data_library[typeof(DataTypeGeneric)].Update(input_data);
                 var data = get_generic_data();
 
                 // ...then update all other data types
@@ -121,19 +118,19 @@ namespace Core
                 {
                     if (pair.Key != typeof(DataTypeGeneric))
                     {
-                        pair.Value.Initialize(ref input_data, data.DataDimension(), data.ValueTypes());
+                        pair.Value.Update(input_data);
                     }
                 }
 
-                // Notify visualizations via registered update callbacks
-                if (_updated_callbacks == null)
+                // Notify visualizations about (meta) data changes via registered update callbacks
+                if (_update_callbacks == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "No callback list for registered update callbacks");
                     return;
                 }
-                foreach (var updated_callback in _updated_callbacks)
+                foreach (var update_callback in _update_callbacks)
                 {
-                    updated_callback(true);
+                    update_callback(true);
                 }
 
                 _timer.Stop();
@@ -149,22 +146,22 @@ namespace Core
             }
 
             /// <summary>
-            /// Notify registered callers on updated input data. Called by visualizations.
+            /// Notify registered callers on update input data. Called by visualizations.
             /// </summary>
             public void RegisterUpdateTypeCallback(UpdateCallback_Delegate update_callback, Type data_type)
             {
                 // Register update callback of calling visualization
-                if (_updated_callbacks == null)
+                if (_update_callbacks == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "No callback list for registered update callbacks");
                     return;
                 }
-                if (_updated_callbacks.Contains(update_callback))
+                if (_update_callbacks.Contains(update_callback))
                 {
-                    Log.Default.Msg(Log.Level.Debug, "Callback for updated data already registered");
+                    Log.Default.Msg(Log.Level.Debug, "Callback for update data already registered");
                     return;
                 }
-                _updated_callbacks.Add(update_callback);
+                _update_callbacks.Add(update_callback);
 
                 // Register data type of calling visualization
                 if (!_data_library.ContainsKey(data_type))
@@ -177,35 +174,36 @@ namespace Core
                         return;
                     }
                     _data_library.Add(variety.GetType(), variety);
+                    Log.Default.Msg(Log.Level.Info, "Added new data type: " + data_type.FullName);
 
-                    var data = get_generic_data();
+                    // Load data if available
+                    var data = get_generic_data(true);
                     if (data != null)
                     {
-                        variety.Initialize(ref data, data.DataDimension(), data.ValueTypes());
-                        Log.Default.Msg(Log.Level.Info, "Added new data type: " + data_type.FullName);
+                        variety.Update(data);
                     }
                 }
             }
 
             /// <summary>
-            /// Notify registered callers on updated input data. Called by visualizations.
+            /// Notify registered callers on update input data. Called by visualizations.
             /// </summary>
             public void UnregisterUpdateCallback(UpdateCallback_Delegate update_callback)
             {
                 // Unregister data update callback of calling visualization
-                if (_updated_callbacks == null)
+                if (_update_callbacks == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "No callback list for registered update callbacks");
                     return;
                 }
-                if (_updated_callbacks.Contains(update_callback))
+                if (_update_callbacks.Contains(update_callback))
                 {
-                    _updated_callbacks.Remove(update_callback);
+                    _update_callbacks.Remove(update_callback);
                     return;
                 }
-                Log.Default.Msg(Log.Level.Debug, "Callback for updated data already removed");
+                Log.Default.Msg(Log.Level.Debug, "Callback for update data already removed");
 
-                /// XXX Do not unregister data type since it might be used by other visualization(s) or later when visualization is created again...
+                /// XXX TODO Track used data types for being able to delete them is unused.
             }
 
             /// <summary>
@@ -259,14 +257,14 @@ namespace Core
                     }
 
                     // Notify visualizations via registered update callbacks
-                    if (_updated_callbacks == null)
+                    if (_update_callbacks == null)
                     {
                         Log.Default.Msg(Log.Level.Error, "No callback list for registered update callbacks ");
                         return;
                     }
-                    foreach (var updated_callback in _updated_callbacks)
+                    foreach (var update_callback in _update_callbacks)
                     {
-                        updated_callback(false);
+                        update_callback(false);
                     }
 
 
@@ -304,19 +302,25 @@ namespace Core
                 }
             }
 
-            private GenericDataStructure get_generic_data()
+            private GenericDataStructure get_generic_data(bool silent = false)
             {
                 // Get current data from generic reference
                 if (!_data_library.ContainsKey(typeof(DataTypeGeneric)))
                 {
-                    Log.Default.Msg(Log.Level.Error, "Missing generic data");
+                    if (!silent)
+                    {
+                        Log.Default.Msg(Log.Level.Error, "Missing generic data");
+                    }
                     return null;
                 }
                 var data = _data_library[typeof(DataTypeGeneric)].Get as GenericDataStructure;
                 // If there is already data present, create the data for the new type
                 if (data == null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Missing generic data");
+                    if (!silent)
+                    {
+                        Log.Default.Msg(Log.Level.Error, "Missing generic data");
+                    }
                 }
                 return data;
             }
@@ -327,7 +331,7 @@ namespace Core
             private Dictionary<Type, IDataType> _data_library = null;
 
             private OutputData_Delegate _outputdata_callback = null;
-            private List<UpdateCallback_Delegate> _updated_callbacks = null;
+            private List<UpdateCallback_Delegate> _update_callbacks = null;
         }
     }
 }
