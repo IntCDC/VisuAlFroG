@@ -49,7 +49,7 @@ namespace Interface
                 /// DEBUG
                 pManager[0].Optional = true;
 
-                pManager.AddGenericParameter("Configuration File Path", "Config File", "File path to configuration to load on startup.", GH_ParamAccess.item);
+                pManager.AddGenericParameter("Command Line Arguments", "Arguments", "Provide command line arguments.", GH_ParamAccess.item);
                 pManager[1].Optional = true;
             }
 
@@ -75,20 +75,24 @@ namespace Interface
                 // Lazy init required!
                 if (_window == null)
                 {
-
-                    string configuration_file = "";
-                    if (!DataAccess.GetData<string>(0, ref configuration_file))
-                    {
-                        _runtimemessages.Add(Log.Level.Error, "Unable to read configuration parameter");
-                    }
-
                     string app_name = base.Name + " (" + base.NickName + ")";
-                    _window = new MainWindow(app_name, configuration_file);
+                    _window = new MainWindow(app_name);
                     _window.SetReloadInterface(reload_instance);
                     _window.SetOutputDataCallback(retrieve_output_data);
                 }
                 // Open or restore invisible window
                 _window.Show();
+
+                // Parse and evaluate arguments
+                string arguments = "";
+                if (DataAccess.GetData<string>(1, ref arguments))
+                {
+                    if (_arguments != arguments)
+                    {
+                        _window.Arguments(arguments);
+                        _arguments = arguments;
+                    }
+                }
 
 
                 // Data -------------------------------------------------------
@@ -107,7 +111,8 @@ namespace Interface
                         _runtimemessages.Add(Log.Level.Error, "Unable to read input data");
                         return;
                     }
-                    if (!input_data.IsEmpty) {
+                    if (!input_data.IsEmpty)
+                    {
                         _runtimemessages.Add(Log.Level.Debug, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().FullName);
                         /// DEBUG Log.Default.Msg(Log.Level.Warn, input_data.DataDescription(true, true)); // -> Same as Grasshopper Panel output
 
@@ -115,7 +120,8 @@ namespace Interface
                         var input_data_converted = DataConverter.ConvertFromGHStructure(ref input_data);
                         _window.UpdateInputData(ref input_data_converted);
 
-                    } else 
+                    }
+                    else
                     {
                         _runtimemessages.Add(Log.Level.Info, "Skipping empty input data");
                     }
@@ -185,6 +191,7 @@ namespace Interface
             private MainWindow _window = null;
             private GH_Structure<IGH_Goo> _output_data = null;
             private RuntimeMessages _runtimemessages = null;
+            private string _arguments = "";
 
             /// DEBUG
             private int _exec_count = 0;
@@ -210,7 +217,8 @@ namespace Interface
             /// </summary>            
             protected override System.Drawing.Bitmap Icon
             {
-                get {
+                get
+                {
                     var assembly = System.Reflection.Assembly.GetExecutingAssembly();
                     var stream = assembly.GetManifestResourceStream("GrasshopperInterface.resources.logo.logo24.png");
                     return new System.Drawing.Bitmap(stream);

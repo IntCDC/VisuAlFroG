@@ -87,6 +87,18 @@ The successful installation can be tested by opening the provided Grasshopper ex
 
 
 <!-- ###################################################################### -->
+#### Configuration
+
+VisuAlFroG allows to save any configuration you have created to a file via the menu *File* -> *Configuration* -> *Save*
+Configurations are stored in the [JSON](https://www.json.org/json-en.html) file format and can be loaded the following ways:
+- In the menu *File* select *Configuration* -> *Load* 
+- Attach a *Panel* or *Text* component to the *Config File* input parameter of the VisuAlFroG component and enter `--config "<CONFIGURATION-FILE-PATH>"`
+- The configuration file can also be provided as command line argument, e.g.: 
+```Powershell
+> VisuAlFroG.exe --config "<CONFIGURATION-FILE-PATH>"
+```
+
+<!-- ###################################################################### -->
 ### Known Issues
 
 - Rhino ** Version 8** uses .NET Core by (default)[https://www.rhino3d.com/en/docs/guides/netcore/]. 

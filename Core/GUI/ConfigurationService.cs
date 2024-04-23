@@ -175,6 +175,8 @@ namespace Core
                     var fileStream = new FileStream(config_file, FileMode.Open, FileAccess.Read, FileShare.Read);
                     using (StreamReader reader = new StreamReader(fileStream))
                     {
+                        Log.Default.Msg(Log.Level.Info, "Loading configuration from file: '" + config_file + "'");
+
                         string config_content = reader.ReadToEnd();
                         var _deserialize_structure = Deserialize<Dictionary<string, string>>(config_content);
                         foreach (var apply_callback in _deserialize_structure)

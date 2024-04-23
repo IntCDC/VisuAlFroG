@@ -36,14 +36,14 @@ namespace Frontend
             /// <summary>
             /// Ctor. Used for detached execution.
             /// </summary>
-            public MainWindow() : this("[detached] Visual Analytics Framework for Grasshopper (VisuAlFroG)", "", true) { }
+            public MainWindow() : this("[detached] Visual Analytics Framework for Grasshopper (VisuAlFroG)", true) { }
 
             /// <summary>
             /// Ctor.
             /// </summary>
             /// <param name="app_name"></param>
             /// <param name="detached"></param>
-            public MainWindow(string app_name, string configuration_file = "", bool detached = false)
+            public MainWindow(string app_name, bool detached = false)
             {
                 /// DEBUG get C# version, see compile output (C# Language Version 7.3)
                 // #error version
@@ -51,7 +51,7 @@ namespace Frontend
                 _soft_close = !detached;
                 _detached = detached;
                 initialize(app_name);
-                create(configuration_file);
+                create();
             }
 
             /// <summary>
@@ -86,6 +86,17 @@ namespace Frontend
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing input data callback");
                 }
+            }
+
+
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="config_file"></param>
+            public void Arguments(string arguments)
+            {
+                _arguments.Parse(arguments);
+                _arguments.Evaluate();
             }
 
 
@@ -142,8 +153,17 @@ namespace Frontend
                 // base.Loaded += on_loaded;
                 // CompositionTarget.Rendering += once_per_frame;
 
-                // Read cmd line arguments
-                bool initialized = cmdline_arguments();
+                // Register and parse cmd line arguments
+                _arguments.Register("config", "c", 1, (List<string> parameters) =>
+                {
+                    _configurationservice.Load(parameters[0]);
+                });
+                _arguments.Register("help", "h", 0, (List<string> parameters) =>
+                {
+                    _arguments.PrintHelp();
+                });
+                // Proceeding if an error occurs during parsing arguments
+                _arguments.Parse();
 
                 // Initialize managers and services
                 _configurationservice = new ConfigurationService();
@@ -152,6 +172,7 @@ namespace Frontend
                 _colortheme = new ColorTheme();
                 _menubar = new MenuBar();
 
+                bool initialized = true;
                 initialized &= _configurationservice.Initialize();
                 initialized &= _basemanager.Initialize();
                 initialized &= _winmanager.Initialize(_basemanager.GetContentCallbacks());
@@ -175,19 +196,22 @@ namespace Frontend
                 {
                     Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
                 }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Error during initialization of: " + this.GetType().FullName + " - check previous messages for more information.");
+                }
                 return _initialized;
             }
 
             /// <summary>
             /// Create the WPF content of the application.
             /// </summary>
-            /// <param name="configuration_file">The configuration file loaded on startup.</param> 
             /// <returns>True on successful creation of the content, false otherwise</returns>
-            public bool create(string configuration_file)
+            public bool create()
             {
                 if (!_initialized)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to creation");
                     return false;
                 }
                 _timer.Start();
@@ -209,21 +233,8 @@ namespace Frontend
                 _subwindows_element.Children.Add(winmanager_content);
 
 
-                // Load startup configuration from file
-                string config_file = configuration_file;
-                if (_cmdline_args.ContainsKey("config"))
-                {
-                    // Command line overwrites ctor parameter
-                    config_file = _cmdline_args["config"];
-                }
-                if (config_file != "")
-                {
-                    _configurationservice.Load(config_file);
-                }
-                else
-                {
-                    _winmanager.CreateDefault();
-                }
+                // Evaluate previously parsed command line arguments
+                _arguments.Evaluate();
 
 
                 /// DEBUG Load sample data in detached mode ...
@@ -259,42 +270,6 @@ namespace Frontend
                 return true;
             }
 
-            public bool cmdline_arguments()
-            {
-
-                // Parse command line arguments
-                string[] args = Environment.GetCommandLineArgs();
-                for (int index = 1; index < args.Length; index += 2)
-                {
-                    /*
-                     Supported command line arguments:
-                     -h --help     Help text on valid commandline parameters
-                     -c --config   Configuration file path
-                     */
-
-                    // TODO Proper check!
-                    bool valid_arguments = true;
-
-                    Log.Default.Msg(Log.Level.Warn, "Unexpected command line argument(s).");
-
-                    string arg = args[index].Replace("-", "");
-                    _cmdline_args.Add(arg, args[index + 1]);
-
-                }
-
-
-                return true;
-            }
-
-            void print_usage_inforamtion()
-            {
-                Log.Default.Msg(Log.Level.Info,
-                    "VisualFroG.exe [[OPTION] | [OPTION] [PARAMETER]]...\n " +
-                    "Options: " +
-                    "    -c, -config CONFIGURATION_FILE_PATH    Provide the absolute or relative file path to a configuration file that should be loaded on startup." +
-                    "    -h, --help                             Print this message."
-                    );
-            }
 
             /// <summary>
             /// Callback additionally invoked on loading of main window.
@@ -320,11 +295,11 @@ namespace Frontend
             /* ------------------------------------------------------------------*/
             // local variables
 
-            private Dictionary<string, string> _cmdline_args = new Dictionary<string, string>();
-
             private bool _initialized = false;
             private bool _soft_close = false;
             private bool _detached = false;
+
+            private CmdLineArguments _arguments = new CmdLineArguments();
 
             private ConfigurationService _configurationservice = null;
             private Visualizations.BaseManager _basemanager = null;
