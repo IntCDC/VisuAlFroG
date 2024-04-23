@@ -31,9 +31,11 @@ namespace Interface
             /// new tabs/panels will automatically be created.
             /// </summary>
             public VisuAlFroG()
-              : base("Visual Analytics Framework for Grasshopper", "VisuAlFroG",
-                "Visual analytics framework providing the concept of visual analytics pipeline within grasshopper.",
-                "Visual Analytics", "Frameworks")
+              : base("Visual Analytics Framework for Grasshopper", 
+                    "VisuAlFroG",
+                    "Visual analytics framework providing the concept of visual analytics pipeline within grasshopper.",
+                    "Visual Analytics", 
+                    "Frameworks")
             {
                 _runtimemessages = new RuntimeMessages(this);
                 _timer = new TimeBenchmark();
@@ -46,10 +48,9 @@ namespace Interface
             protected override void RegisterInputParams(GH_InputParamManager pManager)
             {
                 pManager.AddGenericParameter("Generic Input Data", "Input Data", "Generic input data for visualization.", GH_ParamAccess.tree);
-                /// DEBUG
                 pManager[0].Optional = true;
 
-                pManager.AddGenericParameter("Command Line Arguments", "Arguments", "Provide command line arguments.", GH_ParamAccess.item);
+                pManager.AddGenericParameter("Command Line Arguments", "Arguments", "Provide command line arguments as text.", GH_ParamAccess.item);
                 pManager[1].Optional = true;
             }
 
@@ -64,7 +65,7 @@ namespace Interface
             /// <summary>
             /// This is the method that actually does the work.
             /// </summary>
-            /// <param name="DA"> The DA object can be used to retrieve data from input parameters and 
+            /// <param name="DataAccess"> The DA object can be used to retrieve data from input parameters and 
             /// to store data in output parameters.</param>
             protected override void SolveInstance(IGH_DataAccess DataAccess)
             {
@@ -72,18 +73,18 @@ namespace Interface
 
                 // Window -----------------------------------------------------
 
-                // Lazy init required!
+                // Lazy init required
                 if (_window == null)
                 {
                     string app_name = base.Name + " (" + base.NickName + ")";
                     _window = new MainWindow(app_name);
-                    _window.SetReloadInterface(reload_instance);
                     _window.SetOutputDataCallback(retrieve_output_data);
                 }
                 // Open or restore invisible window
                 _window.Show();
 
-                // Parse and evaluate arguments
+
+                // Parse and evaluate command line arguments provided as text input
                 string arguments = "";
                 if (DataAccess.GetData<string>(1, ref arguments))
                 {
@@ -128,28 +129,6 @@ namespace Interface
                 }
 
 
-                // Misc -------------------------------------------------------
-
-                /*
-                // Provide wrappers for DataAccess.S/GetDataTree, DataAccess.S/GetDataList, and DataAccess.S/GetData
-                // Access all input parameters
-                foreach (var input_param in Params.Input)
-                {
-                    _runtimemessages.Add(Log.Level.Warn, "Input Parameter Name: " + input_param.Name + " | Type: " + input_param.Type.ToString());
-                    Tuple<DataType, Get-Delegate>
-                }
-                // Access all output parameters
-                foreach (var output_param in Params.Output)
-                {
-                    _runtimemessages.Add(Log.Level.Warn, "Input Parameter Name: " + output_param.Name + " | Type: " + output_param.Type.ToString());
-                    Tuple<DataType, Set-Delegate>
-                }
-
-                // string gh_document_filepath = OnPingDocument().FilePath;
-                // OnPingDocument().FilePathChanged += this.FilePathChangedEvent
-                */
-
-
                 // Log --------------------------------------------------------
 
                 _timer.Stop();
@@ -167,21 +146,13 @@ namespace Interface
             // private functions
 
             /// <summary>
-            /// Callback to trigger reloading of the Grasshopper solution.
-            /// </summary>
-            public void reload_instance()
-            {
-                ExpireSolution(true);
-            }
-
-            /// <summary>
             /// Callback for retrieving new output data.
             /// </summary>
             /// <param name="ouput_data">Reference to the new output data.</param>
             public void retrieve_output_data(ref GenericDataStructure ouput_data)
             {
                 _output_data = DataConverter.ConvertToGHStructure(ref ouput_data);
-                reload_instance();
+                ExpireSolution(true);
             }
 
 

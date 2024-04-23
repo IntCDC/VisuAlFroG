@@ -45,22 +45,10 @@ namespace Frontend
             /// <param name="detached"></param>
             public MainWindow(string app_name, bool detached = false)
             {
-                /// DEBUG get C# version, see compile output (C# Language Version 7.3)
-                // #error version
-
                 _soft_close = !detached;
                 _detached = detached;
                 initialize(app_name);
                 create();
-            }
-
-            /// <summary>
-            /// Callback to trigger reloading the interface (= Grasshopper).
-            /// </summary>
-            /// <param name="reload_callback">Reload callback provided by the interface.</param>
-            public void SetReloadInterface(ReloadInterface_Delegate reload_callback)
-            {
-                _reloadinterface_callback = reload_callback;
             }
 
             /// <summary>
@@ -78,21 +66,18 @@ namespace Frontend
             /// <param name="input_data">Reference to the input data hold by the interface.</param>
             public void UpdateInputData(ref GenericDataStructure input_data)
             {
-                if (_inputdata_callback != null)
+                if (!_initialized)
                 {
-                    _inputdata_callback(ref input_data);
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to updating input data");
+                    return;
                 }
-                else
-                {
-                    Log.Default.Msg(Log.Level.Error, "Missing input data callback");
-                }
+                _basemanager.UpdateInputData(ref input_data);
             }
 
-
             /// <summary>
-            /// 
+            /// Allows to provide arguments as string 
             /// </summary>
-            /// <param name="config_file"></param>
+            /// <param name="arguments">Command line arguments as string</param>
             public void Arguments(string arguments)
             {
                 _arguments.Parse(arguments);
@@ -139,10 +124,7 @@ namespace Frontend
                 }
                 _timer = new TimeBenchmark();
                 _timer.Start();
-                /// Cursor = Cursors.Wait;
 
-                // Explicitly disable debug messages
-                Log.Default.DisableDebug = false;
 
                 // Window setup
                 InitializeComponent();
@@ -150,8 +132,11 @@ namespace Frontend
                 base.Width = 1280;
                 base.Height = 720;
                 base.Icon = ImageLoader.ImageSourceFromFile(ResourcePaths.Locations.LogoIcons, "logo64.png");
-                // base.Loaded += on_loaded;
-                // CompositionTarget.Rendering += once_per_frame;
+
+
+                // Explicitly disable debug messages
+                Log.Default.DisableDebug = true;
+
 
                 // Register and parse cmd line arguments
                 _arguments.Register("config", "c", 1, (List<string> parameters) =>
@@ -165,6 +150,7 @@ namespace Frontend
                 // Proceeding if an error occurs during parsing arguments
                 _arguments.Parse();
 
+
                 // Initialize managers and services
                 _configurationservice = new ConfigurationService();
                 _basemanager = new Visualizations.BaseManager();
@@ -177,19 +163,14 @@ namespace Frontend
                 initialized &= _basemanager.Initialize();
                 initialized &= _winmanager.Initialize(_basemanager.GetContentCallbacks());
                 initialized &= _colortheme.Initialize(App.Current.Resources, _menubar.MarkColorTheme);
-                initialized &= _menubar.Initialize(this.Close, _colortheme.SetColorStyle, _configurationservice.Save, _configurationservice.Load);
+                initialized &= _menubar.Initialize(this.Close, _colortheme.SetColorStyle, _configurationservice.Save, _configurationservice.Load, _basemanager.GetSendOutputDataCallback());
 
-                // Register additional callbacks
-                ///  Do not reorder since applying configuration might be order dependent!
+                // Register configurations
                 _configurationservice.RegisterConfiguration(_basemanager.Name, _basemanager.CollectConfigurations, _basemanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_winmanager.Name, _winmanager.CollectConfigurations, _winmanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_colortheme.Name, _colortheme.CollectConfigurations, _colortheme.ApplyConfigurations);
 
-                // Get callbacks
-                _inputdata_callback = _basemanager.GetInputDataCallback();
 
-
-                /// Cursor = Cursors.Arrow;
                 _timer.Stop();
                 _initialized = initialized;
                 if (_initialized)
@@ -215,9 +196,8 @@ namespace Frontend
                     return false;
                 }
                 _timer.Start();
-                ///Cursor = Cursors.Wait;
 
-
+                // Attach main menu bar to content
                 var menubar_content = _menubar.Attach();
                 if (menubar_content == null)
                 {
@@ -225,6 +205,7 @@ namespace Frontend
                 }
                 _menubar_element.Children.Add(menubar_content);
 
+                // Attach window manager to content
                 var winmanager_content = _winmanager.Attach();
                 if (winmanager_content == null)
                 {
@@ -237,7 +218,17 @@ namespace Frontend
                 _arguments.Evaluate();
 
 
-                /// DEBUG Load sample data in detached mode ...
+                /// DEBUG
+                load_example_data();
+
+
+                _timer.Stop();
+                return true;
+            }
+
+            /// DEBUG Load sample data in detached mode ...
+            private void load_example_data()
+            {
                 if (_detached)
                 {
                     var generator = new Random();
@@ -247,13 +238,16 @@ namespace Frontend
                     for (int i = 0; i < 7; i++)
                     {
                         var data_branch = new GenericDataStructure();
+                        data_branch.Label = "labled_" + i.ToString();
+
                         for (int j = 0; j < 25; j++)
                         {
-                            var value = generator.Next(0, 25);
+                            var value = generator.Next(0, 50);
                             var data_leaf = new GenericDataEntry();
                             data_leaf.AddValue((double)value);
 
                             data_leaf.MetaData.Index = value_index;
+                            data_leaf.MetaData.Label = data_branch.Label;
                             value_index++;
 
                             data_branch.AddEntry(data_leaf);
@@ -263,32 +257,6 @@ namespace Frontend
 
                     UpdateInputData(ref sample_data);
                 }
-
-
-                ///Cursor = Cursors.Arrow;
-                _timer.Stop();
-                return true;
-            }
-
-
-            /// <summary>
-            /// Callback additionally invoked on loading of main window.
-            /// </summary>
-            /// <param name="sender">Sender object.</param>
-            /// <param name="routedEventArgs">Routed event arguments.</param>
-            private void event_loaded(object sender, RoutedEventArgs routedEventArgs)
-            {
-                // so far unused ...
-            }
-
-            /// <summary>
-            /// Callback invoked once per frame.
-            /// </summary>
-            /// <param name="sender">Sender object.</param>
-            /// <param name="args">Event arguments.</param>
-            private void event_once_per_frame(object sender, EventArgs args)
-            {
-                // so far unused ...
             }
 
 
@@ -306,10 +274,6 @@ namespace Frontend
             private WindowManager _winmanager = null;
             private ColorTheme _colortheme = null;
             private MenuBar _menubar = null;
-
-            private ReloadInterface_Delegate _reloadinterface_callback = null;
-            private DataManager.OutputData_Delegate _outputdata_callback = null;
-            private DataManager.InputData_Delegate _inputdata_callback = null;
 
             /// DEBUG
             private TimeBenchmark _timer = null;

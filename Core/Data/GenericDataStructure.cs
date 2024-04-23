@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Core.Utilities;
 
 
@@ -18,8 +19,9 @@ namespace Core
             // public properties
 
             public List<GenericDataStructure> Branches { get { return _branches; } }
-
             public List<GenericDataEntry> Entries { get { return _entries; } }
+
+            public string Label { get; set; } = "";
 
 
             /* ------------------------------------------------------------------*/
@@ -57,16 +59,29 @@ namespace Core
                 return value_types;
             }
 
+            public double Min()
+            {
+                double min = double.PositiveInfinity;
+                get_min(this, ref min);
+                return min;
+            }
+            public double Max()
+            {
+                double max = double.NegativeInfinity;
+                get_max(this, ref max);
+                return max;
+            }
+
+            public List<string> Labels()
+            {
+                List<string> labels = new List<string>();
+                get_labels(this, ref labels);
+                return labels;
+            }
 
             /* ------------------------------------------------------------------*/
             // private functions
 
-            /// <summary>
-            /// TODO
-            /// </summary>
-            /// <param name="branch"></param>
-            /// <param name="entry_index"></param>
-            /// <param name="out_entry"></param>
             private void get_entry_at_index(GenericDataStructure branch, int entry_index, ref GenericDataEntry out_entry)
             {
                 if (out_entry != null)
@@ -87,11 +102,6 @@ namespace Core
                 }
             }
 
-            /// <summary>
-            /// TODO
-            /// </summary>
-            /// <param name="branch"></param>
-            /// <param name="out_metadatalist"></param>
             private void list_metadata(GenericDataStructure branch, ref List<MetaDataGeneric> out_metadatalist)
             {
                 foreach (var entry in branch.Entries)
@@ -104,12 +114,6 @@ namespace Core
                 }
             }
 
-            /// <summary>
-            /// TODO
-            /// </summary>
-            /// <param name="branch"></param>
-            /// <param name="out_dim"></param>
-            /// <returns></returns>
             private bool get_dimension(GenericDataStructure branch, ref uint out_dim)
             {
                 bool retval = true;
@@ -132,11 +136,6 @@ namespace Core
                 return true;
             }
 
-            /// <summary>
-            /// TODO
-            /// </summary>
-            /// <param name="branch"></param>
-            /// <param name="out_metadatalist"></param>
             private void get_valuetypes(GenericDataStructure branch, ref List<Type> out_valuetypes)
             {
                 foreach (var b in branch.Branches)
@@ -156,6 +155,38 @@ namespace Core
                 }
             }
 
+            private void get_min(GenericDataStructure branch, ref double min)
+            {
+                foreach (var b in branch.Branches)
+                {
+                    get_min(b, ref min);
+                }
+                foreach (var entry in branch.Entries)
+                {
+                    min = Math.Min(entry.Min, min);
+                }
+            }
+
+            private void get_max(GenericDataStructure branch, ref double max)
+            {
+                foreach (var b in branch.Branches)
+                {
+                    get_max(b, ref max);
+                }
+                foreach (var entry in branch.Entries)
+                {
+                    max = Math.Max(entry.Max, max);
+                }
+            }
+
+            private void get_labels(GenericDataStructure branch, ref List<string> labels)
+            {
+                foreach (var b in branch.Branches)
+                {
+                    labels.Add(branch.Label);
+                    get_labels(b, ref labels);
+                }
+            }
 
             /* ------------------------------------------------------------------*/
             // private variables

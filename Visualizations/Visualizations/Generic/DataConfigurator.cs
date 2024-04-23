@@ -43,7 +43,7 @@ namespace Visualizations
             _tree_root = null;
             Content.Content = null;
 
-            /// No data is OK, just do nothing hen...
+            /// No data is OK, just do nothing then...
             if (GetData(out GenericDataStructure data))
             {
                 _stack_panel = new StackPanel();
@@ -61,6 +61,16 @@ namespace Visualizations
                     text_value_types.Text += value_type.ToString() + " ";
                 }
                 _stack_panel.Children.Add(text_value_types);
+
+                var min_value = new TextBlock();
+                min_value.SetResourceReference(TextBlock.ForegroundProperty, "Brush_Foreground");
+                min_value.Text = "Min: " + data.Min().ToString();
+                _stack_panel.Children.Add(min_value);
+
+                var max_value = new TextBlock();
+                max_value.SetResourceReference(TextBlock.ForegroundProperty, "Brush_Foreground");
+                max_value.Text = "Max: " + data.Max().ToString();
+                _stack_panel.Children.Add(max_value);
 
                 _tree_root = new TreeViewItem();
                 _tree_root.Header = "Data Root";
@@ -190,7 +200,12 @@ namespace Visualizations
             foreach (var branch in data.Branches)
             {
                 var tree_branch = new TreeViewItem();
-                tree_branch.Header = "Branch [" + branch_index.ToString() + "]";
+                string branch_label = branch.Label;
+                if (branch_label == "")
+                {
+                    branch_label = "Branch";
+                }
+                tree_branch.Header = branch_label + " [" + branch_index.ToString() + "]";
                 tree_branch.SetResourceReference(TreeViewItem.ForegroundProperty, "Brush_Foreground");
 
                 create_data_tree(branch, tree_branch);

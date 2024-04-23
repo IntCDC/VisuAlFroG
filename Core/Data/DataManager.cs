@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
+
 using Core.Abstracts;
 using Core.Utilities;
 
@@ -21,14 +22,14 @@ namespace Core
             // public delegates
 
             /// <summary>
-            /// Function provided by the data manager for passing on the input data to the visualizations
-            /// </summary>
-            public delegate void InputData_Delegate(ref GenericDataStructure input_data);
-
-            /// <summary>
             /// Function provided by the interface (= Grasshopper) which allows pass output data to the interface
             /// </summary>
             public delegate void OutputData_Delegate(ref GenericDataStructure ouput_data);
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public delegate void SendOutputData_Callback();
 
             /// <summary>
             /// Callback for visualizations to request suitable data
@@ -94,7 +95,7 @@ namespace Core
             /// Callback to propagate new input data to the data manager.
             /// </summary>
             /// <param name="input_data">Reference to the new input data.</param>
-            public void SetInputDataCallback(ref GenericDataStructure input_data)
+            public void UpdateInputData(ref GenericDataStructure input_data)
             {
                 if (!_initialized)
                 {
@@ -110,7 +111,7 @@ namespace Core
                 Log.Default.Msg(Log.Level.Info, "Reading input data ...");
 
                 // Update generic data type...
-                _data_library[typeof(DataTypeGeneric)].Update(input_data);
+                _data_library[typeof(DataTypeGeneric)].UpdateData(input_data);
                 var data = get_generic_data();
 
                 // ...then update all other data types
@@ -118,7 +119,7 @@ namespace Core
                 {
                     if (pair.Key != typeof(DataTypeGeneric))
                     {
-                        pair.Value.Update(input_data);
+                        pair.Value.UpdateData(input_data);
                     }
                 }
 
@@ -180,7 +181,7 @@ namespace Core
                     var data = get_generic_data(true);
                     if (data != null)
                     {
-                        variety.Update(data);
+                        variety.UpdateData(data);
                     }
                 }
             }
@@ -233,6 +234,37 @@ namespace Core
             // private functions
 
             /// <summary>
+            /// Send changed output data to interface
+            /// </summary>
+            public void SendOutputData()
+            {
+                if (_outputdata_callback != null)
+                {
+                    var data = get_generic_data();
+                    if (data != null)
+                    {
+                        var metadata_list = data.ListMetaData();
+                        var out_data = new GenericDataStructure();
+                        foreach (var meta_data in metadata_list)
+                        {
+                            if (meta_data.IsSelected)
+                            {
+                                var metadata_entry = new GenericDataEntry();
+                                metadata_entry.AddValue(meta_data.IsSelected);
+                                metadata_entry.AddValue(meta_data.Index);
+                                out_data.AddEntry(metadata_entry);
+                            }
+                        }
+                        _outputdata_callback(ref out_data);
+                    }
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing callback for sending output data");
+                }
+            }
+
+            /// <summary>
             /// Callback provided for getting notified on changed meta data 
             /// !!! This function is currently called for every single change !!!
             /// </summary>
@@ -266,34 +298,6 @@ namespace Core
                     {
                         update_callback(false);
                     }
-
-
-
-
-
-                    // Send changed output data to interface ---------------------
-                    /// TODO XXX Call only once per selection
-                    if (_outputdata_callback != null)
-                    {
-                        var data = get_generic_data();
-                        if (data != null)
-                        {
-                            var metadata_list = data.ListMetaData();
-                            var out_data = new GenericDataStructure();
-                            foreach (var meta_data in metadata_list)
-                            {
-                                if (meta_data.IsSelected)
-                                {
-                                    var metadata_entry = new GenericDataEntry();
-                                    metadata_entry.AddValue(meta_data.IsSelected);
-                                    metadata_entry.AddValue(meta_data.Index);
-                                    out_data.AddEntry(metadata_entry);
-                                }
-                            }
-                            _outputdata_callback(ref out_data);
-                        }
-                    }
-                    // ---------------------------------------------------------
                 }
                 catch (Exception exc)
                 {

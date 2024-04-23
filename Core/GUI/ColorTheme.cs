@@ -211,27 +211,26 @@ namespace Core
                 return style;
             }
 
-            public static Style MenuItemStyle()
+            public static Style MenuItemHighlightStyle()
             {
                 var style = new Style();
                 style.TargetType = typeof(MenuItem);
 
                 Setter setter_foreground = new Setter();
                 setter_foreground.Property = Menu.ForegroundProperty;
-                setter_foreground.Value = new DynamicResourceExtension("Brush_MenuItemForeground");
+                setter_foreground.Value = Brushes.LightGray;
                 style.Setters.Add(setter_foreground);
 
-                /*
+
                 Setter setter_background = new Setter();
                 setter_background.Property = Menu.BackgroundProperty;
-                setter_background.Value = new DynamicResourceExtension("Brush_MenuItemBackground");
+                setter_background.Value = Brushes.DarkRed;
                 style.Setters.Add(setter_background);
 
                 Setter setter_border = new Setter();
                 setter_border.Property = Menu.BorderBrushProperty;
-                setter_border.Value = new DynamicResourceExtension("Brush_MenuBarBorder");
+                setter_border.Value = Brushes.Black;
                 style.Setters.Add(setter_border);
-                */
 
                 return style;
             }

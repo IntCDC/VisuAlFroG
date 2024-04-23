@@ -41,7 +41,7 @@ namespace Core
 
             public DataTypeGeneric(PropertyChangedEventHandler meta_data_update_handler) : base(meta_data_update_handler) { }
 
-            public override void Update(GenericDataStructure data)
+            public override void UpdateData(GenericDataStructure data)
             {
                 _loaded = false;
                 _data = null;

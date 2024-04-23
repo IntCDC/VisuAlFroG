@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Core.Abstracts;
+using System.ComponentModel;
 using SciChart.Charting.Visuals.RenderableSeries;
 using Core.Utilities;
 using Core.Data;
@@ -13,7 +14,6 @@ using Core.Data;
  */
 using SciChartUniformDataType = SciChart.Charting.Model.DataSeries.UniformXyDataSeries<double>;
 using SciChartXYDataType = SciChart.Charting.Model.DataSeries.XyDataSeries<double, double>;
-using System.ComponentModel;
 
 namespace SciChartInterface
 {
@@ -48,7 +48,7 @@ namespace SciChartInterface
 
             public DataTypeSciChartSeries(PropertyChangedEventHandler meta_data_update_handler) : base(meta_data_update_handler) { }
 
-            public override void Update(GenericDataStructure data)
+            public override void UpdateData(GenericDataStructure data)
             {
                 _loaded = false;
                 if (_data != null)

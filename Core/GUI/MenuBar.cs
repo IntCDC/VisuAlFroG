@@ -6,7 +6,9 @@ using System;
 using System.Windows.Navigation;
 using Core.Abstracts;
 using System.Collections.Generic;
-
+using Core.Data;
+using static Core.Data.DataManager;
+using System.Runtime.Remoting.Contexts;
 
 
 /*
@@ -36,7 +38,8 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public bool Initialize(WindowClose_Delegate close_callback, ColorTheme.SetColorStyle_Delegate theme_callback, ConfigurationService.SaveCallback_Delegate save_callback, ConfigurationService.LoadCallback_Delegate load_callback)
+            public bool Initialize(WindowClose_Delegate close_callback, ColorTheme.SetColorStyle_Delegate theme_callback, ConfigurationService.SaveCallback_Delegate save_callback,
+                                   ConfigurationService.LoadCallback_Delegate load_callback, DataManager.SendOutputData_Callback sendoutputdata_callback)
             {
                 if (_initialized)
                 {
@@ -53,6 +56,7 @@ namespace Core
                 _save_callback = save_callback;
                 _load_callback = load_callback;
                 _theme_callback = theme_callback;
+                _sendoutputdata_callback = sendoutputdata_callback;
 
                 _content = new Menu();
                 _content.Style = ColorTheme.MenuBarStyle();
@@ -103,6 +107,7 @@ namespace Core
                 item_close.Style = ColorTheme.MenuItemIconStyle();
                 item_file.Items.Add(item_close);
 
+
                 // ----------------------------------------
                 var item_style = new MenuItem();
                 item_style.Header = "Style";
@@ -141,6 +146,16 @@ namespace Core
                 item_github_link.Header = hyper_link;
                 item_info.Items.Add(item_github_link);
 
+
+                // ----------------------------------------
+                var item_data = new MenuItem();
+                item_data.Header = "Send Output Data";
+                item_data.Name = _item_id_data;
+                item_data.Click += event_menuitem_click;
+                item_data.Style = ColorTheme.MenuItemHighlightStyle();
+                _content.Items.Add(item_data);
+
+
                 return _content;
             }
 
@@ -153,13 +168,14 @@ namespace Core
                     _save_callback = null;
                     _load_callback = null;
                     _theme_callback = null;
+                    _sendoutputdata_callback = null;
 
                     _initialized = false;
                 }
                 return true;
             }
 
-            public void MarkColorTheme(ColorTheme.PredefinedThemes color_theme) 
+            public void MarkColorTheme(ColorTheme.PredefinedThemes color_theme)
             {
                 foreach (var item_theme in _item_themes)
                 {
@@ -210,6 +226,13 @@ namespace Core
                         _load_callback();
                     }
                 }
+                else if (content_id == _item_id_data)
+                {
+                    if (_sendoutputdata_callback != null)
+                    {
+                        _sendoutputdata_callback();
+                    }
+                }
                 else
                 {
                     // color themes
@@ -247,10 +270,12 @@ namespace Core
             private ConfigurationService.SaveCallback_Delegate _save_callback = null;
             private ConfigurationService.LoadCallback_Delegate _load_callback = null;
             private ColorTheme.SetColorStyle_Delegate _theme_callback = null;
+            private SendOutputData_Callback _sendoutputdata_callback = null;
 
             private readonly string _item_id_close = "item_close_" + UniqueID.Generate();
             private readonly string _item_id_save = "item_save_" + UniqueID.Generate();
             private readonly string _item_id_load = "item_load_" + UniqueID.Generate();
+            private readonly string _item_id_data = "item_data_" + UniqueID.Generate();
 
             private Dictionary<string, Tuple<MenuItem, ColorTheme.PredefinedThemes>> _item_themes = new Dictionary<string, Tuple<MenuItem, ColorTheme.PredefinedThemes>>();
         }

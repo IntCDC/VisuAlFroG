@@ -49,7 +49,7 @@ namespace SciChartInterface
 
             public DataTypeSciChartParallel(PropertyChangedEventHandler meta_data_update_handler) : base(meta_data_update_handler) { }
 
-            public override void Update(GenericDataStructure data)
+            public override void UpdateData(GenericDataStructure data)
             {
                 _loaded = false;
                 _data = null;
@@ -76,6 +76,7 @@ namespace SciChartInterface
 
                 // Warn if series have different amount of values
                 var value_dict = value_list[0] as IDictionary<string, object>;
+
                 int item_count = value_dict.Count;
                 for (int i = 1; i < value_list.Count; i++)
                 {
@@ -148,8 +149,8 @@ namespace SciChartInterface
                         foreach (var value in entry.Values)
                         {
                             /// TODO The property names are hard coded and should be replaced by names provided in the data set (e.g. branch name?)
-                            /// XXX What about: entry.MetaData
-                            data_entry_dict.Add(generate_property_name(index), (double)value);
+                            string label = generate_property_name(index); // entry.MetaData.Label;
+                            data_entry_dict.Add(label, (double)value);
                         }
                         index++;
                     }

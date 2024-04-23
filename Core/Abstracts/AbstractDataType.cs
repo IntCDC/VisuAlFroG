@@ -39,9 +39,7 @@ namespace Core
             /// TODO Use _initialized flag
             /// </summary>
             /// <param name="data"></param>
-            /// <param name="data_dimension"></param>
-            /// <param name="value_types"></param>
-            public abstract void Update(GenericDataStructure data);
+            public abstract void UpdateData(GenericDataStructure data);
 
             /// <summary>
             /// TODO

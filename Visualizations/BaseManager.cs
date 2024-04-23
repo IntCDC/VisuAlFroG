@@ -3,6 +3,7 @@ using Visualizations.PythonInterface;
 using Visualizations.WebAPI;
 using Core.Abstracts;
 using Core.Data;
+using static Core.Data.DataManager;
 
 
 
@@ -83,19 +84,24 @@ namespace Visualizations
             return _contentmanager.ApplyConfigurations(configuration);
         }
 
+        // Callback forwarding for ContentManager
         public ContentCallbacks_Type GetContentCallbacks()
         {
             return new ContentCallbacks_Type(_contentmanager.AvailableContentsCallback, _contentmanager.CreateContentCallback, _contentmanager.DeleteContentCallback);
         }
 
-        public DataManager.InputData_Delegate GetInputDataCallback()
+        // Callback forwarding for DataManager
+        public void UpdateInputData(ref GenericDataStructure input_data)
         {
-            return _datamanager.SetInputDataCallback;
+            _datamanager.UpdateInputData(ref input_data);
         }
-
         public void SetOutputDataCallback(DataManager.OutputData_Delegate _outputdata_callback)
         {
             _datamanager.SetOutputDataCallback(_outputdata_callback);
+        }
+        public SendOutputData_Callback GetSendOutputDataCallback()
+        {
+            return _datamanager.SendOutputData;
         }
 
 

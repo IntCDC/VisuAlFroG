@@ -39,7 +39,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            void Update(GenericDataStructure data);
+            void UpdateData(GenericDataStructure data);
 
             void UpdateMetaDataEntry(IMetaData updated_meta_data);
         }

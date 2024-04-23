@@ -31,6 +31,14 @@ namespace Core
             /// </summary>
             public int Index { get; set; }
 
+            /// <summary>
+            /// Label of the data point.
+            /// </summary>
+            public string Label { get; set; }
+
+            /// <summary>
+            /// Flag indicating data point selection
+            /// </summary>
             public bool IsSelected
             {
                 get
