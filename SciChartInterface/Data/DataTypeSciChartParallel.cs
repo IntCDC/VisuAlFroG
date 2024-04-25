@@ -138,8 +138,7 @@ namespace SciChartInterface
                     {
                         foreach (var value in entry._Values)
                         {
-                            /// TODO The property names are hard coded and should be replaced by names provided in the data set (e.g. branch name?)
-                            string label = generate_property_name(index); // entry.MetaData.Label;
+                            string label = entry._Metadata._Label; //generate_property_name(index);
                             data_entry_dict.Add(label, (double)value);
                         }
                         index++;

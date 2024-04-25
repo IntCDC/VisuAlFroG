@@ -80,14 +80,15 @@ or
 Reccomendations for code formatting are stored in `.editorconfig` and are automatically checked via [dotnet-format](https://github.com/dotnet/format) in *Visual Studio*. 
 In *Visual Studio*, look at the info messages in the *Error List* after building *VisuAlFroG* and adjust code according to recommendations.
 
-### Private Variables:
+### Naming Conventions:
+#### Private Variables:
 - Start with `_` and only lower case letters
 - Separate words with `_`
-### Public Properties
+#### Public Properties
 - Start with `_` and then camel case
-### Public Functions:
+#### Public Functions:
 - Camel case
-### Private Functions
+#### Private Functions
 - Only lower case letters
 - Separate words with `_`
 

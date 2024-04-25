@@ -247,7 +247,7 @@ namespace Frontend
                             data_leaf.AddValue((double)value);
 
                             data_leaf._Metadata._Index = value_index;
-                            data_leaf._Metadata._Label = data_branch._Label;
+                            data_leaf._Metadata._Label = "entry_" + j.ToString();
                             value_index++;
 
                             data_branch.AddEntry(data_leaf);
