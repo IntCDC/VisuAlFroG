@@ -74,7 +74,6 @@ namespace Core
 
             private bool _started = false;
             private System.Diagnostics.Stopwatch _watch = null;
-
             private static int _level = 0;
         }
     }

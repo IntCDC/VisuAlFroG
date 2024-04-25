@@ -105,7 +105,7 @@ namespace Core
                 try
                 {
                     _window_root.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.None, 0.6);
-                    _window_root.Children.Item2.Leaf.CreateContent(UniqueID.Invalid, "Visualizations.LogConsole");
+                    _window_root._Children.Item2._Leaf.CreateContent(UniqueID.Invalid, "Visualizations.LogConsole");
                 }
                 catch (Exception exc)
                 {
@@ -131,13 +131,13 @@ namespace Core
                 {
                     return;
                 }
-                configurations.Location = branch.Location;
-                configurations.Orientation = branch.Orientation;
-                configurations.Position = branch.Position;
+                configurations.Location = branch._Location;
+                configurations.Orientation = branch._Orientation;
+                configurations.Position = branch._Position;
 
-                if (branch.Leaf != null)
+                if (branch._Leaf != null)
                 {
-                    var attached_content = branch.Leaf.AttachedContent;
+                    var attached_content = branch._Leaf._AttachedContent;
                     if (attached_content != null)
                     {
                         configurations.Leaf = new WindowLeaf.Configuration()
@@ -147,10 +147,10 @@ namespace Core
                         };
                     }
                 }
-                else if (branch.Children != null)
+                else if (branch._Children != null)
                 {
-                    var child1 = branch.Children.Item1;
-                    var child2 = branch.Children.Item2;
+                    var child1 = branch._Children.Item1;
+                    var child2 = branch._Children.Item2;
 
                     configurations.Children = new Tuple<WindowBranch.Configuration, WindowBranch.Configuration>(new WindowBranch.Configuration(), new WindowBranch.Configuration());
 
@@ -174,14 +174,14 @@ namespace Core
 
                 if (configurations.Leaf != null)
                 {
-                    branch.Leaf.CreateContent(configurations.Leaf.ContentID, configurations.Leaf.ContentType);
+                    branch._Leaf.CreateContent(configurations.Leaf.ContentID, configurations.Leaf.ContentType);
                 }
                 else if (configurations.Children != null)
                 {
                     branch.Split(configurations.Orientation, configurations.Location, configurations.Position);
 
-                    apply_configurations(branch.Children.Item1, configurations.Children.Item1);
-                    apply_configurations(branch.Children.Item2, configurations.Children.Item2);
+                    apply_configurations(branch._Children.Item1, configurations.Children.Item1);
+                    apply_configurations(branch._Children.Item2, configurations.Children.Item2);
                 }
             }
 

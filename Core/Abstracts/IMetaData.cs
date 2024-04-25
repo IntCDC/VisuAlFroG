@@ -15,7 +15,7 @@ namespace Core
         {
 
             /* ------------------------------------------------------------------*/
-            // public events
+            // interface events
 
             /// <summary>
             /// Event to indicated changed properties.
@@ -24,14 +24,14 @@ namespace Core
 
 
             /* ------------------------------------------------------------------*/
-            // public properties
+            // interface properties
 
             /// <summary>
             /// Index of the data point.
             /// </summary>
-            int Index { get; set; }
+            int _Index { get; set; }
 
-            bool IsSelected { get; set; }
+            bool _Selected { get; set; }
 
         }
     }

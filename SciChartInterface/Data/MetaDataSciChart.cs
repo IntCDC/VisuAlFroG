@@ -2,6 +2,7 @@
 using Core.Abstracts;
 using Core.Data;
 using System.ComponentModel;
+using System.Security.Cryptography.X509Certificates;
 
 
 
@@ -15,12 +16,14 @@ namespace SciChartInterface
         public class MetaDataSciChart : MetaDataGeneric, IPointMetadata
         {
 
+            // Wrapper required for IPointMetadata
+            public bool IsSelected { get { return _Selected; } set { _Selected = value; } }
+
             public MetaDataSciChart(int index, bool is_selected, PropertyChangedEventHandler meta_data_update_handler)
             {
-
-                Index = index;
-                IsSelected = is_selected;
-                // Intended: Setting PropertyChanged after IsSelected prevents useless update of all meta data
+                _Index = index;
+                _Selected = is_selected;
+                // Setting PropertyChanged after IsSelected prevents useless initial update of all meta data
                 PropertyChanged += meta_data_update_handler;
             }
         }

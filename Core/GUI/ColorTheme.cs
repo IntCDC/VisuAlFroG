@@ -30,6 +30,22 @@ namespace Core
 
 
             /* ------------------------------------------------------------------*/
+            // public delegates
+
+            /// <summary>
+            /// .... 
+            /// </summary>
+            public delegate void SetColorStyle_Delegate(PredefinedThemes theme);
+
+
+            /* ------------------------------------------------------------------*/
+            // public properties
+
+            public static ColorTheme.PredefinedThemes _DefaultColorTheme { get { return ColorTheme.PredefinedThemes.Dark; } }
+            public static double _GridSplitterSize { get { return 7.0; } }
+
+
+            /* ------------------------------------------------------------------*/
             // public classes 
 
             /// <summary>
@@ -39,22 +55,6 @@ namespace Core
             {
                 public ColorTheme.PredefinedThemes theme { get; set; }
             }
-
-
-            /* ------------------------------------------------------------------*/
-            // public properties
-
-            public static ColorTheme.PredefinedThemes DefaultColorTheme { get { return ColorTheme.PredefinedThemes.Dark; } }
-            public static double GridSplitterSize { get { return 7.0; } }
-
-
-            /* ------------------------------------------------------------------*/
-            // public delegates
-
-            /// <summary>
-            /// .... 
-            /// </summary>
-            public delegate void SetColorStyle_Delegate(PredefinedThemes theme);
 
 
             /* ------------------------------------------------------------------*/
@@ -315,7 +315,7 @@ namespace Core
 
                 _app_resource = app_resources;
                 _mark_color_theme_callback = mark_color_theme_callback;
-                SetColorStyle(DefaultColorTheme);
+                SetColorStyle(_DefaultColorTheme);
 
                 _timer.Stop();
                 _initialized = true;
@@ -389,7 +389,6 @@ namespace Core
             private PredefinedThemes _color_theme = PredefinedThemes.LightBlue;
             private ResourceDictionary _app_resource = null;
             private MenuBar.MarkColorTheme_Delegate _mark_color_theme_callback = null;
-
         }
     }
 }

@@ -21,10 +21,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public properties
 
-            public object Get { get { return _data; } }
-
-            public abstract List<Dimension> SupportedDimensions { get; }
-            public abstract List<Type> SupportedValueTypes { get; }
+            public object _Get { get { return _data; } }
+            public abstract List<Dimension> _SupportedDimensions { get; }
+            public abstract List<Type> _SupportedValueTypes { get; }
 
 
             /* ------------------------------------------------------------------*/
@@ -57,7 +56,7 @@ namespace Core
                 bool incompatible = false;
                 foreach (Type t in value_types)
                 {
-                    if (!SupportedValueTypes.Contains(t))
+                    if (!_SupportedValueTypes.Contains(t))
                     {
                         incompatible = true;
                     }
@@ -77,7 +76,7 @@ namespace Core
             protected bool CompatibleDimensionality(uint data_dimension)
             {
                 bool compatible = false;
-                foreach (Dimension dim in SupportedDimensions)
+                foreach (Dimension dim in _SupportedDimensions)
                 {
                     switch (dim)
                     {
@@ -105,7 +104,7 @@ namespace Core
 
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            // protected variables
 
             protected DataType _data = default(DataType);
             protected bool _loaded = false;

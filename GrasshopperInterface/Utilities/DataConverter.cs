@@ -78,16 +78,16 @@ namespace GrasshopperComponent
                 var output_data = new GH_Structure<IGH_Goo>();
 
                 /// TODO Support branches -> is this supported by GH_Structure nevertheless?
-                if (input_data.Branches.Count > 0) {
+                if (input_data._Branches.Count > 0) {
 
                     Log.Default.Msg(Log.Level.Error, "output of branches is currently not supported... ");
                 }
 
                 int branch_index = 0;
-                foreach (var input_entry in input_data.Entries)
+                foreach (var input_entry in input_data._Entries)
                 {
                     GH_Path path = new GH_Path(branch_index);
-                    foreach (var generic_value in input_entry.Values)
+                    foreach (var generic_value in input_entry._Values)
                     {
                         output_data.Append(new GH_String(generic_value.ToString()), path);
                     }

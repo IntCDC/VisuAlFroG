@@ -27,8 +27,8 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         // properties
 
-        public override string Name { get { return "Log Console"; } }
-        public override bool MultipleInstances { get { return false; } }
+        public override string _Name { get { return "Log Console"; } }
+        public override bool _MultipleInstances { get { return false; } }
 
 
         /* ------------------------------------------------------------------*/
@@ -56,7 +56,7 @@ namespace Visualizations
             _text_block.Width = Double.NaN; // = "Auto"
             _text_block.Height = Double.NaN; // = "Auto"
 
-            Content.Name = ID;
+            Content.Name = _ID;
             Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
             Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
             Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");

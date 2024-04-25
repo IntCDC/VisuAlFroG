@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 
+using Newtonsoft.Json.Linq;
+
 
 
 /*
@@ -26,20 +28,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public properties
 
-            /// <summary>
-            /// Index of the data point.
-            /// </summary>
-            public int Index { get; set; }
-
-            /// <summary>
-            /// Label of the data point.
-            /// </summary>
-            public string Label { get; set; }
-
-            /// <summary>
-            /// Flag indicating data point selection
-            /// </summary>
-            public bool IsSelected
+            public int _Index { get; set; } = -1;
+            public string _Label { get; set; } = "";
+            public bool _Selected
             {
                 get
                 {
@@ -54,7 +45,11 @@ namespace Core
                         PropertyChanged(this, new PropertyChangedEventArgs("IsSelected"));
                     }
                 }
-            }
+            } 
+
+            public uint _Dimension { get; set; } = 0;
+            public double _Min { get; set; } = double.PositiveInfinity;
+            public double _Max { get; set; } = double.NegativeInfinity;
 
             /* ------------------------------------------------------------------*/
             // private variables

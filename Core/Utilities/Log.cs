@@ -41,6 +41,7 @@ namespace Core
 
             public delegate void LogListener_Delegate(List<MessageData> msglist);
 
+
             /* ------------------------------------------------------------------*/
             // public properties
 

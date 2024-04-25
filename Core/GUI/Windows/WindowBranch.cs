@@ -45,11 +45,11 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public properties 
 
-            public Tuple<WindowBranch, WindowBranch> Children { get { return _children; } }
-            public WindowLeaf Leaf { get { return _child_leaf; } }
-            public SplitOrientation Orientation { get { return _orientation; } }
-            public ChildLocation Location { get { return _location; } }
-            public double Position { get { return calculate_position(); } }
+            public Tuple<WindowBranch, WindowBranch> _Children { get; private set; } = null;
+            public WindowLeaf _Leaf { get; private set; } = null;
+            public SplitOrientation _Orientation { get; private set; } = SplitOrientation.None;
+            public ChildLocation _Location { get; private set; } = ChildLocation.None;
+            public double _Position { get { return calculate_position(); } }
 
 
             /* ------------------------------------------------------------------*/
@@ -70,16 +70,16 @@ namespace Core
 
                 _parent_is_root = true;
                 _parent_branch = null;
-                _children = null;
+                _Children = null;
                 _content_callbacks = content_callbacks;
 
-                _content = new Grid();
-                _content.Name = "grid_parent_is_root";
+                _Content = new Grid();
+                _Content.Name = "grid_parent_is_root";
 
-                _child_leaf = new WindowLeaf(this, _parent_is_root, _content_callbacks);
-                _content.Children.Add(_child_leaf.ContentElement);
+                _Leaf = new WindowLeaf(this, _parent_is_root, _content_callbacks);
+                _Content.Children.Add(_Leaf._Content);
 
-                return _content;
+                return _Content;
             }
 
             /// <summary>
@@ -107,47 +107,47 @@ namespace Core
                     Log.Default.Msg(Log.Level.Error, "Relative splitter position must be in range [0.0, 1.0]");
                 }
 
-                delete_content(_content);
+                delete_content(_Content);
 
-                _orientation = orientation;
-                _location = location;
+                _Orientation = orientation;
+                _Location = location;
 
                 var gridsplitter = new GridSplitter();
                 gridsplitter.Name = "gridplitter_" + UniqueID.Generate();
                 gridsplitter.HorizontalAlignment = HorizontalAlignment.Stretch;
                 gridsplitter.Style = ColorTheme.GridSplitterStyle();
 
-                Grid grid_topleft = (use_existing_childs) ? child_branch_1._content : null;
+                Grid grid_topleft = (use_existing_childs) ? child_branch_1._Content : null;
                 if (grid_topleft == null)
                 {
                     grid_topleft = new Grid();
                     grid_topleft.Name = "grid_" + UniqueID.Generate();
                 }
 
-                Grid grid_bottomright = (use_existing_childs) ? child_branch_2._content : null;
+                Grid grid_bottomright = (use_existing_childs) ? child_branch_2._Content : null;
                 if (grid_bottomright == null)
                 {
                     grid_bottomright = new Grid();
                     grid_bottomright.Name = "grid_" + UniqueID.Generate();
                 }
 
-                switch (_orientation)
+                switch (_Orientation)
                 {
                     case (SplitOrientation.Vertical):
                         {
-                            gridsplitter.Width = ColorTheme.GridSplitterSize;
+                            gridsplitter.Width = ColorTheme._GridSplitterSize;
 
                             var column_left = new ColumnDefinition();
                             column_left.Width = new GridLength(relative_position, GridUnitType.Star);
-                            _content.ColumnDefinitions.Add(column_left);
+                            _Content.ColumnDefinitions.Add(column_left);
 
                             var column_splitter = new ColumnDefinition();
-                            column_splitter.Width = new GridLength(ColorTheme.GridSplitterSize);
-                            _content.ColumnDefinitions.Add(column_splitter);
+                            column_splitter.Width = new GridLength(ColorTheme._GridSplitterSize);
+                            _Content.ColumnDefinitions.Add(column_splitter);
 
                             var column_right = new ColumnDefinition();
                             column_right.Width = new GridLength(1.0 - relative_position, GridUnitType.Star);
-                            _content.ColumnDefinitions.Add(column_right);
+                            _Content.ColumnDefinitions.Add(column_right);
 
                             Grid.SetColumn(grid_topleft, 0);
                             Grid.SetColumn(gridsplitter, 1);
@@ -157,19 +157,19 @@ namespace Core
 
                     case (SplitOrientation.Horizontal):
                         {
-                            gridsplitter.Height = ColorTheme.GridSplitterSize;
+                            gridsplitter.Height = ColorTheme._GridSplitterSize;
 
                             var row_top = new RowDefinition();
                             row_top.Height = new GridLength(relative_position, GridUnitType.Star);
-                            _content.RowDefinitions.Add(row_top);
+                            _Content.RowDefinitions.Add(row_top);
 
                             var row_splitter = new RowDefinition();
-                            row_splitter.Height = new GridLength(ColorTheme.GridSplitterSize);
-                            _content.RowDefinitions.Add(row_splitter);
+                            row_splitter.Height = new GridLength(ColorTheme._GridSplitterSize);
+                            _Content.RowDefinitions.Add(row_splitter);
 
                             var row_bottom = new RowDefinition();
                             row_bottom.Height = new GridLength(1.0 - relative_position, GridUnitType.Star);
-                            _content.RowDefinitions.Add(row_bottom);
+                            _Content.RowDefinitions.Add(row_bottom);
 
                             Grid.SetRow(grid_topleft, 0);
                             Grid.SetRow(gridsplitter, 1);
@@ -177,20 +177,20 @@ namespace Core
                         }
                         break;
                 }
-                _content.Children.Add(grid_topleft);
-                _content.Children.Add(gridsplitter);
-                _content.Children.Add(grid_bottomright);
+                _Content.Children.Add(grid_topleft);
+                _Content.Children.Add(gridsplitter);
+                _Content.Children.Add(grid_bottomright);
 
                 if (create_new_childs)
                 {
-                    bool move_top_left = (_location == ChildLocation.Top_Left);
-                    bool move_bottom_right = (_location == ChildLocation.Bottom_Right);
+                    bool move_top_left = (_Location == ChildLocation.Top_Left);
+                    bool move_bottom_right = (_Location == ChildLocation.Bottom_Right);
 
-                    _children = new Tuple<WindowBranch, WindowBranch>(new WindowBranch(), new WindowBranch());
-                    _children.Item1.add_leafchild(this, _content_callbacks, grid_topleft, (move_top_left ? _child_leaf : null));
-                    _children.Item2.add_leafchild(this, _content_callbacks, grid_bottomright, (move_bottom_right ? _child_leaf : null));
+                    _Children = new Tuple<WindowBranch, WindowBranch>(new WindowBranch(), new WindowBranch());
+                    _Children.Item1.add_leafchild(this, _content_callbacks, grid_topleft, (move_top_left ? _Leaf : null));
+                    _Children.Item2.add_leafchild(this, _content_callbacks, grid_bottomright, (move_bottom_right ? _Leaf : null));
 
-                    _child_leaf = null;
+                    _Leaf = null;
                 }
 
                 return true;
@@ -207,25 +207,25 @@ namespace Core
                     return;
                 }
 
-                if (_child_leaf != null)
+                if (_Leaf != null)
                 {
                     /// Don't do that because this will delete newly added visualizations having the same ID as the previous one:
-                    //_child_leaf.ResetLeaf();
-                    _child_leaf = null;
+                    //_Leaf.ResetLeaf();
+                    _Leaf = null;
                 }
-                _orientation = SplitOrientation.None;
-                _location = ChildLocation.None;
-                delete_content(_content);
+                _Orientation = SplitOrientation.None;
+                _Location = ChildLocation.None;
+                delete_content(_Content);
 
-                if (_children != null)
+                if (_Children != null)
                 {
-                    clear_windows(_children.Item1);
-                    clear_windows(_children.Item2);
+                    clear_windows(_Children.Item1);
+                    clear_windows(_Children.Item2);
                 }
-                _children = null;
+                _Children = null;
 
-                _child_leaf = new WindowLeaf(this, _parent_is_root, _content_callbacks);
-                _content.Children.Add(_child_leaf.ContentElement);
+                _Leaf = new WindowLeaf(this, _parent_is_root, _content_callbacks);
+                _Content.Children.Add(_Leaf._Content);
             }
 
             /// <summary>
@@ -265,21 +265,21 @@ namespace Core
             {
                 _parent_is_root = false;
                 _parent_branch = parent_branch;
-                _children = null;
+                _Children = null;
                 _content_callbacks = content_callbacks;
 
-                _child_leaf = child_leaf;
-                if (_child_leaf == null)
+                _Leaf = child_leaf;
+                if (_Leaf == null)
                 {
-                    _child_leaf = new WindowLeaf(this, _parent_is_root, _content_callbacks);
+                    _Leaf = new WindowLeaf(this, _parent_is_root, _content_callbacks);
                 }
                 else
                 {
-                    _child_leaf.SetParent(this, _parent_is_root);
+                    _Leaf.SetParent(this, _parent_is_root);
                 }
 
-                _content = grid;
-                _content.Children.Add(_child_leaf.ContentElement);
+                _Content = grid;
+                _Content.Children.Add(_Leaf._Content);
             }
 
             /// <summary>
@@ -288,38 +288,38 @@ namespace Core
             /// <param name="delete_child">The branch to delete.</param>
             private void delete_childbranch(WindowBranch delete_child)
             {
-                WindowBranch kept_child = ((delete_child == _children.Item1) ? _children.Item2 : ((delete_child == _children.Item2) ? _children.Item1 : null));
+                WindowBranch kept_child = ((delete_child == _Children.Item1) ? _Children.Item2 : ((delete_child == _Children.Item2) ? _Children.Item1 : null));
                 if (kept_child == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Invalid parameter value constellation");
                     return;
                 }
 
-                _orientation = kept_child._orientation;
-                _location = kept_child._location;
+                _Orientation = kept_child._Orientation;
+                _Location = kept_child._Location;
 
                 // Clear current branch child
-                _children = null;
-                _child_leaf = null;
+                _Children = null;
+                _Leaf = null;
 
                 // Reset grids
-                delete_content(_content);
-                delete_content(kept_child._content);
+                delete_content(_Content);
+                delete_content(kept_child._Content);
 
-                if ((kept_child._children != null) && (kept_child._children.Item1 != null) && (kept_child._children.Item2 != null))
+                if ((kept_child._Children != null) && (kept_child._Children.Item1 != null) && (kept_child._Children.Item2 != null))
                 {
-                    _children = new Tuple<WindowBranch, WindowBranch>(kept_child._children.Item1, kept_child._children.Item2);
+                    _Children = new Tuple<WindowBranch, WindowBranch>(kept_child._Children.Item1, kept_child._Children.Item2);
 
-                    _children.Item1._parent_branch = this;
-                    _children.Item2._parent_branch = this;
+                    _Children.Item1._parent_branch = this;
+                    _Children.Item2._parent_branch = this;
 
-                    Split(_orientation, _location, 0.5, _children.Item1, _children.Item2);
+                    Split(_Orientation, _Location, 0.5, _Children.Item1, _Children.Item2);
                 }
-                else if (kept_child._child_leaf != null)
+                else if (kept_child._Leaf != null)
                 {
-                    _child_leaf = kept_child._child_leaf;
-                    _child_leaf.SetParent(this, _parent_is_root);
-                    _content.Children.Add(_child_leaf.ContentElement);
+                    _Leaf = kept_child._Leaf;
+                    _Leaf.SetParent(this, _parent_is_root);
+                    _Content.Children.Add(_Leaf._Content);
                 }
                 else
                 {
@@ -356,14 +356,14 @@ namespace Core
                 /// NOTE: GridUnitType is fixed and always Star independent of the actual value, 
                 /// so we have to check for the actual value to determine whether the value is absolute or relative.
                 double value = 0.0;
-                switch (_orientation)
+                switch (_Orientation)
                 {
                     case (SplitOrientation.Horizontal):
-                        value = _content.RowDefinitions[0].Height.Value;
+                        value = _Content.RowDefinitions[0].Height.Value;
                         if (value > 1.0) // Absolute value (in Pixel)
                         {
                             double total_height = 0;
-                            foreach (var rowdef in _content.RowDefinitions)
+                            foreach (var rowdef in _Content.RowDefinitions)
                             {
                                 total_height += rowdef.Height.Value;
                             }
@@ -374,11 +374,11 @@ namespace Core
                             return value;
                         }
                     case (SplitOrientation.Vertical):
-                        value = _content.ColumnDefinitions[0].Width.Value;
+                        value = _Content.ColumnDefinitions[0].Width.Value;
                         if (value > 1.0)
                         {
                             double total_width = 0;
-                            foreach (var coldef in _content.ColumnDefinitions)
+                            foreach (var coldef in _Content.ColumnDefinitions)
                             {
                                 total_width += coldef.Width.Value;
                             }
@@ -398,15 +398,15 @@ namespace Core
             /// <param name="branch">The branch to start with.</param>
             private void clear_windows(WindowBranch branch)
             {
-                if (branch.Children != null)
+                if (branch._Children != null)
                 {
-                    if (branch.Children.Item1 != null)
+                    if (branch._Children.Item1 != null)
                     {
-                        clear_windows(branch.Children.Item1);
+                        clear_windows(branch._Children.Item1);
                     }
-                    if (branch.Children.Item2 != null)
+                    if (branch._Children.Item2 != null)
                     {
-                        clear_windows(branch.Children.Item2);
+                        clear_windows(branch._Children.Item2);
                     }
                 }
                 branch.reset_window();
@@ -417,27 +417,18 @@ namespace Core
             /// </summary>
             private void reset_window()
             {
-                _children = null;
-                if (_child_leaf != null)
+                _Children = null;
+                if (_Leaf != null)
                 {
                     /// Don't do that because this will delete newly added visualizations having the same ID as the previous one:
-                    //_child_leaf.ResetLeaf();
-                    _child_leaf = null;
+                    //_Leaf.ResetLeaf();
+                    _Leaf = null;
                 }
-                _orientation = SplitOrientation.None;
-                _location = ChildLocation.None;
-                delete_content(_content);
+                _Orientation = SplitOrientation.None;
+                _Location = ChildLocation.None;
+                delete_content(_Content);
                 base.Reset();
             }
-
-
-            /* ------------------------------------------------------------------*/
-            // private variables
-
-            private Tuple<WindowBranch, WindowBranch> _children = null;
-            private WindowLeaf _child_leaf = null;
-            private SplitOrientation _orientation = SplitOrientation.None;
-            private ChildLocation _location = ChildLocation.None;
         }
     }
 }

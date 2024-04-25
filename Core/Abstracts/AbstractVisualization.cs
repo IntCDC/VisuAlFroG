@@ -29,8 +29,8 @@ namespace Core
             /// </summary>
             public class Configuration : IAbstractConfigurationData
             {
-                public string ID { get; set; }
-                public string Type { get; set; }
+                public string _ID { get; set; }
+                public string _Type { get; set; }
                 /// TODO Add additional configuration information that should be saved here...
             }
 
@@ -38,14 +38,14 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public properties
 
-            public abstract string Name { get; }
-            public abstract bool MultipleInstances { get; }
-            public abstract List<Type> DependingServices { get; }
-            public abstract Type RequiredDataType { get; }
+            public abstract string _Name { get; }
+            public abstract bool _MultipleInstances { get; }
+            public abstract List<Type> _DependingServices { get; }
+            public bool _Attached { get; protected set; } = false;
+            public string _ID { get; set; } = UniqueID.Invalid;
 
-            public bool IsAttached { get { return _attached; } }
-            public string ID { get { return _id; } set { _id = value; } }
-            public DataManager.RequestCallback_Delegate RequestDataCallback { get; set; }
+            public abstract Type _RequiredDataType { get; }
+            public DataManager.RequestCallback_Delegate _RequestDataCallback { get; set; }
 
 
             /* ------------------------------------------------------------------*/
@@ -57,7 +57,7 @@ namespace Core
             /// </summary>
             public AbstractVisualization()
             {
-                _id = UniqueID.Generate();
+                _ID = UniqueID.Generate();
                 _timer = new TimeBenchmark();
 
                 /// TODO Move somewhere else to prevent calling it whenever the context menu is opened
@@ -146,7 +146,7 @@ namespace Core
                     return null;
                 }
 
-                _attached = true;
+                _Attached = true;
                 return _content_parent;
             }
             /* TEMPLATE
@@ -170,13 +170,13 @@ namespace Core
             /// <returns>True on success, false otherwise.</returns>
             public virtual bool Detach()
             {
-                if (!_attached)
+                if (!_Attached)
                 {
                     if (_content_child != null)
                     {
                         _content_child.Children.Clear();
                     }
-                    _attached = false;
+                    _Attached = false;
                 }
                 return true;
             }
@@ -197,11 +197,11 @@ namespace Core
             /// <returns>True on success, false otherwise.</returns>
             public virtual bool Terminate()
             {
-                _id = UniqueID.Invalid;
+                _ID = UniqueID.Invalid;
 
                 _created = false;
                 _initialized = false;
-                _attached = false;
+                _Attached = false;
 
                 _content_parent = null;
                 _options_menu = null;
@@ -240,13 +240,13 @@ namespace Core
             {
                 data_parent = default(DataParentType);
 
-                if (this.RequestDataCallback == null)
+                if (this._RequestDataCallback == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
                 }
 
-                var data = (DataParentType)RequestDataCallback(RequiredDataType);
+                var data = (DataParentType)_RequestDataCallback(_RequiredDataType);
                 if (data != null)
                 {
                     data_parent = data;
@@ -275,11 +275,8 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // protected variables
 
-            protected string _id = UniqueID.Invalid;
-
             protected bool _initialized = false;
             protected bool _created = false;
-            protected bool _attached = false;
 
 
             /* ------------------------------------------------------------------*/
@@ -305,7 +302,7 @@ namespace Core
                 var text = new TextBlock();
                 Grid.SetColumn(text, 0);
                 menu_grid.Children.Add(text);
-                text.Text = Name;
+                text.Text = _Name;
                 text.Style = ColorTheme.ContentCaptionStyle();
 
                 var menu = new Menu();

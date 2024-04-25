@@ -21,27 +21,27 @@ namespace Core
             /// <summary>
             /// The name of the content.
             /// </summary>
-            string Name { get; }
+            string _Name { get; }
 
             /// <summary>
             /// True if multiple instances of the content would be created, false otherwise.
             /// </summary>
-            bool MultipleInstances { get; }
+            bool _MultipleInstances { get; }
 
             /// <summary>
             /// Services the content depends on.
             /// </summary>
-            List<Type> DependingServices { get; }
+            List<Type> _DependingServices { get; }
 
             /// <summary>
             /// Returns whether WPF content is attached or not.
             /// </summary>
-            bool IsAttached { get; }
+            bool _Attached { get; }
 
             /// <summary>
             /// The id string of the content.
             /// </summary>
-            string ID { get; }
+            string _ID { get; }
 
 
             /* ------------------------------------------------------------------*/

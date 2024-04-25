@@ -25,22 +25,12 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // public properties
 
-            public sealed override List<Dimension> SupportedDimensions
-            {
-                get
-                {
-                    return new List<Dimension>() { Dimension.Uniform, Dimension.TwoDimensional };
-                }
-            }
+            public sealed override List<Dimension> _SupportedDimensions { get; }
+                = new List<Dimension>() { Dimension.Uniform, Dimension.TwoDimensional };
 
             /// All numeric types that can be converted to double
-            public sealed override List<Type> SupportedValueTypes
-            {
-                get
-                {
-                    return new List<Type>() { typeof(double), typeof(float), typeof(int), typeof(uint), typeof(long), typeof(ulong) };
-                }
-            }
+            public sealed override List<Type> _SupportedValueTypes { get; } 
+                = new List<Type>() { typeof(double), typeof(float), typeof(int), typeof(uint), typeof(long), typeof(ulong) };
 
 
             /* ------------------------------------------------------------------*/
@@ -107,9 +97,9 @@ namespace SciChartInterface
                         int series_count = data_series.DataSeries.Count;
                         for (int i = 0; i < series_count; i++)
                         {
-                            if (updated_meta_data.Index == ((MetaDataSciChart)data_series.DataSeries.Metadata[i]).Index)
+                            if (updated_meta_data._Index == ((MetaDataSciChart)data_series.DataSeries.Metadata[i])._Index)
                             {
-                                ((MetaDataSciChart)data_series.DataSeries.Metadata[i]).IsSelected = updated_meta_data.IsSelected;
+                                ((MetaDataSciChart)data_series.DataSeries.Metadata[i])._Selected = updated_meta_data._Selected;
                             }
                         }
                     }
@@ -124,7 +114,7 @@ namespace SciChartInterface
             private void init_data(GenericDataStructure branch)
             {
                 // For each branch add all leafs to one data series
-                if (branch.Entries.Count > 0)
+                if (branch._Entries.Count > 0)
                 {
                     DataType data_series = new DataType();
                     data_series.Name = UniqueID.Generate();
@@ -133,10 +123,10 @@ namespace SciChartInterface
                     if (branch.DataDimension() == 1)
                     {
                         var series = new SciChartUniformDataType();
-                        foreach (var entry in branch.Entries)
+                        foreach (var entry in branch._Entries)
                         {
-                            var meta_data = new MetaDataSciChart(entry.MetaData.Index, entry.MetaData.IsSelected, _meta_data_update_handler);
-                            series.Append((double)entry.Values[0], meta_data);
+                            var meta_data = new MetaDataSciChart(entry._Metadata._Index, entry._Metadata._Selected, _meta_data_update_handler);
+                            series.Append((double)entry._Values[0], meta_data);
                         }
                         data_series.DataSeries = series;
 
@@ -144,17 +134,17 @@ namespace SciChartInterface
                     else if (branch.DataDimension() == 2)
                     {
                         var series = new SciChartXYDataType();
-                        foreach (var entry in branch.Entries)
+                        foreach (var entry in branch._Entries)
                         {
-                            var meta_data = new MetaDataSciChart(entry.MetaData.Index, entry.MetaData.IsSelected, _meta_data_update_handler);
-                            series.Append((double)entry.Values[0], (double)entry.Values[1], meta_data);
+                            var meta_data = new MetaDataSciChart(entry._Metadata._Index, entry._Metadata._Selected, _meta_data_update_handler);
+                            series.Append((double)entry._Values[0], (double)entry._Values[1], meta_data);
                         }
                         data_series.DataSeries = series;
                     }
                     _data.Add(data_series);
                 }
 
-                foreach (var b in branch.Branches)
+                foreach (var b in branch._Branches)
                 {
                     init_data(b);
                 }

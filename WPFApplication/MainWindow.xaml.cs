@@ -166,9 +166,9 @@ namespace Frontend
                 initialized &= _menubar.Initialize(this.Close, _colortheme.SetColorStyle, _configurationservice.Save, _configurationservice.Load, _basemanager.GetSendOutputDataCallback());
 
                 // Register configurations
-                _configurationservice.RegisterConfiguration(_basemanager.Name, _basemanager.CollectConfigurations, _basemanager.ApplyConfigurations);
-                _configurationservice.RegisterConfiguration(_winmanager.Name, _winmanager.CollectConfigurations, _winmanager.ApplyConfigurations);
-                _configurationservice.RegisterConfiguration(_colortheme.Name, _colortheme.CollectConfigurations, _colortheme.ApplyConfigurations);
+                _configurationservice.RegisterConfiguration(_basemanager._Name, _basemanager.CollectConfigurations, _basemanager.ApplyConfigurations);
+                _configurationservice.RegisterConfiguration(_winmanager._Name, _winmanager.CollectConfigurations, _winmanager.ApplyConfigurations);
+                _configurationservice.RegisterConfiguration(_colortheme._Name, _colortheme.CollectConfigurations, _colortheme.ApplyConfigurations);
 
 
                 _timer.Stop();
@@ -238,7 +238,7 @@ namespace Frontend
                     for (int i = 0; i < 7; i++)
                     {
                         var data_branch = new GenericDataStructure();
-                        data_branch.Label = "labled_" + i.ToString();
+                        data_branch._Label = "labled_" + i.ToString();
 
                         for (int j = 0; j < 25; j++)
                         {
@@ -246,8 +246,8 @@ namespace Frontend
                             var data_leaf = new GenericDataEntry();
                             data_leaf.AddValue((double)value);
 
-                            data_leaf.MetaData.Index = value_index;
-                            data_leaf.MetaData.Label = data_branch.Label;
+                            data_leaf._Metadata._Index = value_index;
+                            data_leaf._Metadata._Label = data_branch._Label;
                             value_index++;
 
                             data_branch.AddEntry(data_leaf);

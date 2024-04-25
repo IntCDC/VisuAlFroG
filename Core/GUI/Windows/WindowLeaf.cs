@@ -39,8 +39,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public properties 
 
-            public AttachedContent_Type AttachedContent { get { return _attached_content; } }
-            public Grid ContentElement { get { return _content; } }
+            public AttachedContent_Type _AttachedContent { get; private set; }
 
 
             /* ------------------------------------------------------------------*/
@@ -68,23 +67,23 @@ namespace Core
                     return;
                 }
 
-                _content = new Grid();
-                _content.SetResourceReference(Grid.BackgroundProperty, "Brush_Background");
-                _content.Name = "grid_" + UniqueID.Generate();
+                _Content = new Grid();
+                _Content.SetResourceReference(Grid.BackgroundProperty, "Brush_Background");
+                _Content.Name = "grid_" + UniqueID.Generate();
 
                 delete_content();
 
                 // Drag and drop
-                _content.MouseMove += event_content_mousemove;
-                _content.AllowDrop = true;
-                _content.DragOver += event_content_dragover;
-                _content.Drop += event_content_drop;
+                _Content.MouseMove += event_content_mousemove;
+                _Content.AllowDrop = true;
+                _Content.DragOver += event_content_dragover;
+                _Content.Drop += event_content_drop;
 
                 /// DEBUG background color
                  /*
                 var generator = new Random();
                 var color = generator.Next(1111, 9999).ToString();
-                _content.Background = (Brush)new BrushConverter().ConvertFrom("#" + color);
+                _Content.Background = (Brush)new BrushConverter().ConvertFrom("#" + color);
                 */
                 contextmenu_setup();
             }
@@ -102,8 +101,8 @@ namespace Core
                 {
                     if ((content_metadata.Item1 != UniqueID.Invalid) && (content_metadata.Item2 != null))
                     {
-                        _content.Children.Add(content_metadata.Item2);
-                        _attached_content = new AttachedContent_Type(content_metadata.Item1, content_type);
+                        _Content.Children.Add(content_metadata.Item2);
+                        _AttachedContent = new AttachedContent_Type(content_metadata.Item1, content_type);
                     }
                     else
                     {
@@ -162,7 +161,7 @@ namespace Core
                 contextmenu.Style = ColorTheme.ContextMenuStyle();
                 // Create context menu when loaded for updated availability of content
                 contextmenu.Loaded += event_contextmenu_loaded;
-                _content.ContextMenu = contextmenu;
+                _Content.ContextMenu = contextmenu;
             }
 
             /// <summary>
@@ -270,7 +269,7 @@ namespace Core
                 item_content_delete.Header = "Delete Content";
                 item_content_delete.Name = _item_id_delete_content;
                 item_content_delete.Click += event_menuitem_click;
-                if (_attached_content == null)
+                if (_AttachedContent == null)
                 {
                     item_content_delete.IsEnabled = false;
                 }
@@ -342,24 +341,24 @@ namespace Core
             /// </summary>
             private void delete_content(bool only_detach = false)
             {
-                _content.Children.Clear();
+                _Content.Children.Clear();
 
                 var info_text = new TextBlock();
                 info_text.Text = "    [Right-click for Context Menu]";
                 info_text.SetResourceReference(TextBlock.ForegroundProperty, "Brush_TextDisabled");
-                _content.Children.Add(info_text);
+                _Content.Children.Add(info_text);
 
-                if (_attached_content != null)
+                if (_AttachedContent != null)
                 {
                     if (!only_detach)
                     {
-                        if (_attached_content.Item1 != UniqueID.Invalid)
+                        if (_AttachedContent.Item1 != UniqueID.Invalid)
                         {
                             // Call Delete Content
-                            _content_callbacks.Item3(_attached_content.Item1);
+                            _content_callbacks.Item3(_AttachedContent.Item1);
                         }
                     }
-                    _attached_content = null;
+                    _AttachedContent = null;
                 }
             }
 
@@ -375,9 +374,9 @@ namespace Core
                 {
                     return;
                 }
-                if ((_attached_content != null) && (e.MiddleButton == MouseButtonState.Pressed))
+                if ((_AttachedContent != null) && (e.MiddleButton == MouseButtonState.Pressed))
                 {
-                    var drag_and_drop_load = new DragDrop_Type(this, _attached_content.Item1, _attached_content.Item2);
+                    var drag_and_drop_load = new DragDrop_Type(this, _AttachedContent.Item1, _AttachedContent.Item2);
                     // Only detach content
                     delete_content(true);
                     DragDrop.DoDragDrop(sender_grid, drag_and_drop_load, DragDropEffects.All);
@@ -426,7 +425,7 @@ namespace Core
                 if (e.Data.GetDataPresent(data_type))
                 {
                     var source_content = (DragDrop_Type)e.Data.GetData(data_type);
-                    var target_content = _attached_content;
+                    var target_content = _AttachedContent;
                     // Only detach content
                     delete_content(true);
 
@@ -461,8 +460,6 @@ namespace Core
 
             /* ------------------------------------------------------------------*/
             // private variables
-
-            private AttachedContent_Type _attached_content = null;
 
             private readonly string _item_id_hori_top = "item_horizontal_top_" + UniqueID.Generate();
             private readonly string _item_id_hori_bottom = "item_horizontal_bottom_" + UniqueID.Generate();

@@ -22,7 +22,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         // properties
 
-        public override string Name { get { return "Columns (2D)"; } }
+        public override string _Name { get { return "Columns (2D)"; } }
 
 
         /* ------------------------------------------------------------------*/

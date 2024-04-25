@@ -28,16 +28,15 @@ namespace Core
         public interface IDataType
         {
             /* ------------------------------------------------------------------*/
-            // public properties
+            // interface properties
 
-            object Get { get; }
-
-            List<Dimension> SupportedDimensions { get; }
-            List<Type> SupportedValueTypes { get; }
+            object _Get { get; }
+            List<Dimension> _SupportedDimensions { get; }
+            List<Type> _SupportedValueTypes { get; }
 
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            // interface functions
 
             void UpdateData(GenericDataStructure data);
 

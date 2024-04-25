@@ -47,6 +47,7 @@ namespace Core
             /// </summary>
             public delegate void UpdateCallback_Delegate(bool new_data);
 
+
             /* ------------------------------------------------------------------*/
             // public functions
 
@@ -226,7 +227,7 @@ namespace Core
                     return null;
 
                 }
-                return _data_library[data_type].Get;
+                return _data_library[data_type]._Get;
             }
 
 
@@ -247,11 +248,11 @@ namespace Core
                         var out_data = new GenericDataStructure();
                         foreach (var meta_data in metadata_list)
                         {
-                            if (meta_data.IsSelected)
+                            if (meta_data._Selected)
                             {
                                 var metadata_entry = new GenericDataEntry();
-                                metadata_entry.AddValue(meta_data.IsSelected);
-                                metadata_entry.AddValue(meta_data.Index);
+                                metadata_entry.AddValue(meta_data._Selected);
+                                metadata_entry.AddValue(meta_data._Index);
                                 out_data.AddEntry(metadata_entry);
                             }
                         }
@@ -278,7 +279,7 @@ namespace Core
                     Log.Default.Msg(Log.Level.Error, "Unknown sender");
                     return;
                 }
-                int index = sender_selection.Index;
+                int index = sender_selection._Index;
 
                 try
                 {
@@ -317,7 +318,7 @@ namespace Core
                     }
                     return null;
                 }
-                var data = _data_library[typeof(DataTypeGeneric)].Get as GenericDataStructure;
+                var data = _data_library[typeof(DataTypeGeneric)]._Get as GenericDataStructure;
                 // If there is already data present, create the data for the new type
                 if (data == null)
                 {
@@ -333,7 +334,6 @@ namespace Core
             // private variables
 
             private Dictionary<Type, IDataType> _data_library = null;
-
             private OutputData_Delegate _outputdata_callback = null;
             private List<UpdateCallback_Delegate> _update_callbacks = null;
         }

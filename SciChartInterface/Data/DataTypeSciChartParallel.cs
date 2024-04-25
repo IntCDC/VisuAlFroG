@@ -26,22 +26,12 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // public properties
 
-            public sealed override List<Dimension> SupportedDimensions
-            {
-                get
-                {
-                    return new List<Dimension>() { Dimension.Uniform, Dimension.TwoDimensional, Dimension.ThreeDimensional, Dimension.Multidimensional };
-                }
-            }
+            public sealed override List<Dimension> _SupportedDimensions { get; }
+                = new List<Dimension>() { Dimension.Uniform, Dimension.TwoDimensional, Dimension.ThreeDimensional, Dimension.Multidimensional };
 
             /// All numeric types that can be converted to double
-            public sealed override List<Type> SupportedValueTypes
-            {
-                get
-                {
-                    return new List<Type>() { typeof(double), typeof(float), typeof(int), typeof(uint), typeof(long), typeof(ulong) };
-                }
-            }
+            public sealed override List<Type> _SupportedValueTypes { get; }
+                = new List<Type>() { typeof(double), typeof(float), typeof(int), typeof(uint), typeof(long), typeof(ulong) };
 
 
             /* ------------------------------------------------------------------*/
@@ -139,14 +129,14 @@ namespace SciChartInterface
             private void create_data(GenericDataStructure branch, ref List<DataType> value_list)
             {
                 // For each branch add all entries as one pcp value
-                if (branch.Entries.Count > 0)
+                if (branch._Entries.Count > 0)
                 {
                     dynamic data_entry = new DataType();
                     var data_entry_dict = data_entry as IDictionary<string, object>;
                     int index = 0;
-                    foreach (var entry in branch.Entries)
+                    foreach (var entry in branch._Entries)
                     {
-                        foreach (var value in entry.Values)
+                        foreach (var value in entry._Values)
                         {
                             /// TODO The property names are hard coded and should be replaced by names provided in the data set (e.g. branch name?)
                             string label = generate_property_name(index); // entry.MetaData.Label;
@@ -157,7 +147,7 @@ namespace SciChartInterface
                     value_list.Add(data_entry);
                 }
 
-                foreach (var b in branch.Branches)
+                foreach (var b in branch._Branches)
                 {
                     create_data(b, ref value_list);
                 }

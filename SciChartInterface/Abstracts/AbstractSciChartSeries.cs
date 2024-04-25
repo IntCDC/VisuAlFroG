@@ -24,7 +24,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // properties
 
-            public sealed override Type RequiredDataType { get; } = typeof(DataTypeSciChartSeries<DataType>);
+            public sealed override Type _RequiredDataType { get; } = typeof(DataTypeSciChartSeries<DataType>);
 
 
             /* ------------------------------------------------------------------*/
@@ -132,13 +132,13 @@ namespace SciChartInterface
             {
                 data_parent.RenderableSeries.Clear();
 
-                if (this.RequestDataCallback == null)
+                if (this._RequestDataCallback == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
                 }
 
-                var data = (List<DataType>)RequestDataCallback(RequiredDataType);
+                var data = (List<DataType>)_RequestDataCallback(_RequiredDataType);
                 if (data != null)
                 {
                     foreach (var data_series in data)

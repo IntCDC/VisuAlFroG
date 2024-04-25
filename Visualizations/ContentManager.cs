@@ -77,7 +77,7 @@ namespace Visualizations
             {
                 foreach (var content_data in content_types.Value)
                 {
-                    configurations.Add(new AbstractVisualization.Configuration() { ID = content_data.Value.ID, Type = content_types.Key.FullName });
+                    configurations.Add(new AbstractVisualization.Configuration() { _ID = content_data.Value._ID, _Type = content_types.Key.FullName });
                 }
             }
             return ConfigurationService.Serialize<List<AbstractVisualization.Configuration>>(configurations);
@@ -102,10 +102,10 @@ namespace Visualizations
 
                 foreach (var content_configuration in visualization_configurations)
                 {
-                    var type = get_type(content_configuration.Type);
+                    var type = get_type(content_configuration._Type);
                     if (_contents.ContainsKey(type))
                     {
-                        var id = content_configuration.ID;
+                        var id = content_configuration._ID;
                         if (id == UniqueID.Invalid)
                         {
                             Log.Default.Msg(Log.Level.Warn, "Invalid content id: " + id);
@@ -119,12 +119,12 @@ namespace Visualizations
                             {
                                 return false;
                             }
-                            new_content.ID = id;
+                            new_content._ID = id;
                             _contents[type].Add(id, new_content);
                         }
                         else
                         {
-                            Log.Default.Msg(Log.Level.Error, "Content " + content_configuration.Type + " with ID " + id + " already exists");
+                            Log.Default.Msg(Log.Level.Error, "Content " + content_configuration._Type + " with ID " + id + " already exists");
                         }
                     }
                     else
@@ -155,7 +155,7 @@ namespace Visualizations
                     // Create temporary instance of content
                     Type content_type = content_types.Key;
                     var tmp_content = (AbstractVisualization)Activator.CreateInstance(content_type);
-                    var lservice_types = tmp_content.DependingServices;
+                    var lservice_types = tmp_content._DependingServices;
                     foreach (Type lservice_type in lservice_types)
                     {
                         // Only consider valid services
@@ -198,8 +198,8 @@ namespace Visualizations
 
                 // Create temporary instance of content
                 var tmp_content = (AbstractVisualization)Activator.CreateInstance(content_type);
-                string header = tmp_content.Name;
-                bool multiple_instances = tmp_content.MultipleInstances;
+                string header = tmp_content._Name;
+                bool multiple_instances = tmp_content._MultipleInstances;
 
                 // Content is only available if multiple instance are allowed or has not been instantiated yet
                 bool available = (multiple_instances || (content_types.Value.IsEmpty() && !multiple_instances));
@@ -247,7 +247,7 @@ namespace Visualizations
                         {
                             return null;
                         }
-                        id = new_content.ID;
+                        id = new_content._ID;
                         _contents[type].Add(id, new_content);
                     }
                 }
@@ -338,7 +338,7 @@ namespace Visualizations
             var content = (AbstractVisualization)Activator.CreateInstance(type);
             if (content.Initialize(_data_request_callback))
             {
-                _register_data_update_type_callback(content.Update, content.RequiredDataType);
+                _register_data_update_type_callback(content.Update, content._RequiredDataType);
                 if (content.Create())
                 {
                     content.Update(true);

@@ -19,21 +19,11 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public properties
 
-            public sealed override List<Dimension> SupportedDimensions
-            {
-                get
-                {
-                    return new List<Dimension>() { Dimension.Uniform, Dimension.TwoDimensional, Dimension.ThreeDimensional, Dimension.Multidimensional };
-                }
-            }
+            public sealed override List<Dimension> _SupportedDimensions { get; }
+                = new List<Dimension>() { Dimension.Uniform, Dimension.TwoDimensional, Dimension.ThreeDimensional, Dimension.Multidimensional };
 
-            public sealed override List<Type> SupportedValueTypes
-            {
-                get
-                {
-                    return new List<Type>() { typeof(string), typeof(double), typeof(float), typeof(int), typeof(uint), typeof(long), typeof(ulong) };
-                }
-            }
+            public sealed override List<Type> _SupportedValueTypes { get; }
+                = new List<Type>() { typeof(string), typeof(double), typeof(float), typeof(int), typeof(uint), typeof(long), typeof(ulong) };
 
 
             /* ------------------------------------------------------------------*/
@@ -52,7 +42,8 @@ namespace Core
                     return;
                 }
 
-                if (!CompatibleDimensionality(data.DataDimension()) || !CompatibleValueTypes(data.ValueTypes())) {
+                if (!CompatibleDimensionality(data.DataDimension()) || !CompatibleValueTypes(data.ValueTypes()))
+                {
                     return;
                 }
                 _data = data;
@@ -70,14 +61,14 @@ namespace Core
                     Log.Default.Msg(Log.Level.Error, "Creation of data required prior to execution");
                     return;
                 }
-                var entry = _data.EntryAtIndex(updated_meta_data.Index);
+                var entry = _data.EntryAtIndex(updated_meta_data._Index);
                 if (entry != null)
                 {
-                    entry.MetaData.IsSelected = updated_meta_data.IsSelected;
+                    entry._Metadata._Selected = updated_meta_data._Selected;
                 }
-                else 
+                else
                 {
-                    Log.Default.Msg(Log.Level.Debug, "Can not find data entry at index: " + updated_meta_data.Index.ToString());
+                    Log.Default.Msg(Log.Level.Debug, "Can not find data entry at index: " + updated_meta_data._Index.ToString());
                 }
             }
 
@@ -92,15 +83,15 @@ namespace Core
             /// <param name="index">The entry index</param>
             private void init_metadata(GenericDataStructure data, ref int index)
             {
-                foreach (var entry in data.Entries)
+                foreach (var entry in data._Entries)
                 {
-                    entry.MetaData.IsSelected = false;
-                    entry.MetaData.Index = index;
-                    entry.MetaData.PropertyChanged += _meta_data_update_handler;
+                    entry._Metadata._Selected = false;
+                    entry._Metadata._Index = index;
+                    entry._Metadata.PropertyChanged += _meta_data_update_handler;
 
                     index++;
                 }
-                foreach (var branch in data.Branches)
+                foreach (var branch in data._Branches)
                 {
                     init_metadata(branch, ref index);
                 }

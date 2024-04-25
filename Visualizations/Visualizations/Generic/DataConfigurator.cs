@@ -22,8 +22,8 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         // properties
 
-        public override string Name { get { return "Data Configurator"; } }
-        public override bool MultipleInstances { get { return false; } }
+        public override string _Name { get { return "Data Configurator"; } }
+        public override bool _MultipleInstances { get { return false; } }
 
 
         /* ------------------------------------------------------------------*/
@@ -79,7 +79,7 @@ namespace Visualizations
                 create_data_tree(data, _tree_root);
                 _stack_panel.Children.Add(_tree_root);
 
-                Content.Name = ID;
+                Content.Name = _ID;
                 Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
                 Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
                 Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
@@ -137,7 +137,7 @@ namespace Visualizations
         private void create_data_tree(GenericDataStructure data, TreeViewItem tree_item)
         {
             int entry_index = 0;
-            foreach (var entry in data.Entries)
+            foreach (var entry in data._Entries)
             {
                 var tree_entry = new TreeViewItem();
                 tree_entry.Header = "Entry [" + entry_index.ToString() + "]";
@@ -154,14 +154,14 @@ namespace Visualizations
                 panel_template.VisualTree = stack_panel;
                 tree_values.ItemsPanel = panel_template;
 
-                foreach (var value in entry.Values)
+                foreach (var value in entry._Values)
                 {
                     var tree_value = new TreeViewItem();
                     tree_value.SetResourceReference(TreeViewItem.ForegroundProperty, "Brush_Foreground");
 
                     tree_value.Header = value.ToString();
                     tree_value.MouseDoubleClick += event_treevalue_clicked;
-                    tree_value.Tag = entry.MetaData;
+                    tree_value.Tag = entry._Metadata;
                     tree_values.Items.Add(tree_value);
                 }
                 var tree_meta = new TreeViewItem();
@@ -173,7 +173,7 @@ namespace Visualizations
                 tree_index.Header = "Index";
                 var tree_index_value = new TreeViewItem();
                 tree_index_value.SetResourceReference(TreeViewItem.ForegroundProperty, "Brush_Foreground");
-                tree_index_value.Header = entry.MetaData.Index.ToString();
+                tree_index_value.Header = entry._Metadata._Index.ToString();
                 tree_index.Items.Add(tree_index_value);
 
                 var tree_selected = new TreeViewItem();
@@ -181,9 +181,9 @@ namespace Visualizations
                 tree_selected.Header = "IsSelected";
                 var tree_selected_value = new TreeViewItem();
                 tree_selected_value.SetResourceReference(TreeViewItem.ForegroundProperty, "Brush_Foreground");
-                tree_selected_value.Header = entry.MetaData.IsSelected.ToString();
+                tree_selected_value.Header = entry._Metadata._Selected.ToString();
                 // Set index of IsSelected to index of value to find it later
-                tree_selected_value.Name = "index_" + entry.MetaData.Index.ToString();
+                tree_selected_value.Name = "index_" + entry._Metadata._Index.ToString();
                 tree_selected.Items.Add(tree_selected_value);
 
                 tree_meta.Items.Add(tree_index);
@@ -197,10 +197,10 @@ namespace Visualizations
             }
 
             int branch_index = 0;
-            foreach (var branch in data.Branches)
+            foreach (var branch in data._Branches)
             {
                 var tree_branch = new TreeViewItem();
-                string branch_label = branch.Label;
+                string branch_label = branch._Label;
                 if (branch_label == "")
                 {
                     branch_label = "Branch";
@@ -228,7 +228,7 @@ namespace Visualizations
                 var meta_data = treevalue.Tag as MetaDataGeneric;
                 if (meta_data != null)
                 {
-                    meta_data.IsSelected = !meta_data.IsSelected;
+                    meta_data._Selected = !meta_data._Selected;
                     update_metadata_at_index(_tree_root, meta_data);
                     return;
                 }
@@ -249,9 +249,9 @@ namespace Visualizations
                 if (treeitem != null)
                 {
                     // IsSeleceted TreeViewItem of value with index
-                    if (treeitem.Name == ("index_" + meta_data.Index.ToString()))
+                    if (treeitem.Name == ("index_" + meta_data._Index.ToString()))
                     {
-                        treeitem.Header = meta_data.IsSelected.ToString();
+                        treeitem.Header = meta_data._Selected.ToString();
                         return;
                     }
                     update_metadata_at_index(treeitem, meta_data);
@@ -265,13 +265,13 @@ namespace Visualizations
         /// <param name="branch"></param>
         private void update_metadata(GenericDataStructure branch)
         {
-            foreach (var b in branch.Branches)
+            foreach (var b in branch._Branches)
             {
                 update_metadata(b);
             }
-            foreach (var entry in branch.Entries)
+            foreach (var entry in branch._Entries)
             {
-                update_metadata_at_index(_tree_root, entry.MetaData);
+                update_metadata_at_index(_tree_root, entry._Metadata);
             }
         }
 

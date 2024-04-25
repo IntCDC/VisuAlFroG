@@ -25,7 +25,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         // properties
 
-        public override string Name { get { return "Parallel Coordinates Plot (2D)"; } }
+        public override string _Name { get { return "Parallel Coordinates Plot (2D)"; } }
 
 
         /* ------------------------------------------------------------------*/

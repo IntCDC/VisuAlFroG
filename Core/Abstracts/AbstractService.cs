@@ -17,7 +17,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public properties
 
-            public string Name { get { return GetType().FullName; } }
+            public string _Name { get { return GetType().FullName; } }
 
 
             /* ------------------------------------------------------------------*/

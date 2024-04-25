@@ -19,12 +19,8 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public properties
 
-            public List<object> Values { get { return _values; } }
-            public MetaDataGeneric MetaData { get { return _metadata; } set { _metadata = value; } }
-            public uint Dimension { get { return (uint)_values.Count; } }
-
-            public double Min { get { return _min; } }
-            public double Max { get { return _max; } }
+            public List<object> _Values { get; private set; } = new List<object>();
+            public MetaDataGeneric _Metadata { get; set; } = new MetaDataGeneric();
 
 
             /* ------------------------------------------------------------------*/
@@ -32,29 +28,29 @@ namespace Core
 
             public void AddValue(object value)
             {
-                _values.Add(value);
-                calculate_statistics(value);
+                _Values.Add(value);
+                update_metadata(value);
             }
 
             public void AddValues<T>(List<T> values) where T : struct
             {
-                _values.Clear();
+                _Values.Clear();
                 foreach (var value in values)
                 {
-                    _values.Add((object)value);
-                    calculate_statistics(value);
+                    _Values.Add((object)value);
+                    update_metadata(value);
                 }
             }
 
             public bool HasIndex(int entry_index)
             {
-                return (_metadata.Index == entry_index);
+                return (_Metadata._Index == entry_index);
             }
 
             public List<Type> ValueTypes()
             {
                 var value_types = new List<Type>();
-                foreach (var value in _values)
+                foreach (var value in _Values)
                 {
                     var type = value.GetType();
                     if (!value_types.Contains(type))
@@ -73,26 +69,17 @@ namespace Core
             /// Re-evaluate statistics for provided value
             /// </summary>
             /// <param name="value"></param>
-            private void calculate_statistics(object value)
+            private void update_metadata(object value)
             {
                 var type = value.GetType();
                 if ((type == typeof(double)) || (type == typeof(int)) || (type == typeof(uint)) || (type == typeof(long)) || (type == typeof(ulong)) || (type == typeof(float)))
                 {
-                    _min = Math.Min(_min, Convert.ToDouble(value));
-                    _max = Math.Max(_max, Convert.ToDouble(value));
+                    _Metadata._Min = Math.Min(_Metadata._Min, Convert.ToDouble(value));
+                    _Metadata._Max = Math.Max(_Metadata._Max, Convert.ToDouble(value));
                 }
+
+                _Metadata._Dimension = (uint)_Values.Count;
             }
-
-
-            /* ------------------------------------------------------------------*/
-            // private variables
-
-            private List<object> _values = new List<object>();
-            private MetaDataGeneric _metadata = new MetaDataGeneric();
-
-            private double _min = double.PositiveInfinity;
-            private double _max = double.NegativeInfinity;
-
         }
     }
 }

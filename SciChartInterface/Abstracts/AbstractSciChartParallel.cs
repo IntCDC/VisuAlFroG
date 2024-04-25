@@ -29,7 +29,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // properties
 
-            public sealed override Type RequiredDataType { get; } = typeof(DataTypeSciChartParallel<DataType>);
+            public sealed override Type _RequiredDataType { get; } = typeof(DataTypeSciChartParallel<DataType>);
 
 
             /* ------------------------------------------------------------------*/
@@ -128,7 +128,7 @@ namespace SciChartInterface
                 var parent = data_parent as SciChartParallelCoordinateSurface;
                 parent.ParallelCoordinateDataSource = null;
 
-                var data = (ParallelCoordinateDataSource<DataType>)RequestDataCallback(RequiredDataType);
+                var data = (ParallelCoordinateDataSource<DataType>)_RequestDataCallback(_RequiredDataType);
                 if (data != null)
                 {
                     parent.ParallelCoordinateDataSource = data;

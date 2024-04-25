@@ -23,7 +23,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         // properties
 
-        public override string Name { get { return "Scatter Plot (2D)"; } }
+        public override string _Name { get { return "Scatter Plot (2D)"; } }
 
 
         /* ------------------------------------------------------------------*/

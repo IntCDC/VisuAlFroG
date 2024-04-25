@@ -26,8 +26,8 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // properties
 
-            public sealed override bool MultipleInstances { get { return true; } }
-            public sealed override List<Type> DependingServices { get { return new List<Type>() { typeof(SciChartInterfaceService) }; } }
+            public sealed override bool _MultipleInstances { get { return true; } }
+            public sealed override List<Type> _DependingServices { get { return new List<Type>() { typeof(SciChartInterfaceService) }; } }
 
             protected SurfaceType Content { get { return _content_surface; } }
 
@@ -42,10 +42,10 @@ namespace SciChartInterface
                 }
                 _timer.Start();
 
-                this.RequestDataCallback = request_callback;
+                this._RequestDataCallback = request_callback;
 
                 _content_surface = new SurfaceType();
-                _content_surface.Name = ID;
+                _content_surface.Name = _ID;
                 _content_surface.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
                 _content_surface.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
 
@@ -75,7 +75,7 @@ namespace SciChartInterface
 
             public sealed override bool Detach()
             {
-                if (!_attached)
+                if (!_Attached)
                 {
                     // Required to release mouse handling
                     _content_surface.ChartModifier.IsAttached = false;

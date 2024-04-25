@@ -127,7 +127,7 @@ namespace Core
                     _item_themes.Add(item_theme.Name, new Tuple<MenuItem, ColorTheme.PredefinedThemes>(item_theme, theme));
                 }
                 // Add manually since default theme in ColorTheme is set in Initialize when this menu is not yet available
-                MarkColorTheme(ColorTheme.DefaultColorTheme);
+                MarkColorTheme(ColorTheme._DefaultColorTheme);
 
 
                 // ----------------------------------------

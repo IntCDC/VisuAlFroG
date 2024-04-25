@@ -25,6 +25,12 @@ namespace Core
 
 
             /* ------------------------------------------------------------------*/
+            // public properties
+
+            public Grid _Content { get; protected set; } = null;
+
+
+            /* ------------------------------------------------------------------*/
             // public types
 
             public enum SplitOrientation
@@ -47,7 +53,7 @@ namespace Core
 
             protected void Reset()
             {
-                _content = null;
+                _Content = null;
                 _parent_is_root = false;
                 _parent_branch = null;
                 _content_callbacks = null;
@@ -57,7 +63,6 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // protected variables
 
-            protected Grid _content = null;
             protected bool _parent_is_root = false;
             protected WindowBranch _parent_branch = null;
             protected ContentCallbacks_Type _content_callbacks = null;
