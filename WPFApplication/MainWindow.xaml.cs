@@ -128,10 +128,11 @@ namespace Frontend
 
                 // Window setup
                 InitializeComponent();
-                base.Title = app_name;
-                base.Width = 1280;
-                base.Height = 720;
-                base.Icon = ImageLoader.ImageSourceFromFile(ResourcePaths.Locations.LogoIcons, "logo64.png");
+                base.Title  = app_name;
+                base.Icon   = ImageLoader.ImageSourceFromFile(ResourcePaths.Locations.LogoIcons, "logo64.png");
+                // Default window size in pixels
+                base.Width = 1600;
+                base.Height = 900;
 
 
                 // Explicitly disable debug messages
@@ -217,46 +218,18 @@ namespace Frontend
                 // Evaluate previously parsed command line arguments
                 _arguments.Evaluate();
 
+                // Load default window configuration
+                _winmanager.CreateDefault();
 
-                /// DEBUG
-                load_example_data();
-
+                /// Provide example data for detached mode
+                if (_detached)
+                {
+                    var sample_data = ExampleData.Get();
+                    UpdateInputData(ref sample_data);
+                }
 
                 _timer.Stop();
                 return true;
-            }
-
-            /// DEBUG Load sample data in detached mode ...
-            private void load_example_data()
-            {
-                if (_detached)
-                {
-                    var generator = new Random();
-                    var sample_data = new GenericDataStructure();
-
-                    int value_index = 0;
-                    for (int i = 0; i < 7; i++)
-                    {
-                        var data_branch = new GenericDataStructure();
-                        data_branch._Label = "labled_" + i.ToString();
-
-                        for (int j = 0; j < 25; j++)
-                        {
-                            var value = generator.Next(0, 50);
-                            var data_leaf = new GenericDataEntry();
-                            data_leaf.AddValue((double)value);
-
-                            data_leaf._Metadata._Index = value_index;
-                            data_leaf._Metadata._Label = "entry_" + j.ToString();
-                            value_index++;
-
-                            data_branch.AddEntry(data_leaf);
-                        }
-                        sample_data.AddBranch(data_branch);
-                    }
-
-                    UpdateInputData(ref sample_data);
-                }
             }
 
 

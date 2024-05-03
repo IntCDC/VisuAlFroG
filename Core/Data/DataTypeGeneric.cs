@@ -48,7 +48,7 @@ namespace Core
                 }
                 _data = data;
 
-                int index = 0;
+                uint index = 0;
                 init_metadata(_data, ref index);
 
                 _loaded = true;
@@ -81,7 +81,7 @@ namespace Core
             /// </summary>
             /// <param name="data">The data branch.</param>
             /// <param name="index">The entry index</param>
-            private void init_metadata(GenericDataStructure data, ref int index)
+            private void init_metadata(GenericDataStructure data, ref uint index)
             {
                 foreach (var entry in data._Entries)
                 {

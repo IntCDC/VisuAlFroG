@@ -29,7 +29,7 @@ namespace Core
             /// <summary>
             /// Index of the data point.
             /// </summary>
-            int _Index { get; set; }
+            uint _Index { get; set; }
 
             bool _Selected { get; set; }
 

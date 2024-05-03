@@ -28,8 +28,10 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public properties
 
-            public int _Index { get; set; } = -1;
-            public string _Label { get; set; } = "";
+            public uint _Index { get; set; }        = uint.MaxValue;
+            public string _Label { get; set; }      = "";
+            public uint _Dimension { get; set; }    = 0;
+
             public bool _Selected
             {
                 get
@@ -47,9 +49,6 @@ namespace Core
                 }
             } 
 
-            public uint _Dimension { get; set; } = 0;
-            public double _Min { get; set; } = double.PositiveInfinity;
-            public double _Max { get; set; } = double.NegativeInfinity;
 
             /* ------------------------------------------------------------------*/
             // private variables

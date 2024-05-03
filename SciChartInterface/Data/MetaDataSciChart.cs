@@ -19,7 +19,7 @@ namespace SciChartInterface
             // Wrapper required for IPointMetadata
             public bool IsSelected { get { return _Selected; } set { _Selected = value; } }
 
-            public MetaDataSciChart(int index, bool is_selected, PropertyChangedEventHandler meta_data_update_handler)
+            public MetaDataSciChart(uint index, bool is_selected, PropertyChangedEventHandler meta_data_update_handler)
             {
                 _Index = index;
                 _Selected = is_selected;

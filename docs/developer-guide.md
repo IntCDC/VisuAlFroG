@@ -15,8 +15,6 @@
 
 
 
-
-
 <!-- ###################################################################### -->
 ## Custom Visualization
 
@@ -35,43 +33,45 @@
 - The default content element can be accessed via the `Content`propoerty. The default content element `Canvas` is defined in the template of the inherited class `AbstractWPFVisualization` and can be changed to any `UIElement`.
         
 
-
+<!--
 ### d3
 
-*WIP*...
+<TODO>
 
 ### Bokeh (Python)
 
-*WIP*...
+<TODO>
+-->
 
 
 <!-- ###################################################################### -->
 ## Additional Information
 
--  **Logging debug messages** in the `LogConsole` requires messages to be provided the following way:
+### Logging debug messages
+In order to show messages in the `LogConsole` messages have to be provided via the `Log` class the following way:
 ```C#
 Log.Default.Msg(Log.Level.Error, "YOUR DEBUG MESSAG");
 ```
-Enable/disable debug message printing in `LogConsole` by changing the following line in *Frontend.Application.MainWindow.Initilaize():131*:
+Enable/disable *DEBUG* message by changing the following line in *Frontend.Application.MainWindow.Initilaize():138*:
 ```C#
     Log.Default.DisableDebug = true;
 ```
 
-- **Predefined colors** are defined for each available color theme in `.../Core/resources/color-themes/<theme>.xaml`. Colors can be assigned to WPF elements via
+### Predefined Colors
+GUI element colors are defined for each available color theme in `.../Core/resources/color-themes/<theme>.xaml`. 
+Colors defined in the themes can be assigned to WPF elements in two ways:
 ```C#
     <Frameworkelement>.SetResourceReference(<Frameworkelement>.<PropertyName>, "Brush_<Name>");
-```
-or
-```C#
+    # OR
     <Setter>.Value = new DynamicResourceExtension("Brush_<Name>");
 ```
 
-- The **default window setup on startup** is defined in *Core.GUI.WindowManager.CreateDefault()* and called in *Frontend.Application.MainWindow.create():202*:
+### Startup Configuration
+The default window configuration on startup is defined in *Core.GUI.WindowManager.CreateDefault()* and called in *Frontend.Application.MainWindow.create():221*:
 ```C#
     _winmanager.CreateDefault();
 ```
 
-       
 
 -----
 <!-- ###################################################################### -->
@@ -80,8 +80,9 @@ or
 Reccomendations for code formatting are stored in `.editorconfig` and are automatically checked via [dotnet-format](https://github.com/dotnet/format) in *Visual Studio*. 
 In *Visual Studio*, look at the info messages in the *Error List* after building *VisuAlFroG* and adjust code according to recommendations.
 
-### Naming Conventions:
-#### Private Variables:
+### Naming Conventions
+
+#### Private Variables
 - Start with `_` and only lower case letters
 - Separate words with `_`
 #### Public Properties
@@ -92,14 +93,15 @@ In *Visual Studio*, look at the info messages in the *Error List* after building
 - Only lower case letters
 - Separate words with `_`
 
+
 -----
 <!-- ###################################################################### -->
 ## Resource Files
 
-Add new resource files to the existing `Core/resources` or `Visualizations/resources` folder and create new subfolder if desired. 
-Add new resource files in *Visual Studio* via `Add` `Existing Items...`. 
+Add new resource files to the existing `Core/resources` or `Visualizations/Libraries/.../template` folder and create new subfolder if desired. 
+Add new resource files in *Visual Studio* via `Add` -> `Existing Items...`. 
 Change the `Build Action` property of the newly added resource file to `Resource`.
-Add new enum to `Location` in `Core.Utilities.WorkingDirectory` and add option for subfolder of new location in `WorkingDirectory.ResourcePath()`.
+Add new enum to `Location` in *Core.Utilities.ResourcePaths* and add option for subfolder of new location in *Core.Utilities.ResourcePaths.GetResourcePath()*.
 
 
 <!-- ###################################################################### -->

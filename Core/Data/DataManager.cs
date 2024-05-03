@@ -109,8 +109,14 @@ namespace Core
                     return;
                 }
                 _timer.Start();
-                Log.Default.Msg(Log.Level.Info, "Reading input data ...");
 
+
+                // Only process valid input data
+                if (!DataValidation.Analyze(ref input_data)) {
+                    return;
+                }
+
+                Log.Default.Msg(Log.Level.Info, "Updating data ...");
                 // Update generic data type...
                 _data_library[typeof(DataTypeGeneric)].UpdateData(input_data);
                 var data = get_generic_data();
@@ -134,6 +140,8 @@ namespace Core
                 {
                     update_callback(true);
                 }
+
+                Log.Default.Msg(Log.Level.Info, "DONE");
 
                 _timer.Stop();
             }
@@ -279,7 +287,6 @@ namespace Core
                     Log.Default.Msg(Log.Level.Error, "Unknown sender");
                     return;
                 }
-                int index = sender_selection._Index;
 
                 try
                 {

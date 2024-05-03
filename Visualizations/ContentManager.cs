@@ -42,7 +42,7 @@ namespace Visualizations
 
             // Register new visualizations here:
             register_content(typeof(LogConsole));
-            register_content(typeof(DataConfigurator));
+            register_content(typeof(DataViewer));
             register_content(typeof(ScatterVisualization));
             register_content(typeof(LinesVisualization));
             register_content(typeof(ColumnsVisualization));

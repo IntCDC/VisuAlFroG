@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 using Core.Utilities;
@@ -34,7 +35,7 @@ namespace Core
 
             public void AddEntry(GenericDataEntry entry) { _Entries.Add(entry); }
 
-            public GenericDataEntry EntryAtIndex(int entry_index)
+            public GenericDataEntry EntryAtIndex(uint entry_index)
             {
                 GenericDataEntry entry = null;
                 get_entry_at_index(this, entry_index, ref entry);
@@ -62,19 +63,6 @@ namespace Core
                 return value_types;
             }
 
-            public double Min()
-            {
-                double min = double.PositiveInfinity;
-                get_min(this, ref min);
-                return min;
-            }
-            public double Max()
-            {
-                double max = double.NegativeInfinity;
-                get_max(this, ref max);
-                return max;
-            }
-
             public List<string> Labels()
             {
                 List<string> labels = new List<string>();
@@ -85,7 +73,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private functions
 
-            private void get_entry_at_index(GenericDataStructure branch, int entry_index, ref GenericDataEntry out_entry)
+            private void get_entry_at_index(GenericDataStructure branch, uint entry_index, ref GenericDataEntry out_entry)
             {
                 if (out_entry != null)
                 {
@@ -155,30 +143,6 @@ namespace Core
                             out_valuetypes.Add(t);
                         }
                     }
-                }
-            }
-
-            private void get_min(GenericDataStructure branch, ref double min)
-            {
-                foreach (var b in branch._Branches)
-                {
-                    get_min(b, ref min);
-                }
-                foreach (var entry in branch._Entries)
-                {
-                    min = Math.Min(entry._Metadata._Min, min);
-                }
-            }
-
-            private void get_max(GenericDataStructure branch, ref double max)
-            {
-                foreach (var b in branch._Branches)
-                {
-                    get_max(b, ref max);
-                }
-                foreach (var entry in branch._Entries)
-                {
-                    max = Math.Max(entry._Metadata._Max, max);
                 }
             }
 

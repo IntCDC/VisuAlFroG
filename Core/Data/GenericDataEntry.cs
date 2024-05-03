@@ -42,7 +42,7 @@ namespace Core
                 }
             }
 
-            public bool HasIndex(int entry_index)
+            public bool HasIndex(uint entry_index)
             {
                 return (_Metadata._Index == entry_index);
             }
@@ -71,13 +71,6 @@ namespace Core
             /// <param name="value"></param>
             private void update_metadata(object value)
             {
-                var type = value.GetType();
-                if ((type == typeof(double)) || (type == typeof(int)) || (type == typeof(uint)) || (type == typeof(long)) || (type == typeof(ulong)) || (type == typeof(float)))
-                {
-                    _Metadata._Min = Math.Min(_Metadata._Min, Convert.ToDouble(value));
-                    _Metadata._Max = Math.Max(_Metadata._Max, Convert.ToDouble(value));
-                }
-
                 _Metadata._Dimension = (uint)_Values.Count;
             }
         }

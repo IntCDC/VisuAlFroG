@@ -138,7 +138,11 @@ namespace SciChartInterface
                     {
                         foreach (var value in entry._Values)
                         {
-                            string label = entry._Metadata._Label; //generate_property_name(index);
+                            string label = entry._Metadata._Label;
+                            if (label == "")
+                            {
+                                label = generate_property_name(index);
+                            }
                             data_entry_dict.Add(label, (double)value);
                         }
                         index++;

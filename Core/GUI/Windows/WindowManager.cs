@@ -104,7 +104,18 @@ namespace Core
                 }
                 try
                 {
+                    /*
+                    _______________________________
+                    |Data Viewer |                |
+                    |            |                |
+                    |            |                |
+                    |____________|________________|
+                    |Log Console                  |
+                    |_____________________________|
+                    */
                     _window_root.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.None, 0.6);
+                    _window_root._Children.Item1.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.None, 0.4);
+                    _window_root._Children.Item1._Children.Item1._Leaf.CreateContent(UniqueID.Invalid, "Visualizations.DataViewer");
                     _window_root._Children.Item2._Leaf.CreateContent(UniqueID.Invalid, "Visualizations.LogConsole");
                 }
                 catch (Exception exc)

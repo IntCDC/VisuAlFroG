@@ -17,6 +17,7 @@
 -----
 
 
+
 <!-- ###################################################################### -->
 ## Building from Source
 
@@ -101,18 +102,23 @@ Configurations are stored in the [JSON](https://www.json.org/json-en.html) file 
 <!-- ###################################################################### -->
 ### Known Issues
 
-- Rhino ** Version 8** uses .NET Core by (default)[https://www.rhino3d.com/en/docs/guides/netcore/]. 
-**VisuAlFroG** requires the legacy .NET Framework, instead.
-Therefore, Rhino need to be changed to always use .NET Framework.
-In the command line type `SetDotNetRuntime` and then enter `Runtime=NETFramework` and confirm.
-Restart Rhino to take changes effect.
+- One of the following errors occurs:
+  - When debugging VisuAlFroG in Visual Studio the following error occurs: **A fatal error has occurred and debugging needs to be terminated. The debugger was configured to use the Desktop CLR (.NETFramework) Managed debugger, but the target process loaded the CoreCLR (.Net Core) runtime. To debug this project, configure it to use the 'Managed (CoreCLR)' debugger.**
+  - When VisuAlFroG is placed in Grasshopper library folder and then Grasshopper is started the following errors occur: 
+    - Object: VisuAlFroG (level 1) Exception has been thrown by the target of an invocation. TargetInvocationException
+    - Object: VisuAlFroG (level 2) Could not load file or assembly 'VisuAlFroG_WPF, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'. FileNotFoundException
 
-Following errors indicate the problem mentioned above:
-- When debugging VisuAlFroG in Visual Studio the following error occurs: *A fatal error has occurred and debugging needs to be terminated. The debugger was configured to use the Desktop CLR (.NETFramework) Managed debugger, but the target process loaded the CoreCLR (.Net Core) runtime. To debug this project, configure it to use the 'Managed (CoreCLR)' debugger.*
-- When VisuAlFroG is placed in Grasshopper library folder and then Grasshopper is started the following errors occur: 
-  - Object: VisuAlFroG (level 1) Exception has been thrown by the target of an invocation. TargetInvocationException
-  - Object: VisuAlFroG (level 2) Could not load file or assembly 'VisuAlFroG_WPF, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'. FileNotFoundException
+  **SOLUTION:**
+  - Rhino **Version 8** uses .NET Core by (default)[https://www.rhino3d.com/en/docs/guides/netcore/]. 
+  **VisuAlFroG** requires the legacy .NET Framework, instead.
+  Therefore, Rhino needs to be told to always use .NET Framework.
+  In the command line type `SetDotNetRuntime` and then enter `Runtime=NETFramework` and confirm.
+  Restart Rhino to take changes effect.
 
+- SciChart mouse interaction is not working via laptop touch pads
+
+  **SOLUTION:**
+  Use external mouse. 
 
 <!-- ###################################################################### -->
 

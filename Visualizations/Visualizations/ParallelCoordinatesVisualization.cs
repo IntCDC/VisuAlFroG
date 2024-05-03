@@ -101,8 +101,9 @@ namespace Visualizations
                 render_style.Triggers.Add(trigger);
 
                 Content.RenderableSeriesStyle = render_style;
+
+                Content.ZoomExtents();
             }
-            Content.ZoomExtents();
         }
 
 

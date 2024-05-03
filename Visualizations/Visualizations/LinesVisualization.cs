@@ -87,8 +87,8 @@ namespace Visualizations
 
                     rs.Style = default_style;
                 }
+                Content.ZoomExtents();
             }
-            Content.ZoomExtents();
         }
 
 
