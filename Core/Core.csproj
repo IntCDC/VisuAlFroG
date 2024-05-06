@@ -93,7 +93,8 @@
     <Compile Include="Abstracts\IMetaData.cs" />
     <Compile Include="Data\DataManager.cs" />
     <Compile Include="Data\DataTypeGeneric.cs" />
-    <Compile Include="Data\DataValidation.cs" />
+    <Compile Include="Data\DataValidator.cs" />
+    <Compile Include="Data\TestData.cs" />
     <Compile Include="Data\GenericDataEntry.cs" />
     <Compile Include="Data\GenericDataStructure.cs" />
     <Compile Include="Data\MetaDataGeneric.cs" />

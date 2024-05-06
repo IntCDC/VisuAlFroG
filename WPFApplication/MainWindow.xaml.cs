@@ -64,14 +64,14 @@ namespace Frontend
             /// Get input data from interface (= Grasshopper).
             /// </summary>
             /// <param name="input_data">Reference to the input data hold by the interface.</param>
-            public void UpdateInputData(ref GenericDataStructure input_data)
+            public void UpdateInputData(GenericDataStructure input_data)
             {
                 if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to updating input data");
                     return;
                 }
-                _basemanager.UpdateInputData(ref input_data);
+                _basemanager.UpdateInputData(input_data);
             }
 
             /// <summary>
@@ -136,7 +136,7 @@ namespace Frontend
 
 
                 // Explicitly disable debug messages
-                Log.Default.DisableDebug = true;
+                Log.Default.DisableDebug = false;
 
 
                 // Register and parse cmd line arguments
@@ -224,8 +224,8 @@ namespace Frontend
                 /// Provide example data for detached mode
                 if (_detached)
                 {
-                    var sample_data = ExampleData.Get();
-                    UpdateInputData(ref sample_data);
+                    var sample_data = TestData.Generate();
+                    UpdateInputData(sample_data);
                 }
 
                 _timer.Stop();

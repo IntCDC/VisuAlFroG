@@ -26,7 +26,7 @@ namespace GrasshopperComponent
             /// </summary>
             /// <param name="input">Reference to the input data.</param>
             /// <returns>The converted output data.</returns>
-            public static GenericDataStructure ConvertFromGHStructure(ref GH_Structure<IGH_Goo> input_data)
+            public static GenericDataStructure ConvertFromGHStructure(GH_Structure<IGH_Goo> input_data)
             {
                 var output_data = new GenericDataStructure();
 
@@ -73,7 +73,7 @@ namespace GrasshopperComponent
             /// </summary>
             /// <param name="input">Reference to the input data.</param>
             /// <returns>The converted output data.</returns>
-            public static GH_Structure<IGH_Goo> ConvertToGHStructure(ref GenericDataStructure input_data)
+            public static GH_Structure<IGH_Goo> ConvertToGHStructure(GenericDataStructure input_data)
             {
                 var output_data = new GH_Structure<IGH_Goo>();
 

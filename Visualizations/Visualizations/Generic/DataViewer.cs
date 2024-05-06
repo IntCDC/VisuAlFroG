@@ -116,7 +116,7 @@ namespace Visualizations
 			PrimaryKeyColumns[0] = _table.Columns["Index"];
 			_table.PrimaryKey = PrimaryKeyColumns;
 
-			create_level_columns(branch, 1);
+			/// create_level_columns(branch, 1);
 
 			column = new DataColumn();
 			column.DataType = typeof(uint);
@@ -148,7 +148,7 @@ namespace Visualizations
 			column.DefaultValue = false;
 			_table.Columns.Add(column);
 
-			for (uint i = 0; i < branch.DataDimension(); i++)
+			for (uint i = 0; i < branch.Dimension(); i++)
 			{
 				column = new DataColumn();
 				column.DataType = typeof(double);
@@ -199,7 +199,7 @@ namespace Visualizations
 				row["Selected"] = entry._Metadata._Selected;
 				row["BranchIndex"] = branch_index;
 				row["BranchLabel"] = branch._Label;
-				row[level_str] = "X";
+				/// row[level_str] = "X";
 
 				for (int i = 0; i < entry._Values.Count; i++)
 				{
@@ -226,12 +226,12 @@ namespace Visualizations
 
 		private string label_branchindex(uint i)
 		{
-			return "BranchLevel-" + i.ToString();
+			return "BranchLevel(" + i.ToString() + ")";
 		}
 
 		private string label_value(uint i)
 		{
-			return "Value-" + i.ToString();
+			return "Value(" + i.ToString() + ")";
 		}
 
 		private void event_scrollviewer_mousewheel(object sender, System.Windows.Input.MouseWheelEventArgs e)

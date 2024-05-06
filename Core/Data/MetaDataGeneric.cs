@@ -20,19 +20,19 @@ namespace Core
             // public events
 
             /// <summary>
-            /// Event to indicated changed properties.
+            /// Event called on change of _Selected property.
+            /// Needs to be set by each Data type individually
             /// </summary>
-            public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler PropertyChanged = null;
 
 
             /* ------------------------------------------------------------------*/
             // public properties
 
-            public uint _Index { get; set; }        = uint.MaxValue;
+            public uint   _Index { get; set; }      = uint.MaxValue;
             public string _Label { get; set; }      = "";
-            public uint _Dimension { get; set; }    = 0;
-
-            public bool _Selected
+            public uint   _Dimension { get; set; }  = 0;
+            public bool   _Selected
             {
                 get
                 {
@@ -44,7 +44,7 @@ namespace Core
                     _selected = value;
                     if (call_property_change && (PropertyChanged != null))
                     {
-                        PropertyChanged(this, new PropertyChangedEventArgs("IsSelected"));
+                        PropertyChanged(this, new PropertyChangedEventArgs("_Selected"));
                     }
                 }
             } 

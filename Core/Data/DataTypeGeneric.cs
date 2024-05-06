@@ -42,14 +42,13 @@ namespace Core
                     return;
                 }
 
-                if (!CompatibleDimensionality(data.DataDimension()) || !CompatibleValueTypes(data.ValueTypes()))
+                if (!CompatibleDimensionality(data.Dimension()) || !CompatibleTypes(data.Types()))
                 {
                     return;
                 }
-                _data = data;
 
-                uint index = 0;
-                init_metadata(_data, ref index);
+                _data = data;
+                init_metadata(_data);
 
                 _loaded = true;
             }
@@ -80,20 +79,15 @@ namespace Core
             /// Recursively initialize meta data.
             /// </summary>
             /// <param name="data">The data branch.</param>
-            /// <param name="index">The entry index</param>
-            private void init_metadata(GenericDataStructure data, ref uint index)
+            private void init_metadata(GenericDataStructure data)
             {
                 foreach (var entry in data._Entries)
                 {
-                    entry._Metadata._Selected = false;
-                    entry._Metadata._Index = index;
                     entry._Metadata.PropertyChanged += _meta_data_update_handler;
-
-                    index++;
                 }
                 foreach (var branch in data._Branches)
                 {
-                    init_metadata(branch, ref index);
+                    init_metadata(branch);
                 }
             }
         }

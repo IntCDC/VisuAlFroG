@@ -95,6 +95,21 @@ namespace SciChartInterface
                 return base.Terminate();
             }
 
+            public override void Update(bool new_data)
+            {
+                if (!_created)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Creation required prior to execution");
+                    return;
+                }
+
+                if (new_data)
+                {
+                    GetData(Content);
+                    Content.ZoomExtents();
+                }
+            }
+
 
             /* ------------------------------------------------------------------*/
             // protected functions
@@ -108,7 +123,7 @@ namespace SciChartInterface
 
 
             /* ------------------------------------------------------------------*/
-                // private variables
+            // private variables
 
             private SurfaceType _content_surface = null;
         }

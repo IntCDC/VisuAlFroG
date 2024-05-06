@@ -14,6 +14,10 @@ using Core.Data;
  */
 using SciChartUniformDataType = SciChart.Charting.Model.DataSeries.UniformXyDataSeries<double>;
 using SciChartXYDataType = SciChart.Charting.Model.DataSeries.XyDataSeries<double, double>;
+using Core.GUI;
+using SciChart.Charting.Visuals.PointMarkers;
+using System.Windows;
+using System.Windows.Media;
 
 namespace SciChartInterface
 {
@@ -29,7 +33,7 @@ namespace SciChartInterface
                 = new List<Dimension>() { Dimension.Uniform, Dimension.TwoDimensional };
 
             /// All numeric types that can be converted to double
-            public sealed override List<Type> _SupportedValueTypes { get; } 
+            public sealed override List<Type> _SupportedValueTypes { get; }
                 = new List<Type>() { typeof(double), typeof(float), typeof(int), typeof(uint), typeof(long), typeof(ulong) };
 
 
@@ -53,7 +57,7 @@ namespace SciChartInterface
                     return;
                 }
 
-                if (!CompatibleDimensionality(data.DataDimension()) || !CompatibleValueTypes(data.ValueTypes()))
+                if (!CompatibleDimensionality(data.Dimension()) || !CompatibleTypes(data.Types()))
                 {
                     return;
                 }
@@ -120,7 +124,7 @@ namespace SciChartInterface
                     data_series.Name = UniqueID.Generate();
                     data_series.AntiAliasing = true;
 
-                    if (branch.DataDimension() == 1)
+                    if (branch.Dimension() == 1)
                     {
                         var series = new SciChartUniformDataType();
                         foreach (var entry in branch._Entries)
@@ -131,7 +135,7 @@ namespace SciChartInterface
                         data_series.DataSeries = series;
 
                     }
-                    else if (branch.DataDimension() == 2)
+                    else if (branch.Dimension() == 2)
                     {
                         var series = new SciChartXYDataType();
                         foreach (var entry in branch._Entries)
@@ -141,6 +145,8 @@ namespace SciChartInterface
                         }
                         data_series.DataSeries = series;
                     }
+
+                    data_series.Style = renders_series_style();
                     _data.Add(data_series);
                 }
 
@@ -148,6 +154,67 @@ namespace SciChartInterface
                 {
                     init_data(b);
                 }
+            }
+
+            private System.Windows.Style renders_series_style()
+            {
+                var default_style = new System.Windows.Style();
+                default_style.TargetType = typeof(DataType);
+
+                var new_color = ColorTheme.RandomColor();
+
+                if (typeof(DataType) == typeof(FastColumnRenderableSeries))
+                {
+                    Setter setter_stroke = new Setter();
+                    setter_stroke.Property = FastColumnRenderableSeries.PaletteProviderProperty;
+                    setter_stroke.Value = new StrokePalette();
+                    default_style.Setters.Add(setter_stroke);
+
+                    Setter setter_gradient = new Setter();
+                    setter_gradient.Property = FastColumnRenderableSeries.FillProperty;
+                    setter_gradient.Value = new SolidColorBrush(new_color); // gradient;
+                    default_style.Setters.Add(setter_gradient);
+                }
+                else
+                {
+                    var pointmarker_default = new EllipsePointMarker()
+                    {
+                        Stroke = new_color,
+                        Fill = new_color,
+                        Width = 10.0,
+                        Height = 10.0
+                    };
+                    var pointmarker_selected = new EllipsePointMarker()
+                    {
+                        StrokeThickness = 3,
+                        Fill = new_color,
+                        Width = 10.0,
+                        Height = 10.0
+                    };
+                    pointmarker_selected.SetResourceReference(EllipsePointMarker.StrokeProperty, "Color_StrokeSelected");
+
+                    Setter setter_stroke = new Setter();
+                    setter_stroke.Property = BaseRenderableSeries.StrokeProperty;
+                    setter_stroke.Value = new_color;
+                    default_style.Setters.Add(setter_stroke);
+
+                    Setter setter_thickness = new Setter();
+                    setter_thickness.Property = BaseRenderableSeries.StrokeThicknessProperty;
+                    setter_thickness.Value = 3;
+                    default_style.Setters.Add(setter_thickness);
+
+                    Setter setter_point = new Setter();
+                    setter_point.Property = BaseRenderableSeries.PointMarkerProperty;
+                    setter_point.Value = pointmarker_default;
+                    default_style.Setters.Add(setter_point);
+
+                    Setter setter_point_selected = new Setter();
+                    setter_point_selected.Property = BaseRenderableSeries.SelectedPointMarkerProperty;
+                    setter_point_selected.Value = pointmarker_selected;
+                    default_style.Setters.Add(setter_point_selected);
+                }
+
+                return default_style;
             }
         }
     }

@@ -81,14 +81,16 @@ namespace Visualizations
                 var render_style = new System.Windows.Style();
                 render_style.TargetType = typeof(BaseRenderableSeries);
 
+                var new_color = ColorTheme.RandomColor();
                 Setter setter_strokethickness = new Setter();
                 setter_strokethickness.Property = BaseRenderableSeries.StrokeThicknessProperty;
                 setter_strokethickness.Value = 3;
-                render_style.Setters.Add(setter_strokethickness);
+                render_style.Setters.Add(setter_strokethickness);   
 
                 var setter_stroke = new Setter();
                 setter_stroke.Property = BaseRenderableSeries.StrokeProperty;
-                setter_stroke.Value = new DynamicResourceExtension("Color_StrokeDefault");
+                /// XXX TODO Set different colors for different series
+                setter_stroke.Value = new DynamicResourceExtension("Color_StrokeDefault"); // new_color
                 render_style.Setters.Add(setter_stroke);
 
                 Trigger trigger = new Trigger();

@@ -49,17 +49,17 @@ namespace Core
                 return metadata_list;
             }
 
-            public uint DataDimension()
+            public uint Dimension()
             {
                 uint dim = 0;
                 get_dimension(this, ref dim);
                 return dim;
             }
 
-            public List<Type> ValueTypes()
+            public List<Type> Types()
             {
                 var value_types = new List<Type>();
-                get_valuetypes(this, ref value_types);
+                get_types(this, ref value_types);
                 return value_types;
             }
 
@@ -68,6 +68,11 @@ namespace Core
                 List<string> labels = new List<string>();
                 get_labels(this, ref labels);
                 return labels;
+            }
+
+            public bool Empty()
+            {
+                return ((_Branches.Count == 0) && (_Entries.Count == 0));
             }
 
             /* ------------------------------------------------------------------*/
@@ -127,15 +132,15 @@ namespace Core
                 return true;
             }
 
-            private void get_valuetypes(GenericDataStructure branch, ref List<Type> out_valuetypes)
+            private void get_types(GenericDataStructure branch, ref List<Type> out_valuetypes)
             {
                 foreach (var b in branch._Branches)
                 {
-                    get_valuetypes(b, ref out_valuetypes);
+                    get_types(b, ref out_valuetypes);
                 }
                 foreach (var entry in branch._Entries)
                 {
-                    var value_types = entry.ValueTypes();
+                    var value_types = entry._Types;
                     foreach (var t in value_types)
                     {
                         if (!out_valuetypes.Contains(t))

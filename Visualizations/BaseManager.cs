@@ -91,9 +91,9 @@ namespace Visualizations
         }
 
         // Callback forwarding for DataManager
-        public void UpdateInputData(ref GenericDataStructure input_data)
+        public void UpdateInputData(GenericDataStructure input_data)
         {
-            _datamanager.UpdateInputData(ref input_data);
+            _datamanager.UpdateInputData(input_data);
         }
         public void SetOutputDataCallback(DataManager.OutputData_Delegate _outputdata_callback)
         {

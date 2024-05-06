@@ -118,8 +118,8 @@ namespace Interface
                         /// DEBUG Log.Default.Msg(Log.Level.Warn, input_data.DataDescription(true, true)); // -> Same as Grasshopper Panel output
 
                         // Convert and pass on input data 
-                        var input_data_converted = DataConverter.ConvertFromGHStructure(ref input_data);
-                        _window.UpdateInputData(ref input_data_converted);
+                        var input_data_converted = DataConverter.ConvertFromGHStructure(input_data);
+                        _window.UpdateInputData(input_data_converted);
 
                     }
                     else
@@ -149,9 +149,9 @@ namespace Interface
             /// Callback for retrieving new output data.
             /// </summary>
             /// <param name="ouput_data">Reference to the new output data.</param>
-            public void retrieve_output_data(ref GenericDataStructure ouput_data)
+            public void retrieve_output_data(GenericDataStructure ouput_data)
             {
-                _output_data = DataConverter.ConvertToGHStructure(ref ouput_data);
+                _output_data = DataConverter.ConvertToGHStructure(ouput_data);
                 ExpireSolution(true);
             }
 

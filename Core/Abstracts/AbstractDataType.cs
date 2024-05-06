@@ -51,7 +51,7 @@ namespace Core
             /// </summary>
             /// <param name="value_types"></param>
             /// <returns></returns>
-            protected bool CompatibleValueTypes(List<Type> value_types)
+            protected bool CompatibleTypes(List<Type> value_types)
             {
                 bool incompatible = false;
                 foreach (Type t in value_types)

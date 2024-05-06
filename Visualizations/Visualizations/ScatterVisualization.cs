@@ -29,56 +29,6 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         // public functions
 
-        public override void Update(bool new_data)
-        {
-            if (!_created)
-            {
-                Log.Default.Msg(Log.Level.Error, "Creation required prior to execution");
-                return;
-            }
-
-            if (new_data)
-            {
-                GetData(Content);
-
-                // Data Style--------------------------------------------
-                foreach (var rs in Content.RenderableSeries)
-                {
-                    var default_style = new System.Windows.Style();
-                    default_style.TargetType = typeof(XyScatterRenderableSeries);
-
-                    var new_color = ColorTheme.RandomColor();
-                    var pointmarker_default = new EllipsePointMarker()
-                    {
-                        Stroke = new_color,
-                        Fill = new_color,
-                        Width = 10.0,
-                        Height = 10.0
-                    };
-                    var pointmarker_selected = new EllipsePointMarker()
-                    {
-                        StrokeThickness = 3,
-                        Fill = new_color,
-                        Width = 10.0,
-                        Height = 10.0
-                    };
-                    pointmarker_selected.SetResourceReference(EllipsePointMarker.StrokeProperty, "Color_StrokeSelected");
-
-                    Setter setter_point = new Setter();
-                    setter_point.Property = BaseRenderableSeries.PointMarkerProperty;
-                    setter_point.Value = pointmarker_default;
-                    default_style.Setters.Add(setter_point);
-
-                    Setter setter_point_selected = new Setter();
-                    setter_point_selected.Property = BaseRenderableSeries.SelectedPointMarkerProperty;
-                    setter_point_selected.Value = pointmarker_selected;
-                    default_style.Setters.Add(setter_point_selected);
-
-                    rs.Style = default_style;
-                }
-                Content.ZoomExtents();
-            }
-        }
 
 
         /// <summary>

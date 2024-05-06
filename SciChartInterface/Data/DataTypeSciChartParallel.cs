@@ -50,7 +50,7 @@ namespace SciChartInterface
                     return;
                 }
 
-                if (!CompatibleDimensionality(data.DataDimension()) || !CompatibleValueTypes(data.ValueTypes()))
+                if (!CompatibleDimensionality(data.Dimension()) || !CompatibleTypes(data.Types()))
                 {
                     return;
                 }
@@ -121,11 +121,6 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // private functions
 
-            /// <summary>
-            /// TODO
-            /// </summary>
-            /// <param name="branch"></param>
-            /// <param name="value_list"></param>
             private void create_data(GenericDataStructure branch, ref List<DataType> value_list)
             {
                 // For each branch add all entries as one pcp value
@@ -156,10 +151,6 @@ namespace SciChartInterface
                 }
             }
 
-            /// <summary>
-            /// TODO
-            /// </summary>
-            /// <returns></returns>
             private Style axes_style()
             {
                 var axis_style = new System.Windows.Style();
@@ -218,11 +209,6 @@ namespace SciChartInterface
                 return axis_style;
             }
 
-            /// <summary>
-            /// TODO
-            /// </summary>
-            /// <param name="index"></param>
-            /// <returns></returns>
             private string generate_property_name(int index)
             {
                 return ("p" + index.ToString());
