@@ -51,7 +51,7 @@ namespace Core
             /// Initialize the content.
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
-            bool Initialize(DataManager.RequestCallback_Delegate request_callback);
+            bool Initialize(DataManager.GetDataCallback_Delegate request_callback);
 
             /// <summary>
             /// Create the content. To be called only once.

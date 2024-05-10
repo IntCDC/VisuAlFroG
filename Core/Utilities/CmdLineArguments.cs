@@ -56,6 +56,7 @@ namespace Core
                     string arg_string = Regex.Replace(arguments, @"\s+", " ");
                     string[] arg_arr = arg_string.Split(' ');
                     args.AddRange(arg_arr);
+                    args.RemoveAll(x => (x == ""));
                 }
                 else
                 {

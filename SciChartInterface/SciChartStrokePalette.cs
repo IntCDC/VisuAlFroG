@@ -33,10 +33,12 @@ namespace SciChartInterface
         /// <returns></returns>
         public Color? OverrideStrokeColor(IRenderableSeries rSeries, int index, IPointMetadata meta_data)
         {
+            var color_name = "Color_StrokeDefault";
+            if ((meta_data != null) && (meta_data.IsSelected)) {
+                color_name = "Color_StrokeSelected";
+            }
             /// XXX This is not working because DynamicResourceExtension does not reference 'hard' object ...?
-            var Object_StrokeSelected = new DynamicResourceExtension("Color_StrokeSelected");
-            var Object_StrokeDefault = new DynamicResourceExtension("Color_StrokeDefault");
-            return null; /// XXX  ((meta_data != null) && (meta_data.IsSelected)) ? Color_StrokeSelected : Color_StrokeDefault;
+            return null; // (Color)new DynamicResourceExtension(color_name);
         }
     }
 }

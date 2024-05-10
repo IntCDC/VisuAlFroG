@@ -5,6 +5,7 @@ using Core.Data;
 using Grasshopper.Kernel.Types;
 using System.Globalization;
 using Grasshopper.Kernel.Data;
+using System.Collections.Generic;
 
 
 
@@ -12,7 +13,7 @@ using Grasshopper.Kernel.Data;
  * Convert Data from and to Grasshopper data format 
  * 
  */
-namespace GrasshopperComponent
+namespace GrasshopperInterface
 {
     namespace Utilities
     {
@@ -36,30 +37,36 @@ namespace GrasshopperComponent
                     foreach (var input_value in input_entries)
                     {
                         var output_entry = new GenericDataEntry();
-
-                        var type = input_value.GetType();
-                        if (type == typeof(GH_String))
+                        if (input_value.CastTo<string>(out string value_string))
                         {
-                            if (input_value.CastTo<string>(out string value_string))
+                            char[] separators = new char[] { ' ', ',', '|', ';' };
+                            string[] subs = value_string.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                            foreach (var sub in subs)
                             {
-                                // TODO Add more conversions
                                 try
                                 {
-                                    double value_double = Convert.ToDouble(value_string, CultureInfo.InvariantCulture);
+                                    double value_double = Convert.ToDouble(sub, CultureInfo.InvariantCulture);
                                     output_entry.AddValue(value_double);
                                 }
                                 catch (Exception exc)
                                 {
-                                    //Log.Default.Msg(Log.Level.Error, exc.Message);
-                                    
+                                    /// Log.Default.Msg(Log.Level.Error, exc.Message);
+
                                     // Default: Add as string
                                     output_entry.AddValue(value_string);
                                 }
                             }
+                            if (subs.Length == 0)
+                            {
+                                ///Log.Default.Msg(Log.Level.Error, "Failed to parse values. ");
+
+                                // Allow empty values
+                                output_entry.AddValue(value_string);
+                            }
                         }
                         else
                         {
-                            Log.Default.Msg(Log.Level.Error, "Can not convert input data from type: " + type.FullName);
+                            Log.Default.Msg(Log.Level.Error, "Can not convert raw input data to string from type: " + input_value.GetType());
                         }
                         output_branch.AddEntry(output_entry);
                     }
@@ -78,7 +85,8 @@ namespace GrasshopperComponent
                 var output_data = new GH_Structure<IGH_Goo>();
 
                 /// TODO Support branches -> is this supported by GH_Structure nevertheless?
-                if (input_data._Branches.Count > 0) {
+                if (input_data._Branches.Count > 0)
+                {
 
                     Log.Default.Msg(Log.Level.Error, "output of branches is currently not supported... ");
                 }

@@ -37,7 +37,8 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public DataTypeSciChartParallel(PropertyChangedEventHandler meta_data_update_handler) : base(meta_data_update_handler) { }
+            public DataTypeSciChartParallel(PropertyChangedEventHandler update_metadata_handler, PropertyChangedEventHandler update_data_handler)
+                : base(update_metadata_handler, update_data_handler) { }
 
             public override void UpdateData(GenericDataStructure data)
             {
@@ -126,20 +127,31 @@ namespace SciChartInterface
                 // For each branch add all entries as one pcp value
                 if (branch._Entries.Count > 0)
                 {
+                    /// ADD filter for selecting value index
+                    int value_index = 0;
+                    switch (branch._Entries[0]._Metadata._Dimension)
+                    {
+                        case (2):
+                            value_index = 1;
+                            Log.Default.Msg(Log.Level.Warn, "Found two-dimensional data. Using values at index 1. Assuming values at index 0 are for indexing.");
+                            break;
+                        default:
+                            Log.Default.Msg(Log.Level.Warn, "Using values at index 0. Selecting other value index needs to be implemented...");
+                            break;
+                    }
+
                     dynamic data_entry = new DataType();
                     var data_entry_dict = data_entry as IDictionary<string, object>;
                     int index = 0;
                     foreach (var entry in branch._Entries)
                     {
-                        foreach (var value in entry._Values)
+                        string label = entry._Metadata._Label;
+                        if (label == "")
                         {
-                            string label = entry._Metadata._Label;
-                            if (label == "")
-                            {
-                                label = generate_property_name(index);
-                            }
-                            data_entry_dict.Add(label, (double)value);
+                            label = generate_property_name(index);
                         }
+                        data_entry_dict.Add(label, (double)entry._Values[value_index]);
+
                         index++;
                     }
                     value_list.Add(data_entry);

@@ -109,10 +109,10 @@ Configurations are stored in the [JSON](https://www.json.org/json-en.html) file 
     - Object: VisuAlFroG (level 2) Could not load file or assembly 'VisuAlFroG_WPF, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'. FileNotFoundException
 
   **SOLUTION:**
-  - Rhino **Version 8** uses .NET Core by (default)[https://www.rhino3d.com/en/docs/guides/netcore/]. 
-  **VisuAlFroG** requires the legacy .NET Framework, instead.
+  - Rhino **Version 8** uses **.NET Core** by [default](https://www.rhino3d.com/en/docs/guides/netcore/). 
+  **VisuAlFroG** requires the legacy **.NET Framework**, instead.
   Therefore, Rhino needs to be told to always use .NET Framework.
-  In the command line type `SetDotNetRuntime` and then enter `Runtime=NETFramework` and confirm.
+  In the Rhino command line type `SetDotNetRuntime` and then enter `Runtime=NETFramework` and confirm.
   Restart Rhino to take changes effect.
 
 - SciChart mouse interaction is not working via laptop touch pads

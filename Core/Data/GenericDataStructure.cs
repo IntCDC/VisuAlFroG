@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 using Core.Utilities;
 
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
+
 
 
 /*
@@ -42,9 +44,9 @@ namespace Core
                 return entry;
             }
 
-            public List<MetaDataGeneric> ListMetaData()
+            public List<GenericMetaData> ListMetaData()
             {
-                List<MetaDataGeneric> metadata_list = new List<MetaDataGeneric>();
+                List<GenericMetaData> metadata_list = new List<GenericMetaData>();
                 list_metadata(this, ref metadata_list);
                 return metadata_list;
             }
@@ -75,6 +77,49 @@ namespace Core
                 return ((_Branches.Count == 0) && (_Entries.Count == 0));
             }
 
+            public bool IsTransposable()
+            {
+                if (_Entries.Count > 0)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Transposing data is not possible when entries on top level exist.");
+                    return false;
+                }
+
+                foreach (var b in _Branches)
+                {
+                    if (b._Branches.Count > 0)
+                    {
+                        Log.Default.Msg(Log.Level.Error, "Transposing data is not possible when branches have sub-branches.");
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            public bool Transpose(out GenericDataStructure transposed_data)
+            {
+                transposed_data = new GenericDataStructure();
+                if (!IsTransposable()) { return false; }
+
+                for (int b = 0; b < _Branches.Count; b++)
+                {
+                    var branch = _Branches[b];
+                    for (int e = 0; e < branch._Entries.Count; e++)
+                    {
+                        var entry = branch._Entries[e];
+                        if (b == 0)
+                        {
+                            var new_branch = new GenericDataStructure();
+                            new_branch._Label = entry._Metadata._Label;
+                            transposed_data._Branches.Add(new_branch);
+                        }
+                        entry._Metadata._Label = branch._Label;
+                        transposed_data._Branches[e].AddEntry(entry);
+                    }
+                }
+                return true;
+            }
+
             /* ------------------------------------------------------------------*/
             // private functions
 
@@ -98,7 +143,7 @@ namespace Core
                 }
             }
 
-            private void list_metadata(GenericDataStructure branch, ref List<MetaDataGeneric> out_metadatalist)
+            private void list_metadata(GenericDataStructure branch, ref List<GenericMetaData> out_metadatalist)
             {
                 foreach (var entry in branch._Entries)
                 {

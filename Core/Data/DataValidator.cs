@@ -32,25 +32,26 @@ namespace Core
 
                 // Check validity of input data
                 bool valid = true;
-                valid |= check_branches(input_data);
+                valid &= check_branches(input_data);
                 uint entry_count = uint.MaxValue;
-                valid |= check_entries(input_data, ref entry_count);
-                uint value_count = uint.MaxValue;
-                valid |= check_values(input_data, ref value_count);
-                if (!valid)
-                {
-                    return false;
-                }
-                Log.Default.Msg(Log.Level.Info, "    >>> Successfully validated data.");
-
+                valid &= check_entries(input_data, ref entry_count);
 
                 // Copy data and remove label entries
                 output_data = input_data;
                 extract_column_labels(ref output_data);
                 extract_row_labels(ref output_data);
+
+                uint value_count = uint.MaxValue;
+                valid &= check_values(input_data, ref value_count);
+
                 convert_value_type(ref output_data);
                 Log.Default.Msg(Log.Level.Info, "    >>> Successfully aligned labels.");
 
+                if (!valid)
+                {
+                    return false;
+                }
+                Log.Default.Msg(Log.Level.Info, "    >>> Successfully validated data.");
 
                 uint index = 0;
                 init_index(input_data, ref index);
@@ -91,10 +92,10 @@ namespace Core
                         if (entry_count != tmp_entry_count)
                         {
                             Log.Default.Msg(Log.Level.Error, "Entry count mismatch. Expected " + entry_count.ToString() + " entries but found " + tmp_entry_count.ToString() + ".");
-                            retval |= false;
+                            retval &= false;
                         }
                     }
-                    retval |= check_entries(branch, ref entry_count);
+                    retval &= check_entries(branch, ref entry_count);
                 }
                 return retval;
             }
@@ -116,13 +117,13 @@ namespace Core
                         if (value_count != tmp_value_count)
                         {
                             Log.Default.Msg(Log.Level.Error, "Values count mismatch. Expected " + value_count.ToString() + " values but found " + tmp_value_count.ToString() + ".");
-                            retval |= false;
+                            retval &= false;
                         }
                     }
                 }
                 foreach (var branch in data._Branches)
                 {
-                    retval |= check_values(branch, ref value_count);
+                    retval &= check_values(branch, ref value_count);
                 }
                 return retval;
             }
@@ -141,7 +142,7 @@ namespace Core
                         bool only_one = true;
                         foreach (var e in data._Branches[0]._Entries)
                         {
-                            only_one |= (e._Values.Count == 1);
+                            only_one &= (e._Values.Count == 1);
                         }
                         if (only_one && only_strings)
                         {

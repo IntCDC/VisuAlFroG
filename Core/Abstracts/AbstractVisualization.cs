@@ -42,10 +42,11 @@ namespace Core
             public abstract bool _MultipleInstances { get; }
             public abstract List<Type> _DependingServices { get; }
             public bool _Attached { get; protected set; } = false;
-            public string _ID { get; set; } = UniqueID.Invalid;
+            public string _ID { get; set; } = UniqueID.InvalidString;
+            public int _DataUID { get; set; } = UniqueID.InvalidInt;
 
             public abstract Type _RequiredDataType { get; }
-            public DataManager.RequestCallback_Delegate _RequestDataCallback { get; set; }
+            public DataManager.GetDataCallback_Delegate _RequestDataCallback { get; set; }
 
 
             /* ------------------------------------------------------------------*/
@@ -57,7 +58,7 @@ namespace Core
             /// </summary>
             public AbstractVisualization()
             {
-                _ID = UniqueID.Generate();
+                _ID = UniqueID.GenerateString();
                 _timer = new TimeBenchmark();
 
                 /// TODO Move somewhere else to prevent calling it whenever the context menu is opened
@@ -78,7 +79,7 @@ namespace Core
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
             /// <exception cref="InvalidOperationException">...throw error when method of base class is called instead.</exception>
-            public virtual bool Initialize(DataManager.RequestCallback_Delegate request_callback)
+            public virtual bool Initialize(DataManager.GetDataCallback_Delegate request_callback)
             {
                 throw new InvalidOperationException("Call Initialize() method of derived class");
             }
@@ -197,7 +198,7 @@ namespace Core
             /// <returns>True on success, false otherwise.</returns>
             public virtual bool Terminate()
             {
-                _ID = UniqueID.Invalid;
+                _ID = UniqueID.InvalidString;
 
                 _created = false;
                 _initialized = false;
@@ -246,7 +247,7 @@ namespace Core
                     return false;
                 }
 
-                var data = (DataParentType)_RequestDataCallback(_RequiredDataType);
+                var data = (DataParentType)_RequestDataCallback(_DataUID);
                 if (data != null)
                 {
                     data_parent = data;
@@ -256,19 +257,19 @@ namespace Core
                 return false;
             }
 
+            protected void AttachChildContent(UIElement control)
+            {
+                _content_child.Children.Add(control);
+            }
+
             /// <summary>
             /// Add new option to menu of visualization.
             /// </summary>
-            protected void AddOption(MenuItem option)
+            protected void AddMenuOption(MenuItem option)
             {
                 option.Style = ColorTheme.MenuItemIconStyle();
                 _options_menu.Items.Add(option);
                 _options_menu.IsEnabled = true;
-            }
-
-            protected void AttachChildContent(UIElement control)
-            {
-                _content_child.Children.Add(control);
             }
 
 

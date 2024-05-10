@@ -93,7 +93,7 @@
   <ItemGroup>
     <Compile Include="Data\DataTypeSciChartParallel.cs" />
     <Compile Include="Data\DataTypeSciChartSeries.cs" />
-    <Compile Include="Data\MetaDataSciChart.cs" />
+    <Compile Include="Data\SciChartMetaData.cs" />
     <Compile Include="SciChartInterfaceService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

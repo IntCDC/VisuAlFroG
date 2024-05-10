@@ -29,7 +29,8 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public DataTypeGeneric(PropertyChangedEventHandler meta_data_update_handler) : base(meta_data_update_handler) { }
+            public DataTypeGeneric(PropertyChangedEventHandler update_metadata_handler, PropertyChangedEventHandler update_data_handler) 
+                : base(update_metadata_handler, update_data_handler) { }
 
             public override void UpdateData(GenericDataStructure data)
             {
@@ -83,7 +84,7 @@ namespace Core
             {
                 foreach (var entry in data._Entries)
                 {
-                    entry._Metadata.PropertyChanged += _meta_data_update_handler;
+                    entry._Metadata.PropertyChanged += _update_metadata_handler;
                 }
                 foreach (var branch in data._Branches)
                 {

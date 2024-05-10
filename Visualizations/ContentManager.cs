@@ -21,7 +21,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         // public functions
 
-        public bool Initialize(DataManager.RequestCallback_Delegate request_callback, DataManager.RegisterUpdateTypeCallback_Delegate update_callback, DataManager.UnregisterUpdateCallback_Delegate unregister_callback)
+        public bool Initialize(DataManager.GetDataCallback_Delegate request_callback, DataManager.RegisterDataCallback_Delegate update_callback, DataManager.UnregisterUpdateCallback_Delegate unregister_callback)
         {
             if (_initialized)
             {
@@ -36,17 +36,17 @@ namespace Visualizations
 
             _contents = new Dictionary<Type, Dictionary<string, AbstractVisualization>>();
             _data_request_callback = request_callback;
-            _register_data_update_type_callback = update_callback;
-            _unregister_data_update_callback = unregister_callback;
+            _register_data_callback = update_callback;
+            _unregister_data_callback = unregister_callback;
 
 
             // Register new visualizations here:
-            register_content(typeof(LogConsole));
-            register_content(typeof(DataViewer));
-            register_content(typeof(ScatterVisualization));
-            register_content(typeof(LinesVisualization));
-            register_content(typeof(ColumnsVisualization));
-            register_content(typeof(ParallelCoordinatesVisualization));
+            register_content(typeof(WPF_LogConsole));
+            register_content(typeof(WPF_DataViewer));
+            register_content(typeof(SciChart_ScatterPlot));
+            register_content(typeof(SciChart_Lines));
+            register_content(typeof(SciChart_Columns));
+            register_content(typeof(SciChart_ParallelCoordinatesPlot));
             /// DEBUG register_content(typeof(CustomWPFVisualization));
 
 
@@ -63,7 +63,7 @@ namespace Visualizations
                 terminated &= clear_contents();
 
                 _data_request_callback = null;
-                _register_data_update_type_callback = null;
+                _register_data_callback = null;
 
                 _initialized = false;
             }
@@ -106,7 +106,7 @@ namespace Visualizations
                     if (_contents.ContainsKey(type))
                     {
                         var id = content_configuration._ID;
-                        if (id == UniqueID.Invalid)
+                        if (id == UniqueID.InvalidString)
                         {
                             Log.Default.Msg(Log.Level.Warn, "Invalid content id: " + id);
                             break;
@@ -235,7 +235,7 @@ namespace Visualizations
                 string id = content_id;
                 if (!_contents[type].ContainsKey(id))
                 {
-                    if (content_id != UniqueID.Invalid)
+                    if (content_id != UniqueID.InvalidString)
                     {
                         Log.Default.Msg(Log.Level.Warn, "Could not find requested content " + content_type + " with ID " + id);
                         return null;
@@ -273,7 +273,7 @@ namespace Visualizations
             {
                 if (content_types.Value.ContainsKey(content_id))
                 {
-                    _unregister_data_update_callback(content_types.Value[content_id].Update);
+                    _unregister_data_callback(content_types.Value[content_id]._DataUID);
                     content_types.Value[content_id].Detach();
                     content_types.Value[content_id].Terminate();
                     return content_types.Value.Remove(content_id);
@@ -338,11 +338,15 @@ namespace Visualizations
             var content = (AbstractVisualization)Activator.CreateInstance(type);
             if (content.Initialize(_data_request_callback))
             {
-                _register_data_update_type_callback(content.Update, content._RequiredDataType);
-                if (content.Create())
+                var data_uid = _register_data_callback(content.Update, content._RequiredDataType);
+                if (data_uid != UniqueID.InvalidInt)
                 {
-                    content.Update(true);
-                    return content;
+                    content._DataUID = data_uid;
+                    if (content.Create())
+                    {
+                        content.Update(true);
+                        return content;
+                    }
                 }
             }
             Log.Default.Msg(Log.Level.Error, "Unable to initialize or create content: " + type.FullName);
@@ -411,7 +415,7 @@ namespace Visualizations
             {
                 foreach (var content_data in content_types.Value)
                 {
-                    _unregister_data_update_callback(content_data.Value.Update);
+                    _unregister_data_callback(content_data.Value._DataUID);
                     content_data.Value.Detach();
                     terminated &= content_data.Value.Terminate();
                 }
@@ -427,8 +431,8 @@ namespace Visualizations
         // Separate dictionary for each content type
         private Dictionary<Type, Dictionary<string, AbstractVisualization>> _contents = null;
 
-        private DataManager.RequestCallback_Delegate _data_request_callback = null;
-        private DataManager.RegisterUpdateTypeCallback_Delegate _register_data_update_type_callback = null;
-        private DataManager.UnregisterUpdateCallback_Delegate _unregister_data_update_callback = null;
+        private DataManager.GetDataCallback_Delegate _data_request_callback = null;
+        private DataManager.RegisterDataCallback_Delegate _register_data_callback = null;
+        private DataManager.UnregisterUpdateCallback_Delegate _unregister_data_callback = null;
     }
 }

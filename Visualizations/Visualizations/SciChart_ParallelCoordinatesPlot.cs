@@ -20,12 +20,12 @@ using System.Windows.Media;
  */
 namespace Visualizations
 {
-    public class ParallelCoordinatesVisualization : AbstractSciChartParallel<SciChartParallelCoordinateSurface, ExpandoObject>
+    public class SciChart_ParallelCoordinatesPlot : AbstractSciChartParallel<SciChartParallelCoordinateSurface, ExpandoObject>
     {
         /* ------------------------------------------------------------------*/
         // properties
 
-        public override string _Name { get { return "Parallel Coordinates Plot (2D)"; } }
+        public override string _Name { get { return "Parallel Coordinates Plot (SciChart)"; } }
 
 
         /* ------------------------------------------------------------------*/
@@ -84,13 +84,19 @@ namespace Visualizations
                 var new_color = ColorTheme.RandomColor();
                 Setter setter_strokethickness = new Setter();
                 setter_strokethickness.Property = BaseRenderableSeries.StrokeThicknessProperty;
-                setter_strokethickness.Value = 3;
+                setter_strokethickness.Value = 2;
                 render_style.Setters.Add(setter_strokethickness);   
 
                 var setter_stroke = new Setter();
                 setter_stroke.Property = BaseRenderableSeries.StrokeProperty;
                 /// XXX TODO Set different colors for different series
                 setter_stroke.Value = new DynamicResourceExtension("Color_StrokeDefault"); // new_color
+                render_style.Setters.Add(setter_stroke);
+
+                var setter_palette = new Setter();
+                setter_palette.Property = BaseRenderableSeries.PaletteProviderProperty;
+                /// XXX TODO Set different colors for different series
+                setter_palette.Value = new DynamicResourceExtension("Color_StrokeDefault"); // new_color
                 render_style.Setters.Add(setter_stroke);
 
                 Trigger trigger = new Trigger();
@@ -106,15 +112,6 @@ namespace Visualizations
 
                 Content.ZoomExtents();
             }
-        }
-
-
-        /// <summary>
-        /// DEBUG
-        /// </summary>
-        ~ParallelCoordinatesVisualization()
-        {
-            Console.WriteLine("DEBUG - DTOR: ParallelCoordinatesVisualization");
         }
     }
 }

@@ -15,7 +15,7 @@ using Grasshopper.Kernel;
  * Grasshopper Runtime Messages
  * 
  */
-namespace GrasshopperComponent
+namespace GrasshopperInterface
 {
     namespace Utilities
     {

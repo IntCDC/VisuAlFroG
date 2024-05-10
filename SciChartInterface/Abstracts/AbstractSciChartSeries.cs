@@ -47,38 +47,38 @@ namespace SciChartInterface
 
 
                 // Options --------------------------------------------
+                var option_hint = new MenuItem();
+                option_hint.Header = "Interaction Clues";
+
                 var clue_select = new MenuItem();
-                clue_select.Header = "[Left Mouse] Point Select/Box-Select";
+                clue_select.Header = "[Left Mouse] Select Series | Drag & Drop Axes";
                 clue_select.IsEnabled = false;
+                option_hint.Items.Add(clue_select);
 
                 var clue_zoom = new MenuItem();
                 clue_zoom.Header = "[Mouse Wheel] Zoom";
                 clue_zoom.IsEnabled = false;
+                option_hint.Items.Add(clue_zoom);
 
                 var clue_pan = new MenuItem();
                 clue_pan.Header = "[Right Mouse] Pan";
                 clue_pan.IsEnabled = false;
-
-                var option_hint = new MenuItem();
-                option_hint.Header = "Interaction Clues";
-                option_hint.Items.Add(clue_select);
-                option_hint.Items.Add(clue_zoom);
                 option_hint.Items.Add(clue_pan);
 
-                AddOption(option_hint);
+                AddMenuOption(option_hint);
 
 
                 // Axis --------------------------------------------
                 var xAxis = new NumericAxis()
                 {
-                    AxisTitle = "Sample No",
+                    AxisTitle = "X Axis",
                     DrawMajorBands = false
                 };
                 Content.XAxis = xAxis;
 
                 var yAxis = new NumericAxis()
                 {
-                    AxisTitle = "Value",
+                    AxisTitle = "Y Axis",
                     GrowBy = new SciChart.Data.Model.DoubleRange(0.2, 0.2),
                     DrawMajorBands = false,
                 };
@@ -111,6 +111,16 @@ namespace SciChartInterface
                         IsEnabled = true,
                         ActionType = SciChart.Charting.ActionType.Zoom,
                         XyDirection = SciChart.Charting.XyDirection.XYDirection
+                    },
+                    /* new SciChart.Charting.ChartModifiers.RolloverModifier()
+                    {
+                        IsEnabled = true,
+                        ShowTooltipOn = SciChart.Charting.ChartModifiers.ShowTooltipOptions.MouseHover,
+                    }, */
+                    new SciChart.Charting.ChartModifiers.LegendModifier()
+                    {
+                        IsEnabled = true,
+                        ShowLegend = true,
                     }
                 );
 
@@ -138,7 +148,7 @@ namespace SciChartInterface
                     return false;
                 }
 
-                var data = (List<DataType>)_RequestDataCallback(_RequiredDataType);
+                var data = (List<DataType>)_RequestDataCallback(_DataUID);
                 if (data != null)
                 {
                     foreach (var data_series in data)

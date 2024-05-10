@@ -22,12 +22,12 @@ using Visualizations.WPFInterface;
  */
 namespace Visualizations
 {
-    public class LogConsole : AbstractWPFVisualization<ScrollViewer>
+    public class WPF_LogConsole : AbstractWPFVisualization<ScrollViewer>
     {
         /* ------------------------------------------------------------------*/
         // properties
 
-        public override string _Name { get { return "Log Console"; } }
+        public override string _Name { get { return "Log Console (WPF)"; } }
         public override bool _MultipleInstances { get { return false; } }
 
 
@@ -68,7 +68,7 @@ namespace Visualizations
             var copy_option = new MenuItem();
             copy_option.Header = "Copy to Clipboard";
             copy_option.Click += event_option_click;
-            AddOption(copy_option);
+            AddMenuOption(copy_option);
 
             // Call after _text_block has been created
             Log.Default.RegisterListener(this.LogListener);
@@ -133,14 +133,6 @@ namespace Visualizations
                     Console.WriteLine(exc.Message);
                 }
             }
-        }
-
-        /// <summary>
-        /// DEBUG
-        /// </summary>
-        ~LogConsole()
-        {
-            Console.WriteLine("DEBUG - DTOR: LogConsole");
         }
 
 

@@ -91,13 +91,15 @@
     <Compile Include="Abstracts\IAbstractConfiguration.cs" />
     <Compile Include="Abstracts\IDataType.cs" />
     <Compile Include="Abstracts\IMetaData.cs" />
+    <Compile Include="Data\DataFilter.cs" />
     <Compile Include="Data\DataManager.cs" />
+    <Compile Include="Data\DataModifier.cs" />
     <Compile Include="Data\DataTypeGeneric.cs" />
     <Compile Include="Data\DataValidator.cs" />
     <Compile Include="Data\TestData.cs" />
     <Compile Include="Data\GenericDataEntry.cs" />
     <Compile Include="Data\GenericDataStructure.cs" />
-    <Compile Include="Data\MetaDataGeneric.cs" />
+    <Compile Include="Data\GenericMetaData.cs" />
     <Compile Include="GUI\MenuBar.cs" />
     <Compile Include="GUI\ConfigurationService.cs" />
     <Compile Include="GUI\Windows\WindowBranch.cs" />

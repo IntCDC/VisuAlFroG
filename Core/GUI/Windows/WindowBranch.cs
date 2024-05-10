@@ -113,7 +113,7 @@ namespace Core
                 _Location = location;
 
                 var gridsplitter = new GridSplitter();
-                gridsplitter.Name = "gridplitter_" + UniqueID.Generate();
+                gridsplitter.Name = "gridplitter_" + UniqueID.GenerateString();
                 gridsplitter.HorizontalAlignment = HorizontalAlignment.Stretch;
                 gridsplitter.Style = ColorTheme.GridSplitterStyle();
 
@@ -121,14 +121,14 @@ namespace Core
                 if (grid_topleft == null)
                 {
                     grid_topleft = new Grid();
-                    grid_topleft.Name = "grid_" + UniqueID.Generate();
+                    grid_topleft.Name = "grid_" + UniqueID.GenerateString();
                 }
 
                 Grid grid_bottomright = (use_existing_childs) ? child_branch_2._Content : null;
                 if (grid_bottomright == null)
                 {
                     grid_bottomright = new Grid();
-                    grid_bottomright.Name = "grid_" + UniqueID.Generate();
+                    grid_bottomright.Name = "grid_" + UniqueID.GenerateString();
                 }
 
                 switch (_Orientation)
@@ -240,14 +240,6 @@ namespace Core
                     return;
                 }
                 _parent_branch.delete_childbranch(this);
-            }
-
-            /// <summary>
-            /// DEBUG
-            /// </summary>
-            ~WindowBranch()
-            {
-                Console.WriteLine("DEBUG - DTOR: WindowBranch");
             }
 
 

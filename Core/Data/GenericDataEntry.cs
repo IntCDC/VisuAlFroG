@@ -22,7 +22,7 @@ namespace Core
             // public properties
 
             public List<object>     _Values { get; private set; } = new List<object>();
-            public MetaDataGeneric _Metadata { get; set; } = new MetaDataGeneric();
+            public GenericMetaData _Metadata { get; set; } = new GenericMetaData();
             public List<Type>      _Types { get; private set; } = new List<Type>();
 
             /* ------------------------------------------------------------------*/

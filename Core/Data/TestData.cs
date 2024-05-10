@@ -24,7 +24,6 @@ namespace Core
                 var generator = new Random();
                 var sample_data = new GenericDataStructure();
 
-
                 var data_branch = new GenericDataStructure();
                 for (int j = 0; j < 26; j++)
                 {
@@ -38,11 +37,16 @@ namespace Core
                         data_leaf.AddValue("column_" + (j-1).ToString());
                     }
                     data_branch.AddEntry(data_leaf);
+
+
                 }
                 sample_data.AddBranch(data_branch);
 
+
                 for (int i = 0; i < 7; i++)
                 {
+                    var index_value = generator.Next(0, 50);
+
                     data_branch = new GenericDataStructure();
 
                     var data_leaf = new GenericDataEntry();
@@ -52,7 +56,10 @@ namespace Core
                     {
                         var value = generator.Next(0, 50);
                         data_leaf = new GenericDataEntry();
+
+                        data_leaf.AddValue((double)j); // index_value
                         data_leaf.AddValue((double)value);
+
                         data_branch.AddEntry(data_leaf);
                     }
                     sample_data.AddBranch(data_branch);

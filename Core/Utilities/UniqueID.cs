@@ -22,7 +22,7 @@ namespace Core
             /// [STATIC] Generate unique string id.
             /// </summary>
             /// <returns>The id as string.</returns>
-            public static string Generate()
+            public static string GenerateString()
             {
                 var random = new Random();
                 string id = Guid.NewGuid().ToString("N");
@@ -32,10 +32,21 @@ namespace Core
                 return id;
             }
 
+            public static int GenerateInt()
+            {
+                var uid = Guid.NewGuid();
+                return uid.GetHashCode();
+            }
+
             /// <summary>
             /// [STATIC] Variable representing an invalid id.
             /// </summary>
-            public static string Invalid { get { return "invalid"; } }
+            public static string InvalidString { get { return "invalid"; } }
+
+            /// <summary>
+            /// [STATIC] Variable representing an invalid id.
+            /// </summary>
+            public static int InvalidInt { get { return int.MinValue; } }
         }
     }
 }

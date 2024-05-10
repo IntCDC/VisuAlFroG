@@ -39,7 +39,7 @@ namespace Core
             // public functions
 
             public bool Initialize(WindowClose_Delegate close_callback, ColorTheme.SetColorStyle_Delegate theme_callback, ConfigurationService.SaveCallback_Delegate save_callback,
-                                   ConfigurationService.LoadCallback_Delegate load_callback, DataManager.SendOutputData_Callback sendoutputdata_callback)
+                                   ConfigurationService.LoadCallback_Delegate load_callback, DataManager.TriggerSetDataCallback_Delegate sendoutputdata_callback)
             {
                 if (_initialized)
                 {
@@ -118,7 +118,7 @@ namespace Core
                 {
                     var item_theme = new MenuItem();
                     item_theme.Header = Enum.GetName(theme.GetType(), theme);
-                    item_theme.Name = "item_theme_" + UniqueID.Generate();
+                    item_theme.Name = "item_theme_" + UniqueID.GenerateString();
                     item_theme.Click += event_menuitem_click;
                     item_theme.IsCheckable = true;
                     item_theme.Style = ColorTheme.MenuItemIconStyle();
@@ -270,12 +270,12 @@ namespace Core
             private ConfigurationService.SaveCallback_Delegate _save_callback = null;
             private ConfigurationService.LoadCallback_Delegate _load_callback = null;
             private ColorTheme.SetColorStyle_Delegate _theme_callback = null;
-            private SendOutputData_Callback _sendoutputdata_callback = null;
+            private TriggerSetDataCallback_Delegate _sendoutputdata_callback = null;
 
-            private readonly string _item_id_close = "item_close_" + UniqueID.Generate();
-            private readonly string _item_id_save = "item_save_" + UniqueID.Generate();
-            private readonly string _item_id_load = "item_load_" + UniqueID.Generate();
-            private readonly string _item_id_data = "item_data_" + UniqueID.Generate();
+            private readonly string _item_id_close = "item_close_" + UniqueID.GenerateString();
+            private readonly string _item_id_save = "item_save_" + UniqueID.GenerateString();
+            private readonly string _item_id_load = "item_load_" + UniqueID.GenerateString();
+            private readonly string _item_id_data = "item_data_" + UniqueID.GenerateString();
 
             private Dictionary<string, Tuple<MenuItem, ColorTheme.PredefinedThemes>> _item_themes = new Dictionary<string, Tuple<MenuItem, ColorTheme.PredefinedThemes>>();
         }

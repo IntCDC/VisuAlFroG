@@ -52,25 +52,25 @@ namespace SciChartInterface
 
 
                 // Options --------------------------------------------
+                var option_hint = new MenuItem();
+                option_hint.Header = "Interaction Clues";
+
                 var clue_select = new MenuItem();
                 clue_select.Header = "[Left Mouse] Select Series | Drag & Drop Axes";
                 clue_select.IsEnabled = false;
+                option_hint.Items.Add(clue_select);
 
                 var clue_zoom = new MenuItem();
                 clue_zoom.Header = "[Mouse Wheel] Zoom";
                 clue_zoom.IsEnabled = false;
+                option_hint.Items.Add(clue_zoom);
 
                 var clue_pan = new MenuItem();
                 clue_pan.Header = "[Right Mouse] Pan";
                 clue_pan.IsEnabled = false;
-
-                var option_hint = new MenuItem();
-                option_hint.Header = "Interaction Clues";
-                option_hint.Items.Add(clue_select);
-                option_hint.Items.Add(clue_zoom);
                 option_hint.Items.Add(clue_pan);
 
-                AddOption(option_hint);
+                AddMenuOption(option_hint);
 
 
                 // Modifiers ---------------------------------------
@@ -106,6 +106,16 @@ namespace SciChartInterface
                         IsEnabled = false,
                         IsXAxisOnly = true
                     },
+                    /* new SciChart.Charting.ChartModifiers.RolloverModifier()
+                    {
+                        IsEnabled = true,
+                        ShowTooltipOn = SciChart.Charting.ChartModifiers.ShowTooltipOptions.MouseHover,
+                    }, */
+                    /* new SciChart.Charting.ChartModifiers.LegendModifier()
+                    {
+                        IsEnabled = true,
+                        ShowLegend = true,
+                    }, */
                     new SciChart.Charting.ChartModifiers.ZoomExtentsModifier()
                     {
                         IsEnabled = false
@@ -128,7 +138,7 @@ namespace SciChartInterface
                 var parent = data_parent as SciChartParallelCoordinateSurface;
                 parent.ParallelCoordinateDataSource = null;
 
-                var data = (ParallelCoordinateDataSource<DataType>)_RequestDataCallback(_RequiredDataType);
+                var data = (ParallelCoordinateDataSource<DataType>)_RequestDataCallback(_DataUID);
                 if (data != null)
                 {
                     parent.ParallelCoordinateDataSource = data;

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.IO.Ports;
+using System.Linq;
 using System.Windows.Forms;
 
 using Core.Abstracts;
@@ -21,31 +24,17 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public delegates
 
-            /// <summary>
-            /// Function provided by the interface (= Grasshopper) which allows pass output data to the interface
-            /// </summary>
-            public delegate void OutputData_Delegate(GenericDataStructure ouput_data);
+            public delegate void TriggerSetDataCallback_Delegate();
+            public delegate object GetDataCallback_Delegate(int data_uid);
+            public delegate void SetDataCallback_Delegate(GenericDataStructure ouput_data);
 
-            /// <summary>
-            /// 
-            /// </summary>
-            public delegate void SendOutputData_Callback();
-
-            /// <summary>
-            /// Callback for visualizations to request suitable data
-            /// </summary>
-            public delegate object RequestCallback_Delegate(Type data_type);
-
-            /// <summary>
-            /// Callback to register callback for getting notified on any data update
-            /// </summary>
-            public delegate void RegisterUpdateTypeCallback_Delegate(UpdateCallback_Delegate update_callback, Type data_type);
-            public delegate void UnregisterUpdateCallback_Delegate(UpdateCallback_Delegate update_callback);
+            public delegate int RegisterDataCallback_Delegate(UpdateVisualizationCallback_Delegate update_callback, Type data_type);
+            public delegate void UnregisterUpdateCallback_Delegate(int data_uid);
 
             /// <summary>
             /// Callback called on update data
             /// </summary>
-            public delegate void UpdateCallback_Delegate(bool new_data);
+            public delegate void UpdateVisualizationCallback_Delegate(bool new_data);
 
 
             /* ------------------------------------------------------------------*/
@@ -60,11 +49,6 @@ namespace Core
                 _timer.Start();
 
 
-                _update_callbacks = new List<UpdateCallback_Delegate>();
-
-                _data_library = new Dictionary<Type, IDataType>();
-                var variety_generic = new DataTypeGeneric(event_metadata_changed);
-                _data_library.Add(variety_generic.GetType(), variety_generic);
 
                 bool initialized = true;
 
@@ -79,13 +63,9 @@ namespace Core
                 bool terminated = true;
                 if (_initialized)
                 {
+                    _original_data = null;
                     _outputdata_callback = null;
-
                     _data_library.Clear();
-                    _data_library = null;
-
-                    _update_callbacks.Clear();
-                    _update_callbacks = null;
 
                     _initialized = false;
                 }
@@ -95,8 +75,8 @@ namespace Core
             /// <summary>
             /// Callback to propagate new input data to the data manager.
             /// </summary>
-            /// <param name="input_data">Reference to the new input data.</param>
-            public void UpdateInputData(GenericDataStructure input_data)
+            /// <param name="input_data">The new input data.</param>
+            public void UpdateData(GenericDataStructure input_data)
             {
                 if (!_initialized)
                 {
@@ -113,13 +93,17 @@ namespace Core
                 Log.Default.Msg(Log.Level.Info, "Processing new input data...");
                 if (_data_validator.Convert(input_data, out GenericDataStructure validated_data))
                 {
+                    _original_data = validated_data;
+
+                    /*
+                    if (validated_data.Transpose(out GenericDataStructure tranposed_data)) {
+                        validated_data = tranposed_data;
+                    }
+                    */
                     foreach (var pair in _data_library)
                     {
-                        pair.Value.UpdateData(validated_data);
-                    }
-                    foreach (var update_callback in _update_callbacks)
-                    {
-                        update_callback(true);
+                        pair.Value._Data.UpdateData(validated_data);
+                        pair.Value._UpdateVisualization(true);
                     }
                 }
                 Log.Default.Msg(Log.Level.Info, "...done.");
@@ -131,7 +115,7 @@ namespace Core
             /// Set the callback to provide new output data to the interface.
             /// </summary>
             /// <param name="outputdata_callback"></param>
-            public void SetOutputDataCallback(OutputData_Delegate outputdata_callback)
+            public void SetOutputDataCallback(SetDataCallback_Delegate outputdata_callback)
             {
                 _outputdata_callback = outputdata_callback;
             }
@@ -139,47 +123,50 @@ namespace Core
             /// <summary>
             /// Register update callback of calling visualization.
             /// </summary>
-            public void RegisterUpdateTypeCallback(UpdateCallback_Delegate update_callback, Type data_type)
+            public int RegisterDataCallback(UpdateVisualizationCallback_Delegate update_callback, Type data_type)
             {
                 if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return;
+                    return UniqueID.InvalidInt;
                 }
 
-                if (_update_callbacks.Contains(update_callback))
+                if (update_callback == null)
                 {
-                    Log.Default.Msg(Log.Level.Debug, "Callback for update data already registered");
-                    return;
+                    Log.Default.Msg(Log.Level.Error, "Update callback for visualization is NULL.");
+                    return UniqueID.InvalidInt;
+
                 }
-                _update_callbacks.Add(update_callback);
-
-
-                if (!_data_library.ContainsKey(data_type))
+                if (data_type == null)
                 {
-                    var variety = (IDataType)Activator.CreateInstance(data_type, (PropertyChangedEventHandler)event_metadata_changed);
-                    if (variety == null)
-                    {
-                        Log.Default.Msg(Log.Level.Error, "Expected data type of IDataVariety but received: " + data_type.FullName);
-                        return;
-                    }
-                    _data_library.Add(variety.GetType(), variety);
-                    Log.Default.Msg(Log.Level.Info, "Added new data type: " + data_type.FullName);
+                    ///Log.Default.Msg(Log.Level.Error, "Data type is NULL.");
+                    return UniqueID.InvalidInt;
 
-                    // Load data if available
-                    var data = get_generic_data(true);
-                    if (data != null)
-                    {
-                        variety.UpdateData(data);
-                    }
                 }
+                var variety = (IDataType)Activator.CreateInstance(data_type, (PropertyChangedEventHandler)event_metadata_changed, (PropertyChangedEventHandler)event_data_changed);
+                if (variety == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Expected data type of IDataVariety but received: " + data_type.FullName);
+                    return UniqueID.InvalidInt;
+                }
+
+                _data_library.Add(UniqueID.GenerateInt(), new DataDescription(update_callback, variety));
+                Log.Default.Msg(Log.Level.Info, "Added new data type: " + data_type.FullName);
+
+                // Load data if available
+                if (_original_data != null)
+                {
+                    variety.UpdateData(_original_data);
+                }
+
+                return _data_library.Last().Key;
             }
 
             /// <summary>
             /// Unregister data update callback of calling visualization.
             /// XXX TODO Track used data types for being able to delete them is unused.
             /// </summary>
-            public void UnregisterUpdateCallback(UpdateCallback_Delegate update_callback)
+            public void UnregisterDataCallback(int data_uid)
             {
                 if (!_initialized)
                 {
@@ -187,13 +174,14 @@ namespace Core
                     return;
                 }
 
-                if (_update_callbacks.Contains(update_callback))
+                if (_data_library.ContainsKey(data_uid))
                 {
-                    _update_callbacks.Remove(update_callback);
+                    _data_library.Remove(data_uid);
+                    Log.Default.Msg(Log.Level.Debug, "Unregistered data for UID: " + data_uid.ToString());
                 }
                 else
                 {
-                    Log.Default.Msg(Log.Level.Debug, "Callback for update data already removed");
+                    Log.Default.Msg(Log.Level.Debug, "Data already unregistered for data UID: " + data_uid.ToString());
                 }
             }
 
@@ -202,7 +190,7 @@ namespace Core
             /// </summary>
             /// <param name="t">The type the data would be required.</param>
             /// <returns>The data as generic object. Cast to requested type manually.</returns>
-            public object RequestDataCallback(Type data_type)
+            public object GetDataCallback(int data_uid)
             {
                 if (!_initialized)
                 {
@@ -210,13 +198,13 @@ namespace Core
                     return null;
                 }
 
-                if (!_data_library.ContainsKey(data_type))
+                if (!_data_library.ContainsKey(data_uid))
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Requested data not available for given data type: " + data_type.FullName);
+                    Log.Default.Msg(Log.Level.Warn, "Requested data not available for given data UID: " + data_uid.ToString());
                     return null;
 
                 }
-                return _data_library[data_type]._Get;
+                return _data_library[data_uid]._Data._Get;
             }
 
             /// <summary>
@@ -226,10 +214,9 @@ namespace Core
             {
                 if (_outputdata_callback != null)
                 {
-                    var data = get_generic_data();
-                    if (data != null)
+                    if (_original_data != null)
                     {
-                        var metadata_list = data.ListMetaData();
+                        var metadata_list = _original_data.ListMetaData();
                         var out_data = new GenericDataStructure();
                         foreach (var meta_data in metadata_list)
                         {
@@ -268,24 +255,13 @@ namespace Core
                     Log.Default.Msg(Log.Level.Error, "Unknown sender");
                     return;
                 }
-
                 try
                 {
                     // Update meta data in all data series
                     foreach (var pair in _data_library)
                     {
-                        pair.Value.UpdateMetaDataEntry(sender_selection);
-                    }
-
-                    // Notify visualizations via registered update callbacks
-                    if (_update_callbacks == null)
-                    {
-                        Log.Default.Msg(Log.Level.Error, "No callback list for registered update callbacks ");
-                        return;
-                    }
-                    foreach (var update_callback in _update_callbacks)
-                    {
-                        update_callback(false);
+                        pair.Value._Data.UpdateMetaDataEntry(sender_selection);
+                        pair.Value._UpdateVisualization(false);
                     }
                 }
                 catch (Exception exc)
@@ -295,36 +271,70 @@ namespace Core
                 }
             }
 
-            private GenericDataStructure get_generic_data(bool silent = false)
+            /// <summary>
+            /// Callback provided for getting notified on changed meta data 
+            /// !!! This function is currently called for every single change !!!
+            /// </summary>
+            /// <param name="sender">The sender object.</param>
+            /// <param name="e">The property changed event arguments.</param>
+            private void event_data_changed(object sender, PropertyChangedEventArgs e)
             {
-                // Get current data from generic reference
-                if (!_data_library.ContainsKey(typeof(DataTypeGeneric)))
+                var sender_selection = sender as DataModifier;
+                if (sender_selection == null)
                 {
-                    if (!silent)
-                    {
-                        Log.Default.Msg(Log.Level.Error, "Missing generic data");
-                    }
-                    return null;
+                    Log.Default.Msg(Log.Level.Error, "Unknown sender");
+                    return;
                 }
-                var data = _data_library[typeof(DataTypeGeneric)]._Get as GenericDataStructure;
-                // If there is already data present, create the data for the new type
-                if (data == null)
+                try
                 {
-                    if (!silent)
+                    switch (e.PropertyName)
                     {
-                        Log.Default.Msg(Log.Level.Error, "Missing generic data");
+                        case (DataModifier.ADD):
+
+                            break;
+                        case (DataModifier.DELETE):
+
+                            break;
+                        case (DataModifier.CHANGE):
+
+                            break;
+                        default: break;
+
+                    }
+                    // Update data entry in all data series
+                    foreach (var pair in _data_library)
+                    {
+                        /// TODO 
+                        pair.Value._UpdateVisualization(true);
                     }
                 }
-                return data;
+                catch (Exception exc)
+                {
+                    Log.Default.Msg(Log.Level.Error, exc.Message);
+                    return;
+                }
             }
+
 
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private Dictionary<Type, IDataType> _data_library = null;
-            private OutputData_Delegate _outputdata_callback = null;
-            private List<UpdateCallback_Delegate> _update_callbacks = null;
+            private struct DataDescription
+            {
+                public DataDescription(UpdateVisualizationCallback_Delegate update_vis_callback, IDataType data)
+                {
+                    _UpdateVisualization = update_vis_callback;
+                    _Data = data;
+                }
 
+                public UpdateVisualizationCallback_Delegate _UpdateVisualization { get; private set; }
+                public IDataType _Data { get; private set; }
+            }
+
+            GenericDataStructure _original_data = null;
+            private SetDataCallback_Delegate _outputdata_callback = null;
+
+            private Dictionary<int, DataDescription> _data_library = new Dictionary<int, DataDescription>();
             private DataValidator _data_validator = new DataValidator();
         }
     }

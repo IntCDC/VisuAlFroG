@@ -55,7 +55,7 @@ namespace Frontend
             /// Callback to pass output data to the interface (= Grasshopper).
             /// </summary>
             /// <param name="output_data_callback">callback from the DataManager to pipe new output data to the interface.</param>
-            public void SetOutputDataCallback(DataManager.OutputData_Delegate output_data_callback)
+            public void SetOutputDataCallback(DataManager.SetDataCallback_Delegate output_data_callback)
             {
                 _basemanager.SetOutputDataCallback(output_data_callback);
             }

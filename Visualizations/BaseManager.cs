@@ -36,7 +36,7 @@ namespace Visualizations
             _timer.Start();
 
             // Content Manager
-            bool initialized = _contentmanager.Initialize(_datamanager.RequestDataCallback, _datamanager.RegisterUpdateTypeCallback, _datamanager.UnregisterUpdateCallback);
+            bool initialized = _contentmanager.Initialize(_datamanager.GetDataCallback, _datamanager.RegisterDataCallback, _datamanager.UnregisterDataCallback);
             var required_services = _contentmanager.DependingServices();
 
             // Data Manager
@@ -93,13 +93,13 @@ namespace Visualizations
         // Callback forwarding for DataManager
         public void UpdateInputData(GenericDataStructure input_data)
         {
-            _datamanager.UpdateInputData(input_data);
+            _datamanager.UpdateData(input_data);
         }
-        public void SetOutputDataCallback(DataManager.OutputData_Delegate _outputdata_callback)
+        public void SetOutputDataCallback(DataManager.SetDataCallback_Delegate _outputdata_callback)
         {
             _datamanager.SetOutputDataCallback(_outputdata_callback);
         }
-        public SendOutputData_Callback GetSendOutputDataCallback()
+        public TriggerSetDataCallback_Delegate GetSendOutputDataCallback()
         {
             return _datamanager.SendOutputData;
         }

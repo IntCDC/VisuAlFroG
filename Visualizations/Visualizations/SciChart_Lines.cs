@@ -18,12 +18,12 @@ using System.Windows.Media;
  */
 namespace Visualizations
 {
-    public class LinesVisualization : AbstractSciChartSeries<SciChartSurface, FastLineRenderableSeries>
+    public class SciChart_Lines : AbstractSciChartSeries<SciChartSurface, FastLineRenderableSeries>
     {
         /* ------------------------------------------------------------------*/
         // properties
 
-        public override string _Name { get { return "Lines (2D)"; } }
+        public override string _Name { get { return "Lines (SciChart)"; } }
 
 
         /* ------------------------------------------------------------------*/
@@ -31,12 +31,5 @@ namespace Visualizations
 
 
 
-        /// <summary>
-        /// DEBUG
-        /// </summary>
-        ~LinesVisualization()
-        {
-            Console.WriteLine("DEBUG - DTOR: LinesVisualization");
-        }
     }
 }

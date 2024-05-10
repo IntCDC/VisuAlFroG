@@ -29,9 +29,10 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public AbstractDataType(PropertyChangedEventHandler meta_data_update_handler) 
+            public AbstractDataType(PropertyChangedEventHandler update_metadata_handler, PropertyChangedEventHandler update_data_handler) 
             {
-                _meta_data_update_handler = meta_data_update_handler;
+                _update_metadata_handler = update_metadata_handler;
+                _update_data_handler = update_data_handler;
             }
 
             /// <summary>
@@ -108,7 +109,8 @@ namespace Core
 
             protected DataType _data = default(DataType);
             protected bool _loaded = false;
-            protected PropertyChangedEventHandler _meta_data_update_handler = null;
+            protected PropertyChangedEventHandler _update_metadata_handler = null;
+            protected PropertyChangedEventHandler _update_data_handler = null;
         }
     }
 }

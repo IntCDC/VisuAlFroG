@@ -13,7 +13,7 @@ namespace Core
     namespace Data
     {
 
-        public class MetaDataGeneric : IMetaData
+        public class GenericMetaData : IMetaData
         {
 
             /* ------------------------------------------------------------------*/

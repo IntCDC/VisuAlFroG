@@ -34,7 +34,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public override bool Initialize(DataManager.RequestCallback_Delegate request_callback)
+            public override bool Initialize(DataManager.GetDataCallback_Delegate request_callback)
             {
                 if (_initialized)
                 {

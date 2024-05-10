@@ -18,6 +18,8 @@ using Core.GUI;
 using SciChart.Charting.Visuals.PointMarkers;
 using System.Windows;
 using System.Windows.Media;
+using SciChart.Charting.Model.DataSeries;
+using System.Xml.Linq;
 
 namespace SciChartInterface
 {
@@ -40,7 +42,8 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public DataTypeSciChartSeries(PropertyChangedEventHandler meta_data_update_handler) : base(meta_data_update_handler) { }
+            public DataTypeSciChartSeries(PropertyChangedEventHandler update_metadata_handler, PropertyChangedEventHandler update_data_handler)
+                : base(update_metadata_handler, update_data_handler) { }
 
             public override void UpdateData(GenericDataStructure data)
             {
@@ -101,9 +104,9 @@ namespace SciChartInterface
                         int series_count = data_series.DataSeries.Count;
                         for (int i = 0; i < series_count; i++)
                         {
-                            if (updated_meta_data._Index == ((MetaDataSciChart)data_series.DataSeries.Metadata[i])._Index)
+                            if (updated_meta_data._Index == ((SciChartMetaData)data_series.DataSeries.Metadata[i])._Index)
                             {
-                                ((MetaDataSciChart)data_series.DataSeries.Metadata[i])._Selected = updated_meta_data._Selected;
+                                ((SciChartMetaData)data_series.DataSeries.Metadata[i])._Selected = updated_meta_data._Selected;
                             }
                         }
                     }
@@ -121,15 +124,17 @@ namespace SciChartInterface
                 if (branch._Entries.Count > 0)
                 {
                     DataType data_series = new DataType();
-                    data_series.Name = UniqueID.Generate();
                     data_series.AntiAliasing = true;
+                    data_series.Style = renders_series_style();
 
                     if (branch.Dimension() == 1)
                     {
                         var series = new SciChartUniformDataType();
+                        series.SeriesName = (branch._Label == "") ? (UniqueID.GenerateString()) : (branch._Label);
+
                         foreach (var entry in branch._Entries)
                         {
-                            var meta_data = new MetaDataSciChart(entry._Metadata._Index, entry._Metadata._Selected, _meta_data_update_handler);
+                            var meta_data = new SciChartMetaData(entry._Metadata._Index, entry._Metadata._Selected, _update_metadata_handler);
                             series.Append((double)entry._Values[0], meta_data);
                         }
                         data_series.DataSeries = series;
@@ -138,15 +143,17 @@ namespace SciChartInterface
                     else if (branch.Dimension() == 2)
                     {
                         var series = new SciChartXYDataType();
+                        series.SeriesName = (branch._Label == "") ? (UniqueID.GenerateString()) : (branch._Label);
+
                         foreach (var entry in branch._Entries)
                         {
-                            var meta_data = new MetaDataSciChart(entry._Metadata._Index, entry._Metadata._Selected, _meta_data_update_handler);
+                            var meta_data = new SciChartMetaData(entry._Metadata._Index, entry._Metadata._Selected, _update_metadata_handler);
+                            ///series.AcceptsUnsortedData = true;
                             series.Append((double)entry._Values[0], (double)entry._Values[1], meta_data);
                         }
                         data_series.DataSeries = series;
                     }
 
-                    data_series.Style = renders_series_style();
                     _data.Add(data_series);
                 }
 

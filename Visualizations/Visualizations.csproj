@@ -138,13 +138,13 @@
   <ItemGroup>
     <Compile Include="ContentManager.cs" />
     <Compile Include="ServiceManager.cs" />
-    <Compile Include="Visualizations\ColumnsVisualization.cs" />
+    <Compile Include="Visualizations\SciChart_Columns.cs" />
     <Compile Include="WPFInterface\AbstractWPFVisualization.cs" />
-    <Compile Include="Visualizations\Generic\DataViewer.cs" />
-    <Compile Include="Visualizations\LinesVisualization.cs" />
-    <Compile Include="Visualizations\Generic\LogConsole.cs" />
-    <Compile Include="Visualizations\ParallelCoordinatesVisualization.cs" />
-    <Compile Include="Visualizations\ScatterVisualization.cs" />
+    <Compile Include="Visualizations\WPF_DataViewer.cs" />
+    <Compile Include="Visualizations\SciChart_Lines.cs" />
+    <Compile Include="Visualizations\WPF_LogConsole.cs" />
+    <Compile Include="Visualizations\SciChart_ParallelCoordinatesPlot.cs" />
+    <Compile Include="Visualizations\SciChart_ScatterPlot.cs" />
     <Compile Include="BaseManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

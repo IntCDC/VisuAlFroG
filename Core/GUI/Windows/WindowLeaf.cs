@@ -69,7 +69,7 @@ namespace Core
 
                 _Content = new Grid();
                 _Content.SetResourceReference(Grid.BackgroundProperty, "Brush_Background");
-                _Content.Name = "grid_" + UniqueID.Generate();
+                _Content.Name = "grid_" + UniqueID.GenerateString();
 
                 delete_content();
 
@@ -99,7 +99,7 @@ namespace Core
                 var content_metadata = _content_callbacks.Item2(content_id, content_type);
                 if (content_metadata != null)
                 {
-                    if ((content_metadata.Item1 != UniqueID.Invalid) && (content_metadata.Item2 != null))
+                    if ((content_metadata.Item1 != UniqueID.InvalidString) && (content_metadata.Item2 != null))
                     {
                         _Content.Children.Add(content_metadata.Item2);
                         _AttachedContent = new AttachedContent_Type(content_metadata.Item1, content_type);
@@ -138,14 +138,6 @@ namespace Core
             {
                 delete_content();
                 base.Reset();
-            }
-
-            /// <summary>
-            /// DEBUG
-            /// </summary>
-            ~WindowLeaf()
-            {
-                Console.WriteLine("DEBUG - DTOR: WindowLeaf");
             }
 
 
@@ -331,7 +323,7 @@ namespace Core
                     if (content_id == name)
                     {
                         delete_content();
-                        CreateContent(UniqueID.Invalid, content_data.Item4);
+                        CreateContent(UniqueID.InvalidString, content_data.Item4);
                     }
                 }
             }
@@ -352,7 +344,7 @@ namespace Core
                 {
                     if (!only_detach)
                     {
-                        if (_AttachedContent.Item1 != UniqueID.Invalid)
+                        if (_AttachedContent.Item1 != UniqueID.InvalidString)
                         {
                             // Call Delete Content
                             _content_callbacks.Item3(_AttachedContent.Item1);
@@ -461,12 +453,12 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // private variables
 
-            private readonly string _item_id_hori_top = "item_horizontal_top_" + UniqueID.Generate();
-            private readonly string _item_id_hori_bottom = "item_horizontal_bottom_" + UniqueID.Generate();
-            private readonly string _item_id_vert_Left = "item_vertical_left_" + UniqueID.Generate();
-            private readonly string _item_id_vert_right = "item_vertical_right" + UniqueID.Generate();
-            private readonly string _item_id_window_delete = "item_window_delete" + UniqueID.Generate();
-            private readonly string _item_id_delete_content = "item_delete_content" + UniqueID.Generate();
+            private readonly string _item_id_hori_top = "item_horizontal_top_" + UniqueID.GenerateString();
+            private readonly string _item_id_hori_bottom = "item_horizontal_bottom_" + UniqueID.GenerateString();
+            private readonly string _item_id_vert_Left = "item_vertical_left_" + UniqueID.GenerateString();
+            private readonly string _item_id_vert_right = "item_vertical_right" + UniqueID.GenerateString();
+            private readonly string _item_id_window_delete = "item_window_delete" + UniqueID.GenerateString();
+            private readonly string _item_id_delete_content = "item_delete_content" + UniqueID.GenerateString();
         }
     }
 }

@@ -18,12 +18,12 @@ using System.Windows.Media;
  */
 namespace Visualizations
 {
-    public class ScatterVisualization : AbstractSciChartSeries<SciChartSurface, XyScatterRenderableSeries>
+    public class SciChart_ScatterPlot : AbstractSciChartSeries<SciChartSurface, XyScatterRenderableSeries>
     {
         /* ------------------------------------------------------------------*/
         // properties
 
-        public override string _Name { get { return "Scatter Plot (2D)"; } }
+        public override string _Name { get { return "Scatter Plot (SciChart)"; } }
 
 
         /* ------------------------------------------------------------------*/
@@ -31,12 +31,5 @@ namespace Visualizations
 
 
 
-        /// <summary>
-        /// DEBUG
-        /// </summary>
-        ~ScatterVisualization()
-        {
-            Console.WriteLine("DEBUG - DTOR: ScatterVisualization");
-        }
     }
 }

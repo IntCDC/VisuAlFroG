@@ -17,12 +17,12 @@ using Core.Utilities;
  */
 namespace Visualizations
 {
-    public class ColumnsVisualization : AbstractSciChartSeries<SciChartSurface, FastColumnRenderableSeries>
+    public class SciChart_Columns : AbstractSciChartSeries<SciChartSurface, FastColumnRenderableSeries>
     {
         /* ------------------------------------------------------------------*/
         // properties
 
-        public override string _Name { get { return "Columns (1D)"; } }
+        public override string _Name { get { return "Columns (SciChart)"; } }
 
 
         /* ------------------------------------------------------------------*/
@@ -30,12 +30,5 @@ namespace Visualizations
 
 
 
-        /// <summary>
-        /// DEBUG
-        /// </summary>
-        ~ColumnsVisualization()
-        {
-            Console.WriteLine("DEBUG - DTOR: ColumnsVisualization");
-        }
     }
 }
