@@ -43,21 +43,24 @@ namespace SciChartInterface
                 }
                 _timer.Start();
 
-                this._RequestDataCallback = request_callback;
+                if (base.Initialize(request_callback))
+                {
+                    _content_surface = new SurfaceType();
+                    _content_surface.Name = _ID;
+                    _content_surface.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
+                    _content_surface.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
 
-                _content_surface = new SurfaceType();
-                _content_surface.Name = _ID;
-                _content_surface.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
-                _content_surface.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
+                    AttachChildContent(_content_surface);
 
-                AttachChildContent(_content_surface);
+
+                    _initialized = true;
+                    if (_initialized)
+                    {
+                        Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
+                    }
+                }
 
                 _timer.Stop();
-                _initialized = true;
-                if (_initialized)
-                {
-                    Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
-                }
                 return _initialized;
             }
 

@@ -239,11 +239,13 @@ namespace Frontend
                 _winmanager.CreateDefault();
 
                 /// Provide example data for detached mode
+                /*
                 if (_standalone)
                 {
                     var sample_data = TestData.Generate();
                     _basemanager.UpdateInputData(sample_data);
                 }
+                */
 
                 _timer.Stop();
                 return true;

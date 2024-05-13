@@ -46,32 +46,18 @@ namespace Core
             public int _DataUID { get; set; } = UniqueID.InvalidInt;
 
             public abstract Type _RequiredDataType { get; }
-            public DataManager.GetDataCallback_Delegate _RequestDataCallback { get; set; }
+            public DataManager.GetDataCallback_Delegate _RequestDataCallback { get; private set; }
 
 
             /* ------------------------------------------------------------------*/
             // public functions
-
 
             /// <summary>
             /// Ctor.
             /// </summary>
             public AbstractVisualization()
             {
-                _ID = UniqueID.GenerateString();
                 _timer = new TimeBenchmark();
-
-                /// TODO Move somewhere else to prevent calling it whenever the context menu is opened
-                
-                StackPanel stack = new StackPanel();
-                stack.Children.Add(create_menu());
-                DockPanel.SetDock(stack, System.Windows.Controls.Dock.Top);
-
-                _content_child = new Grid();
-
-                _content_parent = new DockPanel();
-                _content_parent.Children.Add(stack);
-                _content_parent.Children.Add(_content_child);
             }
 
             /// <summary>
@@ -81,7 +67,21 @@ namespace Core
             /// <exception cref="InvalidOperationException">...throw error when method of base class is called instead.</exception>
             public virtual bool Initialize(DataManager.GetDataCallback_Delegate request_callback)
             {
-                throw new InvalidOperationException("Call Initialize() method of derived class");
+                _ID = UniqueID.GenerateString();
+
+                StackPanel stack = new StackPanel();
+                stack.Children.Add(create_menu());
+                DockPanel.SetDock(stack, System.Windows.Controls.Dock.Top);
+
+                _content_child = new Grid();
+
+                _content_parent = new DockPanel();
+                _content_parent.Children.Add(stack);
+                _content_parent.Children.Add(_content_child);
+
+                _RequestDataCallback = request_callback;
+
+                return true;
             }
             /* TEMPLATE
             {
@@ -92,18 +92,20 @@ namespace Core
                 _timer.Start();
 
 
-                /// PLACE YOUR STUFF HERE ...
+                if (base.Initialize(request_callback))
+                {
+                   
+                    /// PLACE YOUR STUFF HERE ...
 
-                /// ! REQUIRED:
-                _content.Name = ID;
+                    _initialized = true;
+                    if (_initialized)
+                    {
+                        Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
+                    }
+                }
 
 
                 _timer.Stop();
-                _initialized = true;
-                if (_initialized)
-                {
-                    Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().Name);
-                }
                 return _initialized;
             }
             */
@@ -227,7 +229,7 @@ namespace Core
             */
 
             /// <summary>
-            /// TODO Called when updated data is available
+            /// Called when (partially: new_data=false) updated data is available
             /// </summary>
             /// <param name="new_data">True if new data is available, false if existing data has been updated.</param>
             public abstract void Update(bool new_data);
@@ -243,7 +245,7 @@ namespace Core
             {
                 data_parent = default(DataParentType);
 
-                if (this._RequestDataCallback == null)
+                if (_RequestDataCallback == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
@@ -327,10 +329,10 @@ namespace Core
                 _options_menu.IsEnabled = false;
                 menu.Items.Add(_options_menu);
 
-                _options_menu = new MenuItem();
-                _options_menu.Header = "Data";
-                _options_menu.IsEnabled = false;
-                menu.Items.Add(_options_menu);
+                _data_menu = new MenuItem();
+                _data_menu.Header = "Data";
+                _data_menu.IsEnabled = false;
+                menu.Items.Add(_data_menu);
 
                 return menu_grid;
             }

@@ -354,10 +354,6 @@ namespace Core
                 return false;
             }
 
-            /// <summary>
-            /// TODO
-            /// </summary>
-            /// <param name="theme"></param>
             public void SetColorStyle(PredefinedThemes theme)
             {
                 _app_resource.Clear();

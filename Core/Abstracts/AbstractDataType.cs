@@ -35,23 +35,10 @@ namespace Core
                 _update_data_handler = update_data_handler;
             }
 
-            /// <summary>
-            /// TODO Use _initialized flag
-            /// </summary>
-            /// <param name="data"></param>
             public abstract void UpdateData(GenericDataStructure data);
 
-            /// <summary>
-            /// TODO
-            /// </summary>
-            /// <param name="updated_entry"></param>
             public abstract void UpdateMetaDataEntry(IMetaData updated_meta_data);
 
-            /// <summary>
-            /// TODO
-            /// </summary>
-            /// <param name="value_types"></param>
-            /// <returns></returns>
             protected bool CompatibleTypes(List<Type> value_types)
             {
                 bool incompatible = false;
@@ -69,11 +56,6 @@ namespace Core
                 return !incompatible;
             }
 
-            /// <summary>
-            /// TODO
-            /// </summary>
-            /// <param name="dimensionality"></param>
-            /// <returns></returns>
             protected bool CompatibleDimensionality(uint data_dimension)
             {
                 bool compatible = false;

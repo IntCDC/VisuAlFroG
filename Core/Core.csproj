@@ -92,7 +92,6 @@
     <Compile Include="Abstracts\IDataType.cs" />
     <Compile Include="Abstracts\IMetaData.cs" />
     <Compile Include="Data\DataFilter.cs" />
-    <Compile Include="Data\DataLoaderCSV.cs" />
     <Compile Include="Data\DataManager.cs" />
     <Compile Include="Data\DataModifier.cs" />
     <Compile Include="Data\DataTypeGeneric.cs" />

@@ -106,11 +106,11 @@ namespace Visualizations
         }
         public MenuBar.MenuCallback_Delegate GetSaveDataCallback()
         {
-            return _datamanager.SaveData;
+            return _datamanager.SaveCSVData;
         }
         public MenuBar.MenuCallback_Delegate GetLoadDataCallback()
         {
-            return _datamanager.LoadData;
+            return _datamanager.LoadCSVData;
         }
         public MenuBar.MenuCallback_Delegate GetSendDataCallback()
         {

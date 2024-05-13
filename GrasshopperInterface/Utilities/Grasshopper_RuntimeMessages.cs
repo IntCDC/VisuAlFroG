@@ -57,7 +57,7 @@ namespace GrasshopperInterface
                         _messages.Add((GH_RuntimeMessageLevel.Blank, message));
                         break;
                 }
-                /// TODO StackTrace is not working for Grasshopper  component
+                /// TODO XXX StackTrace is not working for Grasshopper component
                 Log.Default.Msg(level, message, new StackTrace(true));
             }
 

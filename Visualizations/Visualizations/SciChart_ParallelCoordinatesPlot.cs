@@ -89,15 +89,10 @@ namespace Visualizations
 
                 var setter_stroke = new Setter();
                 setter_stroke.Property = BaseRenderableSeries.StrokeProperty;
-                /// XXX TODO Set different colors for different series
                 setter_stroke.Value = new DynamicResourceExtension("Color_StrokeDefault"); // new_color
                 render_style.Setters.Add(setter_stroke);
-
-                var setter_palette = new Setter();
-                setter_palette.Property = BaseRenderableSeries.PaletteProviderProperty;
                 /// XXX TODO Set different colors for different series
-                setter_palette.Value = new DynamicResourceExtension("Color_StrokeDefault"); // new_color
-                render_style.Setters.Add(setter_stroke);
+           
 
                 Trigger trigger = new Trigger();
                 trigger.Property = BaseRenderableSeries.IsSelectedProperty;

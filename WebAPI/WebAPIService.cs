@@ -38,7 +38,7 @@ namespace Visualizations
                 _timer.Start();
 
                 // Generate random port number
-                /// TODO Is there a reason why to choose random port? Break sometimes (when port is already used?)
+                /// TODO Is there a reason why to choose random port? Breaks sometimes (when port is already used?)
                 var generator = new Random();
                 var port = generator.Next(49215, 65535).ToString();
                 //port = "55555";

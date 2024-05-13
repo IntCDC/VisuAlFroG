@@ -40,15 +40,19 @@ namespace Visualizations
                 }
                 _timer.Start();
 
-                this._RequestDataCallback = request_callback;
-                AttachChildContent(_Content);
+                if (base.Initialize(request_callback))
+                {
+                    AttachChildContent(_Content);
+
+                    
+                    _initialized = true;
+                    if (_initialized)
+                    {
+                        Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
+                    }
+                }
 
                 _timer.Stop();
-                _initialized = true;
-                if (_initialized)
-                {
-                    Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
-                }
                 return _initialized;
             }
 

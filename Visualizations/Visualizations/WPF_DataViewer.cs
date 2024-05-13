@@ -14,9 +14,8 @@ using SciChart.Charting.Visuals.RenderableSeries;
 
 
 /*
- *  Data Browser
+ *  Tabular raw data viewer
  * 
- * Control Hierarchy: ScrollViewer(Content) -> StackPanel(_stack_panel) -> TextBlock,TextBlock,TreeViewItem(_tree_root)
  * 
  */
 namespace Visualizations
@@ -48,8 +47,8 @@ namespace Visualizations
             _Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
             _Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
             _Content.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
-            _Content.PreviewMouseWheel += event_scrollviewer_mousewheel;
             _Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
+            _Content.PreviewMouseWheel += event_scrollviewer_mousewheel;
 
             if (GetData(out GenericDataStructure data))
             {

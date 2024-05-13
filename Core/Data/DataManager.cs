@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Windows.Controls;
 using System.Windows.Forms;
 
 using Core.Abstracts;
@@ -92,7 +93,7 @@ namespace Core
                 _timer.Start();
 
                 Log.Default.Msg(Log.Level.Info, "Processing new input data...");
-                if (_data_validator.Convert(input_data, out GenericDataStructure validated_data))
+                if (DataValidator.Convert(input_data, out GenericDataStructure validated_data))
                 {
                     _original_data = validated_data;
 
@@ -122,7 +123,7 @@ namespace Core
             }
 
             /// <summary>
-            /// Register update callback of calling visualization.
+            /// Register data of calling visualization.
             /// </summary>
             public int RegisterDataCallback(UpdateVisualizationCallback_Delegate update_callback, Type data_type)
             {
@@ -166,8 +167,7 @@ namespace Core
             }
 
             /// <summary>
-            /// Unregister data update callback of calling visualization.
-            /// XXX TODO Track used data types for being able to delete them is unused.
+            /// Unregister data of calling visualization.
             /// </summary>
             public void UnregisterDataCallback(int data_uid)
             {
@@ -211,28 +211,22 @@ namespace Core
             }
 
             /// <summary>
-            /// 
+            /// Save data in CSV format to a file
             /// </summary>
-            public bool SaveData()
+            public bool SaveCSVData()
             {
-                /// TODO
-                Log.Default.Msg(Log.Level.Warn, "Saving data from file is not yet implemented...");
-                return true;
-
-                string csv_data_string = CSV_DataConverter.ConvertToCSV(_original_data);
-                FileDialogHelper.Save(csv_data_string, "Save Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("data", "csv"));
+                if (CSV_DataConverter.ConvertToCSV(_original_data, out string output_data))
+                {
+                    return FileDialogHelper.Save(output_data, "Save Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("data", "csv"));
+                }
+                return false;
             }
 
             /// <summary>
             /// Load CSV formatted data from a file
             /// </summary>
-            public bool LoadData()
+            public bool LoadCSVData()
             {
-                /// TODO
-                Log.Default.Msg(Log.Level.Warn, "Loading data from file is not yet implemented...");
-                return true;
-
-
                 string data_file = FileDialogHelper.Load("Load Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("data", "csv"));
                 try
                 {
@@ -240,12 +234,12 @@ namespace Core
                     using (StreamReader reader = new StreamReader(fileStream))
                     {
                         Log.Default.Msg(Log.Level.Info, "Loading data from file: '" + data_file + "'");
-
-                        string csv_data = "";
-                        var input_data = CSV_DataConverter.ConvertFromCSV(csv_data);
-                        UpdateData(input_data);
-
-                        return true;
+                        string content = reader.ReadToEnd();
+                        if (CSV_DataConverter.ConvertFromCSV(content, out GenericDataStructure input_data))
+                        {
+                            UpdateData(input_data);
+                            return true;
+                        }
                     }
                 }
                 catch (Exception exc)
@@ -282,15 +276,22 @@ namespace Core
                 }
                 else
                 {
-                    ///Log.Default.Msg(Log.Level.Warn, "Missing callback for sending output data");
-
-                    /// TODO Ask to save output data to file
-                    Log.Default.Msg(Log.Level.Warn, "Saving output data from file is not yet implemented...");
-                    return false;
-
-                    string csv_data_string = CSV_DataConverter.ConvertToCSV(out_data);
-                    FileDialogHelper.Save(csv_data_string, "Save Output Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("output_data", "csv"));
+                    if (CSV_DataConverter.ConvertToCSV(out_data, out string csv_data_string))
+                    {
+                        string title = "Send Output Data";
+                        string message = "No callback available to send the output data.\nDo you want to save the data to a CSV file?\nIf not, nothing will happen...";
+                        MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                        DialogResult result = MessageBox.Show(message, title, buttons);
+                        if (result == DialogResult.Yes)
+                        {
+                            FileDialogHelper.Save(csv_data_string, "Save Output Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("output_data", "csv"));
+                        }
+                    }
+                    else {
+                        Log.Default.Msg(Log.Level.Warn, "No callback available to send the output data. Since data can not be converted to CSV format, nothing happens...");
+                    }
                 }
+
                 return true;
             }
 
@@ -394,7 +395,6 @@ namespace Core
             private SetDataCallback_Delegate _outputdata_callback = null;
 
             private Dictionary<int, DataDescription> _data_library = new Dictionary<int, DataDescription>();
-            private DataValidator _data_validator = new DataValidator();
         }
     }
 }

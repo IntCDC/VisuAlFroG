@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
@@ -18,13 +14,11 @@ namespace Core
     {
         public class FileDialogHelper
         {
-
-
             /// <summary>
-            /// File dialog for saving provided string to a file.
+            /// [STATIC] File dialog for saving provided string to a file.
             /// </summary>
             /// <param name="output_content">The content of the file as string.</param>
-            public static void Save(string output_content, string dialog_title, string dialog_filter, string default_file_name)
+            public static bool Save(string output_content, string dialog_title, string dialog_filter, string default_file_name)
             {
                 Stream ouput_stream;
 
@@ -46,17 +40,18 @@ namespace Core
                         ouput_stream.Write(byte_content, 0, byte_content.Length);
 
                         ouput_stream.Close();
+                        return true;
                     }
                 }
+                return false;
             }
 
             /// <summary>
-            /// File dialog for loading content from a JSON file.
+            /// [STATIC] File dialog for loading content from a JSON file.
             /// </summary>
             /// <returns>The content of the file as string.</returns>
             public static string Load(string dialog_title, string dialog_filter, string default_file_name)
             {
-                var input_content = "";
                 using (System.Windows.Forms.OpenFileDialog open_file_dialog = new System.Windows.Forms.OpenFileDialog())
                 {
                     open_file_dialog.Title = dialog_title;
@@ -71,10 +66,8 @@ namespace Core
                         return open_file_dialog.FileName;
                     }
                 }
-                return input_content;
+                return "";
             }
-
-
 
         }
     }

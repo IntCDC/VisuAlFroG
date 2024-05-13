@@ -77,30 +77,45 @@ namespace Core
                 return ((_Branches.Count == 0) && (_Entries.Count == 0));
             }
 
-            public bool IsTransposable()
+            public bool IsFlatRowBased()
             {
-                if (_Entries.Count > 0)
+                // Check if only branches (>0) exist on the top level
+                if ((_Branches.Count == 0) || (_Entries.Count > 0))
                 {
-                    Log.Default.Msg(Log.Level.Error, "Transposing data is not possible when entries on top level exist.");
                     return false;
                 }
 
-                foreach (var b in _Branches)
+                // Check if branches have at least one entry, all branches have the same number of entries, and no sub branches exist
+                int entry_count = int.MinValue;
+                for (int i = 0; i < _Branches.Count; i++)
                 {
-                    if (b._Branches.Count > 0)
+                    // Set entry_count for the first time
+                    if (i == 0)
                     {
-                        Log.Default.Msg(Log.Level.Error, "Transposing data is not possible when branches have sub-branches.");
+                        entry_count = _Branches[i]._Entries.Count;
+                    }
+
+                    if ((_Branches[i]._Branches.Count > 0) || (_Branches[i]._Entries.Count != entry_count) || (_Branches[i]._Entries.Count == 0))
+                    {
                         return false;
                     }
                 }
                 return true;
             }
 
-            public bool Transpose(out GenericDataStructure transposed_data)
+            /// <summary>
+            /// Apply transposed data in place
+            /// </summary>
+            /// <returns></returns>
+            public bool Transpose()
             {
-                transposed_data = new GenericDataStructure();
-                if (!IsTransposable()) { return false; }
+                if (!IsFlatRowBased())
+                {
+                    Log.Default.Msg(Log.Level.Error, "Transposing data is not possible since data is not flat and row based.");
+                    return false;
+                }
 
+                var transposed_data = new GenericDataStructure();
                 for (int b = 0; b < _Branches.Count; b++)
                 {
                     var branch = _Branches[b];
@@ -117,6 +132,11 @@ namespace Core
                         transposed_data._Branches[e].AddEntry(entry);
                     }
                 }
+
+                _Branches.Clear();
+                _Entries.Clear();
+                _Branches = transposed_data._Branches;
+
                 return true;
             }
 

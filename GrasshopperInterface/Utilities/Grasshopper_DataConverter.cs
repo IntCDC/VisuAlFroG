@@ -39,7 +39,7 @@ namespace GrasshopperInterface
                         var output_entry = new GenericDataEntry();
                         if (input_value.CastTo<string>(out string value_string))
                         {
-                            char[] separators = new char[] { ' ', ',', '|', ';' };
+                            char[] separators = new char[] { ' ', ',', '|', ';' };  // Do check for '.' since this is comma for float
                             string[] subs = value_string.Split(separators, StringSplitOptions.RemoveEmptyEntries);
                             foreach (var sub in subs)
                             {
@@ -84,11 +84,11 @@ namespace GrasshopperInterface
             {
                 var ghstructure_data = new GH_Structure<IGH_Goo>();
 
-                /// TODO Support branches -> is this supported by GH_Structure nevertheless?
                 if (input_data._Branches.Count > 0)
                 {
-
-                    Log.Default.Msg(Log.Level.Error, "output of branches is currently not supported... ");
+                    /// TODO Support branches -> Is this supported by GH_Structure nevertheless?
+                    Log.Default.Msg(Log.Level.Error, "Converting sub branches is currently not supported... ");
+                    return ghstructure_data;
                 }
 
                 int branch_index = 0;

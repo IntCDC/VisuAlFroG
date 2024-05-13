@@ -19,6 +19,10 @@ namespace Core
     {
         public class DataValidator
         {
+
+            /* ------------------------------------------------------------------*/
+            // public functions
+
             /// <summary>
             /// Validate and convert input data into known format. 
             /// Extracts labels.
@@ -26,7 +30,7 @@ namespace Core
             /// <param name="input_data"></param>
             /// <param name="validated_data"></param>
             /// <returns></returns>
-            public bool Convert(GenericDataStructure input_data, out GenericDataStructure output_data)
+            public static bool Convert(GenericDataStructure input_data, out GenericDataStructure output_data)
             {
                 output_data = new GenericDataStructure();
 
@@ -60,8 +64,12 @@ namespace Core
                 return true;
             }
 
+
+            /* ------------------------------------------------------------------*/
+            // private functions
+
             // Check if only main branch contains branches and that no sub-branches exist
-            private bool check_branches(GenericDataStructure data)
+            private static bool check_branches(GenericDataStructure data)
             {
                 foreach (var b in data._Branches)
                 {
@@ -76,7 +84,7 @@ namespace Core
 
             // Check if all branches contain equal number of entries
             /// XXX This must not be true if sub-branches are allowed?
-            private bool check_entries(GenericDataStructure data, ref uint entry_count)
+            private static bool check_entries(GenericDataStructure data, ref uint entry_count)
             {
                 bool retval = true;
                 foreach (var branch in data._Branches)
@@ -101,7 +109,7 @@ namespace Core
             }
 
             // Check if all entries contain equal number of values
-            private bool check_values(GenericDataStructure data, ref uint value_count)
+            private static bool check_values(GenericDataStructure data, ref uint value_count)
             {
                 bool retval = true;
                 foreach (var entry in data._Entries)
@@ -130,7 +138,7 @@ namespace Core
 
             // Check if first branch contains only entries with one string value that can be used as column labels
             // if not, generate column labels 'Column_[X]'
-            private bool extract_column_labels(ref GenericDataStructure data)
+            private static bool extract_column_labels(ref GenericDataStructure data)
             {
                 bool retval = false;
                 if (data._Branches.Count > 0)
@@ -172,7 +180,7 @@ namespace Core
 
             // Check if all branches start with one string value for each entry that can be used as row label
             // if not, generate row labels 'Row_[X]'
-            private bool extract_row_labels(ref GenericDataStructure data)
+            private static bool extract_row_labels(ref GenericDataStructure data)
             {
                 bool retval = false;
                 if (data._Branches.Count > 0)
@@ -227,7 +235,7 @@ namespace Core
             }
 
             // Check if all other values can be converted to double
-            private bool convert_value_type(ref GenericDataStructure data)
+            private static bool convert_value_type(ref GenericDataStructure data)
             {
                 if (!((data.Types().Count == 1) && (data.Types()[0] == typeof(double))))
                 {
@@ -242,7 +250,7 @@ namespace Core
             /// </summary>
             /// <param name="data">The data branch.</param>
             /// <param name="index">Reference to a index declared outside</param>
-            private void init_index(GenericDataStructure data, ref uint index)
+            private static void init_index(GenericDataStructure data, ref uint index)
             {
                 foreach (var entry in data._Entries)
                 {
