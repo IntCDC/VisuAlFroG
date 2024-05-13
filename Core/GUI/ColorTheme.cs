@@ -32,10 +32,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public delegates
 
-            /// <summary>
-            /// .... 
-            /// </summary>
             public delegate void SetColorStyle_Delegate(PredefinedThemes theme);
+
+            public delegate void MarkColorTheme_Delegate(ColorTheme.PredefinedThemes color_theme);
 
 
             /* ------------------------------------------------------------------*/
@@ -305,7 +304,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public bool Initialize(ResourceDictionary app_resources, MenuBar.MarkColorTheme_Delegate mark_color_theme_callback)
+            public bool Initialize(ResourceDictionary app_resources, MarkColorTheme_Delegate mark_color_theme_callback)
             {
                 if (_initialized)
                 {
@@ -388,7 +387,7 @@ namespace Core
 
             private PredefinedThemes _color_theme = PredefinedThemes.LightBlue;
             private ResourceDictionary _app_resource = null;
-            private MenuBar.MarkColorTheme_Delegate _mark_color_theme_callback = null;
+            private MarkColorTheme_Delegate _mark_color_theme_callback = null;
         }
     }
 }

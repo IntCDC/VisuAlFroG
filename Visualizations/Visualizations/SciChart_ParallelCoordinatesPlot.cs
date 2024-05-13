@@ -41,7 +41,7 @@ namespace Visualizations
 
             if (new_data)
             {
-                GetData(Content);
+                GetData(_Content);
 
                 // Data Style--------------------------------------------
 
@@ -54,7 +54,7 @@ namespace Visualizations
                 setter_title.Value = "";
                 title_style.Setters.Add(setter_title);
 
-                Content.Style = title_style;
+                _Content.Style = title_style;
 
                 // Label Style
                 var label_style = new System.Windows.Style();
@@ -75,7 +75,7 @@ namespace Visualizations
                 setter_fontweight.Value = FontWeights.SemiBold;
                 label_style.Setters.Add(setter_fontweight);
 
-                Content.LabelStyle = label_style;
+                _Content.LabelStyle = label_style;
 
                 // Render Series Style
                 var render_style = new System.Windows.Style();
@@ -108,9 +108,9 @@ namespace Visualizations
                 trigger.Setters.Add(setter_trigger);
                 render_style.Triggers.Add(trigger);
 
-                Content.RenderableSeriesStyle = render_style;
+                _Content.RenderableSeriesStyle = render_style;
 
-                Content.ZoomExtents();
+                _Content.ZoomExtents();
             }
         }
     }

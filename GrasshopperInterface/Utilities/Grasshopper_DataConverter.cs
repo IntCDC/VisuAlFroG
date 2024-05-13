@@ -17,19 +17,19 @@ namespace GrasshopperInterface
 {
     namespace Utilities
     {
-        public class DataConverter
+        public class Grasshopper_DataConverter
         {
             /* ------------------------------------------------------------------*/
             // static functions
 
             /// <summary>
-            /// [STATIC] Convert data provided by the interface to data type not depending on interface specific type. 
+            /// [STATIC] Convert data provided by the interface to generic data type. 
             /// </summary>
-            /// <param name="input">Reference to the input data.</param>
+            /// <param name="input_data">The input data.</param>
             /// <returns>The converted output data.</returns>
             public static GenericDataStructure ConvertFromGHStructure(GH_Structure<IGH_Goo> input_data)
             {
-                var output_data = new GenericDataStructure();
+                var generic_data = new GenericDataStructure();
 
                 foreach (var input_entries in input_data.Branches)
                 {
@@ -70,19 +70,19 @@ namespace GrasshopperInterface
                         }
                         output_branch.AddEntry(output_entry);
                     }
-                    output_data.AddBranch(output_branch);
+                    generic_data.AddBranch(output_branch);
                 }
-                return output_data;
+                return generic_data;
             }
 
             /// <summary>
-            /// [STATIC] Convert data provided by the application to interface specific data type. 
+            /// [STATIC] Convert from generic data type to interface specific data type. 
             /// </summary>
-            /// <param name="input">Reference to the input data.</param>
+            /// <param name="input_data">The input data.</param>
             /// <returns>The converted output data.</returns>
             public static GH_Structure<IGH_Goo> ConvertToGHStructure(GenericDataStructure input_data)
             {
-                var output_data = new GH_Structure<IGH_Goo>();
+                var ghstructure_data = new GH_Structure<IGH_Goo>();
 
                 /// TODO Support branches -> is this supported by GH_Structure nevertheless?
                 if (input_data._Branches.Count > 0)
@@ -97,13 +97,13 @@ namespace GrasshopperInterface
                     GH_Path path = new GH_Path(branch_index);
                     foreach (var generic_value in input_entry._Values)
                     {
-                        output_data.Append(new GH_String(generic_value.ToString()), path);
+                        ghstructure_data.Append(new GH_String(generic_value.ToString()), path);
                     }
-                    output_data.EnsurePath(path);
+                    ghstructure_data.EnsurePath(path);
                     branch_index++;
                 }
 
-                return output_data;
+                return ghstructure_data;
             }
         }
     }

@@ -205,8 +205,10 @@ namespace Core
                 _Attached = false;
 
                 _content_parent = null;
-                _options_menu = null;
                 _content_child = null;
+
+                _options_menu = null;
+                _data_menu = null;
 
                 _timer = null;
 
@@ -263,15 +265,24 @@ namespace Core
             }
 
             /// <summary>
-            /// Add new option to menu of visualization.
+            /// Add new option to 'options' menu of visualization.
             /// </summary>
-            protected void AddMenuOption(MenuItem option)
+            protected void AddOptionMenu(MenuItem option)
             {
                 option.Style = ColorTheme.MenuItemIconStyle();
                 _options_menu.Items.Add(option);
                 _options_menu.IsEnabled = true;
             }
 
+            /// <summary>
+            /// Add new option to 'data' menu of visualization.
+            /// </summary>
+            protected void AddDataMenu(MenuItem option)
+            {
+                option.Style = ColorTheme.MenuItemIconStyle();
+                _data_menu.Items.Add(option);
+                _data_menu.IsEnabled = true;
+            }
 
             /* ------------------------------------------------------------------*/
             // protected variables
@@ -316,6 +327,11 @@ namespace Core
                 _options_menu.IsEnabled = false;
                 menu.Items.Add(_options_menu);
 
+                _options_menu = new MenuItem();
+                _options_menu.Header = "Data";
+                _options_menu.IsEnabled = false;
+                menu.Items.Add(_options_menu);
+
                 return menu_grid;
             }
 
@@ -324,8 +340,10 @@ namespace Core
             // private variables
 
             private DockPanel _content_parent = null;
-            private MenuItem _options_menu = null;
             private Grid _content_child = null;
+
+            private MenuItem _options_menu = null;
+            private MenuItem _data_menu = null;
 
             /// DEBUG
             protected TimeBenchmark _timer = null;

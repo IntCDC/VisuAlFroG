@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows.Controls;
+using System.Collections.Generic;
 using Core.GUI;
 
 
@@ -7,17 +9,23 @@ using Core.GUI;
  * Abstract Child Window
  * 
  */
+
+// Arguments: <content name, flag: is content available, flag: are multiple instances allowed, content type>
+using ReadContentMetaData_Type = System.Tuple<string, bool, bool, string>;
+
+using AttachContentMetaData_Type = System.Tuple<string, System.Windows.Controls.Panel>;
+
+
 namespace Core
 {
     namespace Abstracts
     {
         public abstract class AbstractWindow
         {
-
             /* ------------------------------------------------------------------*/
             // public delegates
 
-            public delegate AvailableContentsList_Type AvailableContents_Delegate();
+            public delegate List<ReadContentMetaData_Type> AvailableContents_Delegate();
 
             public delegate AttachContentMetaData_Type CreateContent_Delegate(string content_id, string content_type);
 
@@ -65,7 +73,7 @@ namespace Core
 
             protected bool _parent_is_root = false;
             protected WindowBranch _parent_branch = null;
-            protected ContentCallbacks_Type _content_callbacks = null;
+            protected Tuple<AvailableContents_Delegate, CreateContent_Delegate, DeleteContent_Delegate> _content_callbacks = null;
         }
     }
 }

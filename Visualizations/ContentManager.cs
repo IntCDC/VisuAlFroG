@@ -14,6 +14,13 @@ using Core.Data;
  * Content Manager
  * 
  */
+
+// Arguments: <content name, flag: is content available, flag: are multiple instances allowed, content type>
+using ReadContentMetaData_Type = System.Tuple<string, bool, bool, string>;
+
+using AttachContentMetaData_Type = System.Tuple<string, System.Windows.Controls.Panel>;
+
+
 namespace Visualizations
 {
     public class ContentManager : AbstractService
@@ -21,13 +28,13 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         // public functions
 
-        public bool Initialize(DataManager.GetDataCallback_Delegate request_callback, DataManager.RegisterDataCallback_Delegate update_callback, DataManager.UnregisterUpdateCallback_Delegate unregister_callback)
+        public bool Initialize(DataManager.GetDataCallback_Delegate request_callback, DataManager.RegisterDataCallback_Delegate register_callback, DataManager.UnregisterUpdateCallback_Delegate unregister_callback)
         {
             if (_initialized)
             {
                 Terminate();
             }
-            if ((request_callback == null) || (update_callback == null) || (unregister_callback == null))
+            if ((request_callback == null) || (register_callback == null) || (unregister_callback == null))
             {
                 Log.Default.Msg(Log.Level.Error, "Missing callback(s)");
                 return false;
@@ -36,7 +43,7 @@ namespace Visualizations
 
             _contents = new Dictionary<Type, Dictionary<string, AbstractVisualization>>();
             _data_request_callback = request_callback;
-            _register_data_callback = update_callback;
+            _register_data_callback = register_callback;
             _unregister_data_callback = unregister_callback;
 
 
@@ -181,9 +188,9 @@ namespace Visualizations
         /// Provide necessary information of available window content (called by window leaf).
         /// </summary>
         /// <returns>List of available content meta data.</returns>
-        public AvailableContentsList_Type AvailableContentsCallback()
+        public List<ReadContentMetaData_Type> AvailableContentsCallback()
         {
-            var content_ids = new AvailableContentsList_Type();
+            var content_ids = new List<ReadContentMetaData_Type>();
 
             if (!_initialized)
             {
@@ -339,7 +346,8 @@ namespace Visualizations
             if (content.Initialize(_data_request_callback))
             {
                 var data_uid = _register_data_callback(content.Update, content._RequiredDataType);
-                if (data_uid != UniqueID.InvalidInt)
+                // XXX Do not check if no data should have been created...
+                /// if (data_uid != UniqueID.InvalidInt) 
                 {
                     content._DataUID = data_uid;
                     if (content.Create())
@@ -349,6 +357,7 @@ namespace Visualizations
                     }
                 }
             }
+            content = null;
             Log.Default.Msg(Log.Level.Error, "Unable to initialize or create content: " + type.FullName);
             return null;
         }

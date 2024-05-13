@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Windows.Forms;
@@ -137,29 +138,31 @@ namespace Core
                     return UniqueID.InvalidInt;
 
                 }
-                if (data_type == null)
+                if (data_type != null)
                 {
-                    ///Log.Default.Msg(Log.Level.Error, "Data type is NULL.");
+                    var variety = (IDataType)Activator.CreateInstance(data_type, (PropertyChangedEventHandler)event_metadata_changed, (PropertyChangedEventHandler)event_data_changed);
+                    if (variety == null)
+                    {
+                        Log.Default.Msg(Log.Level.Error, "Expected data type of IDataVariety but received: " + data_type.FullName);
+                        return UniqueID.InvalidInt;
+                    }
+
+                    _data_library.Add(UniqueID.GenerateInt(), new DataDescription(update_callback, variety));
+                    Log.Default.Msg(Log.Level.Info, "Added new data type: " + data_type.FullName);
+
+                    // Load data if available
+                    if (_original_data != null)
+                    {
+                        variety.UpdateData(_original_data);
+                    }
+
+                    return _data_library.Last().Key;
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Debug, "Omitted data creation for data type 'null'");
                     return UniqueID.InvalidInt;
-
                 }
-                var variety = (IDataType)Activator.CreateInstance(data_type, (PropertyChangedEventHandler)event_metadata_changed, (PropertyChangedEventHandler)event_data_changed);
-                if (variety == null)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Expected data type of IDataVariety but received: " + data_type.FullName);
-                    return UniqueID.InvalidInt;
-                }
-
-                _data_library.Add(UniqueID.GenerateInt(), new DataDescription(update_callback, variety));
-                Log.Default.Msg(Log.Level.Info, "Added new data type: " + data_type.FullName);
-
-                // Load data if available
-                if (_original_data != null)
-                {
-                    variety.UpdateData(_original_data);
-                }
-
-                return _data_library.Last().Key;
             }
 
             /// <summary>
@@ -208,33 +211,87 @@ namespace Core
             }
 
             /// <summary>
+            /// 
+            /// </summary>
+            public bool SaveData()
+            {
+                /// TODO
+                Log.Default.Msg(Log.Level.Warn, "Saving data from file is not yet implemented...");
+                return true;
+
+                string csv_data_string = CSV_DataConverter.ConvertToCSV(_original_data);
+                FileDialogHelper.Save(csv_data_string, "Save Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("data", "csv"));
+            }
+
+            /// <summary>
+            /// Load CSV formatted data from a file
+            /// </summary>
+            public bool LoadData()
+            {
+                /// TODO
+                Log.Default.Msg(Log.Level.Warn, "Loading data from file is not yet implemented...");
+                return true;
+
+
+                string data_file = FileDialogHelper.Load("Load Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("data", "csv"));
+                try
+                {
+                    var fileStream = new FileStream(data_file, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    using (StreamReader reader = new StreamReader(fileStream))
+                    {
+                        Log.Default.Msg(Log.Level.Info, "Loading data from file: '" + data_file + "'");
+
+                        string csv_data = "";
+                        var input_data = CSV_DataConverter.ConvertFromCSV(csv_data);
+                        UpdateData(input_data);
+
+                        return true;
+                    }
+                }
+                catch (Exception exc)
+                {
+                    Log.Default.Msg(Log.Level.Error, exc.Message);
+                }
+                return false;
+            }
+
+            /// <summary>
             /// Send changed output data to interface
             /// </summary>
-            public void SendOutputData()
+            public bool SendData()
             {
+                var out_data = new GenericDataStructure();
+                if (_original_data != null)
+                {
+                    var metadata_list = _original_data.ListMetaData();
+                    foreach (var meta_data in metadata_list)
+                    {
+                        if (meta_data._Selected)
+                        {
+                            var metadata_entry = new GenericDataEntry();
+                            metadata_entry.AddValue(meta_data._Selected);
+                            metadata_entry.AddValue(meta_data._Index);
+                            out_data.AddEntry(metadata_entry);
+                        }
+                    }
+
+                }
                 if (_outputdata_callback != null)
                 {
-                    if (_original_data != null)
-                    {
-                        var metadata_list = _original_data.ListMetaData();
-                        var out_data = new GenericDataStructure();
-                        foreach (var meta_data in metadata_list)
-                        {
-                            if (meta_data._Selected)
-                            {
-                                var metadata_entry = new GenericDataEntry();
-                                metadata_entry.AddValue(meta_data._Selected);
-                                metadata_entry.AddValue(meta_data._Index);
-                                out_data.AddEntry(metadata_entry);
-                            }
-                        }
-                        _outputdata_callback(out_data);
-                    }
+                    _outputdata_callback(out_data);
                 }
                 else
                 {
-                    Log.Default.Msg(Log.Level.Error, "Missing callback for sending output data");
+                    ///Log.Default.Msg(Log.Level.Warn, "Missing callback for sending output data");
+
+                    /// TODO Ask to save output data to file
+                    Log.Default.Msg(Log.Level.Warn, "Saving output data from file is not yet implemented...");
+                    return false;
+
+                    string csv_data_string = CSV_DataConverter.ConvertToCSV(out_data);
+                    FileDialogHelper.Save(csv_data_string, "Save Output Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("output_data", "csv"));
                 }
+                return true;
             }
 
 
@@ -261,6 +318,7 @@ namespace Core
                     foreach (var pair in _data_library)
                     {
                         pair.Value._Data.UpdateMetaDataEntry(sender_selection);
+
                         pair.Value._UpdateVisualization(false);
                     }
                 }
@@ -287,25 +345,26 @@ namespace Core
                 }
                 try
                 {
-                    switch (e.PropertyName)
-                    {
-                        case (DataModifier.ADD):
-
-                            break;
-                        case (DataModifier.DELETE):
-
-                            break;
-                        case (DataModifier.CHANGE):
-
-                            break;
-                        default: break;
-
-                    }
                     // Update data entry in all data series
                     foreach (var pair in _data_library)
                     {
                         /// TODO 
-                        pair.Value._UpdateVisualization(true);
+                        switch (e.PropertyName)
+                        {
+                            case (DataModifier.ADD):
+
+                                break;
+                            case (DataModifier.DELETE):
+
+                                break;
+                            case (DataModifier.CHANGE):
+
+                                break;
+                            default: break;
+
+                        }
+
+                        pair.Value._UpdateVisualization(false);
                     }
                 }
                 catch (Exception exc)

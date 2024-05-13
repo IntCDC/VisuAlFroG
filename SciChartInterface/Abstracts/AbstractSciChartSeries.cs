@@ -65,7 +65,7 @@ namespace SciChartInterface
                 clue_pan.IsEnabled = false;
                 option_hint.Items.Add(clue_pan);
 
-                AddMenuOption(option_hint);
+                AddOptionMenu(option_hint);
 
 
                 // Axis --------------------------------------------
@@ -74,7 +74,7 @@ namespace SciChartInterface
                     AxisTitle = "X Axis",
                     DrawMajorBands = false
                 };
-                Content.XAxis = xAxis;
+                _Content.XAxis = xAxis;
 
                 var yAxis = new NumericAxis()
                 {
@@ -82,7 +82,7 @@ namespace SciChartInterface
                     GrowBy = new SciChart.Data.Model.DoubleRange(0.2, 0.2),
                     DrawMajorBands = false,
                 };
-                Content.YAxis = yAxis;
+                _Content.YAxis = yAxis;
 
 
                 // Modifiers ---------------------------------------
@@ -90,7 +90,7 @@ namespace SciChartInterface
                 data_point_selection.IsEnabled = true;
                 data_point_selection.AllowsMultiSelection = true;
 
-                Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
+                _Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
                     data_point_selection,
                     new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier()
                     {
@@ -124,7 +124,7 @@ namespace SciChartInterface
                     }
                 );
 
-                Content.ZoomExtents();
+                _Content.ZoomExtents();
 
                 _timer.Stop();
                 _created = true;

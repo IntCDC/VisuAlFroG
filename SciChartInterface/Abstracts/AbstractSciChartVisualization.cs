@@ -29,7 +29,8 @@ namespace SciChartInterface
             public sealed override bool _MultipleInstances { get { return true; } }
             public sealed override List<Type> _DependingServices { get { return new List<Type>() { typeof(SciChartInterfaceService) }; } }
 
-            protected SurfaceType Content { get { return _content_surface; } }
+            protected SurfaceType _Content { get { return _content_surface; } }
+
 
             /* ------------------------------------------------------------------*/
             // public functions
@@ -105,8 +106,8 @@ namespace SciChartInterface
 
                 if (new_data)
                 {
-                    GetData(Content);
-                    Content.ZoomExtents();
+                    GetData(_Content);
+                    _Content.ZoomExtents();
                 }
             }
 

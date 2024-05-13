@@ -43,13 +43,13 @@ namespace Visualizations
             _timer.Start();
 
 
-            Content.Name = _ID;
-            Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-            Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-            Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
-            Content.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
-            Content.PreviewMouseWheel += event_scrollviewer_mousewheel;
-            Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
+            _Content.Name = _ID;
+            _Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            _Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            _Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
+            _Content.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
+            _Content.PreviewMouseWheel += event_scrollviewer_mousewheel;
+            _Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
 
             if (GetData(out GenericDataStructure data))
             {
@@ -59,7 +59,7 @@ namespace Visualizations
                 data_grid.IsReadOnly = true;
                 data_grid.AutoGenerateColumns = true;
                 data_grid.ItemsSource = _table.AsDataView();
-                Content.Content = data_grid;
+                _Content.Content = data_grid;
             }
 
 

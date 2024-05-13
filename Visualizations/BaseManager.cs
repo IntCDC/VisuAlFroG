@@ -4,6 +4,7 @@ using Visualizations.WebAPI;
 using Core.Abstracts;
 using Core.Data;
 using static Core.Data.DataManager;
+using Core.GUI;
 
 
 
@@ -11,6 +12,10 @@ using static Core.Data.DataManager;
  * Visualization Management
  * 
  */
+
+using ContentCallbacks_Type = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.CreateContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
+
+
 namespace Visualizations
 {
     public class BaseManager : AbstractService
@@ -99,9 +104,17 @@ namespace Visualizations
         {
             _datamanager.SetOutputDataCallback(_outputdata_callback);
         }
-        public TriggerSetDataCallback_Delegate GetSendOutputDataCallback()
+        public MenuBar.MenuCallback_Delegate GetSaveDataCallback()
         {
-            return _datamanager.SendOutputData;
+            return _datamanager.SaveData;
+        }
+        public MenuBar.MenuCallback_Delegate GetLoadDataCallback()
+        {
+            return _datamanager.LoadData;
+        }
+        public MenuBar.MenuCallback_Delegate GetSendDataCallback()
+        {
+            return _datamanager.SendData;
         }
 
 

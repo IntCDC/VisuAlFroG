@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-
 using Core.Abstracts;
 using Core.Utilities;
-
 using Newtonsoft.Json;
 
-using static System.Net.Mime.MediaTypeNames;
 
 
 /*
@@ -153,7 +150,7 @@ namespace Core
                     _serialize_strucutre.Add(collect_callback.Key, collect_callback.Value());
                 }
                 string configurations = Serialize<Dictionary<string, string>>(_serialize_strucutre);
-                savefile_dialog(configurations);
+                FileDialogHelper.Save(configurations, "Save Configuration", "JSON files (*.json)|*.json", ResourcePaths.CreateFileName("configuration", "json"));
                 return true;
             }
 
@@ -162,20 +159,14 @@ namespace Core
             /// </summary>
             /// <param name="configuration_file">The configuration file. If empty file dialog is opened.</param>
             /// <returns>True on success, false otherwise.</returns>
-            public bool Load(string configuration_file = "")
+            public bool LoadFile(string configuration_file)
             {
-                string config_file = configuration_file;
-                if (config_file == "")
-                {
-                    config_file = openfile_dialog();
-                }
-
                 try
                 {
-                    var fileStream = new FileStream(config_file, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    var fileStream = new FileStream(configuration_file, FileMode.Open, FileAccess.Read, FileShare.Read);
                     using (StreamReader reader = new StreamReader(fileStream))
                     {
-                        Log.Default.Msg(Log.Level.Info, "Loading configuration from file: '" + config_file + "'");
+                        Log.Default.Msg(Log.Level.Info, "Loading configuration from file: '" + configuration_file + "'");
 
                         string config_content = reader.ReadToEnd();
                         var _deserialize_structure = Deserialize<Dictionary<string, string>>(config_content);
@@ -197,65 +188,12 @@ namespace Core
                 return false;
             }
 
-
-            /* ------------------------------------------------------------------*/
-            // private functions
-
-            /// <summary>
-            /// File dialog for saving provided string to a JSON file.
-            /// </summary>
-            /// <param name="output_content">The content of the file as string.</param>
-            private void savefile_dialog(string output_content)
+            public bool LoadFileDialog()
             {
-                Stream ouput_stream;
-                System.Windows.Forms.SaveFileDialog save_file_dialog = new System.Windows.Forms.SaveFileDialog();
-
-                save_file_dialog.Title = "Save Configuration";
-                save_file_dialog.InitialDirectory = System.Windows.Forms.Application.StartupPath;
-                save_file_dialog.Filter = "JSON files (*.json)|*.json";
-                save_file_dialog.FilterIndex = 1;
-                save_file_dialog.RestoreDirectory = true;
-                save_file_dialog.AddExtension = true;
-                save_file_dialog.FileName = ResourcePaths.CreateFileName("configuration", "json");
-
-                if (save_file_dialog.ShowDialog() == DialogResult.OK)
-                {
-                    if ((ouput_stream = save_file_dialog.OpenFile()) != null)
-                    {
-                        byte[] byte_content = Encoding.ASCII.GetBytes(output_content);
-                        MemoryStream stream = new MemoryStream(byte_content);
-                        ouput_stream.Write(byte_content, 0, byte_content.Length);
-
-                        ouput_stream.Close();
-                    }
-                }
+                string config_file = FileDialogHelper.Load("Load Configuration", "JSON files (*.json)|*.json", ResourcePaths.CreateFileName("configuration", "json"));
+                return LoadFile(config_file);
             }
 
-            /// <summary>
-            /// File dialog for loading content from a JSON file.
-            /// </summary>
-            /// <returns>The content of the file as string.</returns>
-            private string openfile_dialog()
-            {
-                var input_content = "";
-                var input_filename = "";
-
-                using (System.Windows.Forms.OpenFileDialog open_file_dialog = new System.Windows.Forms.OpenFileDialog())
-                {
-                    open_file_dialog.Title = "Load Configuration";
-                    open_file_dialog.InitialDirectory = System.Windows.Forms.Application.StartupPath;
-                    open_file_dialog.Filter = "JSON files (*.json)|*.json";
-                    open_file_dialog.FilterIndex = 1;
-                    open_file_dialog.RestoreDirectory = true;
-                    open_file_dialog.FileName = ResourcePaths.CreateFileName("configuration", "json");
-
-                    if (open_file_dialog.ShowDialog() == DialogResult.OK)
-                    {
-                        return open_file_dialog.FileName;
-                    }
-                }
-                return input_content;
-            }
 
             /* ------------------------------------------------------------------*/
             // public variables

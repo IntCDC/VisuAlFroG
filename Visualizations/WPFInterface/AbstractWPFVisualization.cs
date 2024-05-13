@@ -23,9 +23,9 @@ namespace Visualizations
             // properties
 
             public sealed override List<Type> _DependingServices { get { return new List<Type>() { }; } }
-            public sealed override Type _RequiredDataType { get; } = typeof(DataTypeGeneric);
+            public override Type _RequiredDataType { get; } = typeof(DataTypeGeneric);
 
-            protected ContentType Content { get; } = new ContentType();
+            protected ContentType _Content { get; } = new ContentType();
 
 
             /* ------------------------------------------------------------------*/
@@ -41,7 +41,7 @@ namespace Visualizations
                 _timer.Start();
 
                 this._RequestDataCallback = request_callback;
-                AttachChildContent(Content);
+                AttachChildContent(_Content);
 
                 _timer.Stop();
                 _initialized = true;

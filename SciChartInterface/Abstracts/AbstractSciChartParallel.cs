@@ -70,7 +70,7 @@ namespace SciChartInterface
                 clue_pan.IsEnabled = false;
                 option_hint.Items.Add(clue_pan);
 
-                AddMenuOption(option_hint);
+                AddOptionMenu(option_hint);
 
 
                 // Modifiers ---------------------------------------
@@ -86,7 +86,7 @@ namespace SciChartInterface
                 };
                 modifier_selection.SelectionChanged += event_selection_changed;
 
-                Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
+                _Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
                     modifier_reorder_axes,
                     modifier_selection,
                     new SciChart.Charting.ChartModifiers.ZoomPanModifier()
@@ -122,7 +122,7 @@ namespace SciChartInterface
                     }
                 );
 
-                Content.ZoomExtents();
+                _Content.ZoomExtents();
 
                 _timer.Stop();
                 _created = true;
@@ -154,7 +154,7 @@ namespace SciChartInterface
 
             private void event_axes_reordered(object sender, ParallelAxisReorderArgs e)
             {
-                var parent = Content as SciChartParallelCoordinateSurface;
+                var parent = _Content as SciChartParallelCoordinateSurface;
                 var pcp_source = parent.ParallelCoordinateDataSource as ParallelCoordinateDataSource<ExpandoObject>;
                 pcp_source.ReorderItems(e.OldIndex, e.NewIndex);
             }

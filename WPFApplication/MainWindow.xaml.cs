@@ -7,6 +7,7 @@ using Core.Data;
 using System.Collections.Generic;
 using System.Windows.Input;
 using System.IO;
+using System.Windows.Media;
 
 
 
@@ -29,43 +30,52 @@ namespace Frontend
             /// </summary>
             public delegate void ReloadInterface_Delegate();
 
+            /// <summary>
+            /// Callback to mark color theme menu item
+            /// </summary>
+            public delegate void MarkColorTheme_Delegate(ColorTheme.PredefinedThemes color_theme);
+
+
+
 
             /* ------------------------------------------------------------------*/
             // public functions
 
-            /// <summary>
-            /// Ctor. Used for detached execution.
-            /// </summary>
-            public MainWindow() : this("[detached] Visual Analytics Framework for Grasshopper (VisuAlFroG)", true) { }
+            public MainWindow() : this(false) { }
 
-            /// <summary>
-            /// Ctor.
-            /// </summary>
-            /// <param name="app_name"></param>
-            /// <param name="detached"></param>
-            public MainWindow(string app_name, bool detached = false)
+            public MainWindow(bool called_from_interface)
             {
-                _soft_close = !detached;
-                _detached = detached;
-                initialize(app_name);
+                _soft_close = called_from_interface;
+                _standalone = !called_from_interface;
+                initialize();
                 create();
             }
 
             /// <summary>
-            /// Callback to pass output data to the interface (= Grasshopper).
+            /// Callback to pass output data back to the interface.
             /// </summary>
             /// <param name="output_data_callback">callback from the DataManager to pipe new output data to the interface.</param>
             public void SetOutputDataCallback(DataManager.SetDataCallback_Delegate output_data_callback)
             {
+                if (_standalone)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Ignoring action. Application is defined as stand-alone but used via interface. Set appropriate flag in CTOR via MainWindow(true).");
+                    return;
+                }
                 _basemanager.SetOutputDataCallback(output_data_callback);
             }
 
             /// <summary>
-            /// Get input data from interface (= Grasshopper).
+            /// Get input data from interface.
             /// </summary>
             /// <param name="input_data">Reference to the input data hold by the interface.</param>
             public void UpdateInputData(GenericDataStructure input_data)
             {
+                if (_standalone)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Ignoring action. Application is defined as stand-alone but used via interface. Set appropriate flag in CTOR via MainWindow(true).");
+                    return;
+                }
                 if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to updating input data");
@@ -80,6 +90,11 @@ namespace Frontend
             /// <param name="arguments">Command line arguments as string</param>
             public void Arguments(string arguments)
             {
+                if (_standalone)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Ignoring action. Application is defined as stand-alone but used via interface. Set appropriate flag in CTOR via MainWindow(true).");
+                    return;
+                }
                 _arguments.Parse(arguments);
                 _arguments.Evaluate();
             }
@@ -113,9 +128,8 @@ namespace Frontend
             /// <summary>
             /// Initialize the main WPF window, the services and the managers...
             /// </summary>
-            /// <param name="app_name">The name of the WPF application.</param>
             /// <returns>True on successful initialization, false otherwise.</returns>
-            public bool initialize(string app_name)
+            public bool initialize()
             {
                 if (_initialized)
                 {
@@ -128,8 +142,9 @@ namespace Frontend
 
                 // Window setup
                 InitializeComponent();
-                base.Title  = app_name;
-                base.Icon   = ImageLoader.ImageSourceFromFile(ResourcePaths.Locations.LogoIcons, "logo64.png");
+                const string app_name = "Visual Analytics Framework for Grasshopper(VisuAlFroG)";
+                base.Title = (_standalone) ? ("[stand-alone]" + app_name) : (app_name);
+                base.Icon = ImageLoader.ImageSourceFromFile(ResourcePaths.Locations.LogoIcons, "logo64.png");
                 // Default window size in pixels
                 base.Width = 1600;
                 base.Height = 900;
@@ -142,7 +157,7 @@ namespace Frontend
                 // Register and parse cmd line arguments
                 _arguments.Register("config", "c", 1, (List<string> parameters) =>
                 {
-                    _configurationservice.Load(parameters[0]);
+                    _configurationservice.LoadFile(parameters[0]);
                 });
                 _arguments.Register("help", "h", 0, (List<string> parameters) =>
                 {
@@ -164,8 +179,10 @@ namespace Frontend
                 initialized &= _basemanager.Initialize();
                 initialized &= _winmanager.Initialize(_basemanager.GetContentCallbacks());
                 initialized &= _colortheme.Initialize(App.Current.Resources, _menubar.MarkColorTheme);
-                initialized &= _menubar.Initialize(this.Close, _colortheme.SetColorStyle, _configurationservice.Save, _configurationservice.Load, _basemanager.GetSendOutputDataCallback());
-
+                initialized &= _menubar.Initialize(close_callback_menu,
+                                                   _configurationservice.Save, _configurationservice.LoadFileDialog,
+                                                   _basemanager.GetSaveDataCallback(), _basemanager.GetLoadDataCallback(), _basemanager.GetSendDataCallback(),
+                                                   _colortheme.SetColorStyle);
                 // Register configurations
                 _configurationservice.RegisterConfiguration(_basemanager._Name, _basemanager.CollectConfigurations, _basemanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_winmanager._Name, _winmanager.CollectConfigurations, _winmanager.ApplyConfigurations);
@@ -222,13 +239,19 @@ namespace Frontend
                 _winmanager.CreateDefault();
 
                 /// Provide example data for detached mode
-                if (_detached)
+                if (_standalone)
                 {
                     var sample_data = TestData.Generate();
-                    UpdateInputData(sample_data);
+                    _basemanager.UpdateInputData(sample_data);
                 }
 
                 _timer.Stop();
+                return true;
+            }
+
+            private bool close_callback_menu()
+            {
+                this.Close();
                 return true;
             }
 
@@ -238,7 +261,7 @@ namespace Frontend
 
             private bool _initialized = false;
             private bool _soft_close = false;
-            private bool _detached = false;
+            private bool _standalone = false;
 
             private CmdLineArguments _arguments = new CmdLineArguments();
 

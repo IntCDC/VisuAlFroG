@@ -30,6 +30,9 @@ namespace Visualizations
         public override string _Name { get { return "Log Console (WPF)"; } }
         public override bool _MultipleInstances { get { return false; } }
 
+        // Indicates to not create an unused copy of the data
+        public override Type _RequiredDataType { get; } = null;
+
 
         /* ------------------------------------------------------------------*/
         // public functions
@@ -56,19 +59,19 @@ namespace Visualizations
             _text_block.Width = Double.NaN; // = "Auto"
             _text_block.Height = Double.NaN; // = "Auto"
 
-            Content.Name = _ID;
-            Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-            Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-            Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
-            Content.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
-            Content.PreviewMouseWheel += event_scrollviewer_mousewheel;
-            Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
-            Content.Content = _text_block;
+            _Content.Name = _ID;
+            _Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            _Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            _Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
+            _Content.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
+            _Content.PreviewMouseWheel += event_scrollviewer_mousewheel;
+            _Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
+            _Content.Content = _text_block;
 
             var copy_option = new MenuItem();
             copy_option.Header = "Copy to Clipboard";
             copy_option.Click += event_option_click;
-            AddMenuOption(copy_option);
+            AddOptionMenu(copy_option);
 
             // Call after _text_block has been created
             Log.Default.RegisterListener(this.LogListener);
@@ -160,12 +163,12 @@ namespace Visualizations
 
         protected void set_scroll_background(string background_color_resource_name)
         {
-            Content.SetResourceReference(ScrollViewer.BackgroundProperty, background_color_resource_name);
+            _Content.SetResourceReference(ScrollViewer.BackgroundProperty, background_color_resource_name);
         }
 
         protected void scroll_bottom()
         {
-            Content.ScrollToBottom();
+            _Content.ScrollToBottom();
         }
 
 

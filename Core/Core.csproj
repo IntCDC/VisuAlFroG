@@ -92,10 +92,12 @@
     <Compile Include="Abstracts\IDataType.cs" />
     <Compile Include="Abstracts\IMetaData.cs" />
     <Compile Include="Data\DataFilter.cs" />
+    <Compile Include="Data\DataLoaderCSV.cs" />
     <Compile Include="Data\DataManager.cs" />
     <Compile Include="Data\DataModifier.cs" />
     <Compile Include="Data\DataTypeGeneric.cs" />
     <Compile Include="Data\DataValidator.cs" />
+    <Compile Include="Data\CSV_DataConverter.cs" />
     <Compile Include="Data\TestData.cs" />
     <Compile Include="Data\GenericDataEntry.cs" />
     <Compile Include="Data\GenericDataStructure.cs" />
@@ -108,8 +110,8 @@
     <Compile Include="GUI\Windows\WindowManager.cs" />
     <Compile Include="GUI\ColorTheme.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Abstracts\ContentTypeAliases.cs" />
     <Compile Include="Utilities\CmdLineArguments.cs" />
+    <Compile Include="Utilities\FileDialogHelper.cs" />
     <Compile Include="Utilities\ResourcePaths.cs" />
     <Compile Include="Utilities\ImageLoader.cs" />
     <Compile Include="Utilities\Log.cs" />

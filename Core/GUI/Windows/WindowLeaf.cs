@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Collections.Generic;
 using Core.Abstracts;
 using Core.Utilities;
 
@@ -17,6 +18,13 @@ using AttachedContent_Type = System.Tuple<string, string>;
  * Window Leaf
  * 
  */
+
+// Arguments: <content name, flag: is content available, flag: are multiple instances allowed, content type>
+using ReadContentMetaData_Type = System.Tuple<string, bool, bool, string>;
+
+using ContentCallbacks_Type = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.CreateContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
+
+
 namespace Core
 {
     namespace GUI
@@ -226,7 +234,7 @@ namespace Core
                 item_content_add.Style = ColorTheme.MenuItemIconStyle("add-content.png");
                 item_content_add.Header = "Add Content";
                 // Call Available Contents
-                AvailableContentsList_Type available_child_content = _content_callbacks.Item1();
+                List<ReadContentMetaData_Type> available_child_content = _content_callbacks.Item1();
                 foreach (var content_data in available_child_content)
                 {
                     // Item index: 1=name, 2=available, 3=is-multi, 4=type
@@ -316,7 +324,7 @@ namespace Core
                 }
 
                 // Call Available Contents
-                AvailableContentsList_Type available_contents = _content_callbacks.Item1();
+                List<ReadContentMetaData_Type> available_contents = _content_callbacks.Item1();
                 foreach (var content_data in available_contents)
                 {
                     string name = conform_name(content_data.Item1);
