@@ -5,10 +5,11 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
-
 using Core.Abstracts;
+using Core.GUI;
 using Core.Utilities;
 
 
@@ -26,16 +27,12 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public delegates
 
-            public delegate void TriggerSetDataCallback_Delegate();
             public delegate object GetDataCallback_Delegate(int data_uid);
             public delegate void SetDataCallback_Delegate(GenericDataStructure ouput_data);
 
             public delegate int RegisterDataCallback_Delegate(UpdateVisualizationCallback_Delegate update_callback, Type data_type);
             public delegate void UnregisterUpdateCallback_Delegate(int data_uid);
 
-            /// <summary>
-            /// Callback called on update data
-            /// </summary>
             public delegate void UpdateVisualizationCallback_Delegate(bool new_data);
 
 
@@ -51,8 +48,8 @@ namespace Core
                 _timer.Start();
 
 
-
                 bool initialized = true;
+                _original_data = new GenericDataStructure();
 
 
                 _timer.Stop();
@@ -65,7 +62,7 @@ namespace Core
                 bool terminated = true;
                 if (_initialized)
                 {
-                    _original_data = null;
+                    _original_data = new GenericDataStructure();
                     _outputdata_callback = null;
                     _data_library.Clear();
 
@@ -152,7 +149,7 @@ namespace Core
                     Log.Default.Msg(Log.Level.Info, "Added new data type: " + data_type.FullName);
 
                     // Load data if available
-                    if (_original_data != null)
+                    if (!_original_data.Empty())
                     {
                         variety.UpdateData(_original_data);
                     }
@@ -169,6 +166,7 @@ namespace Core
             /// <summary>
             /// Unregister data of calling visualization.
             /// </summary>
+            /// <param name="data_uid">The UID of the data to be deleted.</param>
             public void UnregisterDataCallback(int data_uid)
             {
                 if (!_initialized)
@@ -191,7 +189,7 @@ namespace Core
             /// <summary>
             /// Return the data for the requested type.
             /// </summary>
-            /// <param name="t">The type the data would be required.</param>
+            /// <param name="data_uid">The UID of the requested data.</param>
             /// <returns>The data as generic object. Cast to requested type manually.</returns>
             public object GetDataCallback(int data_uid)
             {
@@ -211,51 +209,12 @@ namespace Core
             }
 
             /// <summary>
-            /// Save data in CSV format to a file
-            /// </summary>
-            public bool SaveCSVData()
-            {
-                if (CSV_DataConverter.ConvertToCSV(_original_data, out string output_data))
-                {
-                    return FileDialogHelper.Save(output_data, "Save Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("data", "csv"));
-                }
-                return false;
-            }
-
-            /// <summary>
-            /// Load CSV formatted data from a file
-            /// </summary>
-            public bool LoadCSVData()
-            {
-                string data_file = FileDialogHelper.Load("Load Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("data", "csv"));
-                try
-                {
-                    var fileStream = new FileStream(data_file, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    using (StreamReader reader = new StreamReader(fileStream))
-                    {
-                        Log.Default.Msg(Log.Level.Info, "Loading data from file: '" + data_file + "'");
-                        string content = reader.ReadToEnd();
-                        if (CSV_DataConverter.ConvertFromCSV(content, out GenericDataStructure input_data))
-                        {
-                            UpdateData(input_data);
-                            return true;
-                        }
-                    }
-                }
-                catch (Exception exc)
-                {
-                    Log.Default.Msg(Log.Level.Error, exc.Message);
-                }
-                return false;
-            }
-
-            /// <summary>
             /// Send changed output data to interface
             /// </summary>
             public bool SendData()
             {
                 var out_data = new GenericDataStructure();
-                if (_original_data != null)
+                if (!_original_data.Empty())
                 {
                     var metadata_list = _original_data.ListMetaData();
                     foreach (var meta_data in metadata_list)
@@ -276,23 +235,60 @@ namespace Core
                 }
                 else
                 {
-                    if (CSV_DataConverter.ConvertToCSV(out_data, out string csv_data_string))
+                    // Alternatively try to save output data in CSV format
+                    if (CSV_DataHandling.ConvertToCSV(out_data, out string csv_data_string))
                     {
                         string title = "Send Output Data";
                         string message = "No callback available to send the output data.\nDo you want to save the data to a CSV file?\nIf not, nothing will happen...";
                         MessageBoxButtons buttons = MessageBoxButtons.YesNo;
-                        DialogResult result = MessageBox.Show(message, title, buttons);
+                        DialogResult result = System.Windows.Forms.MessageBox.Show(message, title, buttons);
                         if (result == DialogResult.Yes)
                         {
                             FileDialogHelper.Save(csv_data_string, "Save Output Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("output_data", "csv"));
                         }
                     }
-                    else {
+                    else
+                    {
                         Log.Default.Msg(Log.Level.Warn, "No callback available to send the output data. Since data can not be converted to CSV format, nothing happens...");
                     }
                 }
 
                 return true;
+            }
+
+            public override void AttachMenu(MenuBar menu_bar)
+            {
+                var menu_item = MenuBar.GetDefaultMenuItem("Send Output Data", SendData);
+                menu_bar.AddMenu(MenuBar.MainMenuOption.DATA, menu_item);
+
+                menu_bar.AddSeparator(MenuBar.MainMenuOption.DATA);
+
+                menu_item = MenuBar.GetDefaultMenuItem("Save CSV File", null);
+                menu_item.Click += (object sender, RoutedEventArgs e) =>
+                {
+                    var sender_content = sender as System.Windows.Controls.MenuItem;
+                    if (sender_content == null)
+                    {
+                        return;
+                    }
+                    CSV_DataHandling.SaveToFile(_original_data);
+                };
+                menu_bar.AddMenu(MenuBar.MainMenuOption.DATA, menu_item);
+
+                menu_item = MenuBar.GetDefaultMenuItem("Load CSV File", null);
+                menu_item.Click += (object sender, RoutedEventArgs e) =>
+                {
+                    var sender_content = sender as System.Windows.Controls.MenuItem;
+                    if (sender_content == null)
+                    {
+                        return;
+                    }
+                    if (CSV_DataHandling.LoadFromFile(out GenericDataStructure data))
+                    {
+                        UpdateData(data);
+                    }
+                };
+                menu_bar.AddMenu(MenuBar.MainMenuOption.DATA, menu_item);
             }
 
 

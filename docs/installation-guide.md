@@ -84,13 +84,13 @@ The following software is required to be installed beforehand:
 <!-- ###################################################################### -->
 #### Test Example
 
-The successful installation can be tested by opening the provided Grasshopper example: `..\example\VisualizeDataExample.gh`.
+The successful installation can be tested by opening the provided Grasshopper example: `..\example\example.gh`.
 
 
 <!-- ###################################################################### -->
 #### Configuration
 
-VisuAlFroG allows to save any configuration you have created to a file via the menu *File* -> *Configuration* -> *Save*
+VisuAlFroG allows to save any user interface configuration you have created to a file via the menu *File* -> *Configuration* -> *Save*
 Configurations are stored in the [JSON](https://www.json.org/json-en.html) file format and can be loaded the following ways:
 - In the menu *File* select *Configuration* -> *Load* 
 - Attach a *Panel* or *Text* component to the *Config File* input parameter of the VisuAlFroG component and enter `--config "<CONFIGURATION-FILE-PATH>"`

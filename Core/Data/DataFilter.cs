@@ -14,7 +14,7 @@ namespace Core
 {
     namespace Data
     {
-        public class DataFilter
+        public class DataFilter // : IDataModifier
         {
 
 

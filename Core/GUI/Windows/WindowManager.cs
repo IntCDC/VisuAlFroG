@@ -42,10 +42,8 @@ namespace Core
 
                 _timer.Start();
 
-                _content_callbacks = content_callbacks;
-
                 _window_root = new WindowBranch();
-                _content = _window_root.CreateRoot(_content_callbacks);
+                _content = _window_root.CreateRoot(content_callbacks);
                 bool initialized = (_content != null);
 
                 _timer.Stop();
@@ -70,7 +68,6 @@ namespace Core
                 {
                     _content = null;
                     _window_root = null;
-                    _content_callbacks = null;
 
                     _initialized = false;
                 }
@@ -206,7 +203,6 @@ namespace Core
 
             private Grid _content = null;
             private WindowBranch _window_root = null;
-            private ContentCallbacks_Type _content_callbacks = null;
         }
     }
 }

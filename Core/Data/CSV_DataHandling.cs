@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Windows.Media;
 using System.Globalization;
 using System.Windows.Markup;
+using System.IO;
 
 
 
@@ -17,10 +18,58 @@ namespace Core
 {
     namespace Data
     {
-        public class CSV_DataConverter
+        public class CSV_DataHandling
         {
             /* ------------------------------------------------------------------*/
             // static functions
+
+            /// <summary>
+            /// [STATIC] Save data in CSV format to a file
+            /// </summary>
+            /// <param name="data"></param>
+            /// <returns></returns>
+            public static bool SaveToFile(GenericDataStructure data)
+            {
+                if (ConvertToCSV(data, out string output_data))
+                {
+                    return FileDialogHelper.Save(output_data, "Save Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("data", "csv"));
+                }
+                return false;
+            }
+
+            /// <summary>
+            /// [STATIC] Load CSV formatted data from a file
+            /// </summary>
+            /// <param name="data"></param>
+            /// <returns></returns>
+            public static bool LoadFromFile(out GenericDataStructure data)
+            {
+                data = new GenericDataStructure();
+
+                string data_file = FileDialogHelper.Load("Load Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("data", "csv"));
+                try
+                {
+                    if (data_file != "")
+                    {
+                        var fileStream = new FileStream(data_file, FileMode.Open, FileAccess.Read, FileShare.Read);
+                        using (StreamReader reader = new StreamReader(fileStream))
+                        {
+                            Log.Default.Msg(Log.Level.Info, "Loading data from file: '" + data_file + "'");
+                            string content = reader.ReadToEnd();
+                            if (ConvertFromCSV(content, out GenericDataStructure input_data))
+                            {
+                                data = input_data;
+                                return true;
+                            }
+                        }
+                    }
+                }
+                catch (Exception exc)
+                {
+                    Log.Default.Msg(Log.Level.Error, exc.Message);
+                }
+                return false;
+            }
 
             /// <summary>
             /// [STATIC] Convert CSV formatted data to generic data type. 
@@ -32,8 +81,13 @@ namespace Core
             {
                 output_data = new GenericDataStructure();
 
-                var generic_input_data = new GenericDataStructure();
+                if (input_data == "")
+                {
+                    Log.Default.Msg(Log.Level.Info, "Empty input data. Skipping converting data to CSV format.");
+                    return true;
+                }
 
+                var generic_input_data = new GenericDataStructure();
                 var lines = input_data.Split('\n');
                 foreach (var line in lines)
                 {
@@ -94,7 +148,7 @@ namespace Core
                 }
                 else
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Unable to convert data from CSV format");
+                    Log.Default.Msg(Log.Level.Info, "Empty input data. Skipping converting data from CSV format");
                     return false;
                 }
             }
@@ -108,9 +162,16 @@ namespace Core
             public static bool ConvertToCSV(GenericDataStructure input_data, out string output_data)
             {
                 output_data = "";
+
+                if (input_data.Empty())
+                {
+                    Log.Default.Msg(Log.Level.Info, "Found no input data to convert");
+                    return true;
+                }
+
                 if (!input_data.IsFlatRowBased())
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Unable to convert data to CSV format");
+                    Log.Default.Msg(Log.Level.Warn, "Input data has wrong format to be converted to CSV format");
                     return false;
                 }
 

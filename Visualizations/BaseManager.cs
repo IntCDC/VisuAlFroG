@@ -104,17 +104,12 @@ namespace Visualizations
         {
             _datamanager.SetOutputDataCallback(_outputdata_callback);
         }
-        public MenuBar.MenuCallback_Delegate GetSaveDataCallback()
+
+        public override void AttachMenu(MenuBar menu_bar)
         {
-            return _datamanager.SaveCSVData;
-        }
-        public MenuBar.MenuCallback_Delegate GetLoadDataCallback()
-        {
-            return _datamanager.LoadCSVData;
-        }
-        public MenuBar.MenuCallback_Delegate GetSendDataCallback()
-        {
-            return _datamanager.SendData;
+            ///_servicemanager.AttachMenu(menu_bar);
+            ///_contentmanager.AttachMenu(menu_bar);
+            _datamanager.AttachMenu(menu_bar);
         }
 
 

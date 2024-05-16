@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Windows.Input;
 using System.IO;
 using System.Windows.Media;
+using System.Windows.Controls;
 
 
 
@@ -168,25 +169,30 @@ namespace Frontend
 
 
                 // Initialize managers and services
-                _configurationservice = new ConfigurationService();
                 _basemanager = new Visualizations.BaseManager();
+                _configurationservice = new ConfigurationService();
                 _winmanager = new WindowManager();
                 _colortheme = new ColorTheme();
                 _menubar = new MenuBar();
 
                 bool initialized = true;
-                initialized &= _configurationservice.Initialize();
                 initialized &= _basemanager.Initialize();
+                initialized &= _configurationservice.Initialize();
                 initialized &= _winmanager.Initialize(_basemanager.GetContentCallbacks());
-                initialized &= _colortheme.Initialize(App.Current.Resources, _menubar.MarkColorTheme);
-                initialized &= _menubar.Initialize(close_callback_menu,
-                                                   _configurationservice.Save, _configurationservice.LoadFileDialog,
-                                                   _basemanager.GetSaveDataCallback(), _basemanager.GetLoadDataCallback(), _basemanager.GetSendDataCallback(),
-                                                   _colortheme.SetColorStyle);
+                initialized &= _colortheme.Initialize(App.Current.Resources);
+                initialized &= _menubar.Initialize();
+
                 // Register configurations
                 _configurationservice.RegisterConfiguration(_basemanager._Name, _basemanager.CollectConfigurations, _basemanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_winmanager._Name, _winmanager.CollectConfigurations, _winmanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_colortheme._Name, _colortheme.CollectConfigurations, _colortheme.ApplyConfigurations);
+
+                // Attach all main menu options (order dependent!)
+                _basemanager.AttachMenu(_menubar);
+                _configurationservice.AttachMenu(_menubar);
+                _colortheme.AttachMenu(_menubar);
+                _menubar.AddSeparator(MenuBar.MainMenuOption.FILE);
+                _menubar.AddMenu(MenuBar.MainMenuOption.FILE, MenuBar.GetDefaultMenuItem("Exit", close_callback_menu));
 
 
                 _timer.Stop();
@@ -239,13 +245,12 @@ namespace Frontend
                 _winmanager.CreateDefault();
 
                 /// Provide example data for detached mode
-                /*
                 if (_standalone)
                 {
                     var sample_data = TestData.Generate();
                     _basemanager.UpdateInputData(sample_data);
                 }
-                */
+
 
                 _timer.Stop();
                 return true;

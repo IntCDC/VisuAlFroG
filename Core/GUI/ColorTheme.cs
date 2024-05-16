@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Documents;
 using Core.Utilities;
 using Core.Abstracts;
+using System.Collections.Generic;
 
 
 
@@ -27,14 +28,6 @@ namespace Core
                 LightBlue,
                 Dark
             }
-
-
-            /* ------------------------------------------------------------------*/
-            // public delegates
-
-            public delegate void SetColorStyle_Delegate(PredefinedThemes theme);
-
-            public delegate void MarkColorTheme_Delegate(ColorTheme.PredefinedThemes color_theme);
 
 
             /* ------------------------------------------------------------------*/
@@ -304,7 +297,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public bool Initialize(ResourceDictionary app_resources, MarkColorTheme_Delegate mark_color_theme_callback)
+            public bool Initialize(ResourceDictionary app_resources)
             {
                 if (_initialized)
                 {
@@ -313,7 +306,6 @@ namespace Core
                 _timer.Start();
 
                 _app_resource = app_resources;
-                _mark_color_theme_callback = mark_color_theme_callback;
                 SetColorStyle(_DefaultColorTheme);
 
                 _timer.Stop();
@@ -372,9 +364,43 @@ namespace Core
                 }
                 ResourceDictionary theme_resource = new ResourceDictionary() { Source = theme_uri };
 
-                _mark_color_theme_callback(theme);
                 _app_resource.MergedDictionaries.Add(theme_resource);
                 _color_theme = theme;
+
+                update_menu_item_selection();
+            }
+
+            public override void AttachMenu(MenuBar menu_bar)
+            {
+                var themes_names = Enum.GetNames(typeof(PredefinedThemes));
+                foreach (var theme_name in themes_names)
+                {
+                    var theme_item = MenuBar.GetDefaultMenuItem(theme_name, null);
+                    theme_item.Click += (object sender, RoutedEventArgs e) =>
+                    {
+                        var sender_content = sender as MenuItem;
+                        if (sender_content == null)
+                        {
+                            return;
+                        }
+                        SetColorStyle((PredefinedThemes)Enum.Parse(typeof(PredefinedThemes), theme_name));
+
+                    };
+                    menu_bar.AddMenu(MenuBar.MainMenuOption.STYLE, theme_item);
+                    _theme_menu_items.Add(theme_item);
+                }
+                update_menu_item_selection();
+            }
+
+
+            /* ------------------------------------------------------------------*/
+            // private functions 
+            private void update_menu_item_selection()
+            {
+                foreach (var theme_meu_item in _theme_menu_items)
+                {
+                    theme_meu_item.IsChecked = (_color_theme == (PredefinedThemes)Enum.Parse(typeof(PredefinedThemes), (string)theme_meu_item.Header));
+                }
             }
 
 
@@ -383,7 +409,8 @@ namespace Core
 
             private PredefinedThemes _color_theme = PredefinedThemes.LightBlue;
             private ResourceDictionary _app_resource = null;
-            private MarkColorTheme_Delegate _mark_color_theme_callback = null;
+            private List<MenuItem> _theme_menu_items = new List<MenuItem>();
+
         }
     }
 }

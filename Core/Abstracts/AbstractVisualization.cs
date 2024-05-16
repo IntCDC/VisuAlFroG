@@ -209,8 +209,8 @@ namespace Core
                 _content_parent = null;
                 _content_child = null;
 
+                _menu = null;
                 _options_menu = null;
-                _data_menu = null;
 
                 _timer = null;
 
@@ -267,6 +267,15 @@ namespace Core
             }
 
             /// <summary>
+            /// Add new menu item to main menu.
+            /// </summary>
+            protected void AddMainMenu(MenuItem menu_item)
+            {
+                ///menu_item.Items -> Style = ColorTheme.MenuItemIconStyle();
+                _menu.Items.Add(menu_item);
+            }
+
+            /// <summary>
             /// Add new option to 'options' menu of visualization.
             /// </summary>
             protected void AddOptionMenu(MenuItem option)
@@ -276,15 +285,6 @@ namespace Core
                 _options_menu.IsEnabled = true;
             }
 
-            /// <summary>
-            /// Add new option to 'data' menu of visualization.
-            /// </summary>
-            protected void AddDataMenu(MenuItem option)
-            {
-                option.Style = ColorTheme.MenuItemIconStyle();
-                _data_menu.Items.Add(option);
-                _data_menu.IsEnabled = true;
-            }
 
             /* ------------------------------------------------------------------*/
             // protected variables
@@ -319,20 +319,15 @@ namespace Core
                 text.Text = _Name;
                 text.Style = ColorTheme.ContentCaptionStyle();
 
-                var menu = new Menu();
-                Grid.SetColumn(menu, 1);
-                menu_grid.Children.Add(menu);
-                menu.Style = ColorTheme.ContentMenuStyle();
+                _menu = new Menu();
+                Grid.SetColumn(_menu, 1);
+                _menu.Style = ColorTheme.ContentMenuStyle();
+                menu_grid.Children.Add(_menu);
 
                 _options_menu = new MenuItem();
                 _options_menu.Header = "Options";
                 _options_menu.IsEnabled = false;
-                menu.Items.Add(_options_menu);
-
-                _data_menu = new MenuItem();
-                _data_menu.Header = "Data";
-                _data_menu.IsEnabled = false;
-                menu.Items.Add(_data_menu);
+                _menu.Items.Add(_options_menu);
 
                 return menu_grid;
             }
@@ -344,8 +339,8 @@ namespace Core
             private DockPanel _content_parent = null;
             private Grid _content_child = null;
 
+            private Menu _menu = null;
             private MenuItem _options_menu = null;
-            private MenuItem _data_menu = null;
 
             /// DEBUG
             protected TimeBenchmark _timer = null;

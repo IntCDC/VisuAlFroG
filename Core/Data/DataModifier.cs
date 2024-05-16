@@ -14,7 +14,7 @@ namespace Core
 {
     namespace Data
     {
-        public class DataModifier
+        public class DataModifier // : IDataModifier
         {
             public const string ADD = "ADD";
             public const string DELETE = "DELETE";

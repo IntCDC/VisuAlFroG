@@ -23,13 +23,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public delegates
 
-            public delegate bool SaveCallback_Delegate();
+            public delegate string RegisterCollectCallback_Delegate();
 
-            public delegate bool LoadCallback_Delegate(string configuratio_file = "");
-
-            public delegate string RegisterCollect_Delegate();
-
-            public delegate bool RegisterApply_Delegate(string configurations);
+            public delegate bool RegisterApplyCallback_Delegate(string configurations);
 
 
             /* ------------------------------------------------------------------*/
@@ -87,8 +83,8 @@ namespace Core
                 }
                 _timer.Start();
 
-                _collect_callbacks = new Dictionary<string, RegisterCollect_Delegate>();
-                _apply_callbacks = new Dictionary<string, RegisterApply_Delegate>();
+                _collect_callbacks = new Dictionary<string, RegisterCollectCallback_Delegate>();
+                _apply_callbacks = new Dictionary<string, RegisterApplyCallback_Delegate>();
 
                 _timer.Stop();
                 _initialized = true;
@@ -104,10 +100,10 @@ namespace Core
                 if (_initialized)
                 {
                     _collect_callbacks.Clear();
-                    _collect_callbacks = new Dictionary<string, RegisterCollect_Delegate>();
+                    _collect_callbacks = new Dictionary<string, RegisterCollectCallback_Delegate>();
 
                     _apply_callbacks.Clear();
-                    _apply_callbacks = new Dictionary<string, RegisterApply_Delegate>();
+                    _apply_callbacks = new Dictionary<string, RegisterApplyCallback_Delegate>();
 
                     _initialized = false;
                 }
@@ -120,7 +116,7 @@ namespace Core
             /// <param name="name">Unique name of the caller.</param>
             /// <param name="collect_callback">Callback for collecting all configurations.</param>
             /// <param name="apply_callback">callback for applying all configurations.</param>
-            public void RegisterConfiguration(string name, RegisterCollect_Delegate collect_callback, RegisterApply_Delegate apply_callback)
+            public void RegisterConfiguration(string name, RegisterCollectCallback_Delegate collect_callback, RegisterApplyCallback_Delegate apply_callback)
             {
                 if (!_initialized)
                 {
@@ -194,13 +190,20 @@ namespace Core
                 return LoadFile(config_file);
             }
 
+            public override void AttachMenu(MenuBar menu_bar)
+            {
+                var config_menu = MenuBar.GetDefaultMenuItem("Configuration");
+                config_menu.Items.Add(MenuBar.GetDefaultMenuItem("Save", Save));
+                config_menu.Items.Add(MenuBar.GetDefaultMenuItem("Load", LoadFileDialog));
+                menu_bar.AddMenu(MenuBar.MainMenuOption.FILE, config_menu);
+            }
+
 
             /* ------------------------------------------------------------------*/
             // public variables
 
-
-            private Dictionary<string, RegisterCollect_Delegate> _collect_callbacks = null;
-            private Dictionary<string, RegisterApply_Delegate> _apply_callbacks = null;
+            private Dictionary<string, RegisterCollectCallback_Delegate> _collect_callbacks = null;
+            private Dictionary<string, RegisterApplyCallback_Delegate> _apply_callbacks = null;
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+
+using Core.GUI;
 using Core.Utilities;
 
 
@@ -11,7 +13,7 @@ namespace Core
 {
     namespace Abstracts
     {
-        public abstract class AbstractService : IAbstractService
+        public abstract class AbstractService
         {
 
             /* ------------------------------------------------------------------*/
@@ -38,7 +40,7 @@ namespace Core
             /// </summary>
             public virtual bool Initialize()
             {
-                throw new InvalidOperationException("Call Initialize method of derived class");
+                throw new InvalidOperationException("Call Initialize method of derived class with required parameters");
             }
             /* TEMPLATE
             {
@@ -60,7 +62,6 @@ namespace Core
             }
             */
 
-
             public abstract bool Terminate();
             /* TEMPLATE
             {
@@ -73,6 +74,11 @@ namespace Core
                 return true;
             }
             */
+
+            public virtual void AttachMenu(MenuBar menu_bar)
+            {
+                throw new InvalidOperationException("This function has been called for derived class of AbstractService that does not implement this function");
+            }
 
 
             /* ------------------------------------------------------------------*/

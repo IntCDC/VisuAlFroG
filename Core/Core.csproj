@@ -87,7 +87,6 @@
     <Compile Include="Abstracts\AbstractVisualization.cs" />
     <Compile Include="Abstracts\AbstractWindow.cs" />
     <Compile Include="Abstracts\IAbstractContent.cs" />
-    <Compile Include="Abstracts\IAbstractService.cs" />
     <Compile Include="Abstracts\IAbstractConfiguration.cs" />
     <Compile Include="Abstracts\IDataType.cs" />
     <Compile Include="Abstracts\IMetaData.cs" />
@@ -96,7 +95,7 @@
     <Compile Include="Data\DataModifier.cs" />
     <Compile Include="Data\DataTypeGeneric.cs" />
     <Compile Include="Data\DataValidator.cs" />
-    <Compile Include="Data\CSV_DataConverter.cs" />
+    <Compile Include="Data\CSV_DataHandling.cs" />
     <Compile Include="Data\TestData.cs" />
     <Compile Include="Data\GenericDataEntry.cs" />
     <Compile Include="Data\GenericDataStructure.cs" />
