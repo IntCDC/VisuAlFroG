@@ -28,9 +28,11 @@ namespace Core
             // public delegates
 
             public delegate object GetDataCallback_Delegate(int data_uid);
+            public delegate List<System.Windows.Controls.MenuItem> GetDataMenuCallback_Delegate(int data_uid);
+
             public delegate void SetDataCallback_Delegate(GenericDataStructure ouput_data);
 
-            public delegate int RegisterDataCallback_Delegate(UpdateVisualizationCallback_Delegate update_callback, Type data_type);
+            public delegate int RegisterDataCallback_Delegate(Type data_type, UpdateVisualizationCallback_Delegate update_callback);
             public delegate void UnregisterUpdateCallback_Delegate(int data_uid);
 
             public delegate void UpdateVisualizationCallback_Delegate(bool new_data);
@@ -122,7 +124,7 @@ namespace Core
             /// <summary>
             /// Register data of calling visualization.
             /// </summary>
-            public int RegisterDataCallback(UpdateVisualizationCallback_Delegate update_callback, Type data_type)
+            public int RegisterDataCallback(Type data_type, UpdateVisualizationCallback_Delegate update_callback)
             {
                 if (!_initialized)
                 {
@@ -209,6 +211,28 @@ namespace Core
             }
 
             /// <summary>
+            /// Return the data menu for the requested type
+            /// </summary>
+            /// <param name="data_uid"></param>
+            /// <returns></returns>
+            public List<System.Windows.Controls.MenuItem> GetDataMenuCallback(int data_uid)
+            {
+                if (!_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return null;
+                }
+
+                if (!_data_library.ContainsKey(data_uid))
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Requested data menu not available for given data UID: " + data_uid.ToString());
+                    return null;
+
+                }
+                return _data_library[data_uid]._Data.GetMenu();
+            }
+
+            /// <summary>
             /// Send changed output data to interface
             /// </summary>
             public bool SendData()
@@ -256,14 +280,14 @@ namespace Core
                 return true;
             }
 
-            public override void AttachMenu(MenuBar menu_bar)
+            public override void AttachMenu(MainMenuBar menu_bar)
             {
-                var menu_item = MenuBar.GetDefaultMenuItem("Send Output Data", SendData);
-                menu_bar.AddMenu(MenuBar.MainMenuOption.DATA, menu_item);
+                var menu_item = MainMenuBar.GetDefaultMenuItem("Send Output Data", SendData);
+                menu_bar.AddMenu(MainMenuBar.PredefinedMenuOption.DATA, menu_item);
 
-                menu_bar.AddSeparator(MenuBar.MainMenuOption.DATA);
+                menu_bar.AddSeparator(MainMenuBar.PredefinedMenuOption.DATA);
 
-                menu_item = MenuBar.GetDefaultMenuItem("Save CSV File", null);
+                menu_item = MainMenuBar.GetDefaultMenuItem("Save CSV File", null);
                 menu_item.Click += (object sender, RoutedEventArgs e) =>
                 {
                     var sender_content = sender as System.Windows.Controls.MenuItem;
@@ -273,9 +297,9 @@ namespace Core
                     }
                     CSV_DataHandling.SaveToFile(_original_data);
                 };
-                menu_bar.AddMenu(MenuBar.MainMenuOption.DATA, menu_item);
+                menu_bar.AddMenu(MainMenuBar.PredefinedMenuOption.DATA, menu_item);
 
-                menu_item = MenuBar.GetDefaultMenuItem("Load CSV File", null);
+                menu_item = MainMenuBar.GetDefaultMenuItem("Load CSV File", null);
                 menu_item.Click += (object sender, RoutedEventArgs e) =>
                 {
                     var sender_content = sender as System.Windows.Controls.MenuItem;
@@ -288,7 +312,7 @@ namespace Core
                         UpdateData(data);
                     }
                 };
-                menu_bar.AddMenu(MenuBar.MainMenuOption.DATA, menu_item);
+                menu_bar.AddMenu(MainMenuBar.PredefinedMenuOption.DATA, menu_item);
             }
 
 

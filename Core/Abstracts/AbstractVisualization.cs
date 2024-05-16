@@ -7,19 +7,27 @@ using Core.Abstracts;
 using Core.GUI;
 using Core.Data;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Windows.Forms;
 
 
 
 /*
  * Abstract Visualization
  * 
+ * Initialize -> Create -> (Update) -> Attach
  */
 namespace Core
 {
     namespace Abstracts
     {
-        public abstract class AbstractVisualization : IAbstractContent
+        public abstract class AbstractVisualization : IAbstractVisualization
         {
+
+            /* ------------------------------------------------------------------*/
+            // public delegate
+
+            public delegate void AttachDataMenu_Delegate(List<System.Windows.Controls.MenuItem> menu_item);
+
 
             /* ------------------------------------------------------------------*/
             // public classes
@@ -47,6 +55,7 @@ namespace Core
 
             public abstract Type _RequiredDataType { get; }
             public DataManager.GetDataCallback_Delegate _RequestDataCallback { get; private set; }
+            public DataManager.GetDataMenuCallback_Delegate _RequestDataMenuCallback { get; private set; }
 
 
             /* ------------------------------------------------------------------*/
@@ -65,9 +74,27 @@ namespace Core
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
             /// <exception cref="InvalidOperationException">...throw error when method of base class is called instead.</exception>
-            public virtual bool Initialize(DataManager.GetDataCallback_Delegate request_callback)
+            public virtual bool Initialize(DataManager.GetDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback)
             {
+                if (_initialized)
+                {
+                    Terminate();
+                }
+                _initialized = false;
+
+                if ((request_data_callback == null) || (request_menu_callback == null))
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing callback(s)");
+                    return false;
+                }
+
                 _ID = UniqueID.GenerateString();
+
+                _RequestDataCallback = request_data_callback;
+                _RequestDataMenuCallback = request_menu_callback;
+
+                _menu = new ContentMenuBar();
+                _initialized = _menu.Initialize();
 
                 StackPanel stack = new StackPanel();
                 stack.Children.Add(create_menu());
@@ -79,18 +106,12 @@ namespace Core
                 _content_parent.Children.Add(stack);
                 _content_parent.Children.Add(_content_child);
 
-                _RequestDataCallback = request_callback;
 
-                return true;
+                return _initialized;
             }
             /* TEMPLATE
             {
-                if (_initialized)
-                {
-                    Terminate();
-                }
                 _timer.Start();
-
 
                 if (base.Initialize(request_callback))
                 {
@@ -208,11 +229,11 @@ namespace Core
 
                 _content_parent = null;
                 _content_child = null;
-
                 _menu = null;
-                _options_menu = null;
-
                 _timer = null;
+
+                _RequestDataCallback = null;
+                _RequestDataMenuCallback = null;
 
                 return true;
             }
@@ -238,51 +259,61 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // protected functions
 
+            protected void attach_child_content(UIElement control)
+            {
+                _content_child.Children.Add(control);
+            }
+
             /// </summary>
             /// <param name="data_parent"></param>
             /// <returns></returns>
-            protected virtual bool GetData<DataParentType>(out DataParentType data_parent)
+            protected virtual bool apply_data<DataParentType>(out DataParentType data_parent)
             {
                 data_parent = default(DataParentType);
 
-                if (_RequestDataCallback == null)
+                if (!_initialized)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Missing request data callback");
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return false;
                 }
 
+                // This is the place where the visualization connects to the actual data residing within the data manager
                 var data = (DataParentType)_RequestDataCallback(_DataUID);
                 if (data != null)
                 {
                     data_parent = data;
+
                     return true;
                 }
                 /// Log.Default.Msg(Log.Level.Error, "No data for: " + typeof(DataParentType).FullName);
                 return false;
             }
 
-            protected void AttachChildContent(UIElement control)
+            protected bool attach_data_menu()
             {
-                _content_child.Children.Add(control);
-            }
+                if (!_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return false;
+                }
 
-            /// <summary>
-            /// Add new menu item to main menu.
-            /// </summary>
-            protected void AddMainMenu(MenuItem menu_item)
-            {
-                ///menu_item.Items -> Style = ColorTheme.MenuItemIconStyle();
-                _menu.Items.Add(menu_item);
-            }
+                _menu.Clear(ContentMenuBar.PredefinedMenuOption.DATA);
+                var data_menu_items = _RequestDataMenuCallback(_DataUID);
+                foreach (var menu_item in data_menu_items)
+                {
+                    menu_item.Click += (object sender, RoutedEventArgs e) =>
+                    {
+                        var sender_content = sender as System.Windows.Controls.MenuItem;
+                        if (sender_content == null)
+                        {
+                            return;
+                        }
+                        Update(true);
+                    };
+                    _menu.AddMenu(ContentMenuBar.PredefinedMenuOption.DATA, menu_item);
+                }
 
-            /// <summary>
-            /// Add new option to 'options' menu of visualization.
-            /// </summary>
-            protected void AddOptionMenu(MenuItem option)
-            {
-                option.Style = ColorTheme.MenuItemIconStyle();
-                _options_menu.Items.Add(option);
-                _options_menu.IsEnabled = true;
+                return true;
             }
 
 
@@ -291,6 +322,8 @@ namespace Core
 
             protected bool _initialized = false;
             protected bool _created = false;
+
+            protected ContentMenuBar _menu = null;
 
 
             /* ------------------------------------------------------------------*/
@@ -319,15 +352,10 @@ namespace Core
                 text.Text = _Name;
                 text.Style = ColorTheme.ContentCaptionStyle();
 
-                _menu = new Menu();
-                Grid.SetColumn(_menu, 1);
-                _menu.Style = ColorTheme.ContentMenuStyle();
-                menu_grid.Children.Add(_menu);
-
-                _options_menu = new MenuItem();
-                _options_menu.Header = "Options";
-                _options_menu.IsEnabled = false;
-                _menu.Items.Add(_options_menu);
+                var menu = _menu.Attach();
+                Grid.SetColumn(menu, 1);
+                menu.Style = ColorTheme.ContentMenuBarStyle();
+                menu_grid.Children.Add(menu);
 
                 return menu_grid;
             }
@@ -339,8 +367,6 @@ namespace Core
             private DockPanel _content_parent = null;
             private Grid _content_child = null;
 
-            private Menu _menu = null;
-            private MenuItem _options_menu = null;
 
             /// DEBUG
             protected TimeBenchmark _timer = null;

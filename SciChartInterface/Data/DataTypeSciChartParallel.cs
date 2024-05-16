@@ -9,6 +9,7 @@ using System.Windows.Shapes;
 using Core.Abstracts;
 using Core.Data;
 using System.ComponentModel;
+using System.Windows.Controls;
 
 
 
@@ -51,7 +52,7 @@ namespace SciChartInterface
                     return;
                 }
 
-                if (!CompatibleDimensionality(data.Dimension()) || !CompatibleTypes(data.Types()))
+                if (!compatible_dimensionality(data.Dimension()) || !compatible_types(data.Types()))
                 {
                     return;
                 }
@@ -116,6 +117,14 @@ namespace SciChartInterface
                 }
 
                 /// TODO
+            }
+
+            public override List<MenuItem> GetMenu()
+            {
+
+                /// TODO 
+
+                return new List<MenuItem>();
             }
 
 

@@ -114,7 +114,7 @@ namespace Core
 
             //  MENU --------------------
 
-            public static Style MenuBarStyle()
+            public static Style MainMenuBarStyle()
             {
                 var style = new Style();
                 style.TargetType = typeof(Menu);
@@ -142,7 +142,7 @@ namespace Core
                 return style;
             }
 
-            public static Style ContentMenuStyle()
+            public static Style ContentMenuBarStyle()
             {
                 var style = new Style();
                 style.TargetType = typeof(Menu);
@@ -245,12 +245,12 @@ namespace Core
                 setter_foreground.Value = new DynamicResourceExtension("Brush_MenuItemForeground");
                 style.Setters.Add(setter_foreground);
 
-                /*
                 Setter setter_background = new Setter();
                 setter_background.Property = MenuItem.BackgroundProperty;
                 setter_background.Value = new DynamicResourceExtension("Brush_MenuItemBackground");
                 style.Setters.Add(setter_background);
 
+/*
                 Setter setter_border = new Setter();
                 setter_border.Property = Menu.BorderBrushProperty;
                 setter_border.Value = new DynamicResourceExtension("Brush_MenuItemBorder");
@@ -370,12 +370,12 @@ namespace Core
                 update_menu_item_selection();
             }
 
-            public override void AttachMenu(MenuBar menu_bar)
+            public override void AttachMenu(MainMenuBar menu_bar)
             {
                 var themes_names = Enum.GetNames(typeof(PredefinedThemes));
                 foreach (var theme_name in themes_names)
                 {
-                    var theme_item = MenuBar.GetDefaultMenuItem(theme_name, null);
+                    var theme_item = MainMenuBar.GetDefaultMenuItem(theme_name, null);
                     theme_item.Click += (object sender, RoutedEventArgs e) =>
                     {
                         var sender_content = sender as MenuItem;
@@ -386,7 +386,7 @@ namespace Core
                         SetColorStyle((PredefinedThemes)Enum.Parse(typeof(PredefinedThemes), theme_name));
 
                     };
-                    menu_bar.AddMenu(MenuBar.MainMenuOption.STYLE, theme_item);
+                    menu_bar.AddMenu(MainMenuBar.PredefinedMenuOption.STYLE, theme_item);
                     _theme_menu_items.Add(theme_item);
                 }
                 update_menu_item_selection();

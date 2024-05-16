@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Controls;
 using Core.Utilities;
 using Core.Abstracts;
 using System.ComponentModel;
+using Core.GUI;
 
 
 
@@ -29,7 +31,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public DataTypeGeneric(PropertyChangedEventHandler update_metadata_handler, PropertyChangedEventHandler update_data_handler) 
+            public DataTypeGeneric(PropertyChangedEventHandler update_metadata_handler, PropertyChangedEventHandler update_data_handler)
                 : base(update_metadata_handler, update_data_handler) { }
 
             public override void UpdateData(GenericDataStructure data)
@@ -43,7 +45,7 @@ namespace Core
                     return;
                 }
 
-                if (!CompatibleDimensionality(data.Dimension()) || !CompatibleTypes(data.Types()))
+                if (!compatible_dimensionality(data.Dimension()) || !compatible_types(data.Types()))
                 {
                     return;
                 }
@@ -72,14 +74,23 @@ namespace Core
                 }
             }
 
+            public override List<MenuItem> GetMenu()
+            {
+                /// XXX TODO Only for testing - this should go or be set by DataFilter
+                
+                var menu_list = new List<MenuItem>();
+                if (_data != null)
+                {
+                    var transpose_item = ContentMenuBar.GetDefaultMenuItem("Transpose", _data.Transpose);
+                    menu_list.Add(transpose_item);
+                }
+                return menu_list;
+            }
+
 
             /* ------------------------------------------------------------------*/
             // private functions
 
-            /// <summary>
-            /// Recursively initialize meta data.
-            /// </summary>
-            /// <param name="data">The data branch.</param>
             private void init_metadata(GenericDataStructure data)
             {
                 foreach (var entry in data._Entries)

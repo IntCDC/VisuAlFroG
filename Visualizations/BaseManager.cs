@@ -41,24 +41,21 @@ namespace Visualizations
             _timer.Start();
 
             // Content Manager
-            bool initialized = _contentmanager.Initialize(_datamanager.GetDataCallback, _datamanager.RegisterDataCallback, _datamanager.UnregisterDataCallback);
-            var required_services = _contentmanager.DependingServices();
+            bool initialized = _contentmanager.Initialize(_datamanager.GetDataCallback, _datamanager.GetDataMenuCallback, _datamanager.RegisterDataCallback, _datamanager.UnregisterDataCallback);
 
             // Data Manager
             initialized &= _datamanager.Initialize();
 
             // Service Manager
+            var required_services = _contentmanager.DependingServices();
             foreach (Type service_type in required_services)
             {
                 var new_service = (AbstractService)Activator.CreateInstance(service_type);
                 _servicemanager.AddService(new_service);
             }
-
             /// DEBUG
             //_servicemanager.AddService(new PythonInterfaceService());
             //_servicemanager.AddService(new WebAPIService());
-            
-            
             initialized &= _servicemanager.Initialize();
 
             _timer.Stop();
@@ -105,7 +102,7 @@ namespace Visualizations
             _datamanager.SetOutputDataCallback(_outputdata_callback);
         }
 
-        public override void AttachMenu(MenuBar menu_bar)
+        public override void AttachMenu(MainMenuBar menu_bar)
         {
             ///_servicemanager.AttachMenu(menu_bar);
             ///_contentmanager.AttachMenu(menu_bar);

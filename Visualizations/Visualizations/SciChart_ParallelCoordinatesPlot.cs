@@ -41,7 +41,7 @@ namespace Visualizations
 
             if (new_data)
             {
-                GetData(_Content);
+                apply_data(_Content);
 
                 // Data Style--------------------------------------------
 

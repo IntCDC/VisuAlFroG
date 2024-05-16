@@ -32,24 +32,14 @@ namespace Visualizations
             // public functions
 
 
-            public override bool Initialize(DataManager.GetDataCallback_Delegate request_callback)
+            public override bool Initialize(DataManager.GetDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback)
             {
-                if (_initialized)
-                {
-                    Terminate();
-                }
                 _timer.Start();
 
-                if (base.Initialize(request_callback))
+                if (base.Initialize(request_data_callback, request_menu_callback))
                 {
-                    AttachChildContent(_Content);
-
-                    
-                    _initialized = true;
-                    if (_initialized)
-                    {
-                        Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
-                    }
+                    attach_child_content(_Content);
+                    Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
                 }
 
                 _timer.Stop();

@@ -173,7 +173,7 @@ namespace Frontend
                 _configurationservice = new ConfigurationService();
                 _winmanager = new WindowManager();
                 _colortheme = new ColorTheme();
-                _menubar = new MenuBar();
+                _menubar = new MainMenuBar();
 
                 bool initialized = true;
                 initialized &= _basemanager.Initialize();
@@ -191,8 +191,8 @@ namespace Frontend
                 _basemanager.AttachMenu(_menubar);
                 _configurationservice.AttachMenu(_menubar);
                 _colortheme.AttachMenu(_menubar);
-                _menubar.AddSeparator(MenuBar.MainMenuOption.FILE);
-                _menubar.AddMenu(MenuBar.MainMenuOption.FILE, MenuBar.GetDefaultMenuItem("Exit", close_callback_menu));
+                _menubar.AddSeparator(MainMenuBar.PredefinedMenuOption.FILE);
+                _menubar.AddMenu(MainMenuBar.PredefinedMenuOption.FILE, MainMenuBar.GetDefaultMenuItem("Exit", close_callback_menu));
 
 
                 _timer.Stop();
@@ -276,7 +276,7 @@ namespace Frontend
             private Visualizations.BaseManager _basemanager = null;
             private WindowManager _winmanager = null;
             private ColorTheme _colortheme = null;
-            private MenuBar _menubar = null;
+            private MainMenuBar _menubar = null;
 
             /// DEBUG
             private TimeBenchmark _timer = null;

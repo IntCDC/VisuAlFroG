@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Core.Data;
-
+using Core.GUI;
+using System.Windows.Controls;
 
 
 /*
@@ -42,6 +43,7 @@ namespace Core
 
             void UpdateMetaDataEntry(IMetaData updated_meta_data);
 
+            List<MenuItem> GetMenu();
         }
     }
 }

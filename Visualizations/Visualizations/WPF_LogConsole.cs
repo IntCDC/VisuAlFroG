@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Core.Data;
 using Core.Abstracts;
 using Visualizations.WPFInterface;
+using Core.GUI;
 
 
 
@@ -68,10 +69,8 @@ namespace Visualizations
             _Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
             _Content.Content = _text_block;
 
-            var copy_option = new MenuItem();
-            copy_option.Header = "Copy to Clipboard";
-            copy_option.Click += event_option_click;
-            AddOptionMenu(copy_option);
+            _menu.AddMenu(ContentMenuBar.PredefinedMenuOption.OPTIONS, MainMenuBar.GetDefaultMenuItem("Copy to Clipboard", clipboard_option_click));
+
 
             // Call after _text_block has been created
             Log.Default.RegisterListener(this.LogListener);
@@ -142,7 +141,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         // private functions
 
-        private void event_option_click(object sender, RoutedEventArgs e)
+        private bool clipboard_option_click()
         {
             string complete_log = "";
             foreach (var inline in _text_block.Inlines)
@@ -151,6 +150,7 @@ namespace Visualizations
                 complete_log += text_range.Text;
             }
             Clipboard.SetText(complete_log);
+            return true;
         }
 
         private void event_scrollviewer_mousewheel(object sender, System.Windows.Input.MouseWheelEventArgs e)

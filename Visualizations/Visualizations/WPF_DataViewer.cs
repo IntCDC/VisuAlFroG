@@ -50,7 +50,7 @@ namespace Visualizations
             _Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
             _Content.PreviewMouseWheel += event_scrollviewer_mousewheel;
 
-            if (GetData(out GenericDataStructure data))
+            if (apply_data(out GenericDataStructure data))
             {
                 create_table(data);
 
@@ -59,6 +59,8 @@ namespace Visualizations
                 data_grid.AutoGenerateColumns = true;
                 data_grid.ItemsSource = _table.AsDataView();
                 _Content.Content = data_grid;
+
+                attach_data_menu();
             }
 
 
@@ -82,7 +84,7 @@ namespace Visualizations
             }
             else
             {
-                if (!GetData(out GenericDataStructure data))
+                if (!apply_data(out GenericDataStructure data))
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing data");
                     return;

@@ -59,7 +59,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // protected functions
 
-            protected void Reset()
+            protected void reset()
             {
                 _Content = null;
                 _parent_is_root = false;

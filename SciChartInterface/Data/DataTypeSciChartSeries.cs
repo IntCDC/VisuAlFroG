@@ -20,6 +20,7 @@ using System.Windows;
 using System.Windows.Media;
 using SciChart.Charting.Model.DataSeries;
 using System.Xml.Linq;
+using System.Windows.Controls;
 
 namespace SciChartInterface
 {
@@ -60,7 +61,7 @@ namespace SciChartInterface
                     return;
                 }
 
-                if (!CompatibleDimensionality(data.Dimension()) || !CompatibleTypes(data.Types()))
+                if (!compatible_dimensionality(data.Dimension()) || !compatible_types(data.Types()))
                 {
                     return;
                 }
@@ -85,6 +86,7 @@ namespace SciChartInterface
                             break;
                         }
                     }
+
                     _loaded = true;
                 }
             }
@@ -112,6 +114,14 @@ namespace SciChartInterface
                     }
                     data_series.InvalidateVisual();
                 }
+            }
+
+            public override List<MenuItem> GetMenu()
+            {
+
+                /// TODO 
+
+                return new List<MenuItem>();
             }
 
 

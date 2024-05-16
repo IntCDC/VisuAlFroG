@@ -35,29 +35,20 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public override bool Initialize(DataManager.GetDataCallback_Delegate request_callback)
+            public override bool Initialize(DataManager.GetDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback)
             {
-                if (_initialized)
-                {
-                    Terminate();
-                }
                 _timer.Start();
 
-                if (base.Initialize(request_callback))
+                if (base.Initialize(request_data_callback, request_menu_callback))
                 {
                     _content_surface = new SurfaceType();
                     _content_surface.Name = _ID;
                     _content_surface.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
                     _content_surface.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
 
-                    AttachChildContent(_content_surface);
+                    attach_child_content(_content_surface);
 
-
-                    _initialized = true;
-                    if (_initialized)
-                    {
-                        Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
-                    }
+                    Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
                 }
 
                 _timer.Stop();
@@ -109,7 +100,8 @@ namespace SciChartInterface
 
                 if (new_data)
                 {
-                    GetData(_Content);
+                    apply_data(_Content);
+                    attach_data_menu();
                     _Content.ZoomExtents();
                 }
             }
@@ -118,9 +110,9 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // protected functions
 
-            protected abstract bool GetData(SciChartSurface data_parent);
+            protected abstract bool apply_data(SciChartSurface data_parent);
 
-            protected sealed override bool GetData<DataParentType>(out DataParentType data_parent)
+            protected sealed override bool apply_data<DataParentType>(out DataParentType data_parent)
             {
                 throw new InvalidOperationException("Call alternatively implemented GetData() method");
             }

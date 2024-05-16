@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-
+using System.Windows.Controls;
 using Core.Data;
+using Core.GUI;
 using Core.Utilities;
 
 
@@ -39,7 +40,13 @@ namespace Core
 
             public abstract void UpdateMetaDataEntry(IMetaData updated_meta_data);
 
-            protected bool CompatibleTypes(List<Type> value_types)
+            public abstract List<MenuItem> GetMenu();
+
+
+            /* ------------------------------------------------------------------*/
+            // protected functions
+
+            protected bool compatible_types(List<Type> value_types)
             {
                 bool incompatible = false;
                 foreach (Type t in value_types)
@@ -56,7 +63,7 @@ namespace Core
                 return !incompatible;
             }
 
-            protected bool CompatibleDimensionality(uint data_dimension)
+            protected bool compatible_dimensionality(uint data_dimension)
             {
                 bool compatible = false;
                 foreach (Dimension dim in _SupportedDimensions)

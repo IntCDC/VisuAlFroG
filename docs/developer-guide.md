@@ -82,16 +82,20 @@ In *Visual Studio*, look at the info messages in the *Error List* after building
 
 ### Naming Conventions
 
-#### Private Variables
-- Start with `_` and only lower case letters
-- Separate words with `_`
 #### Public Properties
-- Start with `_` and then camel case
-#### Public Functions:
-- Camel case
+- Start with `_` and then camel case | Example: `_PublicProperty`
+#### Public Functions
+- Start with upper case letter, then camel case | Example:`PublicFunction`
+
+#### Protected Properties/Variables
+- Start with lower case letter, then only lower case letters, separate words with `_` | Example:`protected_variable`
+#### Protected Functions:
+- Start with lower case letter, then only lower case letters, separate words with `_` | Example:`protected_function`
+
+#### Private Variables
+- Start with `_` and then only lower case letters, separate words with `_` | Example:`_private_function`
 #### Private Functions
-- Only lower case letters
-- Separate words with `_`
+- Start with lower case letter, then only lower case letters, separate words with `_` | Example:`private_function`
 
 
 -----

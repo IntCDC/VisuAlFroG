@@ -145,7 +145,7 @@ namespace Core
             public void ResetLeaf()
             {
                 delete_content();
-                base.Reset();
+                base.reset();
             }
 
 

@@ -324,7 +324,7 @@ namespace Core
                 }
 
                 // Clear unused branch child
-                kept_child.Reset();
+                kept_child.reset();
             }
 
             /// <summary>
@@ -423,7 +423,7 @@ namespace Core
                 _Orientation = SplitOrientation.None;
                 _Location = ChildLocation.None;
                 delete_content(_Content);
-                base.Reset();
+                base.reset();
             }
         }
     }

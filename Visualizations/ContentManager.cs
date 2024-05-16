@@ -28,13 +28,16 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         // public functions
 
-        public bool Initialize(DataManager.GetDataCallback_Delegate request_callback, DataManager.RegisterDataCallback_Delegate register_callback, DataManager.UnregisterUpdateCallback_Delegate unregister_callback)
+        public bool Initialize(DataManager.GetDataCallback_Delegate getdata_callback,
+                DataManager.GetDataMenuCallback_Delegate getmenu_callback,
+                DataManager.RegisterDataCallback_Delegate register_callback, 
+                DataManager.UnregisterUpdateCallback_Delegate unregister_callback)
         {
             if (_initialized)
             {
                 Terminate();
             }
-            if ((request_callback == null) || (register_callback == null) || (unregister_callback == null))
+            if ((getdata_callback == null) || (getmenu_callback == null) || (register_callback == null) || (unregister_callback == null))
             {
                 Log.Default.Msg(Log.Level.Error, "Missing callback(s)");
                 return false;
@@ -42,7 +45,8 @@ namespace Visualizations
             _timer.Start();
 
             _contents = new Dictionary<Type, Dictionary<string, AbstractVisualization>>();
-            _data_request_callback = request_callback;
+            _content_getdata_callback = getdata_callback;
+            _content_getmenu_callback = getmenu_callback;
             _register_data_callback = register_callback;
             _unregister_data_callback = unregister_callback;
 
@@ -57,6 +61,7 @@ namespace Visualizations
             /// DEBUG register_content(typeof(CustomWPFVisualization));
 
 
+
             _timer.Stop();
             _initialized = true;
             return _initialized;
@@ -69,8 +74,10 @@ namespace Visualizations
             {
                 terminated &= clear_contents();
 
-                _data_request_callback = null;
+                _content_getdata_callback = null;
+                _content_getmenu_callback = null;
                 _register_data_callback = null;
+                _unregister_data_callback = null;
 
                 _initialized = false;
             }
@@ -343,18 +350,14 @@ namespace Visualizations
         private AbstractVisualization create_content(Type type)
         {
             var content = (AbstractVisualization)Activator.CreateInstance(type);
-            if (content.Initialize(_data_request_callback))
+            if (content.Initialize(_content_getdata_callback, _content_getmenu_callback))
             {
-                var data_uid = _register_data_callback(content.Update, content._RequiredDataType);
-                // XXX Do not check if no data should have been created...
-                /// if (data_uid != UniqueID.InvalidInt) 
+                content._DataUID = _register_data_callback(content._RequiredDataType, content.Update);
+                // XXX Do not check for invalid DATAUID because it might be intentional that no data should have been created...
+                if (content.Create())
                 {
-                    content._DataUID = data_uid;
-                    if (content.Create())
-                    {
-                        content.Update(true);
-                        return content;
-                    }
+                    content.Update(true);
+                    return content;
                 }
             }
             content = null;
@@ -440,7 +443,8 @@ namespace Visualizations
         // Separate dictionary for each content type
         private Dictionary<Type, Dictionary<string, AbstractVisualization>> _contents = null;
 
-        private DataManager.GetDataCallback_Delegate _data_request_callback = null;
+        private DataManager.GetDataCallback_Delegate _content_getdata_callback = null;
+        private DataManager.GetDataMenuCallback_Delegate _content_getmenu_callback = null;
         private DataManager.RegisterDataCallback_Delegate _register_data_callback = null;
         private DataManager.UnregisterUpdateCallback_Delegate _unregister_data_callback = null;
     }

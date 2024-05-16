@@ -120,7 +120,7 @@ namespace Core
                                 double value_double = Convert.ToDouble(sub, CultureInfo.InvariantCulture);
                                 entry.AddValue(value_double);
                             }
-                            catch (Exception exc)
+                            catch // (Exception exc)
                             {
                                 /// Log.Default.Msg(Log.Level.Error, exc.Message);
 

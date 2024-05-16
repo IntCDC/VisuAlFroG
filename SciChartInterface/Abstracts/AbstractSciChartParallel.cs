@@ -10,6 +10,7 @@ using System;
 using SciChartInterface.Abstracts;
 using SciChartInterface.Data;
 using Core.Data;
+using Core.GUI;
 
 
 
@@ -52,25 +53,19 @@ namespace SciChartInterface
 
 
                 // Options --------------------------------------------
-                var option_hint = new MenuItem();
-                option_hint.Header = "Interaction Clues";
 
-                var clue_select = new MenuItem();
-                clue_select.Header = "[Left Mouse] Select Series | Drag & Drop Axes";
-                clue_select.IsEnabled = false;
-                option_hint.Items.Add(clue_select);
-
-                var clue_zoom = new MenuItem();
-                clue_zoom.Header = "[Mouse Wheel] Zoom";
-                clue_zoom.IsEnabled = false;
-                option_hint.Items.Add(clue_zoom);
-
-                var clue_pan = new MenuItem();
-                clue_pan.Header = "[Right Mouse] Pan";
-                clue_pan.IsEnabled = false;
-                option_hint.Items.Add(clue_pan);
-
-                AddOptionMenu(option_hint);
+                _menu.Clear(ContentMenuBar.PredefinedMenuOption.OPTIONS);
+                var option_hint = MainMenuBar.GetDefaultMenuItem("Interaction Clues");
+                var clue_item = MainMenuBar.GetDefaultMenuItem("[Left Mouse] Select Series | Drag & Drop Axes", null);
+                clue_item.IsEnabled = false;
+                option_hint.Items.Add(clue_item);
+                clue_item = MainMenuBar.GetDefaultMenuItem("[Mouse Wheel] Zoom", null);
+                clue_item.IsEnabled = false;
+                option_hint.Items.Add(clue_item);
+                clue_item = MainMenuBar.GetDefaultMenuItem("[Right Mouse] Pan", null);
+                clue_item.IsEnabled = false;
+                option_hint.Items.Add(clue_item);
+                _menu.AddMenu(ContentMenuBar.PredefinedMenuOption.OPTIONS, option_hint);
 
 
                 // Modifiers ---------------------------------------
@@ -133,8 +128,14 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // protected functions
 
-            protected override bool GetData(SciChartSurface data_parent)
+            protected override bool apply_data(SciChartSurface data_parent)
             {
+                if (!_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return false;
+                }
+
                 var parent = data_parent as SciChartParallelCoordinateSurface;
                 parent.ParallelCoordinateDataSource = null;
 
@@ -142,6 +143,7 @@ namespace SciChartInterface
                 if (data != null)
                 {
                     parent.ParallelCoordinateDataSource = data;
+
                     return true;
                 }
                 /// Log.Default.Msg(Log.Level.Error, "Missing data for: " + typeof(ParallelCoordinateDataSource<DataType>).FullName);
