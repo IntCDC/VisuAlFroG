@@ -31,8 +31,8 @@ namespace Core
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public DataTypeGeneric(PropertyChangedEventHandler update_metadata_handler, PropertyChangedEventHandler update_data_handler)
-                : base(update_metadata_handler, update_data_handler) { }
+            public DataTypeGeneric(PropertyChangedEventHandler update_data_handler, PropertyChangedEventHandler update_metadata_handler)
+                : base(update_data_handler, update_metadata_handler) { }
 
             public override void UpdateData(GenericDataStructure data)
             {
@@ -50,7 +50,7 @@ namespace Core
                     return;
                 }
 
-                _data = data;
+                _data = data.DeepCopy(_update_metadata_handler);
                 init_metadata(_data);
 
                 _loaded = true;

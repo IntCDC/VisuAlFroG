@@ -55,7 +55,7 @@ namespace Core
 
             public abstract Type _RequiredDataType { get; }
             public DataManager.GetDataCallback_Delegate _RequestDataCallback { get; private set; }
-            public DataManager.GetDataMenuCallback_Delegate _RequestDataMenuCallback { get; private set; }
+            public DataManager.GetDataMenuCallback_Delegate _RequestMenuCallback { get; private set; }
 
 
             /* ------------------------------------------------------------------*/
@@ -91,7 +91,7 @@ namespace Core
                 _ID = UniqueID.GenerateString();
 
                 _RequestDataCallback = request_data_callback;
-                _RequestDataMenuCallback = request_menu_callback;
+                _RequestMenuCallback = request_menu_callback;
 
                 _menu = new ContentMenuBar();
                 _initialized = _menu.Initialize();
@@ -233,7 +233,7 @@ namespace Core
                 _timer = null;
 
                 _RequestDataCallback = null;
-                _RequestDataMenuCallback = null;
+                _RequestMenuCallback = null;
 
                 return true;
             }
@@ -298,7 +298,7 @@ namespace Core
                 }
 
                 _menu.Clear(ContentMenuBar.PredefinedMenuOption.DATA);
-                var data_menu_items = _RequestDataMenuCallback(_DataUID);
+                var data_menu_items = _RequestMenuCallback(_DataUID);
                 foreach (var menu_item in data_menu_items)
                 {
                     menu_item.Click += (object sender, RoutedEventArgs e) =>

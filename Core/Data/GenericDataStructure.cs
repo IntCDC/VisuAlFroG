@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using Core.Utilities;
+
+using Newtonsoft.Json.Linq;
 
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
@@ -139,6 +142,39 @@ namespace Core
 
                 return true;
             }
+
+            public GenericDataStructure DeepCopy(PropertyChangedEventHandler update_metadata_handler)
+            {
+                var branch_clone = new GenericDataStructure();
+
+                foreach (var branch in _Branches)
+                {
+                    branch_clone.AddBranch(branch.DeepCopy(update_metadata_handler));
+                }
+                foreach (var entry in _Entries)
+                {
+                    var entry_clone = new GenericDataEntry();
+
+                    foreach (var value in entry._Values)
+                    {
+                        entry_clone._Values.Add(value);
+                    }
+                    foreach (var type in entry._Types)
+                    {
+                        entry_clone._Types.Add(type);
+                    }
+                    entry_clone._Metadata._Index = entry._Metadata._Index;
+                    entry_clone._Metadata._Label = entry._Metadata._Label;
+                    entry_clone._Metadata._Dimension = entry._Metadata._Dimension;
+                    entry_clone._Metadata._Selected = entry._Metadata._Selected;
+                    entry_clone._Metadata.PropertyChanged += update_metadata_handler;
+                    branch_clone.AddEntry(entry_clone);
+                }
+                branch_clone._Label = _Label;
+
+                return branch_clone;
+            }
+
 
             /* ------------------------------------------------------------------*/
             // private functions

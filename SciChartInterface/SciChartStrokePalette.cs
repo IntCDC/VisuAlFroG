@@ -1,5 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Media;
+
+using Core.Utilities;
+
 using SciChart.Charting.Model.DataSeries;
 using SciChart.Charting.Visuals.PaletteProviders;
 using SciChart.Charting.Visuals.RenderableSeries;
@@ -33,12 +36,24 @@ namespace SciChartInterface
         /// <returns></returns>
         public Color? OverrideStrokeColor(IRenderableSeries rSeries, int index, IPointMetadata meta_data)
         {
-            var color_name = "Color_StrokeDefault";
-            if ((meta_data != null) && (meta_data.IsSelected)) {
-                color_name = "Color_StrokeSelected";
+            var brush_default = Application.Current.Resources["Brush_StrokeDefault"] as SolidColorBrush;
+            var brush_selected = Application.Current.Resources["Brush_StrokeSelected"] as SolidColorBrush;
+
+            if ((brush_default == null) || (brush_selected == null))
+            {
+                Log.Default.Msg(Log.Level.Error, "Unable to find resource for stroke color(s).");
+                return Colors.White;
             }
-            /// XXX This is not working because DynamicResourceExtension does not reference 'hard' object ...?
-            return null; // (Color)new DynamicResourceExtension(color_name);
+            else
+            {
+                return ((meta_data.IsSelected) ? (brush_selected.Color) : (brush_default.Color));
+            }
         }
+
+        /* ------------------------------------------------------------------*/
+        // private variables
+
+
+
     }
 }

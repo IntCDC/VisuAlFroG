@@ -43,8 +43,8 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             // public functions
 
-            public DataTypeSciChartSeries(PropertyChangedEventHandler update_metadata_handler, PropertyChangedEventHandler update_data_handler)
-                : base(update_metadata_handler, update_data_handler) { }
+            public DataTypeSciChartSeries(PropertyChangedEventHandler update_data_handler, PropertyChangedEventHandler update_metadata_handler)
+                : base(update_data_handler, update_metadata_handler) { }
 
             public override void UpdateData(GenericDataStructure data)
             {

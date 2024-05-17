@@ -1,9 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <SolidColorBrush x:Key="Color_StrokeSelected">Red</SolidColorBrush>
-    <SolidColorBrush x:Key="Color_StrokeDefault">LightYellow</SolidColorBrush>
-	<SolidColorBrush x:Key="Brush_StrokeSelected" Color="Red"/>
+    <SolidColorBrush x:Key="Brush_StrokeSelected" Color="Red"/>
 	<SolidColorBrush x:Key="Brush_StrokeDefault" Color="LightYellow"/>
 
 	<SolidColorBrush x:Key="Brush_Foreground" Color="DarkSlateGray"/>

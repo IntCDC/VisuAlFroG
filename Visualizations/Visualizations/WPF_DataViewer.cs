@@ -1,15 +1,8 @@
-﻿using System;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Data;
 using Core.Utilities;
 using Core.Data;
 using Visualizations.WPFInterface;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
-using System.Data.Common;
-using static Core.Utilities.Log;
-using SciChart.Charting.Visuals.RenderableSeries;
 
 
 
@@ -220,7 +213,15 @@ namespace Visualizations
             }
             foreach (var entry in branch._Entries)
             {
-                _table.Rows[(int)entry._Metadata._Index]["Selected"] = entry._Metadata._Selected;
+                var row = _table.Rows.Find((int)entry._Metadata._Index);
+                if (row != null)
+                {
+                    row["Selected"] = entry._Metadata._Selected;
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing entry at index: " + entry._Metadata._Index.ToString());
+                }
             }
         }
 

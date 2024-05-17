@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+
 using Core.Abstracts;
 using Core.GUI;
 using Core.Utilities;
@@ -50,27 +51,30 @@ namespace Core
                 _timer.Start();
 
 
-                bool initialized = true;
-                _original_data = new GenericDataStructure();
+                // Add copy of data that is kept for reference as the original data unmodified
+                var variety = (IDataType)Activator.CreateInstance(typeof(DataTypeGeneric), (PropertyChangedEventHandler)event_data_changed, (PropertyChangedEventHandler)event_metadata_changed);
+                _data_library.Add(UniqueID.GenerateInt(), new DataDescription(((bool new_data) => { }), variety));
+                _original_data_hash = _data_library.Last().Key;
 
 
                 _timer.Stop();
-                _initialized = initialized;
+                _initialized = true;
                 return _initialized;
             }
 
             public override bool Terminate()
             {
-                bool terminated = true;
                 if (_initialized)
                 {
-                    _original_data = new GenericDataStructure();
+                    UnregisterDataCallback(_original_data_hash);
+                    _original_data_hash = UniqueID.InvalidInt;
+
                     _outputdata_callback = null;
                     _data_library.Clear();
 
                     _initialized = false;
                 }
-                return terminated;
+                return true;
             }
 
             /// <summary>
@@ -94,13 +98,6 @@ namespace Core
                 Log.Default.Msg(Log.Level.Info, "Processing new input data...");
                 if (DataValidator.Convert(input_data, out GenericDataStructure validated_data))
                 {
-                    _original_data = validated_data;
-
-                    /*
-                    if (validated_data.Transpose(out GenericDataStructure tranposed_data)) {
-                        validated_data = tranposed_data;
-                    }
-                    */
                     foreach (var pair in _data_library)
                     {
                         pair.Value._Data.UpdateData(validated_data);
@@ -140,7 +137,7 @@ namespace Core
                 }
                 if (data_type != null)
                 {
-                    var variety = (IDataType)Activator.CreateInstance(data_type, (PropertyChangedEventHandler)event_metadata_changed, (PropertyChangedEventHandler)event_data_changed);
+                    var variety = (IDataType)Activator.CreateInstance(data_type, (PropertyChangedEventHandler)event_data_changed, (PropertyChangedEventHandler)event_metadata_changed);
                     if (variety == null)
                     {
                         Log.Default.Msg(Log.Level.Error, "Expected data type of IDataVariety but received: " + data_type.FullName);
@@ -150,10 +147,11 @@ namespace Core
                     _data_library.Add(UniqueID.GenerateInt(), new DataDescription(update_callback, variety));
                     Log.Default.Msg(Log.Level.Info, "Added new data type: " + data_type.FullName);
 
-                    // Load data if available
-                    if (!_original_data.Empty())
+                    // Load original data if available
+                    var original_data = (GenericDataStructure)GetDataCallback(_original_data_hash);
+                    if ((original_data != null) && (!original_data.Empty()))
                     {
-                        variety.UpdateData(_original_data);
+                        variety.UpdateData(original_data);
                     }
 
                     return _data_library.Last().Key;
@@ -238,9 +236,10 @@ namespace Core
             public bool SendData()
             {
                 var out_data = new GenericDataStructure();
-                if (!_original_data.Empty())
+                var original_data = (GenericDataStructure)GetDataCallback(_original_data_hash);
+                if ((original_data != null) && (!original_data.Empty()))
                 {
-                    var metadata_list = _original_data.ListMetaData();
+                    var metadata_list = original_data.ListMetaData();
                     foreach (var meta_data in metadata_list)
                     {
                         if (meta_data._Selected)
@@ -295,7 +294,7 @@ namespace Core
                     {
                         return;
                     }
-                    CSV_DataHandling.SaveToFile(_original_data);
+                    CSV_DataHandling.SaveToFile((GenericDataStructure)GetDataCallback(_original_data_hash));
                 };
                 menu_bar.AddMenu(MainMenuBar.PredefinedMenuOption.DATA, menu_item);
 
@@ -339,7 +338,6 @@ namespace Core
                     foreach (var pair in _data_library)
                     {
                         pair.Value._Data.UpdateMetaDataEntry(sender_selection);
-
                         pair.Value._UpdateVisualization(false);
                     }
                 }
@@ -411,9 +409,8 @@ namespace Core
                 public IDataType _Data { get; private set; }
             }
 
-            GenericDataStructure _original_data = null;
+            private int _original_data_hash = UniqueID.InvalidInt;
             private SetDataCallback_Delegate _outputdata_callback = null;
-
             private Dictionary<int, DataDescription> _data_library = new Dictionary<int, DataDescription>();
         }
     }

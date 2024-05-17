@@ -81,7 +81,7 @@ namespace Core
             {
                 output_data = new GenericDataStructure();
 
-                if (input_data == "")
+                if ((input_data == null) || (input_data == ""))
                 {
                     Log.Default.Msg(Log.Level.Info, "Empty input data. Skipping converting data to CSV format.");
                     return true;
@@ -163,7 +163,7 @@ namespace Core
             {
                 output_data = "";
 
-                if (input_data.Empty())
+                if ((input_data == null) || (input_data.Empty()))
                 {
                     Log.Default.Msg(Log.Level.Info, "Found no input data to convert");
                     return true;

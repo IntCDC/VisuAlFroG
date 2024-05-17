@@ -64,6 +64,8 @@ Colors defined in the themes can be assigned to WPF elements in two ways:
     <Frameworkelement>.SetResourceReference(<Frameworkelement>.<PropertyName>, "Brush_<Name>");
     # OR
     <Setter>.Value = new DynamicResourceExtension("Brush_<Name>");
+    # OR
+    var brush_<Name> = Application.Current.Resources["Brush_<Name>"] as SolidColorBrush;
 ```
 
 ### Startup Configuration
