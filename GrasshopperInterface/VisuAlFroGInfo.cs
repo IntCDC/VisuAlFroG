@@ -1,6 +1,8 @@
 ﻿using Core.Utilities;
+
 using Grasshopper;
 using Grasshopper.Kernel;
+
 using System;
 using System.Drawing;
 using System.Reflection;
@@ -17,7 +19,7 @@ namespace GrasshopperInterface
     {
 
         /* ------------------------------------------------------------------*/
-        // public functions
+        #region public functions
 
         public override string Name => "VisuAlFroG";
 
@@ -42,5 +44,7 @@ namespace GrasshopperInterface
 
         // Return a string representing your preferred contact details.
         public override string AuthorContact => "matthias.braun@intcdc.uni-stuttgart.de";
+
+        #endregion
     }
 }

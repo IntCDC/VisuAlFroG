@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+
 using Core.Abstracts;
 using Core.Utilities;
+
 using Newtonsoft.Json;
 
 
@@ -21,15 +23,16 @@ namespace Core
         {
 
             /* ------------------------------------------------------------------*/
-            // public delegates
+            #region public delegates
 
             public delegate string RegisterCollectCallback_Delegate();
 
             public delegate bool RegisterApplyCallback_Delegate(string configurations);
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // static functions
+            #region static functions
 
             /// <summary>
             /// [STATIC] Provides static serialization of configurations to JSON string.
@@ -41,8 +44,7 @@ namespace Core
             {
                 try
                 {
-                    string configurations = JsonConvert.SerializeObject(window_data); //, Formatting.Indented);
-                    return configurations;
+                    return JsonConvert.SerializeObject(window_data); //, Formatting.Indented);
                 }
                 catch (Exception exc)
                 {
@@ -61,8 +63,7 @@ namespace Core
             {
                 try
                 {
-                    T configurations = JsonConvert.DeserializeObject<T>(content);
-                    return configurations;
+                    return JsonConvert.DeserializeObject<T>(content);
                 }
                 catch (Exception exc)
                 {
@@ -71,9 +72,10 @@ namespace Core
                 return default(T);
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public override bool Initialize()
             {
@@ -198,12 +200,15 @@ namespace Core
                 menu_bar.AddMenu(MainMenuBar.PredefinedMenuOption.FILE, config_menu);
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public variables
+            #region private variables
 
             private Dictionary<string, RegisterCollectCallback_Delegate> _collect_callbacks = null;
             private Dictionary<string, RegisterApplyCallback_Delegate> _apply_callbacks = null;
+
+            #endregion
         }
     }
 }

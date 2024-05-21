@@ -21,7 +21,7 @@ namespace Core
         public class CSV_DataHandling
         {
             /* ------------------------------------------------------------------*/
-            // static functions
+            #region static functions
 
             /// <summary>
             /// [STATIC] Save data in CSV format to a file
@@ -163,7 +163,7 @@ namespace Core
             {
                 output_data = "";
 
-                if ((input_data == null) || (input_data.Empty()))
+                if ((input_data == null) || (input_data.IsEmpty()))
                 {
                     Log.Default.Msg(Log.Level.Info, "Found no input data to convert");
                     return true;
@@ -230,6 +230,8 @@ namespace Core
                 }
                 return true;
             }
+
+            #endregion
         }
     }
 }

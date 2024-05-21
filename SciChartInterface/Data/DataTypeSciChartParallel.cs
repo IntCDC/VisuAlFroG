@@ -25,18 +25,7 @@ namespace SciChartInterface
             where DataType : IDynamicMetaObjectProvider, new()
         {
             /* ------------------------------------------------------------------*/
-            // public properties
-
-            public sealed override List<Dimension> _SupportedDimensions { get; }
-                = new List<Dimension>() { Dimension.Uniform, Dimension.TwoDimensional, Dimension.ThreeDimensional, Dimension.Multidimensional };
-
-            /// All numeric types that can be converted to double
-            public sealed override List<Type> _SupportedValueTypes { get; }
-                = new List<Type>() { typeof(double), typeof(float), typeof(int), typeof(uint), typeof(long), typeof(ulong) };
-
-
-            /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public DataTypeSciChartParallel(PropertyChangedEventHandler update_data_handler, PropertyChangedEventHandler update_metadata_handler)
                 : base(update_data_handler, update_metadata_handler) { }
@@ -46,48 +35,25 @@ namespace SciChartInterface
                 _loaded = false;
                 _data = null;
 
-                if (data == null)
+                if ((data == null) || data.IsEmpty())
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing data");
                     return;
                 }
+                _Dimension = data.GetDimension();
 
-                if (!compatible_dimensionality(data.Dimension()) || !compatible_types(data.Types()))
-                {
-                    return;
-                }
+                // Convert and create row data
+                List<DataType> rows_list = new List<DataType>();
+                create_data(data, ref rows_list);
 
-                // Convert and create required data
-                List<DataType> value_list = new List<DataType>();
-                create_data(data, ref value_list);
-                if (value_list.Count == 0)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Missing values...");
-                    return;
-                }
-
-                // Warn if series have different amount of values
-                var value_dict = value_list[0] as IDictionary<string, object>;
-
-                int item_count = value_dict.Count;
-                for (int i = 1; i < value_list.Count; i++)
-                {
-                    value_dict = value_list[i] as IDictionary<string, object>;
-                    if (item_count != value_dict.Count)
-                    {
-                        Log.Default.Msg(Log.Level.Warn, "Data series have different amount of values");
-                    }
-                    item_count = Math.Min(item_count, value_dict.Count);
-                }
-
-                ParallelCoordinateDataItem<DataType, double>[] item_list = new ParallelCoordinateDataItem<DataType, double>[item_count];
-
-                // Initialize property names
+                // Create property names for columns
                 int index = 0;
-                foreach (var kvp in value_dict)
+                var tmp_row = rows_list[0] as IDictionary<string, object>;
+                ParallelCoordinateDataItem<DataType, double>[] columns_list = new ParallelCoordinateDataItem<DataType, double>[tmp_row.Count];
+                foreach (var kvp in tmp_row)
                 {
                     string property_name = kvp.Key;
-                    item_list[index] = new ParallelCoordinateDataItem<DataType, double>(p =>
+                    columns_list[index] = new ParallelCoordinateDataItem<DataType, double>(p =>
                         {
                             var p_dict = p as IDictionary<string, object>;
                             return (double)p_dict[property_name];
@@ -97,13 +63,13 @@ namespace SciChartInterface
                         AxisStyle = axes_style()
                     };
                     index++;
-                    if (index >= item_count)
+                    if (index >= tmp_row.Count)
                     {
                         break;
                     }
                 }
-                _data = new ParallelCoordinateDataSource<DataType>(item_list);
-                _data.SetValues(value_list);
+                _data = new ParallelCoordinateDataSource<DataType>(columns_list);
+                _data.SetValues(rows_list);
 
                 _loaded = true;
             }
@@ -127,28 +93,16 @@ namespace SciChartInterface
                 return new List<MenuItem>();
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private functions
+            #region private functions
 
             private void create_data(GenericDataStructure branch, ref List<DataType> value_list)
             {
-                // For each branch add all entries as one pcp value
+                // For each branch add all entries to one row dictionary
                 if (branch._Entries.Count > 0)
                 {
-                    /// ADD filter for selecting value index
-                    int value_index = 0;
-                    switch (branch._Entries[0]._Metadata._Dimension)
-                    {
-                        case (2):
-                            value_index = 1;
-                            Log.Default.Msg(Log.Level.Warn, "Found two-dimensional data. Using values at index 1. Assuming values at index 0 are for indexing.");
-                            break;
-                        default:
-                            Log.Default.Msg(Log.Level.Warn, "Using values at index 0. Selecting other value index needs to be implemented...");
-                            break;
-                    }
-
                     dynamic data_entry = new DataType();
                     var data_entry_dict = data_entry as IDictionary<string, object>;
                     int index = 0;
@@ -159,7 +113,7 @@ namespace SciChartInterface
                         {
                             label = generate_property_name(index);
                         }
-                        data_entry_dict.Add(label, (double)entry._Values[value_index]);
+                        data_entry_dict.Add(label, (double)entry._Values[0]);
 
                         index++;
                     }
@@ -235,5 +189,7 @@ namespace SciChartInterface
                 return ("p" + index.ToString());
             }
         }
+
+        #endregion
     }
 }

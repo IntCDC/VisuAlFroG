@@ -15,7 +15,7 @@ namespace Core
         public class ResourcePaths
         {
             /* ------------------------------------------------------------------*/
-            // public types
+            #region public types
 
             public enum Locations
             {
@@ -24,9 +24,10 @@ namespace Core
                 Themes,
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // static functions
+            #region static functions
 
             /// <summary>
             ///  [STATIC] Returns the location from which the application is executed            
@@ -72,7 +73,7 @@ namespace Core
             public static Uri GetResourcePath(Locations resource, string filename)
             {
                 // name of top level resource directory
-                string resource_path = "resources"; 
+                string resource_path = "resources";
                 string assembly_name = Assembly.GetCallingAssembly().GetName().Name; // "Core"
 
                 switch (resource)
@@ -95,6 +96,7 @@ namespace Core
                 return new Uri(file_path, UriKind.RelativeOrAbsolute);
             }
 
+            #endregion
         }
     }
 }

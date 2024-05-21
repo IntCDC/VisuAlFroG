@@ -32,7 +32,7 @@ namespace Core
         public class WindowLeaf : AbstractWindow
         {
             /* ------------------------------------------------------------------*/
-            // public classes 
+            #region public classes 
 
             /// <summary>
             /// Configuration data.
@@ -43,15 +43,17 @@ namespace Core
                 public string ContentType { get; set; }
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public properties 
+            #region public properties 
 
             public AttachedContent_Type _AttachedContent { get; private set; }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             /// <summary>
             /// Ctor.
@@ -148,9 +150,10 @@ namespace Core
                 base.reset();
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private functions
+            #region private functions
 
             /// <summary>
             /// Used to setup the context menu once.
@@ -457,9 +460,10 @@ namespace Core
                 return conform_name;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            #region private variables
 
             private readonly string _item_id_hori_top = "item_horizontal_top_" + UniqueID.GenerateString();
             private readonly string _item_id_hori_bottom = "item_horizontal_bottom_" + UniqueID.GenerateString();
@@ -467,6 +471,8 @@ namespace Core
             private readonly string _item_id_vert_right = "item_vertical_right" + UniqueID.GenerateString();
             private readonly string _item_id_window_delete = "item_window_delete" + UniqueID.GenerateString();
             private readonly string _item_id_delete_content = "item_delete_content" + UniqueID.GenerateString();
+
+            #endregion
         }
     }
 }

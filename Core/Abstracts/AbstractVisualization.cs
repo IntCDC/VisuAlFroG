@@ -24,13 +24,14 @@ namespace Core
         {
 
             /* ------------------------------------------------------------------*/
-            // public delegate
+            #region public delegate
 
             public delegate void AttachDataMenu_Delegate(List<System.Windows.Controls.MenuItem> menu_item);
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public classes
+            #region public classes
 
             /// <summary>
             /// Class defining the configuration required for restoring content.
@@ -42,9 +43,10 @@ namespace Core
                 /// TODO Add additional configuration information that should be saved here...
             }
 
+#endregion
 
             /* ------------------------------------------------------------------*/
-            // public properties
+            #region public properties
 
             public abstract string _Name { get; }
             public abstract bool _MultipleInstances { get; }
@@ -57,9 +59,10 @@ namespace Core
             public DataManager.GetDataCallback_Delegate _RequestDataCallback { get; private set; }
             public DataManager.GetDataMenuCallback_Delegate _RequestMenuCallback { get; private set; }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             /// <summary>
             /// Ctor.
@@ -255,9 +258,10 @@ namespace Core
             /// <param name="new_data">True if new data is available, false if existing data has been updated.</param>
             public abstract void Update(bool new_data);
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // protected functions
+            #region protected functions
 
             protected void attach_child_content(UIElement control)
             {
@@ -316,18 +320,20 @@ namespace Core
                 return true;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // protected variables
+            #region protected variables
 
             protected bool _initialized = false;
             protected bool _created = false;
 
             protected ContentMenuBar _menu = null;
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private functions
+            #region private functions
 
             /// <summary>
             /// Create content menu.
@@ -360,9 +366,10 @@ namespace Core
                 return menu_grid;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            #region private variables
 
             private DockPanel _content_parent = null;
             private Grid _content_child = null;
@@ -370,6 +377,8 @@ namespace Core
 
             /// DEBUG
             protected TimeBenchmark _timer = null;
+
+            #endregion
         }
     }
 }

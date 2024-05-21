@@ -20,7 +20,7 @@ namespace GrasshopperInterface
         public class Grasshopper_DataConverter
         {
             /* ------------------------------------------------------------------*/
-            // static functions
+            #region static functions
 
             /// <summary>
             /// [STATIC] Convert data provided by the interface to generic data type. 
@@ -105,6 +105,8 @@ namespace GrasshopperInterface
 
                 return ghstructure_data;
             }
+
+            #endregion
         }
     }
 }

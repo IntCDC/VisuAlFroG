@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-using Newtonsoft.Json.Linq;
+using Core.Abstracts;
 
 
 
@@ -17,7 +17,7 @@ namespace Core
         {
 
             /* ------------------------------------------------------------------*/
-            // public events
+            #region public events
 
             /// <summary>
             /// Event called on change of _Selected property.
@@ -25,14 +25,15 @@ namespace Core
             /// </summary>
             public event PropertyChangedEventHandler PropertyChanged = null;
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public properties
+            #region public properties
 
-            public uint   _Index { get; set; }      = uint.MaxValue;
-            public string _Label { get; set; }      = "";
-            public uint   _Dimension { get; set; }  = 0;
-            public bool   _Selected
+            public uint _Index { get; set; } = uint.MaxValue;
+            public string _Label { get; set; } = "";
+            public uint _Dimension { get; set; } = uint.MaxValue;
+            public bool _Selected
             {
                 get
                 {
@@ -47,13 +48,16 @@ namespace Core
                         PropertyChanged(this, new PropertyChangedEventArgs("_Selected"));
                     }
                 }
-            } 
+            }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            #region private variables
 
             private bool _selected = false;
+
+            #endregion
         }
     }
 }

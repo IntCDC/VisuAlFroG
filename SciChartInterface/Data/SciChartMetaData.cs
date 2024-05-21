@@ -16,8 +16,16 @@ namespace SciChartInterface
         public class SciChartMetaData : GenericMetaData, IPointMetadata
         {
 
+            /* ------------------------------------------------------------------*/
+            #region public properties
+
             // Wrapper required for IPointMetadata
             public bool IsSelected { get { return _Selected; } set { _Selected = value; } }
+
+            #endregion
+
+            /* ------------------------------------------------------------------*/
+            #region public functions
 
             public SciChartMetaData(uint index, bool is_selected, PropertyChangedEventHandler update_metadata_handler)
             {
@@ -26,6 +34,8 @@ namespace SciChartInterface
                 // Setting PropertyChanged after IsSelected prevents useless initial update of all meta data
                 PropertyChanged += update_metadata_handler;
             }
+
+            #endregion
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Visualizations
         {
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public override bool Initialize()
             {
@@ -92,15 +92,18 @@ namespace Visualizations
                 return true;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            #region private variables
 
             private Thread _worker = null;
             private IntPtr _python_threads;
 
             /// DEBUG
             private PythonScript _script = null;
+
+            #endregion
         }
     }
 }

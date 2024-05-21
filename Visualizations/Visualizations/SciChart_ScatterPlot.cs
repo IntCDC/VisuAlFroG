@@ -21,15 +21,17 @@ namespace Visualizations
     public class SciChart_ScatterPlot : AbstractSciChartSeries<SciChartSurface, XyScatterRenderableSeries>
     {
         /* ------------------------------------------------------------------*/
-        // properties
+        #region public properties
 
         public override string _Name { get { return "Scatter Plot (SciChart)"; } }
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // public functions
+        #region public functions
 
 
 
+        #endregion
     }
 }

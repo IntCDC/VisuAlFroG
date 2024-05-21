@@ -30,13 +30,13 @@ namespace Visualizations
     public class CustomWPFVisualization : AbstractWPFVisualization<Canvas>
     {
         /* ------------------------------------------------------------------*/
-        // properties
+        #region public properties
 
         public override string Name { get { return "CustomWPFVisualization"; } }
         public override bool MultipleInstances { get { return true; } }
 
         /* ------------------------------------------------------------------*/
-        // public functions
+        #region public functions
 
         public override bool Create()
         {
@@ -90,7 +90,7 @@ namespace Visualizations
 
 
         /* ------------------------------------------------------------------*/
-        // private functions
+        #region private functions
 
         /// <summary>
         /// 
@@ -201,7 +201,7 @@ namespace Visualizations
         }
 
         /* ------------------------------------------------------------------*/
-        // private variables
+        #region private variables
 
         private List<Rectangle> _data_element = new List<Rectangle>();
 

@@ -26,7 +26,7 @@ namespace Core
         public class DataManager : AbstractService
         {
             /* ------------------------------------------------------------------*/
-            // public delegates
+            #region public delegates
 
             public delegate object GetDataCallback_Delegate(int data_uid);
             public delegate List<System.Windows.Controls.MenuItem> GetDataMenuCallback_Delegate(int data_uid);
@@ -38,9 +38,10 @@ namespace Core
 
             public delegate void UpdateVisualizationCallback_Delegate(bool new_data);
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public override bool Initialize()
             {
@@ -149,7 +150,7 @@ namespace Core
 
                     // Load original data if available
                     var original_data = (GenericDataStructure)GetDataCallback(_original_data_hash);
-                    if ((original_data != null) && (!original_data.Empty()))
+                    if ((original_data != null) && (!original_data.IsEmpty()))
                     {
                         variety.UpdateData(original_data);
                     }
@@ -237,9 +238,9 @@ namespace Core
             {
                 var out_data = new GenericDataStructure();
                 var original_data = (GenericDataStructure)GetDataCallback(_original_data_hash);
-                if ((original_data != null) && (!original_data.Empty()))
+                if ((original_data != null) && (!original_data.IsEmpty()))
                 {
-                    var metadata_list = original_data.ListMetaData();
+                    var metadata_list = original_data.GetListMetaData();
                     foreach (var meta_data in metadata_list)
                     {
                         if (meta_data._Selected)
@@ -314,9 +315,10 @@ namespace Core
                 menu_bar.AddMenu(MainMenuBar.PredefinedMenuOption.DATA, menu_item);
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private functions
+            #region private functions
 
             /// <summary>
             /// Callback provided for getting notified on changed meta data 
@@ -332,19 +334,12 @@ namespace Core
                     Log.Default.Msg(Log.Level.Error, "Unknown sender");
                     return;
                 }
-                try
+
+                // Update meta data in all data series
+                foreach (var pair in _data_library)
                 {
-                    // Update meta data in all data series
-                    foreach (var pair in _data_library)
-                    {
-                        pair.Value._Data.UpdateMetaDataEntry(sender_selection);
-                        pair.Value._UpdateVisualization(false);
-                    }
-                }
-                catch (Exception exc)
-                {
-                    Log.Default.Msg(Log.Level.Error, exc.Message);
-                    return;
+                    pair.Value._Data.UpdateMetaDataEntry(sender_selection);
+                    pair.Value._UpdateVisualization(false);
                 }
             }
 
@@ -362,40 +357,34 @@ namespace Core
                     Log.Default.Msg(Log.Level.Error, "Unknown sender");
                     return;
                 }
-                try
+
+                // Update data entry in all data series
+                foreach (var pair in _data_library)
                 {
-                    // Update data entry in all data series
-                    foreach (var pair in _data_library)
+                    /// TODO 
+                    switch (e.PropertyName)
                     {
-                        /// TODO 
-                        switch (e.PropertyName)
-                        {
-                            case (DataModifier.ADD):
+                        case (DataModifier.ADD):
 
-                                break;
-                            case (DataModifier.DELETE):
+                            break;
+                        case (DataModifier.DELETE):
 
-                                break;
-                            case (DataModifier.CHANGE):
+                            break;
+                        case (DataModifier.CHANGE):
 
-                                break;
-                            default: break;
+                            break;
+                        default: break;
 
-                        }
-
-                        pair.Value._UpdateVisualization(false);
                     }
-                }
-                catch (Exception exc)
-                {
-                    Log.Default.Msg(Log.Level.Error, exc.Message);
-                    return;
+
+                    pair.Value._UpdateVisualization(false);
                 }
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            #region private variables
 
             private struct DataDescription
             {
@@ -412,6 +401,8 @@ namespace Core
             private int _original_data_hash = UniqueID.InvalidInt;
             private SetDataCallback_Delegate _outputdata_callback = null;
             private Dictionary<int, DataDescription> _data_library = new Dictionary<int, DataDescription>();
+
+            #endregion
         }
     }
 }

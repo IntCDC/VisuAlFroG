@@ -17,7 +17,7 @@ namespace Core
         public class MainMenuBar : AbstractMenuBar<MainMenuBar.PredefinedMenuOption>
         {
             /* ------------------------------------------------------------------*/
-            // public enum
+            #region public enum
 
             public enum PredefinedMenuOption
             {
@@ -27,9 +27,10 @@ namespace Core
                 HELP,
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public override bool Initialize()
             {
@@ -45,9 +46,10 @@ namespace Core
                 return _initialized;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private functions
+            #region private functions
 
             private void add_repo_link()
             {
@@ -74,6 +76,7 @@ namespace Core
                 e.Handled = true;
             }
 
+            #endregion
         }
     }
 }

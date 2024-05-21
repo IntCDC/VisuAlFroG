@@ -7,6 +7,7 @@ using Frontend.Application;
 using Core.Utilities;
 using Core.Data;
 using Core.Abstracts;
+using GH_IO.Serialization;
 
 
 
@@ -20,7 +21,7 @@ namespace GrasshopperInterface
     public class VisuAlFroG : GH_Component
     {
         /* ------------------------------------------------------------------*/
-        // public functions
+        #region public functions
 
         /// <summary>
         /// Each implementation of GH_Component must provide a public 
@@ -139,9 +140,10 @@ namespace GrasshopperInterface
             _runtimemessages.Show();
         }
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // private functions
+        #region private functions
 
         /// <summary>
         /// Callback for retrieving new output data.
@@ -153,9 +155,10 @@ namespace GrasshopperInterface
             ExpireSolution(true);
         }
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // private variables
+        #region private variables
 
         private MainWindow _window = null;
         private GH_Structure<IGH_Goo> _output_data = null;
@@ -166,9 +169,10 @@ namespace GrasshopperInterface
         private int _exec_count = 0;
         private TimeBenchmark _timer = null;
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // internal grasshopper stuff
+        #region internal grasshopper stuff
 
         /// <summary>
         /// The Exposure property controls where in the panel a component icon 
@@ -201,5 +205,7 @@ namespace GrasshopperInterface
         /// that use the old ID will partially fail during loading.
         /// </summary>
         public override Guid ComponentGuid => new Guid("f1a3ed54-b664-439c-929f-a239c3f668cd");
+
+        #endregion
     }
 }

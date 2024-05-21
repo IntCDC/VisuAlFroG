@@ -15,7 +15,7 @@ namespace Visualizations
     {
 
         /* ------------------------------------------------------------------*/
-        // public functions
+        #region public functions
 
         /// <summary>
         /// Add new service.
@@ -81,10 +81,13 @@ namespace Visualizations
             return terminated;
         }
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // private variables
+        #region private variables
 
         private Dictionary<Type, AbstractService> _services = null;
+
+        #endregion
     }
 }

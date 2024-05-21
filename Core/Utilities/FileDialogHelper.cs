@@ -14,6 +14,10 @@ namespace Core
     {
         public class FileDialogHelper
         {
+
+            /* ------------------------------------------------------------------*/
+            #region static functions
+
             /// <summary>
             /// [STATIC] File dialog for saving provided string to a file.
             /// </summary>
@@ -69,6 +73,7 @@ namespace Core
                 return "";
             }
 
+            #endregion
         }
     }
 }

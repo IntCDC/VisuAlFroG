@@ -24,16 +24,17 @@ namespace SciChartInterface
 
         {
             /* ------------------------------------------------------------------*/
-            // properties
+            #region public properties
 
             public sealed override bool _MultipleInstances { get { return true; } }
             public sealed override List<Type> _DependingServices { get { return new List<Type>() { typeof(SciChartInterfaceService) }; } }
 
             protected SurfaceType _Content { get { return _content_surface; } }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public override bool Initialize(DataManager.GetDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback)
             {
@@ -106,9 +107,10 @@ namespace SciChartInterface
                 }
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // protected functions
+            #region protected functions
 
             protected abstract bool apply_data(SciChartSurface data_parent);
 
@@ -117,11 +119,14 @@ namespace SciChartInterface
                 throw new InvalidOperationException("Call alternatively implemented GetData() method");
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            #region private variables
 
             private SurfaceType _content_surface = null;
+
+            #endregion
         }
     }
 }

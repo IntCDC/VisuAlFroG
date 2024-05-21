@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
-
-using Core.Utilities;
-
-using Newtonsoft.Json.Linq;
 
 
 
@@ -19,14 +14,16 @@ namespace Core
         public class GenericDataEntry
         {
             /* ------------------------------------------------------------------*/
-            // public properties
+            #region public properties
 
-            public List<object>     _Values { get; private set; } = new List<object>();
+            public List<object> _Values { get; private set; } = new List<object>();
             public GenericMetaData _Metadata { get; set; } = new GenericMetaData();
-            public List<Type>      _Types { get; private set; } = new List<Type>();
+            public List<Type> _Types { get; private set; } = new List<Type>();
+
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public void AddValue<T>(T value)
             {
@@ -53,10 +50,12 @@ namespace Core
                 return (_Metadata._Index == entry_index);
             }
 
-            public bool Empty()
+            public bool IsEmpty()
             {
                 return (_Values.Count == 0);
             }
         }
+
+        #endregion
     }
 }

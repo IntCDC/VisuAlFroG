@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Core.Data;
-
-using Newtonsoft.Json.Linq;
 
 
 
@@ -19,6 +12,13 @@ namespace Core
     {
         public class TestData
         {
+            /* ------------------------------------------------------------------*/
+            #region static functions
+
+            /// <summary>
+            /// [STATIC]
+            /// </summary>
+            /// <returns></returns>
             public static GenericDataStructure Generate()
             {
                 var generator = new Random();
@@ -33,15 +33,15 @@ namespace Core
                     {
                         data_leaf.AddValue("row_headers");
                     }
-                    else {
-                        data_leaf.AddValue("column_" + (j-1).ToString());
+                    else
+                    {
+                        data_leaf.AddValue("column_" + (j - 1).ToString());
                     }
                     data_branch.AddEntry(data_leaf);
 
 
                 }
                 sample_data.AddBranch(data_branch);
-
 
                 for (int i = 0; i < 7; i++)
                 {
@@ -67,6 +67,8 @@ namespace Core
 
                 return sample_data;
             }
+
+            #endregion
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Visualizations
     public class BaseManager : AbstractService
     {
         /* ------------------------------------------------------------------*/
-        // public functions
+        #region public functions
 
         public BaseManager()
         {
@@ -109,13 +109,16 @@ namespace Visualizations
             _datamanager.AttachMenu(menu_bar);
         }
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // private variables
+        #region private variables
 
         private ServiceManager _servicemanager = null;
         private ContentManager _contentmanager = null;
         private DataManager _datamanager = null;
+
+        #endregion
     }
 }
 

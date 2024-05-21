@@ -19,7 +19,7 @@ namespace SciChartInterface
     public class StrokePalette : IStrokePaletteProvider
     {
         /* ------------------------------------------------------------------*/
-        // public functions
+        #region public functions
 
         /// <summary>
         /// Callback called when drawing of series begins.
@@ -50,10 +50,6 @@ namespace SciChartInterface
             }
         }
 
-        /* ------------------------------------------------------------------*/
-        // private variables
-
-
-
+        #endregion
     }
 }

@@ -21,7 +21,7 @@ namespace Core
         {
 
             /* ------------------------------------------------------------------*/
-            // public enum 
+            #region public enum 
 
             public enum PredefinedThemes
             {
@@ -29,16 +29,18 @@ namespace Core
                 Dark
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public properties
+            #region public properties
 
             public static ColorTheme.PredefinedThemes _DefaultColorTheme { get { return ColorTheme.PredefinedThemes.Dark; } }
             public static double _GridSplitterSize { get { return 7.0; } }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public classes 
+            #region public classes 
 
             /// <summary>
             /// Configuration data.
@@ -48,9 +50,10 @@ namespace Core
                 public ColorTheme.PredefinedThemes theme { get; set; }
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // static functions
+            #region static functions
 
             //  Random Color --------------------
 
@@ -250,36 +253,36 @@ namespace Core
                 setter_background.Value = new DynamicResourceExtension("Brush_MenuItemBackground");
                 style.Setters.Add(setter_background);
 
-/*
-                Setter setter_border = new Setter();
-                setter_border.Property = Menu.BorderBrushProperty;
-                setter_border.Value = new DynamicResourceExtension("Brush_MenuItemBorder");
-                style.Setters.Add(setter_border);
+                /*
+                                Setter setter_border = new Setter();
+                                setter_border.Property = Menu.BorderBrushProperty;
+                                setter_border.Value = new DynamicResourceExtension("Brush_MenuItemBorder");
+                                style.Setters.Add(setter_border);
 
-                Setter setter_trigger_background = new Setter();
-                setter_trigger_background.Property = MenuItem.BackgroundProperty;
-                setter_trigger_background.Value = new DynamicResourceExtension("Brush_MenuItemBackgroundHighlight");
+                                Setter setter_trigger_background = new Setter();
+                                setter_trigger_background.Property = MenuItem.BackgroundProperty;
+                                setter_trigger_background.Value = new DynamicResourceExtension("Brush_MenuItemBackgroundHighlight");
 
-                Setter setter_trigger_border = new Setter();
-                setter_trigger_border.Property = MenuItem.BorderBrushProperty;
-                setter_trigger_border.Value = new DynamicResourceExtension("Brush_MenuItemBorderdHighlight");
+                                Setter setter_trigger_border = new Setter();
+                                setter_trigger_border.Property = MenuItem.BorderBrushProperty;
+                                setter_trigger_border.Value = new DynamicResourceExtension("Brush_MenuItemBorderdHighlight");
 
-                Trigger trigger = new Trigger();
-                trigger.Property = MenuItem.IsHighlightedProperty;
-                trigger.Value = true;
-                trigger.Setters.Add(setter_trigger_background);
-                trigger.Setters.Add(setter_trigger_border);
+                                Trigger trigger = new Trigger();
+                                trigger.Property = MenuItem.IsHighlightedProperty;
+                                trigger.Value = true;
+                                trigger.Setters.Add(setter_trigger_background);
+                                trigger.Setters.Add(setter_trigger_border);
 
-                ControlTemplate control_template = new ControlTemplate();
-                control_template.TargetType = typeof(MenuItem);
-                control_template.Triggers.Add(trigger);
+                                ControlTemplate control_template = new ControlTemplate();
+                                control_template.TargetType = typeof(MenuItem);
+                                control_template.Triggers.Add(trigger);
 
-                Setter setter_highlight = new Setter();
-                setter_highlight.Property = MenuItem.TemplateProperty;
-                setter_highlight.Value = control_template;
+                                Setter setter_highlight = new Setter();
+                                setter_highlight.Property = MenuItem.TemplateProperty;
+                                setter_highlight.Value = control_template;
 
-                style.Setters.Add(setter_highlight);
-                */
+                                style.Setters.Add(setter_highlight);
+                                */
                 return style;
             }
 
@@ -293,9 +296,10 @@ namespace Core
                 return style;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public bool Initialize(ResourceDictionary app_resources)
             {
@@ -392,9 +396,10 @@ namespace Core
                 update_menu_item_selection();
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private functions 
+            #region private functions 
             private void update_menu_item_selection()
             {
                 foreach (var theme_meu_item in _theme_menu_items)
@@ -403,14 +408,16 @@ namespace Core
                 }
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            #region private variables
 
             private PredefinedThemes _color_theme = PredefinedThemes.LightBlue;
             private ResourceDictionary _app_resource = null;
             private List<MenuItem> _theme_menu_items = new List<MenuItem>();
 
+            #endregion
         }
     }
 }

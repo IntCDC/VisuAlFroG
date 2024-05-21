@@ -23,13 +23,14 @@ namespace SciChartInterface
             where DataType : BaseRenderableSeries, new()
         {
             /* ------------------------------------------------------------------*/
-            // properties
+            #region public properties
 
             public sealed override Type _RequiredDataType { get; } = typeof(DataTypeSciChartSeries<DataType>);
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public override bool Create()
             {
@@ -126,9 +127,10 @@ namespace SciChartInterface
                 return _created;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // protected functions
+            #region protected functions
 
             /// </summary>
             /// <param name="data_parent"></param>
@@ -162,6 +164,8 @@ namespace SciChartInterface
                 ///Log.Default.Msg(Log.Level.Error, "Missing data for: " + typeof(List<DataType>).FullName);
                 return false;
             }
+
+            #endregion
         }
     }
 }

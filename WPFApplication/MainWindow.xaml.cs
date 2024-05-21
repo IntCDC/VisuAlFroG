@@ -24,7 +24,7 @@ namespace Frontend
         public partial class MainWindow : Window
         {
             /* ------------------------------------------------------------------*/
-            // public delegates
+            #region public delegates
 
             /// <summary>
             /// Function provided by the interface (= Grasshopper) which allows to trigger reloading of the interface
@@ -36,20 +36,30 @@ namespace Frontend
             /// </summary>
             public delegate void MarkColorTheme_Delegate(ColorTheme.PredefinedThemes color_theme);
 
-
-
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public MainWindow() : this(false) { }
 
             public MainWindow(bool called_from_interface)
             {
+
+                Window progress_window = new Window();
+                progress_window.Content = _progress_bar;
+                _progress_bar.Value = 0;
+                progress_window.Show();
+
+
                 _soft_close = called_from_interface;
                 _standalone = !called_from_interface;
                 initialize();
+                _progress_bar.Value = 50;
                 create();
+                _progress_bar.Value = 100;
+
+                progress_window.Close();
             }
 
             /// <summary>
@@ -100,9 +110,10 @@ namespace Frontend
                 _arguments.Evaluate();
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // protected functions
+            #region protected functions
 
             /// <summary>
             /// Soft close is used when called from interface (= Grasshopper), see CTOR
@@ -122,9 +133,10 @@ namespace Frontend
                 }
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private functions
+            #region private functions
 
             /// <summary>
             /// Initialize the main WPF window, the services and the managers...
@@ -237,9 +249,10 @@ namespace Frontend
                 }
                 _subwindows_element.Children.Add(winmanager_content);
 
-
                 // Evaluate previously parsed command line arguments
                 _arguments.Evaluate();
+
+
 
                 // Load default window configuration
                 _winmanager.CreateDefault();
@@ -252,6 +265,7 @@ namespace Frontend
                 }
 
 
+
                 _timer.Stop();
                 return true;
             }
@@ -261,10 +275,10 @@ namespace Frontend
                 this.Close();
                 return true;
             }
-
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // local variables
+            #region private variables
 
             private bool _initialized = false;
             private bool _soft_close = false;
@@ -278,8 +292,18 @@ namespace Frontend
             private ColorTheme _colortheme = null;
             private MainMenuBar _menubar = null;
 
+            private ProgressBar _progress_bar = new ProgressBar()
+            {
+                Minimum = 0,
+                Maximum = 100,
+                IsIndeterminate = false,
+            };
+
+
             /// DEBUG
             private TimeBenchmark _timer = null;
+
+            #endregion
         }
     }
 }

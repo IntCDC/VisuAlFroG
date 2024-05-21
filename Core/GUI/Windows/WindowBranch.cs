@@ -31,7 +31,7 @@ namespace Core
         {
 
             /* ------------------------------------------------------------------*/
-            // public classes 
+            #region public classes 
 
             /// <summary>
             /// Configuration data.
@@ -45,9 +45,10 @@ namespace Core
                 public Tuple<WindowBranch.Configuration, WindowBranch.Configuration> Children { get; set; }
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public properties 
+            #region public properties 
 
             public Tuple<WindowBranch, WindowBranch> _Children { get; private set; } = null;
             public WindowLeaf _Leaf { get; private set; } = null;
@@ -55,9 +56,10 @@ namespace Core
             public ChildLocation _Location { get; private set; } = ChildLocation.None;
             public double _Position { get { return calculate_position(); } }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             /// <summary>
             /// Ctor.
@@ -246,9 +248,10 @@ namespace Core
                 _parent_branch.delete_childbranch(this);
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private functions
+            #region private functions
 
             /// <summary>
             /// Add window leaf to this branch.
@@ -425,6 +428,8 @@ namespace Core
                 delete_content(_Content);
                 base.reset();
             }
+
+            #endregion
         }
     }
 }

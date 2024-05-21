@@ -2,12 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-
 using Core.Utilities;
-
-using Newtonsoft.Json.Linq;
-
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
+using Core.Abstracts;
 
 
 
@@ -25,57 +21,58 @@ namespace Core
         public class GenericDataStructure
         {
             /* ------------------------------------------------------------------*/
-            // public properties
+            #region public properties
 
             public List<GenericDataStructure> _Branches { get; private set; } = new List<GenericDataStructure>();
             public List<GenericDataEntry> _Entries { get; private set; } = new List<GenericDataEntry>();
 
             public string _Label { get; set; } = "";
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public void AddBranch(GenericDataStructure branch) { _Branches.Add(branch); }
 
             public void AddEntry(GenericDataEntry entry) { _Entries.Add(entry); }
 
-            public GenericDataEntry EntryAtIndex(uint entry_index)
+            public GenericDataEntry GetEntryAtIndex(uint entry_index)
             {
                 GenericDataEntry entry = null;
                 get_entry_at_index(this, entry_index, ref entry);
                 return entry;
             }
 
-            public List<GenericMetaData> ListMetaData()
+            public List<GenericMetaData> GetListMetaData()
             {
                 List<GenericMetaData> metadata_list = new List<GenericMetaData>();
                 list_metadata(this, ref metadata_list);
                 return metadata_list;
             }
 
-            public uint Dimension()
+            public uint GetDimension()
             {
                 uint dim = 0;
                 get_dimension(this, ref dim);
                 return dim;
             }
 
-            public List<Type> Types()
+            public List<Type> GetTypes()
             {
                 var value_types = new List<Type>();
                 get_types(this, ref value_types);
                 return value_types;
             }
 
-            public List<string> Labels()
+            public List<string> GetLabels()
             {
                 List<string> labels = new List<string>();
                 get_labels(this, ref labels);
                 return labels;
             }
 
-            public bool Empty()
+            public bool IsEmpty()
             {
                 return ((_Branches.Count == 0) && (_Entries.Count == 0));
             }
@@ -175,9 +172,10 @@ namespace Core
                 return branch_clone;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private functions
+            #region private functions
 
             private void get_entry_at_index(GenericDataStructure branch, uint entry_index, ref GenericDataEntry out_entry)
             {
@@ -260,6 +258,8 @@ namespace Core
                     get_labels(b, ref labels);
                 }
             }
+
+            #endregion
         }
     }
 }

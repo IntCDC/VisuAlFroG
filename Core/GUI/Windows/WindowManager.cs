@@ -26,7 +26,7 @@ namespace Core
         public class WindowManager : AbstractService, IAbstractConfigurationData
         {
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public bool Initialize(ContentCallbacks_Type content_callbacks)
             {
@@ -103,30 +103,27 @@ namespace Core
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                     return;
                 }
-                try
-                {
-                    /*
-                    _______________________________
-                    |Data Viewer |                |
-                    |            |                |
-                    |            |                |
-                    |____________|________________|
-                    |Log Console                  |
-                    |_____________________________|
-                    */
-                    _window_root.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.None, 0.6);
-                    _window_root._Children.Item1.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.None, 0.4);
-                    _window_root._Children.Item1._Children.Item1._Leaf.CreateContent(UniqueID.InvalidString, "Visualizations.WPF_DataViewer");
-                    _window_root._Children.Item2._Leaf.CreateContent(UniqueID.InvalidString, "Visualizations.WPF_LogConsole");
-                }
-                catch (Exception exc)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Unable to create default window configuration: " + exc.Message);
-                }
+
+                /*
+                _______________________________
+                |Data Viewer |                |
+                |            |                |
+                |            |                |
+                |____________|________________|
+                |Log Console                  |
+                |_____________________________|
+                */
+                _window_root.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.None, 0.6);
+                _window_root._Children.Item1.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.None, 0.4);
+                _window_root._Children.Item1._Children.Item1._Leaf.CreateContent(UniqueID.InvalidString, "Visualizations.WPF_DataViewer");
+                _window_root._Children.Item1._Children.Item2._Leaf.CreateContent(UniqueID.InvalidString, "Visualizations.SciChart_Lines");
+                _window_root._Children.Item2._Leaf.CreateContent(UniqueID.InvalidString, "Visualizations.WPF_LogConsole");
             }
 
+            #endregion
+
             /* ------------------------------------------------------------------*/
-            // private functions
+            #region private functions
 
             /// <summary>
             /// Traverse window tree in breadth first order to gather all configurations recursively.
@@ -197,12 +194,15 @@ namespace Core
                 }
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            #region private variables
 
             private Grid _content = null;
             private WindowBranch _window_root = null;
+
+            #endregion
         }
     }
 }

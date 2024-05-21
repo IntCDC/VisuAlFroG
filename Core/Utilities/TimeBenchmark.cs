@@ -15,7 +15,7 @@ namespace Core
         public class TimeBenchmark
         {
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             /// <summary>
             /// Ctor.
@@ -68,13 +68,16 @@ namespace Core
 #endif
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            #region private variables
 
             private bool _started = false;
             private System.Diagnostics.Stopwatch _watch = null;
             private static int _level = 0;
+
+            #endregion
         }
     }
 }

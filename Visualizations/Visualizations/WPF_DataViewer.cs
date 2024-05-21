@@ -16,14 +16,15 @@ namespace Visualizations
     public class WPF_DataViewer : AbstractWPFVisualization<System.Windows.Controls.ScrollViewer>
     {
         /* ------------------------------------------------------------------*/
-        // properties
+        #region public properties
 
         public override string _Name { get { return "Data Viewer (WPF)"; } }
         public override bool _MultipleInstances { get { return false; } }
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // public functions
+        #region public functions
 
         public override bool Create()
         {
@@ -86,9 +87,10 @@ namespace Visualizations
             }
         }
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // private functions
+        #region private functions
 
         private void create_table(GenericDataStructure branch)
         {
@@ -141,7 +143,7 @@ namespace Visualizations
             column.DefaultValue = false;
             _table.Columns.Add(column);
 
-            for (uint i = 0; i < branch.Dimension(); i++)
+            for (uint i = 0; i < branch.GetDimension(); i++)
             {
                 column = new DataColumn();
                 column.DataType = typeof(double);
@@ -232,7 +234,7 @@ namespace Visualizations
 
         private string label_value(uint i)
         {
-            return "Value(" + i.ToString() + ")";
+            return "Value" + i.ToString() + "";
         }
 
         private void event_scrollviewer_mousewheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
@@ -243,11 +245,13 @@ namespace Visualizations
             e.Handled = true;
         }
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // private variables
+        #region private variables
 
         private System.Data.DataTable _table = null;
 
+        #endregion
     }
 }

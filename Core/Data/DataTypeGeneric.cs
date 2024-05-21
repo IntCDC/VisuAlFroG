@@ -19,17 +19,7 @@ namespace Core
         public class DataTypeGeneric : AbstractDataType<GenericDataStructure>
         {
             /* ------------------------------------------------------------------*/
-            // public properties
-
-            public sealed override List<Dimension> _SupportedDimensions { get; }
-                = new List<Dimension>() { Dimension.Uniform, Dimension.TwoDimensional, Dimension.ThreeDimensional, Dimension.Multidimensional };
-
-            public sealed override List<Type> _SupportedValueTypes { get; }
-                = new List<Type>() { typeof(string), typeof(double), typeof(float), typeof(int), typeof(uint), typeof(long), typeof(ulong) };
-
-
-            /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public DataTypeGeneric(PropertyChangedEventHandler update_data_handler, PropertyChangedEventHandler update_metadata_handler)
                 : base(update_data_handler, update_metadata_handler) { }
@@ -44,11 +34,7 @@ namespace Core
                     Log.Default.Msg(Log.Level.Error, "Missing data");
                     return;
                 }
-
-                if (!compatible_dimensionality(data.Dimension()) || !compatible_types(data.Types()))
-                {
-                    return;
-                }
+                _Dimension = data.GetDimension();
 
                 _data = data.DeepCopy(_update_metadata_handler);
                 init_metadata(_data);
@@ -63,7 +49,7 @@ namespace Core
                     Log.Default.Msg(Log.Level.Error, "Creation of data required prior to execution");
                     return;
                 }
-                var entry = _data.EntryAtIndex(updated_meta_data._Index);
+                var entry = _data.GetEntryAtIndex(updated_meta_data._Index);
                 if (entry != null)
                 {
                     entry._Metadata._Selected = updated_meta_data._Selected;
@@ -77,7 +63,7 @@ namespace Core
             public override List<MenuItem> GetMenu()
             {
                 /// XXX TODO Only for testing - this should go or be set by DataFilter
-                
+
                 var menu_list = new List<MenuItem>();
                 if (_data != null)
                 {
@@ -87,9 +73,10 @@ namespace Core
                 return menu_list;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private functions
+            #region private functions
 
             private void init_metadata(GenericDataStructure data)
             {
@@ -102,6 +89,8 @@ namespace Core
                     init_metadata(branch);
                 }
             }
+
+            #endregion
         }
     }
 }

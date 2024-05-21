@@ -28,13 +28,14 @@ namespace SciChartInterface
         {
 
             /* ------------------------------------------------------------------*/
-            // properties
+            #region public properties
 
             public sealed override Type _RequiredDataType { get; } = typeof(DataTypeSciChartParallel<DataType>);
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public override bool Create()
             {
@@ -124,9 +125,10 @@ namespace SciChartInterface
                 return _created;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // protected functions
+            #region protected functions
 
             protected override bool apply_data(SciChartSurface data_parent)
             {
@@ -150,9 +152,10 @@ namespace SciChartInterface
                 return false;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private functions
+            #region private functions
 
             private void event_axes_reordered(object sender, ParallelAxisReorderArgs e)
             {
@@ -166,6 +169,8 @@ namespace SciChartInterface
                 /// TODO
                 Log.Default.Msg(Log.Level.Info, "event_selection_changed...");
             }
+
+            #endregion
         }
     }
 }

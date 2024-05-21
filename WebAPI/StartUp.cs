@@ -1,4 +1,5 @@
 ﻿using Owin;
+
 using System.Web.Http;
 
 
@@ -15,7 +16,7 @@ namespace Visualizations
         {
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             /// <summary>
             /// This code configures Web API.
@@ -34,6 +35,8 @@ namespace Visualizations
 
                 appBuilder.UseWebApi(config);
             }
+
+            #endregion
         }
     }
 }

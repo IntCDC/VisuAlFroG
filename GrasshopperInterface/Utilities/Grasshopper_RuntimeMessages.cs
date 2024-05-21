@@ -23,7 +23,7 @@ namespace GrasshopperInterface
         {
 
             /* ------------------------------------------------------------------*/
-            // public functions
+#region public functions
 
             /// <summary>
             /// Ctor.
@@ -83,12 +83,15 @@ namespace GrasshopperInterface
                 }
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            #region private variables
 
             private GH_Component _parent = null;
             private List<(Grasshopper.Kernel.GH_RuntimeMessageLevel, string)> _messages = null;
+
+            #endregion
         }
     }
 }

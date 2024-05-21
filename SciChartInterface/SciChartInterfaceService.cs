@@ -14,7 +14,7 @@ namespace SciChartInterface
     public class SciChartInterfaceService : AbstractService
     {
         /* ------------------------------------------------------------------*/
-        // public functions
+        #region public functions
 
         public override bool Initialize()
         {
@@ -57,6 +57,8 @@ namespace SciChartInterface
             }
             return true;
         }
+
+        #endregion
     }
 }
 

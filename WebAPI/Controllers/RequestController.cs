@@ -21,7 +21,7 @@ namespace Visualizations
             {
 
                 /* ------------------------------------------------------------------*/
-                // public functions
+                #region public functions
 
                 /// <summary>
                 /// Ctor.
@@ -91,12 +91,15 @@ namespace Visualizations
                 {
                 }
 
+                #endregion
 
                 /* ------------------------------------------------------------------*/
-                // private variables
+                #region private variables
 
                 /// DEBUG 
                 private Request[] _requests = null;
+
+                #endregion
             }
         }
     }

@@ -20,13 +20,14 @@ namespace Core
         public abstract class AbstractMenuBar<EnumOptionType> where EnumOptionType : Enum
         {
             /* ------------------------------------------------------------------*/
-            // public delegate
+            #region public delegate
 
             public delegate bool MenuCallback_Delegate();
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // static functions
+            #region static functions
 
             public static MenuItem GetDefaultMenuItem(string name, MenuCallback_Delegate callback = null)
             {
@@ -49,9 +50,10 @@ namespace Core
                 return menu_item;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public virtual bool Initialize()
             {
@@ -117,9 +119,10 @@ namespace Core
                 return true;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // protected functions
+            #region protected functions
 
             protected void add_main_menu(string name, EnumOptionType enum_option)
             {
@@ -129,18 +132,22 @@ namespace Core
                 _main_menu_items.Add(enum_option, main_menu_item);
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // protected variables
+            #region protected variables
 
             protected bool _initialized = false;
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            #region private variables
 
             private Menu _content = null;
             private Dictionary<EnumOptionType, MenuItem> _main_menu_items = null;
+
+            #endregion
         }
     }
 }

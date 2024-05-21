@@ -22,7 +22,7 @@ namespace Core
         public class ImageLoader
         {
             /* ------------------------------------------------------------------*/
-            // static functions
+            #region static functions
 
             /// <summary>
             /// [STATIC] Create WPF __ImageSource__ for given resource location and file name.
@@ -60,6 +60,8 @@ namespace Core
                 }
                 return null;
             }
+
+            #endregion
         }
     }
 }

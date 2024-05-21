@@ -17,13 +17,14 @@ namespace Core
         {
 
             /* ------------------------------------------------------------------*/
-            // public delegates
+            #region public delegates
 
             public delegate void EvaluateArgument_Delegate(List<string> parameters);
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public bool Register(string cmd_long, string cmd_short, uint cmd_params, EvaluateArgument_Delegate cmd_evaluate_callback)
             {
@@ -163,9 +164,10 @@ namespace Core
                     );
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            #region private variables
 
             // List of registered command line options
             private Dictionary<string, Option> _registered_options = new Dictionary<string, Option>();
@@ -186,6 +188,8 @@ namespace Core
                 public uint ParamCount { get; }
                 public EvaluateArgument_Delegate EvaluateCallback { get; }
             }
+
+            #endregion
         }
     }
 }

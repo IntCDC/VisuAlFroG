@@ -17,13 +17,15 @@ namespace Visualizations
         {
 
             /* ------------------------------------------------------------------*/
-            // public property
+            #region public properties
 
             public string _StringID { get; set; }
 
 
+            #endregion
+
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             /// <summary>
             /// Load script from file (DEBUG).
@@ -76,12 +78,15 @@ namespace Visualizations
                 Console.WriteLine("PythonScript>>> StringID = " + _StringID);
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            #region private variables
 
             private bool _initialized = false;
             private string _source = null;
+
+            #endregion
         }
     }
 }

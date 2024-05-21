@@ -23,6 +23,10 @@ namespace Core
 
         public interface IAbstractConfiguration
         {
+
+            /* ------------------------------------------------------------------*/
+            #region interface functions
+
             /// <summary>
             /// Called for collecting all configurations.
             /// </summary>
@@ -35,6 +39,8 @@ namespace Core
             /// <param name="configurations">The configurations as JSON string.</param>
             /// <returns>True on success, false otherwise.</returns>
             bool ApplyConfigurations(string configurations);
+
+            #endregion
         }
     }
 }

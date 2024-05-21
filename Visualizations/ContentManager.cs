@@ -26,11 +26,11 @@ namespace Visualizations
     public class ContentManager : AbstractService
     {
         /* ------------------------------------------------------------------*/
-        // public functions
+        #region public functions
 
         public bool Initialize(DataManager.GetDataCallback_Delegate getdata_callback,
                 DataManager.GetDataMenuCallback_Delegate getmenu_callback,
-                DataManager.RegisterDataCallback_Delegate register_callback, 
+                DataManager.RegisterDataCallback_Delegate register_callback,
                 DataManager.UnregisterUpdateCallback_Delegate unregister_callback)
         {
             if (_initialized)
@@ -297,9 +297,10 @@ namespace Visualizations
             return false;
         }
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // private functions
+        #region private functions
 
         /// <summary>
         /// Register new content type.
@@ -436,9 +437,10 @@ namespace Visualizations
             return terminated;
         }
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // private variables
+        #region private variables
 
         // Separate dictionary for each content type
         private Dictionary<Type, Dictionary<string, AbstractVisualization>> _contents = null;
@@ -447,5 +449,7 @@ namespace Visualizations
         private DataManager.GetDataMenuCallback_Delegate _content_getmenu_callback = null;
         private DataManager.RegisterDataCallback_Delegate _register_data_callback = null;
         private DataManager.UnregisterUpdateCallback_Delegate _unregister_data_callback = null;
+
+        #endregion
     }
 }

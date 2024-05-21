@@ -27,7 +27,7 @@ namespace Visualizations
         {
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public override bool Initialize()
             {
@@ -82,12 +82,15 @@ namespace Visualizations
                 return true;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            #region private variables
 
             private HttpClient _client = null;
             private string _base_address = null;
+
+            #endregion
         }
     }
 }

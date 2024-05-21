@@ -26,7 +26,7 @@ namespace Visualizations
     public class WPF_LogConsole : AbstractWPFVisualization<ScrollViewer>
     {
         /* ------------------------------------------------------------------*/
-        // properties
+        #region public properties
 
         public override string _Name { get { return "Log Console (WPF)"; } }
         public override bool _MultipleInstances { get { return false; } }
@@ -34,9 +34,10 @@ namespace Visualizations
         // Indicates to not create an unused copy of the data
         public override Type _RequiredDataType { get; } = null;
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // public functions
+        #region public functions
 
         public override bool Create()
         {
@@ -121,25 +122,20 @@ namespace Visualizations
                         break;
                 }
 
-                try
+                if (_text_block == null)
                 {
-                    if (_text_block == null) {
-                        Log.Default.Msg(Log.Level.Error, "Text Block element is null");
-                        return;
-                    }
-                    _text_block.Inlines.Add(run);
-                    scroll_bottom();
+                    Log.Default.Msg(Log.Level.Error, "Text Block element is null");
+                    return;
                 }
-                catch (Exception exc)
-                {
-                    Console.WriteLine(exc.Message);
-                }
+                _text_block.Inlines.Add(run);
+                scroll_bottom();
             }
         }
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // private functions
+        #region private functions
 
         private bool clipboard_option_click()
         {
@@ -171,11 +167,13 @@ namespace Visualizations
             _Content.ScrollToBottom();
         }
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // private variables
+        #region private variables
 
         private TextBlock _text_block = null;
 
+        #endregion
     }
 }

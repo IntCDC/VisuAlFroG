@@ -5,6 +5,11 @@ using System.ComponentModel;
 using SciChart.Charting.Visuals.RenderableSeries;
 using Core.Utilities;
 using Core.Data;
+using Core.GUI;
+using SciChart.Charting.Visuals.PointMarkers;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Controls;
 
 
 
@@ -12,16 +17,6 @@ using Core.Data;
  *  SciChart data variety for fast lines
  * 
  */
-using SciChartUniformDataType = SciChart.Charting.Model.DataSeries.UniformXyDataSeries<double>;
-using SciChartXYDataType = SciChart.Charting.Model.DataSeries.XyDataSeries<double, double>;
-using Core.GUI;
-using SciChart.Charting.Visuals.PointMarkers;
-using System.Windows;
-using System.Windows.Media;
-using SciChart.Charting.Model.DataSeries;
-using System.Xml.Linq;
-using System.Windows.Controls;
-
 namespace SciChartInterface
 {
     namespace Data
@@ -30,18 +25,7 @@ namespace SciChartInterface
             where DataType : BaseRenderableSeries, new()
         {
             /* ------------------------------------------------------------------*/
-            // public properties
-
-            public sealed override List<Dimension> _SupportedDimensions { get; }
-                = new List<Dimension>() { Dimension.Uniform, Dimension.TwoDimensional };
-
-            /// All numeric types that can be converted to double
-            public sealed override List<Type> _SupportedValueTypes { get; }
-                = new List<Type>() { typeof(double), typeof(float), typeof(int), typeof(uint), typeof(long), typeof(ulong) };
-
-
-            /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public DataTypeSciChartSeries(PropertyChangedEventHandler update_data_handler, PropertyChangedEventHandler update_metadata_handler)
                 : base(update_data_handler, update_metadata_handler) { }
@@ -60,11 +44,7 @@ namespace SciChartInterface
                     Log.Default.Msg(Log.Level.Error, "Missing data");
                     return;
                 }
-
-                if (!compatible_dimensionality(data.Dimension()) || !compatible_types(data.Types()))
-                {
-                    return;
-                }
+                _Dimension = data.GetDimension();
 
                 if (_data == null)
                 {
@@ -72,23 +52,8 @@ namespace SciChartInterface
                 }
                 _data.Clear();
 
-                // Convert and create required data
-                init_data(data);
-                if (_data.Count > 0)
-                {
-                    // Warn if series have different amount of values
-                    int count = _data[0].DataSeries.Count;
-                    for (int i = 1; i < _data.Count; i++)
-                    {
-                        if (count != _data[i].DataSeries.Count)
-                        {
-                            Log.Default.Msg(Log.Level.Warn, "Data series have different amount of values");
-                            break;
-                        }
-                    }
-
-                    _loaded = true;
-                }
+                convert_data(data);
+                _loaded = true;
             }
 
             public override void UpdateMetaDataEntry(IMetaData updated_meta_data)
@@ -118,58 +83,89 @@ namespace SciChartInterface
 
             public override List<MenuItem> GetMenu()
             {
+                var menu_items = new List<MenuItem>();
 
-                /// TODO 
+                for (uint a = 0; a < 2; a++)
+                {
+                    var menu_item = ContentMenuBar.GetDefaultMenuItem(((a == 0) ? ("[X]") : ("[Y]")) + " Axis Filter");
+                    menu_items.Add(menu_item);
 
-                return new List<MenuItem>();
+                    var radio_btn = new RadioButton();
+                    radio_btn.Name = "radio_" + UniqueID.GenerateString();
+                    radio_btn.Content = "Index";
+                    radio_btn.Tag = new AxisFilterData(a, IndexIndex);
+                    radio_btn.Checked += radio_btn_checked;
+                    menu_item.Items.Add(radio_btn);
+
+                    if (_axis_value_map.ContainsKey(a) && (_axis_value_map[a] == IndexIndex))
+                    {
+                        radio_btn.IsChecked = true;
+                    }
+
+                    for (uint d = 0; d < _Dimension; d++)
+                    {
+                        radio_btn = new RadioButton();
+                        radio_btn.Name = "radio_" + UniqueID.GenerateString();
+                        radio_btn.Content = "Value" + d.ToString();
+                        radio_btn.Tag = new AxisFilterData(a, d); // Save index of values
+                        radio_btn.Checked += radio_btn_checked;
+                        menu_item.Items.Add(radio_btn);
+
+                        if (_axis_value_map.ContainsKey(a) && (_axis_value_map[a] == d))
+                        {
+                            radio_btn.IsChecked = true;
+                        }
+                    }
+                }
+                return menu_items;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private functions
+            #region private functions
 
-            private void init_data(GenericDataStructure branch)
+            private void convert_data(GenericDataStructure branch)
             {
                 // For each branch add all leafs to one data series
                 if (branch._Entries.Count > 0)
                 {
+                    var series = new SciChart.Charting.Model.DataSeries.XyDataSeries<double, double>();
+                    series.SeriesName = (branch._Label == "") ? (UniqueID.GenerateString()) : (branch._Label);
+                    foreach (var entry in branch._Entries)
+                    {
+                        double x = double.NaN;
+                        double y = double.NaN;
+                        var dim = branch.GetDimension();
+                        if (dim == 1)
+                        {
+                            x = (double)entry._Metadata._Index;
+                            y = (double)entry._Values[0];
+                            _axis_value_map[0] = IndexIndex;
+                            _axis_value_map[1] = 0;
+                        }
+                        else if (dim == 2)
+                        {
+                            x = (double)entry._Values[0];
+                            y = (double)entry._Values[1];
+                            _axis_value_map[0] = 0;
+                            _axis_value_map[1] = 1;
+                            series.AcceptsUnsortedData = true; // XXX Can result in much slower performance for unsorted data
+                        }
+                        var meta_data = new SciChartMetaData(entry._Metadata._Index, entry._Metadata._Selected, _update_metadata_handler);
+                        series.Append((double)entry._Values[0], (double)entry._Values[1], meta_data);
+                    }
+
                     DataType data_series = new DataType();
                     data_series.AntiAliasing = true;
                     data_series.Style = renders_series_style();
-
-                    if (branch.Dimension() == 1)
-                    {
-                        var series = new SciChartUniformDataType();
-                        series.SeriesName = (branch._Label == "") ? (UniqueID.GenerateString()) : (branch._Label);
-
-                        foreach (var entry in branch._Entries)
-                        {
-                            var meta_data = new SciChartMetaData(entry._Metadata._Index, entry._Metadata._Selected, _update_metadata_handler);
-                            series.Append((double)entry._Values[0], meta_data);
-                        }
-                        data_series.DataSeries = series;
-
-                    }
-                    else if (branch.Dimension() == 2)
-                    {
-                        var series = new SciChartXYDataType();
-                        series.SeriesName = (branch._Label == "") ? (UniqueID.GenerateString()) : (branch._Label);
-
-                        foreach (var entry in branch._Entries)
-                        {
-                            var meta_data = new SciChartMetaData(entry._Metadata._Index, entry._Metadata._Selected, _update_metadata_handler);
-                            ///series.AcceptsUnsortedData = true;
-                            series.Append((double)entry._Values[0], (double)entry._Values[1], meta_data);
-                        }
-                        data_series.DataSeries = series;
-                    }
-
+                    data_series.DataSeries = series;
                     _data.Add(data_series);
                 }
 
                 foreach (var b in branch._Branches)
                 {
-                    init_data(b);
+                    convert_data(b);
                 }
             }
 
@@ -189,7 +185,7 @@ namespace SciChartInterface
 
                     Setter setter_gradient = new Setter();
                     setter_gradient.Property = FastColumnRenderableSeries.FillProperty;
-                    setter_gradient.Value = new SolidColorBrush(new_color); // gradient;
+                    setter_gradient.Value = new SolidColorBrush(new_color);
                     default_style.Setters.Add(setter_gradient);
                 }
                 else
@@ -233,6 +229,44 @@ namespace SciChartInterface
 
                 return default_style;
             }
+
+            private void radio_btn_checked(object sender, RoutedEventArgs e)
+            {
+                var sender_selection = sender as RadioButton;
+                if (sender_selection == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unknown sender");
+                    return;
+                }
+
+                var data = sender_selection.Tag as AxisFilterData;
+                if (data != null)
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Selected values at index " + data.value_index.ToString() + " for axis " + data.axis_index.ToString());
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unable to get data from radio button");
+                }
+            }
+
+            #endregion
+
+            /* ------------------------------------------------------------------*/
+            #region private variables
+
+            public class AxisFilterData
+            {
+                public AxisFilterData(uint ai, uint vi) { axis_index = ai; value_index = vi; }
+                public uint axis_index;
+                public uint value_index;
+            }
+
+            private Dictionary<uint, uint> _axis_value_map = new Dictionary<uint, uint>();
+
+            private const uint IndexIndex = uint.MaxValue;
+
+            #endregion
         }
     }
 }

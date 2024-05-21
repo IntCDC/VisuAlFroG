@@ -23,13 +23,14 @@ namespace Visualizations
     public class SciChart_ParallelCoordinatesPlot : AbstractSciChartParallel<SciChartParallelCoordinateSurface, ExpandoObject>
     {
         /* ------------------------------------------------------------------*/
-        // properties
+        #region public properties
 
         public override string _Name { get { return "Parallel Coordinates Plot (SciChart)"; } }
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // public functions
+        #region public functions
 
         public override void Update(bool new_data)
         {
@@ -85,14 +86,14 @@ namespace Visualizations
                 Setter setter_strokethickness = new Setter();
                 setter_strokethickness.Property = BaseRenderableSeries.StrokeThicknessProperty;
                 setter_strokethickness.Value = 2;
-                render_style.Setters.Add(setter_strokethickness);   
+                render_style.Setters.Add(setter_strokethickness);
 
                 var setter_stroke = new Setter();
                 setter_stroke.Property = BaseRenderableSeries.StrokeProperty;
                 setter_stroke.Value = new DynamicResourceExtension("Color_StrokeDefault"); // new_color
                 render_style.Setters.Add(setter_stroke);
                 /// XXX TODO Set different colors for different series
-           
+
 
                 Trigger trigger = new Trigger();
                 trigger.Property = BaseRenderableSeries.IsSelectedProperty;
@@ -108,5 +109,7 @@ namespace Visualizations
                 _Content.ZoomExtents();
             }
         }
+
+        #endregion
     }
 }

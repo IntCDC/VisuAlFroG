@@ -23,7 +23,7 @@ namespace Core
         {
 
             /* ------------------------------------------------------------------*/
-            // public types
+            #region public types
 
             public enum Level
             {
@@ -39,17 +39,24 @@ namespace Core
                 public string message;
             }
 
-            public delegate void LogListener_Delegate(List<MessageData> msglist);
-
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public properties
+            #region public delegates
+
+            public delegate void LogListener_Delegate(List<MessageData> msglist);
+
+            #endregion
+
+            /* ------------------------------------------------------------------*/
+            #region public properties
 
             public bool DisableDebug { get; set; } = false;
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             /// <summary>
             /// [STATIC] Create singelton when Log.Default is called the first time.
@@ -170,16 +177,18 @@ namespace Core
                 return _listeners.Remove(listener);
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private variables
+            #region private variables
 
             private static Log _instance = null;
             private static readonly object _padlock = new object();
 
             private List<MessageData> _messages = null;
             private List<LogListener_Delegate> _listeners = null;
+
+            #endregion
         }
     }
-
 }

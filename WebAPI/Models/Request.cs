@@ -16,7 +16,7 @@ namespace Visualizations
             {
 
                 /* ------------------------------------------------------------------*/
-                // public variables
+                #region public properties
 
                 /// <summary>
                 /// Request ID (DEBUG)
@@ -27,6 +27,8 @@ namespace Visualizations
                 /// Request name (DEBUG)
                 /// </summary>
                 public string Name { get; set; }
+
+                #endregion
             }
         }
     }

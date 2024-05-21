@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
-using System.Windows.Forms;
-using System.Windows.Markup;
-using System.Windows.Media;
-
-using Core.Utilities;
+﻿using Core.Utilities;
 
 
 
@@ -21,10 +14,10 @@ namespace Core
         {
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region static functions
 
             /// <summary>
-            /// Validate and convert input data into known format. 
+            /// [STATIC] Validate and convert input data into known format. 
             /// Extracts labels.
             /// </summary>
             /// <param name="input_data"></param>
@@ -36,6 +29,7 @@ namespace Core
 
                 // Check validity of input data
                 bool valid = true;
+                valid &= check_dimension(input_data);
                 valid &= check_branches(input_data);
                 uint entry_count = uint.MaxValue;
                 valid &= check_entries(input_data, ref entry_count);
@@ -64,9 +58,21 @@ namespace Core
                 return true;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // private functions
+            #region private functions
+
+            // Check required dimension
+            private static bool check_dimension(GenericDataStructure data)
+            {
+                if (data.GetDimension() == 0)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Data is required to have at least values for one dimension.");
+                    return false;
+                }
+                return true;
+            }
 
             // Check if only main branch contains branches and that no sub-branches exist
             private static bool check_branches(GenericDataStructure data)
@@ -145,7 +151,7 @@ namespace Core
                 {
                     if (data._Branches[0]._Entries.Count > 0)
                     {
-                        var t_list = data._Branches[0].Types();
+                        var t_list = data._Branches[0].GetTypes();
                         bool only_strings = ((t_list.Count == 1) && (t_list[0] == typeof(string)));
                         bool only_one = true;
                         foreach (var e in data._Branches[0]._Entries)
@@ -237,7 +243,7 @@ namespace Core
             // Check if all other values can be converted to double
             private static bool convert_value_type(ref GenericDataStructure data)
             {
-                if (!((data.Types().Count == 1) && (data.Types()[0] == typeof(double))))
+                if (!((data.GetTypes().Count == 1) && (data.GetTypes()[0] == typeof(double))))
                 {
                     Log.Default.Msg(Log.Level.Error, "Not all values are of type 'double'.");
                     return false;
@@ -262,6 +268,8 @@ namespace Core
                     init_index(branch, ref index);
                 }
             }
+
+            #endregion
         }
     }
 }

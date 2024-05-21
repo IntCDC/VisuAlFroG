@@ -20,15 +20,16 @@ namespace Visualizations
     public class SciChart_Columns : AbstractSciChartSeries<SciChartSurface, FastColumnRenderableSeries>
     {
         /* ------------------------------------------------------------------*/
-        // properties
+        #region public properties
 
         public override string _Name { get { return "Columns (SciChart)"; } }
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // public functions
+        #region public functions
 
 
-
+        #endregion
     }
 }

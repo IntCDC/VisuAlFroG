@@ -16,7 +16,7 @@ namespace Core
         public interface IAbstractVisualization
         {
             /* ------------------------------------------------------------------*/
-            // interface properties
+            #region interface properties
 
             /// <summary>
             /// The name of the content.
@@ -43,9 +43,10 @@ namespace Core
             /// </summary>
             string _ID { get; }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // interface functions
+            #region interface functions
 
             /// <summary>
             /// Initialize the content.
@@ -76,6 +77,8 @@ namespace Core
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
             bool Terminate();
+
+#endregion
         }
     }
 }

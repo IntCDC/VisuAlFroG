@@ -52,7 +52,7 @@ In order to show messages in the `LogConsole` messages have to be provided via t
 ```C#
 Log.Default.Msg(Log.Level.Error, "YOUR DEBUG MESSAG");
 ```
-Enable/disable *DEBUG* message by changing the following line in *Frontend.Application.MainWindow.Initilaize():138*:
+Enable/disable *DEBUG* message by changing the following line in *Frontend.Application.MainWindow.Initilaize():155*:
 ```C#
     Log.Default.DisableDebug = true;
 ```
@@ -69,7 +69,7 @@ Colors defined in the themes can be assigned to WPF elements in two ways:
 ```
 
 ### Startup Configuration
-The default window configuration on startup is defined in *Core.GUI.WindowManager.CreateDefault()* and called in *Frontend.Application.MainWindow.create():221*:
+The default window configuration on startup is defined in *Core.GUI.WindowManager.CreateDefault()* and called in *Frontend.Application.MainWindow.create():245*:
 ```C#
     _winmanager.CreateDefault();
 ```
@@ -85,19 +85,25 @@ In *Visual Studio*, look at the info messages in the *Error List* after building
 ### Naming Conventions
 
 #### Public Properties
-- Start with `_` and then camel case | Example: `_PublicProperty`
+- Start with `_` and then camel case 
+Example: `_PublicProperty`
 #### Public Functions
-- Start with upper case letter, then camel case | Example:`PublicFunction`
+- Start with upper case letter, then camel case 
+Example:`PublicFunction`
 
 #### Protected Properties/Variables
-- Start with lower case letter, then only lower case letters, separate words with `_` | Example:`protected_variable`
+- Start with lower case letter, then only lower case letters, separate words with `_` 
+Example:`protected_variable`
 #### Protected Functions:
-- Start with lower case letter, then only lower case letters, separate words with `_` | Example:`protected_function`
+- Start with lower case letter, then only lower case letters, separate words with `_` 
+Example:`protected_function`
 
 #### Private Variables
-- Start with `_` and then only lower case letters, separate words with `_` | Example:`_private_function`
+- Start with `_` and then only lower case letters, separate words with `_` 
+Example:`_private_function`
 #### Private Functions
-- Start with lower case letter, then only lower case letters, separate words with `_` | Example:`private_function`
+- Start with lower case letter, then only lower case letters, separate words with `_` 
+Example:`private_function`
 
 
 -----

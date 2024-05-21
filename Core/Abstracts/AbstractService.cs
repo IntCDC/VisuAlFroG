@@ -17,22 +17,24 @@ namespace Core
         {
 
             /* ------------------------------------------------------------------*/
-            // public properties
+            #region public properties
 
             public string _Name { get { return GetType().FullName; } }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // protected functions
+            #region protected functions
 
             protected AbstractService()
             {
                 _timer = new TimeBenchmark();
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // abstract functions
+            #region abstract functions
 
             /// <summary>
             /// If derived class might requires additional data on initialization (declaring Initialize taking parameter(s)), 
@@ -80,13 +82,16 @@ namespace Core
                 throw new InvalidOperationException("This function has been called for derived class of AbstractService that does not implement this function");
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // protected variables
+            #region protected variables
 
             protected bool _initialized = false;
             /// DEBUG
             protected TimeBenchmark _timer = null;
+
+            #endregion
         }
     }
 }

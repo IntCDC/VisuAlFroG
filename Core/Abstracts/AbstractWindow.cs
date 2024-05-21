@@ -23,7 +23,7 @@ namespace Core
         public abstract class AbstractWindow
         {
             /* ------------------------------------------------------------------*/
-            // public delegates
+            #region public delegates
 
             public delegate List<ReadContentMetaData_Type> AvailableContents_Delegate();
 
@@ -31,15 +31,17 @@ namespace Core
 
             public delegate bool DeleteContent_Delegate(string content_id);
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public properties
+            #region public properties
 
             public Grid _Content { get; protected set; } = null;
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public types
+            #region public types
 
             public enum SplitOrientation
             {
@@ -55,9 +57,10 @@ namespace Core
                 Bottom_Right,
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // protected functions
+            #region protected functions
 
             protected void reset()
             {
@@ -67,13 +70,16 @@ namespace Core
                 _content_callbacks = null;
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // protected variables
+            #region protected variables
 
             protected bool _parent_is_root = false;
             protected WindowBranch _parent_branch = null;
             protected Tuple<AvailableContents_Delegate, CreateContent_Delegate, DeleteContent_Delegate> _content_callbacks = null;
+
+            #endregion
         }
     }
 }

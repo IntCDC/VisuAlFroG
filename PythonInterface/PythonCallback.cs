@@ -16,7 +16,7 @@ namespace Visualizations
         {
 
             /* ------------------------------------------------------------------*/
-            // static functions
+            #region static functions
 
             /// <summary>
             /// [STATIC] Callback called from within Python script to print message (DEBUG).
@@ -37,6 +37,7 @@ namespace Visualizations
                 return ResourcePaths.CreateFilePath("bokeh", "html");
             }
 
+            #endregion
         }
     }
 }

@@ -20,16 +20,17 @@ namespace Visualizations
             where ContentType : UIElement, new()
         {
             /* ------------------------------------------------------------------*/
-            // properties
+            #region public properties
 
             public sealed override List<Type> _DependingServices { get { return new List<Type>() { }; } }
             public override Type _RequiredDataType { get; } = typeof(DataTypeGeneric);
 
             protected ContentType _Content { get; } = new ContentType();
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
 
             public override bool Initialize(DataManager.GetDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback)
@@ -93,6 +94,8 @@ namespace Visualizations
                 }
                 return base.Terminate();
             }
+
+            #endregion
         }
     }
 }

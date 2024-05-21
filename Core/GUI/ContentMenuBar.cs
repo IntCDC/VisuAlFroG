@@ -17,7 +17,7 @@ namespace Core
         public class ContentMenuBar : AbstractMenuBar<ContentMenuBar.PredefinedMenuOption>
         {
             /* ------------------------------------------------------------------*/
-            // public enum
+            #region public enum
 
             public enum PredefinedMenuOption
             {
@@ -25,9 +25,10 @@ namespace Core
                 DATA,
             }
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // public functions
+            #region public functions
 
             public override bool Initialize()
             {
@@ -39,6 +40,8 @@ namespace Core
                 }
                 return _initialized;
             }
+
+            #endregion
         }
     }
 }

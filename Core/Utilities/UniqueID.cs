@@ -16,7 +16,7 @@ namespace Core
         {
 
             /* ------------------------------------------------------------------*/
-            // static functions
+            #region static functions
 
             /// <summary>
             /// [STATIC] Generate unique string id.
@@ -47,6 +47,8 @@ namespace Core
             /// [STATIC] Variable representing an invalid id.
             /// </summary>
             public static int InvalidInt { get { return int.MinValue; } }
+
+            #endregion
         }
     }
 }

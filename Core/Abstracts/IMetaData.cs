@@ -15,16 +15,17 @@ namespace Core
         {
 
             /* ------------------------------------------------------------------*/
-            // interface events
+            #region interface events
 
             /// <summary>
             /// Event to indicated changed properties.
             /// </summary>
             event PropertyChangedEventHandler PropertyChanged;
 
+            #endregion
 
             /* ------------------------------------------------------------------*/
-            // interface properties
+            #region interface properties
 
             /// <summary>
             /// Index of the data point.
@@ -33,6 +34,7 @@ namespace Core
 
             bool _Selected { get; set; }
 
+            #endregion
         }
     }
 }

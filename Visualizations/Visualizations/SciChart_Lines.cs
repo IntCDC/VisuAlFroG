@@ -6,9 +6,6 @@ using SciChart.Charting.Visuals.PointMarkers;
 using Core.GUI;
 using System;
 using SciChartInterface.Abstracts;
-using Core.Utilities;
-using SciChartInterface;
-using System.Windows.Media;
 
 
 
@@ -21,15 +18,17 @@ namespace Visualizations
     public class SciChart_Lines : AbstractSciChartSeries<SciChartSurface, FastLineRenderableSeries>
     {
         /* ------------------------------------------------------------------*/
-        // properties
+        #region public properties
 
         public override string _Name { get { return "Lines (SciChart)"; } }
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
-        // public functions
+        #region public functions
 
 
 
+        #endregion
     }
 }
