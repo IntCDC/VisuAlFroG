@@ -19,7 +19,7 @@ namespace GrasshopperInterface
 {
     namespace Utilities
     {
-        public class Grasshopper_RuntimeMessages
+        public class gh_RuntimeMessages
         {
 
             /* ------------------------------------------------------------------*/
@@ -29,7 +29,7 @@ namespace GrasshopperInterface
             /// Ctor.
             /// </summary>
             /// <param name="ghcomponent">The parent Grasshopper component to access the runtime message interface.</param>
-            public Grasshopper_RuntimeMessages(GH_Component ghcomponent)
+            public gh_RuntimeMessages(GH_Component ghcomponent)
             {
                 _parent = ghcomponent;
                 _messages = new List<(GH_RuntimeMessageLevel, string)>();

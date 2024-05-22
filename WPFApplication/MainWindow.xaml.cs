@@ -19,7 +19,7 @@ using System.Runtime.Remoting.Contexts;
 
 
 /*
- * Main WPF Application
+ * Main WPF application
  * 
  */
 namespace Frontend
@@ -242,7 +242,6 @@ namespace Frontend
                 }
 
                 loading_progress.SetValue(90);
-                loading_progress.Close();
 
                 _timer.Stop();
                 _initialized = initialized;
@@ -254,6 +253,8 @@ namespace Frontend
                 {
                     Log.Default.Msg(Log.Level.Warn, "Error during initialization of: " + this.GetType().FullName + " - check previous messages for more information.");
                 }
+
+                loading_progress.Close();
                 return _initialized;
             }
 

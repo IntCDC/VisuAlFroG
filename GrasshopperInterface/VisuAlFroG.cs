@@ -13,7 +13,7 @@ using Grasshopper.GUI.Canvas;
 
 
 /*
- * VisuAlFroG Grasshopper Component
+ * VisuAlFroG Grasshopper component
  * 
  */
 namespace GrasshopperInterface
@@ -37,7 +37,10 @@ namespace GrasshopperInterface
                 "Visual Analytics",
                 "Frameworks")
         {
-            _runtimemessages = new Grasshopper_RuntimeMessages(this);
+            /// TODO Prevent multiple instances?
+            // XXX NewInstanceGuid();
+
+            _runtimemessages = new gh_RuntimeMessages(this);
             _timer = new TimeBenchmark();
             _exec_count = 0;
         }
@@ -60,11 +63,6 @@ namespace GrasshopperInterface
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
         {
             pManager.AddGenericParameter("Generic Output Data", "Output Data", "Generic output data from interaction.", GH_ParamAccess.tree);
-        }
-
-        public override void CreateAttributes()
-        {
-            m_attributes = new VisuAlFroGAttributes(this);
         }
 
         /// <summary>
@@ -118,7 +116,7 @@ namespace GrasshopperInterface
                         /// DEBUG Log.Default.Msg(Log.Level.Warn, input_data.DataDescription(true, true)); // -> Same as Grasshopper Panel output
 
                         // Convert and pass on input data 
-                        var input_data_converted = Grasshopper_DataConverter.ConvertFromGHStructure(input_data);
+                        var input_data_converted = gh_DataConverter.ConvertFromGHStructure(input_data);
                         _window.UpdateInputData(input_data_converted);
 
                     }
@@ -167,7 +165,7 @@ namespace GrasshopperInterface
         /// <param name="ouput_data">Reference to the new output data.</param>
         public void retrieve_output_data(GenericDataStructure ouput_data)
         {
-            _output_data = Grasshopper_DataConverter.ConvertToGHStructure(ouput_data);
+            _output_data = gh_DataConverter.ConvertToGHStructure(ouput_data);
             ExpireSolution(true);
         }
 
@@ -178,7 +176,7 @@ namespace GrasshopperInterface
 
         private MainWindow _window = null;
         private GH_Structure<IGH_Goo> _output_data = null;
-        private Grasshopper_RuntimeMessages _runtimemessages = null;
+        private gh_RuntimeMessages _runtimemessages = null;
         private string _arguments = "";
 
         /// DEBUG

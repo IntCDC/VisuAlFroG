@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
+using System.Threading.Tasks;
 
 
 /*
@@ -16,7 +16,6 @@ namespace Core
         {
             /* ------------------------------------------------------------------*/
             #region public functions
-
 
             public LoadingProgressWindow()
             {
@@ -46,10 +45,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region private functions
 
-            private void LoadingProgress_Load(object sender, EventArgs e)
-            {
-
-            }
+            // private void LoadingProgress_Load(object sender, EventArgs e) {}
 
             #endregion
 

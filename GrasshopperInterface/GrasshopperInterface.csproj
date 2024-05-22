@@ -17,7 +17,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Grasshopper" Version="8.6.24101.5001" IncludeAssets="compile;build" />
+    <PackageReference Include="Grasshopper" Version="8.5.24072.13001" IncludeAssets="compile;build" />
     <PackageReference Include="Microsoft.AspNet.WebApi.OwinSelfHost" Version="5.3.0" />
     <PackageReference Include="Microsoft.Owin.Host.HttpListener" Version="4.2.2" />
     <PackageReference Include="Microsoft.Owin.Hosting" Version="4.2.2" />
@@ -25,6 +25,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\GrasshopperComponentLinking\GrasshopperComponentLinking.csproj" />
     <ProjectReference Include="..\WPFApplication\WPFApplication.csproj" />
   </ItemGroup>
   
