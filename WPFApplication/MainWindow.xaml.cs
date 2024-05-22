@@ -9,6 +9,12 @@ using System.Windows.Input;
 using System.IO;
 using System.Windows.Media;
 using System.Windows.Controls;
+using System.Windows.Forms;
+using System.ComponentModel.DataAnnotations;
+using System.IO.Ports;
+using System.Linq;
+using Visualizations;
+using System.Runtime.Remoting.Contexts;
 
 
 
@@ -45,21 +51,9 @@ namespace Frontend
 
             public MainWindow(bool called_from_interface)
             {
-
-                Window progress_window = new Window();
-                progress_window.Content = _progress_bar;
-                _progress_bar.Value = 0;
-                progress_window.Show();
-
-
                 _soft_close = called_from_interface;
                 _standalone = !called_from_interface;
                 initialize();
-                _progress_bar.Value = 50;
-                create();
-                _progress_bar.Value = 100;
-
-                progress_window.Close();
             }
 
             /// <summary>
@@ -158,13 +152,17 @@ namespace Frontend
                 const string app_name = "Visual Analytics Framework for Grasshopper(VisuAlFroG)";
                 base.Title = (_standalone) ? ("[stand-alone]" + app_name) : (app_name);
                 base.Icon = ImageLoader.ImageSourceFromFile(ResourcePaths.Locations.LogoIcons, "logo64.png");
+                base.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 // Default window size in pixels
                 base.Width = 1600;
                 base.Height = 900;
+                this.Show();
 
+                LoadingProgressWindow loading_progress = new LoadingProgressWindow();
 
                 // Explicitly disable debug messages
                 Log.Default.DisableDebug = false;
+                Log.Default.DumpFile = true;
 
 
                 // Register and parse cmd line arguments
@@ -179,6 +177,7 @@ namespace Frontend
                 // Proceeding if an error occurs during parsing arguments
                 _arguments.Parse();
 
+                loading_progress.SetValue(10);
 
                 // Initialize managers and services
                 _basemanager = new Visualizations.BaseManager();
@@ -187,6 +186,8 @@ namespace Frontend
                 _colortheme = new ColorTheme();
                 _menubar = new MainMenuBar();
 
+                loading_progress.SetValue(20);
+
                 bool initialized = true;
                 initialized &= _basemanager.Initialize();
                 initialized &= _configurationservice.Initialize();
@@ -194,10 +195,14 @@ namespace Frontend
                 initialized &= _colortheme.Initialize(App.Current.Resources);
                 initialized &= _menubar.Initialize();
 
+                loading_progress.SetValue(30);
+
                 // Register configurations
                 _configurationservice.RegisterConfiguration(_basemanager._Name, _basemanager.CollectConfigurations, _basemanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_winmanager._Name, _winmanager.CollectConfigurations, _winmanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_colortheme._Name, _colortheme.CollectConfigurations, _colortheme.ApplyConfigurations);
+
+                loading_progress.SetValue(40);
 
                 // Attach all main menu options (order dependent!)
                 _basemanager.AttachMenu(_menubar);
@@ -206,6 +211,38 @@ namespace Frontend
                 _menubar.AddSeparator(MainMenuBar.PredefinedMenuOption.FILE);
                 _menubar.AddMenu(MainMenuBar.PredefinedMenuOption.FILE, MainMenuBar.GetDefaultMenuItem("Exit", close_callback_menu));
 
+                loading_progress.SetValue(50);
+
+                // Attach main menu bar to content
+                _menubar_element.Children.Clear();
+                _menubar_element.Children.Add(_menubar.Attach());
+                _menubar_element.UpdateLayout();
+                // Attach window manager to content
+                _subwindows_element.Children.Clear();
+                _subwindows_element.Children.Add(_winmanager.Attach());
+                _subwindows_element.UpdateLayout();
+
+                loading_progress.SetValue(60);
+
+                // Evaluate previously parsed command line arguments
+                _arguments.Evaluate();
+
+                loading_progress.SetValue(70);
+
+                // Load default window configuration
+                _winmanager.CreateDefault();
+
+                loading_progress.SetValue(80);
+
+                /// Provide example data for detached mode
+                if (_standalone)
+                {
+                    var sample_data = TestData.Generate();
+                    _basemanager.UpdateInputData(sample_data);
+                }
+
+                loading_progress.SetValue(90);
+                loading_progress.Close();
 
                 _timer.Stop();
                 _initialized = initialized;
@@ -218,56 +255,6 @@ namespace Frontend
                     Log.Default.Msg(Log.Level.Warn, "Error during initialization of: " + this.GetType().FullName + " - check previous messages for more information.");
                 }
                 return _initialized;
-            }
-
-            /// <summary>
-            /// Create the WPF content of the application.
-            /// </summary>
-            /// <returns>True on successful creation of the content, false otherwise</returns>
-            public bool create()
-            {
-                if (!_initialized)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to creation");
-                    return false;
-                }
-                _timer.Start();
-
-                // Attach main menu bar to content
-                var menubar_content = _menubar.Attach();
-                if (menubar_content == null)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Invalid menu bar content");
-                }
-                _menubar_element.Children.Add(menubar_content);
-
-                // Attach window manager to content
-                var winmanager_content = _winmanager.Attach();
-                if (winmanager_content == null)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Invalid menu bar content");
-                }
-                _subwindows_element.Children.Add(winmanager_content);
-
-                // Evaluate previously parsed command line arguments
-                _arguments.Evaluate();
-
-
-
-                // Load default window configuration
-                _winmanager.CreateDefault();
-
-                /// Provide example data for detached mode
-                if (_standalone)
-                {
-                    var sample_data = TestData.Generate();
-                    _basemanager.UpdateInputData(sample_data);
-                }
-
-
-
-                _timer.Stop();
-                return true;
             }
 
             private bool close_callback_menu()
@@ -292,7 +279,7 @@ namespace Frontend
             private ColorTheme _colortheme = null;
             private MainMenuBar _menubar = null;
 
-            private ProgressBar _progress_bar = new ProgressBar()
+            private System.Windows.Controls.ProgressBar _progress_bar = new System.Windows.Controls.ProgressBar()
             {
                 Minimum = 0,
                 Maximum = 100,

@@ -53,6 +53,34 @@ namespace Core
 
             public bool DisableDebug { get; set; } = false;
 
+            /// <summary>
+            /// Dump log messages to a file. Default is 'false'.
+            /// </summary>
+            public bool DumpFile
+            {
+                get { return _dump_file; }
+                set
+                {
+                    if (value != _dump_file)
+                    {
+                        _dump_file = value;
+                        if (_dump_file)
+                        {
+                            if (!File.Exists(log_file))
+                            {
+                                using (StreamWriter sw = File.CreateText(log_file))
+                                {
+                                    sw.WriteLine("---------- NEW LOG (" + DateTime.Now.ToString() + ") ----------");
+                                }
+                                Log.Default.Msg(Log.Level.Info, "Starting to write log messages to file: '" + log_file + "'");
+                            }
+                        } else {
+                            Log.Default.Msg(Log.Level.Info, "Stopped writing log messages to file.");
+                        }
+                    }
+                }
+            }
+
             #endregion
 
             /* ------------------------------------------------------------------*/
@@ -84,6 +112,10 @@ namespace Core
             {
                 _messages = new List<MessageData>();
                 _listeners = new List<LogListener_Delegate>();
+                if (File.Exists(log_file))
+                {
+                    File.Delete(log_file);
+                }
             }
 
             /// <summary>
@@ -153,6 +185,13 @@ namespace Core
                     listener(listener_messages);
                 }
 
+                if (_dump_file)
+                {
+                    using (StreamWriter sw = File.AppendText(log_file))
+                    {
+                        sw.WriteLine(message);
+                    }
+                }
                 Console.WriteLine(message);
             }
 
@@ -187,6 +226,9 @@ namespace Core
 
             private List<MessageData> _messages = null;
             private List<LogListener_Delegate> _listeners = null;
+
+            private bool _dump_file = false;
+            private readonly string log_file = ResourcePaths.CreateFileName("console_log", "txt");
 
             #endregion
         }

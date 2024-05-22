@@ -85,11 +85,13 @@ namespace Core
                 }
                 _initialized = false;
 
+/* TEMP
                 if ((request_data_callback == null) || (request_menu_callback == null))
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing callback(s)");
                     return false;
                 }
+*/
 
                 _ID = UniqueID.GenerateString();
 

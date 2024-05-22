@@ -8,6 +8,7 @@ using Core.Utilities;
 using Core.Data;
 using Core.Abstracts;
 using GH_IO.Serialization;
+using Grasshopper.GUI.Canvas;
 
 
 
@@ -15,7 +16,6 @@ using GH_IO.Serialization;
  * VisuAlFroG Grasshopper Component
  * 
  */
-
 namespace GrasshopperInterface
 {
     public class VisuAlFroG : GH_Component
@@ -62,6 +62,11 @@ namespace GrasshopperInterface
             pManager.AddGenericParameter("Generic Output Data", "Output Data", "Generic output data from interaction.", GH_ParamAccess.tree);
         }
 
+        public override void CreateAttributes()
+        {
+            m_attributes = new VisuAlFroGAttributes(this);
+        }
+
         /// <summary>
         /// This is the method that actually does the work.
         /// </summary>
@@ -71,73 +76,84 @@ namespace GrasshopperInterface
         {
             _timer.Start();
 
-            // Window -----------------------------------------------------
-
-            // Lazy init required
             if (_window == null)
             {
-                _window = new MainWindow(true);
-                _window.SetOutputDataCallback(retrieve_output_data);
-            }
-            // Open or restore invisible window
-            _window.Show();
-
-
-            // Parse and evaluate command line arguments provided as text input
-            string arguments = "";
-            if (DataAccess.GetData<string>(1, ref arguments))
-            {
-                if (_arguments != arguments)
-                {
-                    _window.Arguments(arguments);
-                    _arguments = arguments;
-                }
-            }
-
-
-            // Data -------------------------------------------------------
-
-            if (_output_data != null)
-            {
-                // Write output data
-                DataAccess.SetDataTree(0, _output_data);
-                _output_data = null;
+                // Skip if window is not yet created
+                _runtimemessages.Add(Log.Level.Warn, "Create window with double-click on component.");
             }
             else
             {
-                // Read input data
-                if (!DataAccess.GetDataTree(0, out GH_Structure<IGH_Goo> input_data))
+                // Window -----------------------------------------------------
+
+                // Parse and evaluate command line arguments provided as text input
+                string arguments = "";
+                if (DataAccess.GetData<string>(1, ref arguments))
                 {
-                    _runtimemessages.Add(Log.Level.Error, "Unable to read input data");
-                    return;
+                    if (_arguments != arguments)
+                    {
+                        _window.Arguments(arguments);
+                        _arguments = arguments;
+                    }
                 }
-                if (!input_data.IsEmpty)
+
+                // Data -------------------------------------------------------
+
+                if (_output_data != null)
                 {
-                    _runtimemessages.Add(Log.Level.Debug, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().FullName);
-                    /// DEBUG Log.Default.Msg(Log.Level.Warn, input_data.DataDescription(true, true)); // -> Same as Grasshopper Panel output
-
-                    // Convert and pass on input data 
-                    var input_data_converted = Grasshopper_DataConverter.ConvertFromGHStructure(input_data);
-                    _window.UpdateInputData(input_data_converted);
-
+                    // Write output data
+                    DataAccess.SetDataTree(0, _output_data);
+                    _output_data = null;
                 }
                 else
                 {
-                    _runtimemessages.Add(Log.Level.Info, "Skipping empty input data");
+                    // Read input data
+                    if (!DataAccess.GetDataTree(0, out GH_Structure<IGH_Goo> input_data))
+                    {
+                        _runtimemessages.Add(Log.Level.Error, "Unable to read input data");
+                        return;
+                    }
+                    if (!input_data.IsEmpty)
+                    {
+                        _runtimemessages.Add(Log.Level.Debug, "Data Count: " + input_data.DataCount.ToString() + " | Type: " + input_data.GetType().FullName);
+                        /// DEBUG Log.Default.Msg(Log.Level.Warn, input_data.DataDescription(true, true)); // -> Same as Grasshopper Panel output
+
+                        // Convert and pass on input data 
+                        var input_data_converted = Grasshopper_DataConverter.ConvertFromGHStructure(input_data);
+                        _window.UpdateInputData(input_data_converted);
+
+                    }
+                    else
+                    {
+                        _runtimemessages.Add(Log.Level.Info, "Skipping empty input data");
+                    }
                 }
             }
 
-
             // Log --------------------------------------------------------
-
-            _timer.Stop();
 
             // DEBUG
             _exec_count++;
             _runtimemessages.Add(Log.Level.Info, "Solution execution number: " + _exec_count);
 
+            _timer.Stop();
+
             // Show runtime messages in Grasshopper
             _runtimemessages.Show();
+        }
+
+        public void CreateWindow()
+        {
+            // Lazy init required
+            if (_window == null)
+            {
+                _window = new MainWindow(true);
+                _window.SetOutputDataCallback(retrieve_output_data);
+            } else {
+                // Open or restore invisible window
+                _window.Show();
+            }
+
+            ExpireSolution(true);
         }
 
         #endregion
