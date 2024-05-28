@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
+
 using Grasshopper;
 using Grasshopper.Kernel;
+
 using Rhino.Geometry;
+// using GrasshopperInterface.Utilities;
 
 
 
@@ -25,17 +29,17 @@ namespace GrasshopperLinking
         /// new tabs/panels will automatically be created.
         /// </summary>
         public LinkingComponent()
-          : base("LinkingComponent", 
+          : base("LinkingComponent",
             "LinkComp",
             "[TODO].",
-            "Visual Analytics", 
+            "Visual Analytics",
             "Frameworks")
         {
             NewInstanceGuid();
         }
 
         public override void CreateAttributes()
-        {       
+        {
             m_attributes = new LinkingComponentGAttributes(this);
         }
 
@@ -49,7 +53,7 @@ namespace GrasshopperLinking
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-
+            /// leave empty ...
         }
 
         /// <summary>
@@ -57,7 +61,7 @@ namespace GrasshopperLinking
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-
+            pManager.AddGenericParameter("Linked Parameter Values", "Linked Values", "List of linked parameter values.", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -65,9 +69,15 @@ namespace GrasshopperLinking
         /// </summary>
         /// <param name="DA">The DA object can be used to retrieve data from input parameters and 
         /// to store data in output parameters.</param>
-        protected override void SolveInstance(IGH_DataAccess DA)
+        protected override void SolveInstance(IGH_DataAccess DataAccess)
         {
-
+            var atr = m_attributes as LinkingComponentGAttributes;
+            if (atr == null)
+            {
+                /// XXX Unable to get attributes - BUG
+            }
+            List<Tuple<Guid, string, double>> values = atr.OutputValues();
+            DataAccess.SetDataList(0, values);
         }
 
         #endregion
@@ -75,7 +85,7 @@ namespace GrasshopperLinking
         /* ------------------------------------------------------------------*/
         #region private variables
 
-
+        /// TODO private RuntimeMessages _runtimemessages = null;
 
         #endregion
 
@@ -96,7 +106,15 @@ namespace GrasshopperLinking
         /// You can add image files to your project resources and access them like this:
         /// return Resources.IconForThisComponent;
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => null;
+        protected override System.Drawing.Bitmap Icon
+        {
+            get
+            {
+                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                var stream = assembly.GetManifestResourceStream("GrasshopperLinking.resources.logo.logo24.png");
+                return new System.Drawing.Bitmap(stream);
+            }
+        }
 
         /// <summary>
         /// Each component must have a unique Guid to identify it. 

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GrasshopperLinking": {
+      "commandName": "Project",
+      "hotReloadEnabled": false
+    }
+  }
+}

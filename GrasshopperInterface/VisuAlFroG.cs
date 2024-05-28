@@ -9,6 +9,8 @@ using Core.Data;
 using Core.Abstracts;
 using GH_IO.Serialization;
 using Grasshopper.GUI.Canvas;
+using System.Threading;
+using System.Globalization;
 
 
 
@@ -37,10 +39,10 @@ namespace GrasshopperInterface
                 "Visual Analytics",
                 "Frameworks")
         {
-            /// TODO Prevent multiple instances?
+            /// TODO TEST Prevent multiple instances or is it OK?
             // XXX NewInstanceGuid();
 
-            _runtimemessages = new gh_RuntimeMessages(this);
+            _runtimemessages = new RuntimeMessages(this);
             _timer = new TimeBenchmark();
             _exec_count = 0;
         }
@@ -81,6 +83,8 @@ namespace GrasshopperInterface
             }
             else
             {
+                CreateWindow();
+
                 // Window -----------------------------------------------------
 
                 // Parse and evaluate command line arguments provided as text input
@@ -116,7 +120,7 @@ namespace GrasshopperInterface
                         /// DEBUG Log.Default.Msg(Log.Level.Warn, input_data.DataDescription(true, true)); // -> Same as Grasshopper Panel output
 
                         // Convert and pass on input data 
-                        var input_data_converted = gh_DataConverter.ConvertFromGHStructure(input_data);
+                        var input_data_converted = DataConverter.ConvertFromGHStructure(input_data);
                         _window.UpdateInputData(input_data_converted);
 
                     }
@@ -144,6 +148,8 @@ namespace GrasshopperInterface
             // Lazy init required
             if (_window == null)
             {
+                Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
                 _window = new MainWindow(true);
                 _window.SetOutputDataCallback(retrieve_output_data);
             } else {
@@ -165,7 +171,7 @@ namespace GrasshopperInterface
         /// <param name="ouput_data">Reference to the new output data.</param>
         public void retrieve_output_data(GenericDataStructure ouput_data)
         {
-            _output_data = gh_DataConverter.ConvertToGHStructure(ouput_data);
+            _output_data = DataConverter.ConvertToGHStructure(ouput_data);
             ExpireSolution(true);
         }
 
@@ -176,7 +182,7 @@ namespace GrasshopperInterface
 
         private MainWindow _window = null;
         private GH_Structure<IGH_Goo> _output_data = null;
-        private gh_RuntimeMessages _runtimemessages = null;
+        private RuntimeMessages _runtimemessages = null;
         private string _arguments = "";
 
         /// DEBUG

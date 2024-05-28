@@ -25,7 +25,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\GrasshopperComponentLinking\GrasshopperComponentLinking.csproj" />
+    <ProjectReference Include="..\GrasshopperLinking\GrasshopperLinking.csproj" />
     <ProjectReference Include="..\WPFApplication\WPFApplication.csproj" />
   </ItemGroup>
   

@@ -3,16 +3,12 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <Version>1.0</Version>
-    <Title>GrasshopperComponentLinking</Title>
-    <Description>Description of GrasshopperComponentLinking</Description>
+    <Title>GrasshopperLinking</Title>
+    <Description>Description of GrasshopperLinking</Description>
     <TargetExt>.gha</TargetExt>
     <UseWpf>true</UseWpf>
+    <Platforms>x86;x64</Platforms>    
   </PropertyGroup>
-	
-  <ItemGroup>
-    <None Remove="resources\logo\logo24.png" />
-    <None Remove="resources\logo\logo32.png" />
-  </ItemGroup>
 	
   <ItemGroup>
     <EmbeddedResource Include="resources\logo\logo24.png" />
@@ -27,8 +23,12 @@
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
   
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  
   <PropertyGroup Condition="$(Configuration) == 'Debug' AND $([MSBuild]::IsOSPlatform(Windows))">
-    <StartProgram>C:\Program Files\Rhino 7\System\Rhino.exe</StartProgram>
+    <StartProgram>C:\Program Files\Rhino 8\System\Rhino.exe</StartProgram>
     <StartArguments></StartArguments>
     <StartAction>Program</StartAction>
   </PropertyGroup>

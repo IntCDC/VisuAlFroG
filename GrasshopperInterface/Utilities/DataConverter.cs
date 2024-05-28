@@ -17,7 +17,7 @@ namespace GrasshopperInterface
 {
     namespace Utilities
     {
-        public class gh_DataConverter
+        public class DataConverter
         {
             /* ------------------------------------------------------------------*/
             #region static functions
