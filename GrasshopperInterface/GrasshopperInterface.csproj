@@ -25,13 +25,16 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\GrasshopperLinking\GrasshopperLinking.csproj" />
     <ProjectReference Include="..\WPFApplication\WPFApplication.csproj" />
   </ItemGroup>
   
   <ItemGroup>
     <EmbeddedResource Include="resources\logo\logo24.png" />
     <EmbeddedResource Include="resources\logo\logo32.png" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   
   <PropertyGroup Condition="$(Configuration) == 'Debug' AND $([MSBuild]::IsOSPlatform(Windows))">

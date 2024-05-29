@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * DEFINE whether parameter linking should be output
+ */
+#define OUTPUT
+
+
+using System;
 using Grasshopper.Kernel;
 using Grasshopper.GUI.Canvas;
 using Grasshopper.Kernel.Attributes;
@@ -10,31 +16,34 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using Grasshopper.Kernel.Special;
 using System.Linq;
-using Grasshopper.Kernel.Parameters;
-using static GrasshopperLinking.AbstractParamLinker;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using GrasshopperInterface.Utilities;
 
 
 
 /*
  * Grasshopper linking component attributes
  * 
+ * *** CODE is mainly based on \Opossum\Opossum2_0_Proto_A\OptComponentAttributes.cs on https://github.tik.uni-stuttgart.de/icd/Opossum ***
+ * 
  */
-namespace GrasshopperLinking
+namespace GrasshopperInterface
 {
-    public class LinkingComponentGAttributes : GH_ComponentAttributes
+    public class ComponentAttributes : GH_ComponentAttributes
     {
         /* ------------------------------------------------------------------*/
         #region public functions
 
-        public LinkingComponentGAttributes(LinkingComponent component_owner) : base(component_owner)
+        public ComponentAttributes(VisuAlFroG component_owner, RuntimeMessages runtimemessages) : base(component_owner)
         {
             _owner = component_owner;
+            _runtimemessages = runtimemessages;
 
+            /// _runtimemessages.Add(Log.Level.Warn, "[ComponentAttributes] ...");
 
             _linker_list = new List<AbstractParamLinker>() {
-                new ParamLinker<GH_NumberSlider>(AbstractParamLinker.ParamType.IN, "Variables"),
-                // new ParamLinker<GH_NumberSlider>(AbstractParamLinker.ParamType.OUT, "Results"),
+                new ParamLinker<GH_NumberSlider>(AbstractParamLinker.ParamType.IN, "Variables", runtimemessages),
+                new ParamLinker<GH_NumberSlider>(AbstractParamLinker.ParamType.IN, "Objectives", runtimemessages),
+                // new ParamLinker<GH_NumberSlider>(ParamType.OUT, "Results"),
             };
 
 
@@ -124,8 +133,8 @@ namespace GrasshopperLinking
         /// <returns></returns>
         public override GH_ObjectResponse RespondToMouseDoubleClick(GH_Canvas sender, GH_CanvasMouseEvent e)
         {
-            // unused ...
-            return base.RespondToMouseDoubleClick(sender, e);
+            _owner.CreateWindow();
+            return GH_ObjectResponse.Handled; // base.RespondToMouseDoubleClick(sender, e);
         }
 
 
@@ -269,29 +278,6 @@ namespace GrasshopperLinking
             Bounds = LayoutBounds(Owner, m_innerBounds);
         }
 
-        /* NOT REQUIRED
-        public override void ExpireLayout()
-        {
-            // ...
-            base.ExpireLayout();
-        }
-        */
-
-        /* NOT REQUIRED
-        protected void LayoutExtents()
-        {
-            foreach (var param in Owner.Params.Input)
-            {
-                Bounds = RectangleF.Union(Bounds, param.Attributes.Bounds);
-            }
-            foreach (var param in Owner.Params.Output)
-            {
-                Bounds = RectangleF.Union(Bounds, param.Attributes.Bounds);
-            }
-            Bounds.Inflate(2f, 2f);
-        }
-        */
-
         #endregion
 
         /* ------------------------------------------------------------------*/
@@ -321,8 +307,9 @@ namespace GrasshopperLinking
                 }
             }
 
-            /// RESULT OUT PARAM
+            #if OUTPUT
             capsule.AddOutputGrip(Owner.Params.First().Attributes.OutputGrip.Y);
+            #endif
 
             var implied_style = GH_CapsuleRenderEngine.GetImpliedStyle(GH_Palette.Blue, Selected, Owner.Locked, Owner.Hidden);
             capsule.Render(graphics, implied_style);
@@ -335,17 +322,18 @@ namespace GrasshopperLinking
                 graphics.DrawString(linker._Caption, GH_FontServer.Standard, Brushes.Black, param_box, GH_TextRenderingConstants.NearCenter);
             }
 
-            /// RESULT OUT PARAM
-            string caption = "Results";
+            #if OUTPUT
+            string caption = "Output";
             SizeF string_size = GH_FontServer.MeasureString(caption, GH_FontServer.Large);
             RectangleF result_box = new RectangleF
             {
                 Width = string_size.Width,
                 Height = string_size.Height
             };
-            result_box.X = Bounds.Right - result_box.Width - 5f;
+            result_box.X = Bounds.Right - result_box.Width;
             result_box.Y = Bounds.Top + (Bounds.Height * 0.5f) - (result_box.Height / 2.0f);
             graphics.DrawString(caption, GH_FontServer.Standard, Brushes.Black, result_box, GH_TextRenderingConstants.NearCenter);
+            #endif
 
             using (var icon = get_icon())
             {
@@ -372,24 +360,19 @@ namespace GrasshopperLinking
         private System.Drawing.Bitmap get_icon()
         {
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            var stream = assembly.GetManifestResourceStream("GrasshopperLinking.resources.logo.logo24.png");
-            return new System.Drawing.Bitmap(stream);
+            var stream = assembly.GetManifestResourceStream("GrasshopperInterface.resources.logo.logo32.png");
+            return (stream != null) ? (new System.Drawing.Bitmap(stream)) : (null);
         }
 
-        #endregion
+#endregion
 
         /* ------------------------------------------------------------------*/
         #region private variables
 
-        private LinkingComponent _owner = null;
+        private VisuAlFroG _owner = null;
         private List<AbstractParamLinker> _linker_list = null;
-
         private AbstractParamLinker _tooltip_linker = null;
-
-        #endregion 
-
-        /* ------------------------------------------------------------------*/
-        #region private properties
+        private RuntimeMessages _runtimemessages = null;
 
         private RectangleF _inner_bounds
         {

@@ -16,14 +16,18 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using Grasshopper.Kernel.Special;
 using Core.Data;
+using GrasshopperInterface.Utilities;
+using Core.Utilities;
 
 
 
 /*
  * Grasshopper parameter linking interaction
  * 
+ * *** CODE is mainly based on \Opossum\Opossum2_0_Proto_A\OptComponentAttributes.cs on https://github.tik.uni-stuttgart.de/icd/Opossum ***
+ * 
  */
-namespace GrasshopperLinking
+namespace GrasshopperInterface
 {
     public class ParamLinkerInteraction<LinkedParamType> : GH_AbstractInteraction
         where LinkedParamType : IGH_Param
@@ -31,13 +35,15 @@ namespace GrasshopperLinking
         /* ------------------------------------------------------------------*/
         #region public functions
 
-        public ParamLinkerInteraction(GH_Canvas canvas, GH_CanvasMouseEvent canvas_mouse_event, GH_Component owner, Dictionary<Guid, Tuple<string, double>> guid_value_map, PointF grip) : base(canvas, canvas_mouse_event)
+        public ParamLinkerInteraction(GH_Canvas canvas, GH_CanvasMouseEvent canvas_mouse_event, GH_Component owner, Dictionary<Guid, Tuple<string, double>> guid_value_map, PointF grip, RuntimeMessages runtimemessages)
+            : base(canvas, canvas_mouse_event)
         {
             _target = null;
             _owner = owner;
             _mode = LinkMode.REPLACE;
             _guid_value_map = guid_value_map;
             _grip = grip;
+            _runtimemessages = runtimemessages;
 
             Instances.CursorServer.AttachCursor(Canvas, "GH_NewWire");
             canvas.StartAutoPan();
@@ -127,15 +133,21 @@ namespace GrasshopperLinking
                 {
                     if (input.ComponentGuid == param.ComponentGuid)
                     {
-                        /// TODO ...
+
                         if (typeof(LinkedParamType) == typeof(GH_NumberSlider))
                         {
                             param_value = ((double)((GH_NumberSlider)input).CurrentValue);
                         }
+                        /* TODO
+                        else if (typeof(LinkedParamType) == typeof(GH_NumberSlider))
+                        {
+                            /// TODO ...
+                        }
+                        */
                     }
                     else
                     {
-                        /// XXXX Unknown parameter type
+                        _runtimemessages.Add(Log.Level.Warn, "[ParamLinkerInteraction] Unsupported parameter type with GUID: " + param.ComponentGuid.ToString());
                     }
                 }
                 var param_name = (_target.NickName == "") ? (_target.Name) : (_target.NickName);
@@ -259,7 +271,7 @@ namespace GrasshopperLinking
         private PointF _point = new PointF(float.NaN, float.NaN);
         private PointF _grip = new PointF(float.NaN, float.NaN);
         private Dictionary<Guid, Tuple<string, double>> _guid_value_map = null;
-
+        private RuntimeMessages _runtimemessages = null;
 
         #endregion
     }

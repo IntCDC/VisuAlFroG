@@ -13,16 +13,17 @@ using System.Drawing;
 using System.Windows.Forms;
 using Rhino.Resources;
 using Grasshopper.Kernel.Special;
+using GrasshopperInterface.Utilities;
 
 
 
 /*
  * Parameter linking
  * 
-* * *** CODE is mainly based on \Opossum\Opossum2_0_Proto_A\OptComponentAttributes.cs on https://github.tik.uni-stuttgart.de/icd/Opossum***
+ * *** CODE is mainly based on \Opossum\Opossum2_0_Proto_A\OptComponentAttributes.cs on https://github.tik.uni-stuttgart.de/icd/Opossum ***
  * 
  */
-namespace GrasshopperLinking
+namespace GrasshopperInterface
 {
     public class ParamLinker<LinkedParamType> : AbstractParamLinker
         where LinkedParamType : IGH_Param
@@ -30,11 +31,11 @@ namespace GrasshopperLinking
         /* ------------------------------------------------------------------*/
         #region public functions
 
-        public ParamLinker(ParamType param_type, string caption) : base(param_type, caption) { }
+        public ParamLinker(ParamType param_type, string caption, RuntimeMessages runtimemessages) : base(param_type, caption, runtimemessages) { }
 
-        public override bool AttachNewInteraction(GH_Canvas canvas, GH_CanvasMouseEvent canvas_mouse_event, LinkingComponent owner)
+        public override bool AttachNewInteraction(GH_Canvas canvas, GH_CanvasMouseEvent canvas_mouse_event, VisuAlFroG owner)
         {
-            _interaction = new ParamLinkerInteraction<LinkedParamType>(canvas, canvas_mouse_event, owner, _GuidValueMap, _last_grip);
+            _interaction = new ParamLinkerInteraction<LinkedParamType>(canvas, canvas_mouse_event, owner, _GuidValueMap, _last_grip, _runtimemessages);
             canvas.ActiveInteraction = _interaction;
             return true;
         }

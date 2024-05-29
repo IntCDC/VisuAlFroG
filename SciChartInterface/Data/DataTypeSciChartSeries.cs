@@ -153,7 +153,7 @@ namespace SciChartInterface
                             series.AcceptsUnsortedData = true; // XXX Can result in much slower performance for unsorted data
                         }
                         var meta_data = new SciChartMetaData(entry._Metadata._Index, entry._Metadata._Selected, _update_metadata_handler);
-                        series.Append((double)entry._Values[0], (double)entry._Values[1], meta_data);
+                        series.Append(x, y, meta_data);
                     }
 
                     DataType data_series = new DataType();

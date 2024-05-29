@@ -1,3 +1,11 @@
+/*
+ * DEFINE whether parameter linking should be used instead of regular parameters 
+ * and whether it should be presented via an output parameter
+ */
+/// #define LINKING
+#define OUTPUT
+
+
 using System;
 using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
@@ -6,11 +14,9 @@ using GrasshopperInterface.Utilities;
 using Frontend.Application;
 using Core.Utilities;
 using Core.Data;
-using Core.Abstracts;
-using GH_IO.Serialization;
-using Grasshopper.GUI.Canvas;
 using System.Threading;
 using System.Globalization;
+using System.Collections.Generic;
 
 
 
@@ -52,11 +58,14 @@ namespace GrasshopperInterface
         /// </summary>
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {
+#if LINKING
+#else
             pManager.AddGenericParameter("Generic Input Data", "Input Data", "Generic input data for visualization.", GH_ParamAccess.tree);
             pManager[0].Optional = true;
 
             pManager.AddGenericParameter("Command Line Arguments", "Arguments", "Provide command line arguments as text.", GH_ParamAccess.item);
             pManager[1].Optional = true;
+#endif
         }
 
         /// <summary>
@@ -64,8 +73,23 @@ namespace GrasshopperInterface
         /// </summary>
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
         {
+#if LINKING
+
+            #if OUTPUT
+            pManager.AddGenericParameter("Linking Output Data", "Output", "Output of linked parameters data.", GH_ParamAccess.list);
+            #endif
+#else
             pManager.AddGenericParameter("Generic Output Data", "Output Data", "Generic output data from interaction.", GH_ParamAccess.tree);
+#endif
         }
+
+#if LINKING
+        public override void CreateAttributes()
+        {
+            m_attributes = new ComponentAttributes(this, _runtimemessages);
+        }
+#endif
+
 
         /// <summary>
         /// This is the method that actually does the work.
@@ -75,6 +99,19 @@ namespace GrasshopperInterface
         protected override void SolveInstance(IGH_DataAccess DataAccess)
         {
             _timer.Start();
+#if LINKING
+            var atr = m_attributes as ComponentAttributes;
+            if (atr == null)
+            {
+                _runtimemessages.Add(Log.Level.Info, "Unable to get output data from attribute.");
+            }
+            else
+            {
+                List<Tuple<Guid, string, double>> values = atr.OutputValues();
+                #if OUTPUT
+                DataAccess.SetDataList(0, values);
+                #endif
+            }
 
             if (_window == null)
             {
@@ -83,9 +120,10 @@ namespace GrasshopperInterface
             }
             else
             {
-                CreateWindow();
-
+#else
                 // Window -----------------------------------------------------
+
+                CreateWindow();
 
                 // Parse and evaluate command line arguments provided as text input
                 string arguments = "";
@@ -129,12 +167,15 @@ namespace GrasshopperInterface
                         _runtimemessages.Add(Log.Level.Info, "Skipping empty input data");
                     }
                 }
-            }
+#endif
+#if LINKING
+        }
+#endif
 
-            // Log --------------------------------------------------------
+        // Log --------------------------------------------------------
 
-            // DEBUG
-            _exec_count++;
+        // DEBUG
+        _exec_count++;
             _runtimemessages.Add(Log.Level.Info, "Solution execution number: " + _exec_count);
 
             _timer.Stop();
@@ -156,11 +197,12 @@ namespace GrasshopperInterface
                 // Open or restore invisible window
                 _window.Show();
             }
-
+#if LINKING
             ExpireSolution(true);
+#endif
         }
 
-        #endregion
+#endregion
 
         /* ------------------------------------------------------------------*/
         #region private functions

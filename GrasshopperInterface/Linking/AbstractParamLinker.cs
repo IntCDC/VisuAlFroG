@@ -11,16 +11,18 @@ using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using GrasshopperInterface.Utilities;
+using Core.Utilities;
 
 
 
 /*
  * Parameter linking
  * 
-* * *** CODE is mainly based on \Opossum\Opossum2_0_Proto_A\OptComponentAttributes.cs on https://github.tik.uni-stuttgart.de/icd/Opossum***
+ * *** CODE is mainly based on \Opossum\Opossum2_0_Proto_A\OptComponentAttributes.cs on https://github.tik.uni-stuttgart.de/icd/Opossum ***
  * 
  */
-namespace GrasshopperLinking
+namespace GrasshopperInterface
 {
     public abstract class AbstractParamLinker
     {
@@ -56,17 +58,20 @@ namespace GrasshopperLinking
         /* ------------------------------------------------------------------*/
         #region abstract functions
 
-        public abstract bool AttachNewInteraction(GH_Canvas canvas, GH_CanvasMouseEvent canvas_mouse_event, LinkingComponent owner);
+        public abstract bool AttachNewInteraction(GH_Canvas canvas, GH_CanvasMouseEvent canvas_mouse_event, VisuAlFroG owner);
 
         #endregion
 
         /* ------------------------------------------------------------------*/
         #region public functions
 
-        public AbstractParamLinker(ParamType param_type, string caption)
+        public AbstractParamLinker(ParamType param_type, string caption, RuntimeMessages runtimemessages)
         {
             _Caption = caption;
             _ParamType = param_type;
+            _runtimemessages = runtimemessages;
+
+            /// _runtimemessages.Add(Log.Level.Warn, "[AbstractParamLinker] ...");
         }
 
         public RectangleF ParamTextBox(RectangleF bounds)
@@ -203,6 +208,7 @@ namespace GrasshopperLinking
         #region protected variables
 
         protected PointF _last_grip = new PointF(float.NaN, float.NaN);
+        protected RuntimeMessages _runtimemessages = null;
 
         #endregion
     }

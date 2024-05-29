@@ -40,11 +40,11 @@ namespace Core
             /// <typeparam name="T">The configurations type.</typeparam>
             /// <param name="window_data">The actual configurations object.</param>
             /// <returns>The serialized configurations.</returns>
-            public static string Serialize<T>(T window_data)
+            public static string Serialize<T>(T content)
             {
                 try
                 {
-                    return JsonConvert.SerializeObject(window_data); //, Formatting.Indented);
+                    return JsonConvert.SerializeObject(content); //, Formatting.Indented);
                 }
                 catch (Exception exc)
                 {

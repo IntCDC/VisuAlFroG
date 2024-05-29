@@ -17,7 +17,7 @@ using Grasshopper.GUI;
 * * *** CODE is mainly based on \Opossum\Opossum2_0_Proto_A\OptComponentAttributes.cs on https://github.tik.uni-stuttgart.de/icd/Opossum***
  * 
  */
-namespace GrasshopperLinking
+namespace GrasshopperInterface
 {
     public class DrawingHelpers
     {

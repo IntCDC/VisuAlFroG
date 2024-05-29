@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+
 using Core.Abstracts;
 using Core.GUI;
 using Core.Utilities;
@@ -133,8 +134,8 @@ namespace Core
                 {
                     Log.Default.Msg(Log.Level.Error, "Update callback for visualization is NULL.");
                     return UniqueID.InvalidInt;
-
                 }
+
                 if (data_type != null)
                 {
                     var variety = (IDataType)Activator.CreateInstance(data_type, (PropertyChangedEventHandler)event_data_changed, (PropertyChangedEventHandler)event_metadata_changed);
@@ -144,7 +145,8 @@ namespace Core
                         return UniqueID.InvalidInt;
                     }
 
-                    _data_library.Add(UniqueID.GenerateInt(), new DataDescription(update_callback, variety));
+                    var data_uid = UniqueID.GenerateInt();
+                    _data_library.Add(data_uid, new DataDescription(update_callback, variety));
                     Log.Default.Msg(Log.Level.Info, "Added new data type: " + data_type.FullName);
 
                     // Load original data if available
@@ -154,7 +156,7 @@ namespace Core
                         variety.UpdateData(original_data);
                     }
 
-                    return _data_library.Last().Key;
+                    return data_uid;
                 }
                 else
                 {
@@ -179,6 +181,10 @@ namespace Core
                 {
                     _data_library.Remove(data_uid);
                     Log.Default.Msg(Log.Level.Debug, "Unregistered data for UID: " + data_uid.ToString());
+                }
+                else if (data_uid == UniqueID.InvalidInt)
+                {
+                    /// do nothing...
                 }
                 else
                 {
