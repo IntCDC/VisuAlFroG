@@ -43,7 +43,7 @@ namespace Core
                 /// TODO Add additional configuration information that should be saved here...
             }
 
-#endregion
+            #endregion
 
             /* ------------------------------------------------------------------*/
             #region public properties
@@ -85,13 +85,13 @@ namespace Core
                 }
                 _initialized = false;
 
-/* TEMP
-                if ((request_data_callback == null) || (request_menu_callback == null))
-                {
-                    Log.Default.Msg(Log.Level.Error, "Missing callback(s)");
-                    return false;
-                }
-*/
+                /* TEMP
+                                if ((request_data_callback == null) || (request_menu_callback == null))
+                                {
+                                    Log.Default.Msg(Log.Level.Error, "Missing callback(s)");
+                                    return false;
+                                }
+                */
 
                 _ID = UniqueID.GenerateString();
 
@@ -283,13 +283,20 @@ namespace Core
                     return false;
                 }
 
-                // This is the place where the visualization connects to the actual data residing within the data manager
-                var data = (DataParentType)_RequestDataCallback(_DataUID);
-                if (data != null)
+                try
                 {
-                    data_parent = data;
+                    // This is the place where the visualization connects to the actual data residing within the data manager
+                    var data = (DataParentType)_RequestDataCallback(_DataUID);
+                    if (data != null)
+                    {
+                        data_parent = data;
 
-                    return true;
+                        return true;
+                    }
+                }
+                catch (Exception exc)
+                {
+                    Log.Default.Msg(Log.Level.Error, exc.Message);
                 }
                 /// Log.Default.Msg(Log.Level.Error, "No data for: " + typeof(DataParentType).FullName);
                 return false;

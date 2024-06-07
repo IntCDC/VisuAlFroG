@@ -10,6 +10,7 @@ using SciChart.Charting.Visuals.PointMarkers;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
+using System.Windows.Markup;
 
 
 
@@ -32,7 +33,6 @@ namespace SciChartInterface
 
             public override void UpdateData(GenericDataStructure data)
             {
-                _loaded = false;
                 if (_data != null)
                 {
                     _data.Clear();
@@ -44,6 +44,7 @@ namespace SciChartInterface
                     Log.Default.Msg(Log.Level.Error, "Missing data");
                     return;
                 }
+
                 _Dimension = data.GetDimension();
 
                 if (_data == null)
@@ -52,7 +53,8 @@ namespace SciChartInterface
                 }
                 _data.Clear();
 
-                convert_data(data);
+                recursive_data_conversion(data);
+                _filter.Update(data);
                 _loaded = true;
             }
 
@@ -68,8 +70,8 @@ namespace SciChartInterface
                 {
                     using (data_series.DataSeries.SuspendUpdates())
                     {
-                        int series_count = data_series.DataSeries.Count;
-                        for (int i = 0; i < series_count; i++)
+                        int values_count = data_series.DataSeries.Count;
+                        for (int i = 0; i < values_count; i++)
                         {
                             if (updated_meta_data._Index == ((SciChartMetaData)data_series.DataSeries.Metadata[i])._Index)
                             {
@@ -83,41 +85,7 @@ namespace SciChartInterface
 
             public override List<MenuItem> GetMenu()
             {
-                var menu_items = new List<MenuItem>();
-
-                for (uint a = 0; a < 2; a++)
-                {
-                    var menu_item = ContentMenuBar.GetDefaultMenuItem(((a == 0) ? ("[X]") : ("[Y]")) + " Axis Filter");
-                    menu_items.Add(menu_item);
-
-                    var radio_btn = new RadioButton();
-                    radio_btn.Name = "radio_" + UniqueID.GenerateString();
-                    radio_btn.Content = "Index";
-                    radio_btn.Tag = new AxisFilterData(a, IndexIndex);
-                    radio_btn.Checked += radio_btn_checked;
-                    menu_item.Items.Add(radio_btn);
-
-                    if (_axis_value_map.ContainsKey(a) && (_axis_value_map[a] == IndexIndex))
-                    {
-                        radio_btn.IsChecked = true;
-                    }
-
-                    for (uint d = 0; d < _Dimension; d++)
-                    {
-                        radio_btn = new RadioButton();
-                        radio_btn.Name = "radio_" + UniqueID.GenerateString();
-                        radio_btn.Content = "Value" + d.ToString();
-                        radio_btn.Tag = new AxisFilterData(a, d); // Save index of values
-                        radio_btn.Checked += radio_btn_checked;
-                        menu_item.Items.Add(radio_btn);
-
-                        if (_axis_value_map.ContainsKey(a) && (_axis_value_map[a] == d))
-                        {
-                            radio_btn.IsChecked = true;
-                        }
-                    }
-                }
-                return menu_items;
+                return _filter._Menu;
             }
 
             #endregion
@@ -125,31 +93,31 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region private functions
 
-            private void convert_data(GenericDataStructure branch)
+            private void recursive_data_conversion(GenericDataStructure data)
             {
                 // For each branch add all leafs to one data series
-                if (branch._Entries.Count > 0)
+                if (data._Entries.Count > 0)
                 {
                     var series = new SciChart.Charting.Model.DataSeries.XyDataSeries<double, double>();
-                    series.SeriesName = (branch._Label == "") ? (UniqueID.GenerateString()) : (branch._Label);
-                    foreach (var entry in branch._Entries)
+                    series.SeriesName = (data._Label == "") ? (UniqueID.GenerateString()) : (data._Label);
+                    foreach (var entry in data._Entries)
                     {
                         double x = double.NaN;
                         double y = double.NaN;
-                        var dim = branch.GetDimension();
+                        var dim = data.GetDimension();
                         if (dim == 1)
                         {
                             x = (double)entry._Metadata._Index;
                             y = (double)entry._Values[0];
-                            _axis_value_map[0] = IndexIndex;
-                            _axis_value_map[1] = 0;
+                            //_axis_value_map[0] = __IndexAxisIdx__;
+                            //_axis_value_map[1] = 0;
                         }
                         else if (dim == 2)
                         {
                             x = (double)entry._Values[0];
                             y = (double)entry._Values[1];
-                            _axis_value_map[0] = 0;
-                            _axis_value_map[1] = 1;
+                            //_axis_value_map[0] = 0;
+                            //_axis_value_map[1] = 1;
                             series.AcceptsUnsortedData = true; // XXX Can result in much slower performance for unsorted data
                         }
                         var meta_data = new SciChartMetaData(entry._Metadata._Index, entry._Metadata._Selected, _update_metadata_handler);
@@ -163,9 +131,9 @@ namespace SciChartInterface
                     _data.Add(data_series);
                 }
 
-                foreach (var b in branch._Branches)
+                foreach (var b in data._Branches)
                 {
-                    convert_data(b);
+                    recursive_data_conversion(b);
                 }
             }
 
@@ -230,41 +198,12 @@ namespace SciChartInterface
                 return default_style;
             }
 
-            private void radio_btn_checked(object sender, RoutedEventArgs e)
-            {
-                var sender_selection = sender as RadioButton;
-                if (sender_selection == null)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Unknown sender");
-                    return;
-                }
-
-                var data = sender_selection.Tag as AxisFilterData;
-                if (data != null)
-                {
-                    Log.Default.Msg(Log.Level.Warn, "Selected values at index " + data.value_index.ToString() + " for axis " + data.axis_index.ToString());
-                }
-                else
-                {
-                    Log.Default.Msg(Log.Level.Error, "Unable to get data from radio button");
-                }
-            }
-
             #endregion
 
             /* ------------------------------------------------------------------*/
             #region private variables
 
-            public class AxisFilterData
-            {
-                public AxisFilterData(uint ai, uint vi) { axis_index = ai; value_index = vi; }
-                public uint axis_index;
-                public uint value_index;
-            }
-
-            private Dictionary<uint, uint> _axis_value_map = new Dictionary<uint, uint>();
-
-            private const uint IndexIndex = uint.MaxValue;
+            private readonly DataFilterSciChartSeries _filter = new DataFilterSciChartSeries(); 
 
             #endregion
         }

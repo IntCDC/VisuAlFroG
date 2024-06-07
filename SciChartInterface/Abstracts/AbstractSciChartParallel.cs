@@ -141,12 +141,19 @@ namespace SciChartInterface
                 var parent = data_parent as SciChartParallelCoordinateSurface;
                 parent.ParallelCoordinateDataSource = null;
 
-                var data = (ParallelCoordinateDataSource<DataType>)_RequestDataCallback(_DataUID);
-                if (data != null)
+                try
                 {
-                    parent.ParallelCoordinateDataSource = data;
+                    var data = (ParallelCoordinateDataSource<DataType>)_RequestDataCallback(_DataUID);
+                    if (data != null)
+                    {
+                        parent.ParallelCoordinateDataSource = data;
 
-                    return true;
+                        return true;
+                    }
+                }
+                catch (Exception exc)
+                {
+                    Log.Default.Msg(Log.Level.Error, exc.Message);
                 }
                 /// Log.Default.Msg(Log.Level.Error, "Missing data for: " + typeof(ParallelCoordinateDataSource<DataType>).FullName);
                 return false;

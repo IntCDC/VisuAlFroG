@@ -6,6 +6,7 @@
 
 ## Contents
 
+- [Rhino 8](#rhino-8)
 - [Custom Visualization](#custom-visualization)
 - [Code Style](#code-style)
 - [Resource Files](#resource-files)
@@ -13,6 +14,12 @@
 <!-- /TOC -->
 -----
 
+
+<!-- ###################################################################### -->
+## Rhino 8
+
+- In Visual Studio open the NuGet package manager of the VisuAlFroG solution and update the Grasshopper package to version 8.
+- Open the project file ..\GrasshopperInterface\GrasshopperInterface.csproj in a text editor and change the path to the Rhino executable accordingly in the tag `StartProgram`.
 
 
 <!-- ###################################################################### -->

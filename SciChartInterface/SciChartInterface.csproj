@@ -62,18 +62,18 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SciChart.Charting, Version=8.3.0.28019, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
-      <HintPath>..\packages\SciChart.8.3.0.28019\lib\net462\SciChart.Charting.dll</HintPath>
+    <Reference Include="SciChart.Charting, Version=8.5.0.28148, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>..\packages\SciChart.8.5.0.28148\lib\net462\SciChart.Charting.dll</HintPath>
     </Reference>
     <Reference Include="SciChart.Charting.DrawingTools, Version=6.6.0.26505, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL" />
-    <Reference Include="SciChart.Core, Version=8.3.0.28019, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
-      <HintPath>..\packages\SciChart.8.3.0.28019\lib\net462\SciChart.Core.dll</HintPath>
+    <Reference Include="SciChart.Core, Version=8.5.0.28148, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>..\packages\SciChart.8.5.0.28148\lib\net462\SciChart.Core.dll</HintPath>
     </Reference>
-    <Reference Include="SciChart.Data, Version=8.3.0.28019, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
-      <HintPath>..\packages\SciChart.8.3.0.28019\lib\net462\SciChart.Data.dll</HintPath>
+    <Reference Include="SciChart.Data, Version=8.5.0.28148, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>..\packages\SciChart.8.5.0.28148\lib\net462\SciChart.Data.dll</HintPath>
     </Reference>
-    <Reference Include="SciChart.Drawing, Version=8.3.0.28019, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
-      <HintPath>..\packages\SciChart.8.3.0.28019\lib\net462\SciChart.Drawing.dll</HintPath>
+    <Reference Include="SciChart.Drawing, Version=8.5.0.28148, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>..\packages\SciChart.8.5.0.28148\lib\net462\SciChart.Drawing.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -91,6 +91,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\DataFilterSciChartSeries.cs" />
     <Compile Include="Data\DataTypeSciChartParallel.cs" />
     <Compile Include="Data\DataTypeSciChartSeries.cs" />
     <Compile Include="Data\SciChartMetaData.cs" />

@@ -208,7 +208,7 @@ namespace GrasshopperInterface
         #region protected variables
 
         protected PointF _last_grip = new PointF(float.NaN, float.NaN);
-        protected RuntimeMessages _runtimemessages = null;
+        protected RuntimeMessages _runtimemessages = null; // only keep pointer
 
         #endregion
     }

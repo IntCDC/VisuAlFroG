@@ -1,20 +1,9 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
 using Core.Utilities;
 using Core.GUI;
 using Core.Data;
 using System.Collections.Generic;
-using System.Windows.Input;
-using System.IO;
-using System.Windows.Media;
-using System.Windows.Controls;
-using System.Windows.Forms;
-using System.ComponentModel.DataAnnotations;
-using System.IO.Ports;
-using System.Linq;
-using Visualizations;
-using System.Runtime.Remoting.Contexts;
 
 
 
@@ -30,21 +19,6 @@ namespace Frontend
         public partial class MainWindow : Window
         {
             /* ------------------------------------------------------------------*/
-            #region public delegates
-
-            /// <summary>
-            /// Function provided by the interface (= Grasshopper) which allows to trigger reloading of the interface
-            /// </summary>
-            public delegate void ReloadInterface_Delegate();
-
-            /// <summary>
-            /// Callback to mark color theme menu item
-            /// </summary>
-            public delegate void MarkColorTheme_Delegate(ColorTheme.PredefinedThemes color_theme);
-
-            #endregion
-
-            /* ------------------------------------------------------------------*/
             #region public functions
 
             public MainWindow() : this(false) { }
@@ -54,6 +28,21 @@ namespace Frontend
                 _soft_close = called_from_interface;
                 _standalone = !called_from_interface;
                 initialize();
+            }
+
+            /// <summary>
+            /// Allows to provide arguments as string 
+            /// </summary>
+            /// <param name="arguments">Command line arguments as string</param>
+            public void Arguments(string arguments)
+            {
+                if (_standalone)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Ignoring action. Application is defined as stand-alone but used via interface. Set appropriate flag in CTOR via MainWindow(true).");
+                    return;
+                }
+                _arguments.Parse(arguments);
+                _arguments.Evaluate();
             }
 
             /// <summary>
@@ -87,21 +76,6 @@ namespace Frontend
                     return;
                 }
                 _basemanager.UpdateInputData(input_data);
-            }
-
-            /// <summary>
-            /// Allows to provide arguments as string 
-            /// </summary>
-            /// <param name="arguments">Command line arguments as string</param>
-            public void Arguments(string arguments)
-            {
-                if (_standalone)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Ignoring action. Application is defined as stand-alone but used via interface. Set appropriate flag in CTOR via MainWindow(true).");
-                    return;
-                }
-                _arguments.Parse(arguments);
-                _arguments.Evaluate();
             }
 
             #endregion
@@ -161,7 +135,7 @@ namespace Frontend
                 LoadingProgressWindow loading_progress = new LoadingProgressWindow();
 
                 // Explicitly disable debug messages
-                Log.Default.DisableDebug = false;
+                Log.Default.DisableDebug = true;
                 Log.Default.DumpFile = true;
 
 
@@ -263,6 +237,7 @@ namespace Frontend
                 this.Close();
                 return true;
             }
+
             #endregion
 
             /* ------------------------------------------------------------------*/
@@ -279,14 +254,6 @@ namespace Frontend
             private WindowManager _winmanager = null;
             private ColorTheme _colortheme = null;
             private MainMenuBar _menubar = null;
-
-            private System.Windows.Controls.ProgressBar _progress_bar = new System.Windows.Controls.ProgressBar()
-            {
-                Minimum = 0,
-                Maximum = 100,
-                IsIndeterminate = false,
-            };
-
 
             /// DEBUG
             private TimeBenchmark _timer = null;

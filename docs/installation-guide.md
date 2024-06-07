@@ -26,7 +26,7 @@
 
 The following software is required to be installed beforehand:
 - [Microsoft *Visual Studio* 2022](https://visualstudio.microsoft.com/vs/)  |  VisualStudio.17.Release/17.9.0+34607.119 Enterprise, Microsoft .NET Framework Version 4.8.09037)
-- [Rhinoceros 3D](https://www.rhino3d.com/)(includes [Grasshopper](https://www.grasshopper3d.com/))  |  Version 8 SR5, 8.5.24072.13001, 2024-03-12, Educational Lab License)
+- [Rhinoceros 3D](https://www.rhino3d.com/)(includes [Grasshopper](https://www.grasshopper3d.com/))  |  Version 7 SR37 7.37.24107.15001, 2024-04-16 Educational Lab License )
 - [SciChart](https://www.scichart.com/)  |  Version 8.3.0.28019
 - [Python](https://www.python.org/downloads/)  |  Version 3.11.5 (3.9 and above)
 - [Bokeh](https://bokeh.org/)  |  Version 3.4.0, see [First Steps](https://docs.bokeh.org/en/latest/docs/first_steps.html#first-steps))
@@ -34,7 +34,8 @@ The following software is required to be installed beforehand:
 (The appended version numbers show the last tested versions)
 
 > **Note**
-> - Upon account creation, the [full version of Rhinoceros 3D](https://www.rhino3d.com/download/rhino-for-windows/evaluation) can be used for free for 90 days.
+> - Upon account creation, the [full version 7 of Rhinoceros 3D](https://www.rhino3d.com/download/archive/rhino/7/latest) can be used for free for 90 days.
+>    - Rhino 8 is already supported but requires re-building VisuAlFrog, see [Developer Guid](developer-guide.md)
 > - Upon account creation, the free [trial version of SciChart](https://www.scichart.com/getting-started/scichart-wpf/) can be used for 30 days
 
 > **Warn**

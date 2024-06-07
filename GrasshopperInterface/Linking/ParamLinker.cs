@@ -45,7 +45,7 @@ namespace GrasshopperInterface
         /* ------------------------------------------------------------------*/
         #region private variables
 
-        ParamLinkerInteraction<LinkedParamType> _interaction = null;
+        ParamLinkerInteraction<LinkedParamType> _interaction = null; // created on demand
 
         #endregion
     }

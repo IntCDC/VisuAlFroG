@@ -1,10 +1,4 @@
-﻿/*
- * DEFINE whether parameter linking should be output
- */
-#define OUTPUT
-
-
-using System;
+﻿using System;
 using Grasshopper.Kernel;
 using Grasshopper.GUI.Canvas;
 using Grasshopper.Kernel.Attributes;
@@ -68,7 +62,8 @@ namespace GrasshopperInterface
             var values_list = new List<Tuple<Guid, string, double>>();
             foreach (var linker in _linker_list)
             {
-                foreach (var map in linker._GuidValueMap) {
+                foreach (var map in linker._GuidValueMap)
+                {
                     values_list.Add(new Tuple<Guid, string, double>(map.Key, map.Value.Item1, map.Value.Item2));
                 }
             }
@@ -307,9 +302,8 @@ namespace GrasshopperInterface
                 }
             }
 
-            #if OUTPUT
+            /// OUTPUT
             capsule.AddOutputGrip(Owner.Params.First().Attributes.OutputGrip.Y);
-            #endif
 
             var implied_style = GH_CapsuleRenderEngine.GetImpliedStyle(GH_Palette.Blue, Selected, Owner.Locked, Owner.Hidden);
             capsule.Render(graphics, implied_style);
@@ -322,7 +316,7 @@ namespace GrasshopperInterface
                 graphics.DrawString(linker._Caption, GH_FontServer.Standard, Brushes.Black, param_box, GH_TextRenderingConstants.NearCenter);
             }
 
-            #if OUTPUT
+            /// OUTPUT
             string caption = "Output";
             SizeF string_size = GH_FontServer.MeasureString(caption, GH_FontServer.Large);
             RectangleF result_box = new RectangleF
@@ -333,14 +327,13 @@ namespace GrasshopperInterface
             result_box.X = Bounds.Right - result_box.Width;
             result_box.Y = Bounds.Top + (Bounds.Height * 0.5f) - (result_box.Height / 2.0f);
             graphics.DrawString(caption, GH_FontServer.Standard, Brushes.Black, result_box, GH_TextRenderingConstants.NearCenter);
-            #endif
 
             using (var icon = get_icon())
             {
                 float size = 32.0f;
                 RectangleF icon_bounds = new RectangleF
                 {
-                    X = Bounds.Left + Bounds.Width - (Bounds.Width / 2.0F) - (size / 2.0f), 
+                    X = Bounds.Left + Bounds.Width - (Bounds.Width / 2.0F) - (size / 2.0f),
                     Y = Bounds.Top + (Bounds.Height / 2.0f) - (size / 2.0f),
                     Height = size,
                     Width = size
@@ -364,15 +357,15 @@ namespace GrasshopperInterface
             return (stream != null) ? (new System.Drawing.Bitmap(stream)) : (null);
         }
 
-#endregion
+        #endregion
 
         /* ------------------------------------------------------------------*/
         #region private variables
 
-        private VisuAlFroG _owner = null;
-        private List<AbstractParamLinker> _linker_list = null;
-        private AbstractParamLinker _tooltip_linker = null;
-        private RuntimeMessages _runtimemessages = null;
+        private VisuAlFroG _owner = null; // only keep pointer
+        private List<AbstractParamLinker> _linker_list = null; // set in ctor
+        private AbstractParamLinker _tooltip_linker = null; // only keep pointer
+        private RuntimeMessages _runtimemessages = null; // only keep pointer
 
         private RectangleF _inner_bounds
         {

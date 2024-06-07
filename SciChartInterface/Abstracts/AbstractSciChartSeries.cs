@@ -150,16 +150,21 @@ namespace SciChartInterface
                     Log.Default.Msg(Log.Level.Error, "Missing request data callback");
                     return false;
                 }
-
-                var data = (List<DataType>)_RequestDataCallback(_DataUID);
-                if (data != null)
+                try
                 {
-                    foreach (var data_series in data)
+                    var data = (List<DataType>)_RequestDataCallback(_DataUID);
+                    if (data != null)
                     {
-                        data_parent.RenderableSeries.Add(data_series);
+                        foreach (var data_series in data)
+                        {
+                            data_parent.RenderableSeries.Add(data_series);
+                        }
+                        return true;
                     }
-
-                    return true;
+                }
+                catch (Exception exc)
+                {
+                    Log.Default.Msg(Log.Level.Error, exc.Message);
                 }
                 ///Log.Default.Msg(Log.Level.Error, "Missing data for: " + typeof(List<DataType>).FullName);
                 return false;

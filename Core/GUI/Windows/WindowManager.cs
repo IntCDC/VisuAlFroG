@@ -113,8 +113,8 @@ namespace Core
                 |Log Console                  |
                 |_____________________________|
                 */
-                _window_root.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.None, 0.6);
-                _window_root._Children.Item1.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.None, 0.4);
+                _window_root.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.None, 0.7);
+                _window_root._Children.Item1.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.None, 0.31);
                 _window_root._Children.Item1._Children.Item1._Leaf.CreateContent(UniqueID.InvalidString, "Visualizations.WPF_DataViewer");
                 _window_root._Children.Item1._Children.Item2._Leaf.CreateContent(UniqueID.InvalidString, "Visualizations.SciChart_Lines");
                 _window_root._Children.Item2._Leaf.CreateContent(UniqueID.InvalidString, "Visualizations.WPF_LogConsole");

@@ -1,9 +1,7 @@
 /*
  * DEFINE whether parameter linking should be used instead of regular parameters 
- * and whether it should be presented via an output parameter
  */
 /// #define LINKING
-#define OUTPUT
 
 
 using System;
@@ -74,10 +72,7 @@ namespace GrasshopperInterface
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
         {
 #if LINKING
-
-            #if OUTPUT
             pManager.AddGenericParameter("Linking Output Data", "Output", "Output of linked parameters data.", GH_ParamAccess.list);
-            #endif
 #else
             pManager.AddGenericParameter("Generic Output Data", "Output Data", "Generic output data from interaction.", GH_ParamAccess.tree);
 #endif
@@ -108,9 +103,7 @@ namespace GrasshopperInterface
             else
             {
                 List<Tuple<Guid, string, double>> values = atr.OutputValues();
-                #if OUTPUT
                 DataAccess.SetDataList(0, values);
-                #endif
             }
 
             if (_window == null)
@@ -222,14 +215,14 @@ namespace GrasshopperInterface
         /* ------------------------------------------------------------------*/
         #region private variables
 
-        private MainWindow _window = null;
-        private GH_Structure<IGH_Goo> _output_data = null;
-        private RuntimeMessages _runtimemessages = null;
+        private MainWindow _window = null; // set in ctor
+        private GH_Structure<IGH_Goo> _output_data = null; // only keep pointer
+        private RuntimeMessages _runtimemessages = null; // set in ctor
         private string _arguments = "";
 
         /// DEBUG
         private int _exec_count = 0;
-        private TimeBenchmark _timer = null;
+        private TimeBenchmark _timer = null; // set in ctor
 
         #endregion
 

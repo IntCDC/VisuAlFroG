@@ -17,7 +17,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Grasshopper" Version="8.5.24072.13001" IncludeAssets="compile;build" />
+    <PackageReference Include="Grasshopper" Version="7.36.23346.16351" IncludeAssets="compile;build" />
     <PackageReference Include="Microsoft.AspNet.WebApi.OwinSelfHost" Version="5.3.0" />
     <PackageReference Include="Microsoft.Owin.Host.HttpListener" Version="4.2.2" />
     <PackageReference Include="Microsoft.Owin.Hosting" Version="4.2.2" />
@@ -38,7 +38,7 @@
   </ItemGroup>
   
   <PropertyGroup Condition="$(Configuration) == 'Debug' AND $([MSBuild]::IsOSPlatform(Windows))">
-    <StartProgram>C:\Program Files\Rhino 8\System\Rhino.exe</StartProgram>
+    <StartProgram>C:\Program Files\Rhino 7\System\Rhino.exe</StartProgram>
     <StartArguments></StartArguments>
     <StartAction>Program</StartAction>
   </PropertyGroup>

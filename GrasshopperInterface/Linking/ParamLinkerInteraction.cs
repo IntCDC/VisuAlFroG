@@ -265,13 +265,13 @@ namespace GrasshopperInterface
             REPLACE
         }
 
-        private GH_Component _owner = null;
+        private GH_Component _owner = null; // only keep pointer
         private LinkMode _mode = LinkMode.REPLACE;
-        private IGH_Param _target = null;
+        private IGH_Param _target = null; // only keep pointer
         private PointF _point = new PointF(float.NaN, float.NaN);
         private PointF _grip = new PointF(float.NaN, float.NaN);
-        private Dictionary<Guid, Tuple<string, double>> _guid_value_map = null;
-        private RuntimeMessages _runtimemessages = null;
+        private Dictionary<Guid, Tuple<string, double>> _guid_value_map = null; // only keep pointer
+        private RuntimeMessages _runtimemessages = null;  // only keep pointer
 
         #endregion
     }
