@@ -103,7 +103,7 @@
     <Compile Include="Abstracts\IDataType.cs" />
     <Compile Include="Abstracts\IMetaData.cs" />
     <Compile Include="Abstracts\AbstractMenuBar.cs" />
-    <Compile Include="Data\AbstractDataFilter.cs" />
+    <Compile Include="Abstracts\AbstractDataFilter.cs" />
     <Compile Include="Data\DataManager.cs" />
     <Compile Include="Data\DataModifier.cs" />
     <Compile Include="Data\DataTypeGeneric.cs" />

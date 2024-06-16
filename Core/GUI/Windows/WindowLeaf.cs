@@ -182,6 +182,14 @@ namespace Core
                 }
                 contextmenu.Items.Clear();
 
+                // Caption 
+                var item_caption = new MenuItem();
+                item_caption.Header = "───── Visualization Configuration ─────";
+                item_caption.IsHitTestVisible = false;
+                item_caption.Focusable = false;
+                contextmenu.Items.Add(item_caption);
+                contextmenu.Items.Add(new Separator());
+
                 // Horizontal 
                 var item_horizontal_top = new MenuItem();
                 item_horizontal_top.Style = ColorTheme.MenuItemIconStyle("align-top.png");
@@ -280,9 +288,16 @@ namespace Core
 
                 var item_content_dad = new MenuItem();
                 item_content_dad.Style = ColorTheme.MenuItemIconStyle("drag-and-drop.png");
-                item_content_dad.Header = "Content Swap: Drag&Drop [Middle Mouse Button]";
-                item_content_dad.IsEnabled = false;
+                item_content_dad.Header = "Content Swap";
+                item_content_dad.IsHitTestVisible = false;
+                item_content_dad.Focusable = false;
                 contextmenu.Items.Add(item_content_dad);
+
+                var item_content_dad_text = new MenuItem();
+                item_content_dad_text.Header = "> Drag&Drop [Middle Mouse Button]";
+                item_content_dad_text.IsEnabled = false;
+                contextmenu.Items.Add(item_content_dad_text);
+
             }
 
             /// <summary>

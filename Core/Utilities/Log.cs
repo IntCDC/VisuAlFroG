@@ -228,7 +228,7 @@ namespace Core
             private List<LogListener_Delegate> _listeners = null;
 
             private bool _dump_file = false;
-            private readonly string log_file = ResourcePaths.CreateFileName("console_log", "txt");
+            private readonly string log_file = ResourcePaths.CreateFilePath("console_log", "txt");
 
             #endregion
         }

@@ -151,7 +151,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <None Include="WPFInterface\template\CustomWPFVisualization.cs.template" />
+    <Compile Include="WPFInterface\template\CustomWPFVisualization.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">

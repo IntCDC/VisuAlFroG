@@ -41,6 +41,7 @@ namespace Core
                     add_main_menu("Style", PredefinedMenuOption.STYLE);
                     add_main_menu("Help", PredefinedMenuOption.HELP);
 
+                    add_usage_info();
                     add_repo_link();
                 }
                 return _initialized;
@@ -62,6 +63,21 @@ namespace Core
                 repo_menu_item.Style = ColorTheme.MenuItemIconStyle("github.png");
                 repo_menu_item.Header = hyper_link;
                 AddMenu(PredefinedMenuOption.HELP, repo_menu_item);
+            }
+
+
+            private void add_usage_info()
+            {
+                var usage_menu = GetDefaultMenuItem("Visualization Configuration");
+                usage_menu.IsEnabled = true;
+                AddMenu(PredefinedMenuOption.FILE, usage_menu);
+
+                var usage_menu_text = GetDefaultMenuItem("> Open menu with [Right-Click] on surface.");
+                usage_menu_text.IsEnabled = false;
+
+                AddMenu(PredefinedMenuOption.FILE, usage_menu_text);
+
+                AddSeparator(PredefinedMenuOption.FILE);
             }
 
             /// <summary>

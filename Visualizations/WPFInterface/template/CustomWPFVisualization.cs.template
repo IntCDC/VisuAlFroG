@@ -32,8 +32,10 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public properties
 
-        public override string Name { get { return "CustomWPFVisualization"; } }
-        public override bool MultipleInstances { get { return true; } }
+        public override string _Name { get { return "CustomWPFVisualization"; } }
+        public override bool _MultipleInstances { get { return true; } }
+
+        #endregion
 
         /* ------------------------------------------------------------------*/
         #region public functions
@@ -47,13 +49,13 @@ namespace Visualizations
             }
             _timer.Start();
 
-            Content.Width  = 0.0; // = full width of parent
-            Content.Height = 0.0; // = full height of parent
-            Content.Children.Clear();
+            _Content.Width  = 0.0; // = full width of parent
+            _Content.Height = 0.0; // = full height of parent
+            _Content.Children.Clear();
 
-            if (GetData(out GenericDataStructure data))
+            if (apply_data(out GenericDataStructure data))
             {
-                if (data.DataDimension() <= 1)
+                if (true) // data.GetDimension() <= 1)
                 {
                     initialize_elements(data);
                 }
@@ -88,6 +90,7 @@ namespace Visualizations
             }
         }
 
+        #endregion
 
         /* ------------------------------------------------------------------*/
         #region private functions
@@ -109,30 +112,30 @@ namespace Visualizations
         /// <param name="e"></param>
         void update_element_metadata(Rectangle element)
         {
-            var meta_data = element.Tag as MetaDataGeneric;
+            var meta_data = element.Tag as GenericMetaData;
             if (meta_data == null)
             {
                 Log.Default.Msg(Log.Level.Error, "Wrong 'Tag' object type...");
                 return;
             }
-            int index = meta_data.Index;
+            uint index = meta_data._Index;
             foreach (var entry in _data_element)
             {
-                var entry_meta_data = entry.Tag as MetaDataGeneric;
-                if (entry_meta_data.Index == index)
+                var entry_meta_data = entry.Tag as GenericMetaData;
+                if (entry_meta_data._Index == index)
                 {
-                    entry.SetResourceReference(Rectangle.StrokeProperty, ((meta_data.IsSelected) ? ("Brush_StrokeSelected") : ("Brush_StrokeDefault")));
+                    entry.SetResourceReference(Rectangle.StrokeProperty, ((meta_data._Selected) ? ("Brush_StrokeSelected") : ("Brush_StrokeDefault")));
                 }
             }
         }
 
         void initialize_elements(GenericDataStructure branch)
         {
-            foreach (var b in branch.Branches)
+            foreach (var b in branch._Branches)
             {
                 initialize_elements(b);
             }
-            foreach (var e in branch.Entries)
+            foreach (var e in branch._Entries)
             {
                 add_element(e);
 
@@ -141,7 +144,7 @@ namespace Visualizations
 
         void add_element(GenericDataEntry entry)
         {
-            var dim = entry.Dimension;
+            var dim = entry._Metadata._Dimension;
 
             var element = new Rectangle();
             element.StrokeThickness = 2;
@@ -152,16 +155,16 @@ namespace Visualizations
             element.Width = 10;
             element.Fill = Brushes.Blue;
 
-            element.Tag = entry.MetaData;
-            element.SetResourceReference(Rectangle.StrokeProperty, ((entry.MetaData.IsSelected) ? ("Brush_StrokeSelected") : ("Brush_StrokeDefault")));
+            element.Tag = entry._Metadata;
+            element.SetResourceReference(Rectangle.StrokeProperty, ((entry._Metadata._Selected) ? ("Brush_StrokeSelected") : ("Brush_StrokeDefault")));
             element.MouseLeftButtonUp += mouse_button_down;
 
-            double height_center = Content.ActualHeight / 2.0;
-            double width_center = Content.ActualWidth / 2.0;
+            double height_center = _Content.ActualHeight / 2.0;
+            double width_center = _Content.ActualWidth / 2.0;
 
             double radius = 10.0;
-            double offset = (double)entry.Values[0] * 2.0;
-            double angle = ((dim == 1) ? (entry.MetaData.Index * 10 / Math.PI) : ((double)entry.Values[1]));
+            double offset = (double)entry._Values[0] * 2.0;
+            double angle = ((dim == 1) ? (entry._Metadata._Index * 10 / Math.PI) : ((double)entry._Values[1]));
             double distance = angle / Math.PI / 10.0;
             double X = width_center + (radius * distance) * Math.Cos(angle) + offset;
             double Y = height_center + (radius * distance) * Math.Sin(angle) + offset;
@@ -169,7 +172,7 @@ namespace Visualizations
             Canvas.SetLeft(element, X);
             Canvas.SetTop(element, Y);
 
-            Content.Children.Add(element);
+            _Content.Children.Add(element);
             _data_element.Add(element);
         }
 
@@ -183,10 +186,10 @@ namespace Visualizations
             var element = sender as Rectangle;
             if (element != null)
             {
-                var meta_data = element.Tag as MetaDataGeneric;
+                var meta_data = element.Tag as GenericMetaData;
                 if (meta_data != null)
                 {
-                    meta_data.IsSelected = !meta_data.IsSelected;
+                    meta_data._Selected = !meta_data._Selected;
                 }
                 else
                 {
@@ -200,10 +203,13 @@ namespace Visualizations
             }
         }
 
+        #endregion
+
         /* ------------------------------------------------------------------*/
         #region private variables
 
         private List<Rectangle> _data_element = new List<Rectangle>();
 
+        #endregion
     }
 }
