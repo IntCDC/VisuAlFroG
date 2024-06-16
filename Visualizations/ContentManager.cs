@@ -58,8 +58,7 @@ namespace Visualizations
             register_content(typeof(SciChart_Lines));
             register_content(typeof(SciChart_Columns));
             register_content(typeof(SciChart_ParallelCoordinatesPlot));
-            /// DEBUG 
-            register_content(typeof(CustomWPFVisualization));
+            /// DEBUG             register_content(typeof(CustomWPFVisualization));
 
 
 
