@@ -233,7 +233,7 @@ namespace Core
                     return null;
 
                 }
-                return _data_library[data_uid]._Data.GetMenu();
+                return _data_library[data_uid]._Data.Menu();
             }
 
             /// <summary>
@@ -285,14 +285,14 @@ namespace Core
                 return true;
             }
 
-            public override void AttachMenu(MainMenuBar menu_bar)
+            public override void AttachMenu(MenubarMain menu_bar)
             {
-                var menu_item = MainMenuBar.GetDefaultMenuItem("Send Output Data", SendData);
-                menu_bar.AddMenu(MainMenuBar.PredefinedMenuOption.DATA, menu_item);
+                var menu_item = MenubarMain.GetDefaultMenuItem("Send Output Data", SendData);
+                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.DATA, menu_item);
 
-                menu_bar.AddSeparator(MainMenuBar.PredefinedMenuOption.DATA);
+                menu_bar.AddSeparator(MenubarMain.PredefinedMenuOption.DATA);
 
-                menu_item = MainMenuBar.GetDefaultMenuItem("Save CSV File", null);
+                menu_item = MenubarMain.GetDefaultMenuItem("Save CSV File");
                 menu_item.Click += (object sender, RoutedEventArgs e) =>
                 {
                     var sender_content = sender as System.Windows.Controls.MenuItem;
@@ -302,9 +302,9 @@ namespace Core
                     }
                     CSV_DataHandling.SaveToFile((GenericDataStructure)GetDataCallback(_original_data_hash));
                 };
-                menu_bar.AddMenu(MainMenuBar.PredefinedMenuOption.DATA, menu_item);
+                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.DATA, menu_item);
 
-                menu_item = MainMenuBar.GetDefaultMenuItem("Load CSV File", null);
+                menu_item = MenubarMain.GetDefaultMenuItem("Load CSV File");
                 menu_item.Click += (object sender, RoutedEventArgs e) =>
                 {
                     var sender_content = sender as System.Windows.Controls.MenuItem;
@@ -317,7 +317,7 @@ namespace Core
                         UpdateData(data);
                     }
                 };
-                menu_bar.AddMenu(MainMenuBar.PredefinedMenuOption.DATA, menu_item);
+                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.DATA, menu_item);
             }
 
             #endregion

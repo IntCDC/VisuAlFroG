@@ -5,7 +5,7 @@ using System.Windows.Documents;
 using System;
 using System.Windows.Navigation;
 using System.Collections.Generic;
-using static Core.GUI.MainMenuBar;
+using static Core.GUI.MenubarMain;
 
 
 
@@ -95,13 +95,22 @@ namespace Core
 
             public void AddMenu(EnumOptionType main_option, MenuItem menu_item)
             {
-                _main_menu_items[main_option].Items.Add(menu_item);
-                _main_menu_items[main_option].IsEnabled = true;
+                if (_main_menu_items.ContainsKey(main_option))
+                {
+                    _main_menu_items[main_option].Items.Add(menu_item);
+                    _main_menu_items[main_option].IsEnabled = true;
+                }
+                else {
+                    Log.Default.Msg(Log.Level.Warn, "Could not find main menu option: '" + main_option.ToString() + "'");
+                }
             }
 
             public void Clear(EnumOptionType main_option)
             {
-                _main_menu_items[main_option].Items.Clear();
+                if (_main_menu_items.ContainsKey(main_option))
+                {
+                    _main_menu_items[main_option].Items.Clear();
+                }
             }
 
             public bool Terminate()

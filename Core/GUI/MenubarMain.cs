@@ -3,6 +3,7 @@ using System.Windows.Documents;
 using System;
 using System.Windows.Navigation;
 using System.Windows;
+using System.Windows.Media.Media3D;
 
 
 
@@ -14,7 +15,7 @@ namespace Core
 {
     namespace GUI
     {
-        public class MainMenuBar : AbstractMenuBar<MainMenuBar.PredefinedMenuOption>
+        public class MenubarMain : AbstractMenuBar<MenubarMain.PredefinedMenuOption>
         {
             /* ------------------------------------------------------------------*/
             #region public enum
@@ -68,14 +69,13 @@ namespace Core
 
             private void add_usage_info()
             {
-                var usage_menu = GetDefaultMenuItem("Visualization Configuration");
+                var usage_menu = GetDefaultMenuItem("Visualizations");
                 usage_menu.IsEnabled = true;
-                AddMenu(PredefinedMenuOption.FILE, usage_menu);
-
-                var usage_menu_text = GetDefaultMenuItem("> Open menu with [Right-Click] on surface.");
+                var usage_menu_text = GetDefaultMenuItem("Open menu with on surface.");
+                usage_menu_text.InputGestureText = "Right-Click";
                 usage_menu_text.IsEnabled = false;
-
-                AddMenu(PredefinedMenuOption.FILE, usage_menu_text);
+                usage_menu.Items.Add(usage_menu_text);
+                AddMenu(PredefinedMenuOption.FILE, usage_menu);
 
                 AddSeparator(PredefinedMenuOption.FILE);
             }

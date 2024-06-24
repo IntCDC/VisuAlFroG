@@ -18,7 +18,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public properties
 
-        public override string _Name { get { return "Data Viewer (WPF)"; } }
+        public override string _TypeName { get { return "Data Viewer (WPF)"; } }
         public override bool _MultipleInstances { get { return false; } }
 
         #endregion

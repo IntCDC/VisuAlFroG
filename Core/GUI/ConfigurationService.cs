@@ -192,12 +192,12 @@ namespace Core
                 return LoadFile(config_file);
             }
 
-            public override void AttachMenu(MainMenuBar menu_bar)
+            public override void AttachMenu(MenubarMain menu_bar)
             {
-                var config_menu = MainMenuBar.GetDefaultMenuItem("Configuration");
-                config_menu.Items.Add(MainMenuBar.GetDefaultMenuItem("Save", Save));
-                config_menu.Items.Add(MainMenuBar.GetDefaultMenuItem("Load", LoadFileDialog));
-                menu_bar.AddMenu(MainMenuBar.PredefinedMenuOption.FILE, config_menu);
+                var config_menu = MenubarMain.GetDefaultMenuItem("Configuration");
+                config_menu.Items.Add(MenubarMain.GetDefaultMenuItem("Save", Save));
+                config_menu.Items.Add(MenubarMain.GetDefaultMenuItem("Load", LoadFileDialog));
+                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.FILE, config_menu);
             }
 
             #endregion

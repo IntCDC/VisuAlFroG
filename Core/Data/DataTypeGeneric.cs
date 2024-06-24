@@ -60,16 +60,18 @@ namespace Core
                 }
             }
 
-            public override List<MenuItem> GetMenu()
-            {
-                /// XXX TODO Only for testing - this should go or be set by DataFilter
 
+            public override List<MenuItem> Menu()
+            {
                 var menu_list = new List<MenuItem>();
+                /// XXX TODO Only for testing - this should go or be set by DataFilter
+                /*
                 if (_data != null)
                 {
                     var transpose_item = ContentMenuBar.GetDefaultMenuItem("Transpose", _data.Transpose);
                     menu_list.Add(transpose_item);
                 }
+                */
                 return menu_list;
             }
 

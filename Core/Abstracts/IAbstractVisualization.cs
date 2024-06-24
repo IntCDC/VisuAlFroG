@@ -19,9 +19,14 @@ namespace Core
             #region interface properties
 
             /// <summary>
-            /// The name of the content.
+            /// The variable name of a specific content instance.
             /// </summary>
-            string _Name { get; }
+            string _Name { get; set; }
+
+            /// <summary>
+            /// The unique type name of the content, e.g. used in the context menu to select new content type.
+            /// </summary>
+            string _TypeName { get; }
 
             /// <summary>
             /// True if multiple instances of the content would be created, false otherwise.
@@ -78,7 +83,7 @@ namespace Core
             /// <returns>True on success, false otherwise.</returns>
             bool Terminate();
 
-#endregion
+            #endregion
         }
     }
 }

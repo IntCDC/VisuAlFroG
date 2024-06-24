@@ -28,7 +28,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public properties
 
-        public override string _Name { get { return "Log Console (WPF)"; } }
+        public override string _TypeName { get { return "Log Console (WPF)"; } }
         public override bool _MultipleInstances { get { return false; } }
 
         // Indicates to not create an unused copy of the data
@@ -70,7 +70,7 @@ namespace Visualizations
             _Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
             _Content.Content = _text_block;
 
-            _menu.AddMenu(ContentMenuBar.PredefinedMenuOption.OPTIONS, MainMenuBar.GetDefaultMenuItem("Copy to Clipboard", clipboard_option_click));
+            _menu.AddMenu(MenubarContent.PredefinedMenuOption.CONTENT, MenubarMain.GetDefaultMenuItem("Copy to Clipboard", clipboard_content_click));
 
 
             // Call after _text_block has been created
@@ -137,7 +137,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region private functions
 
-        private bool clipboard_option_click()
+        private bool clipboard_content_click()
         {
             string complete_log = "";
             foreach (var inline in _text_block.Inlines)

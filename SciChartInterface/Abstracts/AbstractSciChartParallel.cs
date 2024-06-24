@@ -55,18 +55,21 @@ namespace SciChartInterface
 
                 // Options --------------------------------------------
 
-                _menu.Clear(ContentMenuBar.PredefinedMenuOption.OPTIONS);
-                var option_hint = MainMenuBar.GetDefaultMenuItem("Interaction Clues");
-                var clue_item = MainMenuBar.GetDefaultMenuItem("[Left Mouse] Select Series | Drag & Drop Axes", null);
+                //_menu.Clear(ContentMenuBar.PredefinedMenuOption.CONTENT);
+                var option_hint = MenubarMain.GetDefaultMenuItem("Interaction");
+                var clue_item = MenubarMain.GetDefaultMenuItem("Select Series | Drag & Drop Axes");
+                clue_item.InputGestureText = "Left Mouse";
                 clue_item.IsEnabled = false;
                 option_hint.Items.Add(clue_item);
-                clue_item = MainMenuBar.GetDefaultMenuItem("[Mouse Wheel] Zoom", null);
+                clue_item = MenubarMain.GetDefaultMenuItem("Zoom");
+                clue_item.InputGestureText = "Mouse Wheel";
                 clue_item.IsEnabled = false;
                 option_hint.Items.Add(clue_item);
-                clue_item = MainMenuBar.GetDefaultMenuItem("[Right Mouse] Pan", null);
+                clue_item = MenubarMain.GetDefaultMenuItem("Pan");
+                clue_item.InputGestureText = "Right Mouse";
                 clue_item.IsEnabled = false;
                 option_hint.Items.Add(clue_item);
-                _menu.AddMenu(ContentMenuBar.PredefinedMenuOption.OPTIONS, option_hint);
+                _menu.AddMenu(MenubarContent.PredefinedMenuOption.CONTENT, option_hint);
 
 
                 // Modifiers ---------------------------------------

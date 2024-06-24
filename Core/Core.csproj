@@ -103,7 +103,7 @@
     <Compile Include="Abstracts\IDataType.cs" />
     <Compile Include="Abstracts\IMetaData.cs" />
     <Compile Include="Abstracts\AbstractMenuBar.cs" />
-    <Compile Include="Abstracts\AbstractDataFilter.cs" />
+    <Compile Include="Abstracts\AbstractFilter.cs" />
     <Compile Include="Data\DataManager.cs" />
     <Compile Include="Data\DataModifier.cs" />
     <Compile Include="Data\DataTypeGeneric.cs" />
@@ -113,17 +113,19 @@
     <Compile Include="Data\GenericDataEntry.cs" />
     <Compile Include="Data\GenericDataStructure.cs" />
     <Compile Include="Data\GenericMetaData.cs" />
+    <Compile Include="Filtering\Filter.cs" />
+    <Compile Include="Filtering\FilterManager.cs" />
     <Compile Include="GUI\LoadingProgressBar.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\ContentMenuBar.cs" />
+    <Compile Include="GUI\MenubarContent.cs" />
     <Compile Include="GUI\LoadingProgressWindow.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\LoadingProgressWindow.Designer.cs">
       <DependentUpon>LoadingProgressWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\MainMenuBar.cs" />
+    <Compile Include="GUI\MenubarMain.cs" />
     <Compile Include="GUI\ConfigurationService.cs" />
     <Compile Include="GUI\Windows\WindowBranch.cs" />
     <Compile Include="GUI\Windows\WindowLeaf.cs" />
@@ -169,6 +171,7 @@
   <ItemGroup>
     <Resource Include="resources\logo-icons\logo64.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

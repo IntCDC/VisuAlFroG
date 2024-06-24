@@ -43,7 +43,7 @@ namespace Core
 
             public abstract void UpdateMetaDataEntry(IMetaData updated_meta_data);
 
-            public abstract List<MenuItem> GetMenu();
+            public abstract List<MenuItem> Menu();
 
             #endregion
 

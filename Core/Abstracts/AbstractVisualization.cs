@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Windows.Controls;
 using Core.Utilities;
 using System.Windows;
-using Core.Abstracts;
 using Core.GUI;
 using Core.Data;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Windows.Forms;
+using System.Windows.Documents;
+using System.Windows.Data;
+using System.Globalization;
 
 
 
@@ -40,7 +40,9 @@ namespace Core
             {
                 public string _ID { get; set; }
                 public string _Type { get; set; }
+                public string _Name { get; set; }
                 /// TODO Add additional configuration information that should be saved here...
+                /// and adjust de-/serialization methods in ContenManager accordingly
             }
 
             #endregion
@@ -48,7 +50,8 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region public properties
 
-            public abstract string _Name { get; }
+            public string _Name { get { return _edit_content_caption.Text;  } set { _edit_content_caption.Text = value; } }
+            public abstract string _TypeName { get; }
             public abstract bool _MultipleInstances { get; }
             public abstract List<Type> _DependingServices { get; }
             public bool _Attached { get; protected set; } = false;
@@ -86,11 +89,11 @@ namespace Core
                 _initialized = false;
 
                 /* TEMP
-                                if ((request_data_callback == null) || (request_menu_callback == null))
-                                {
-                                    Log.Default.Msg(Log.Level.Error, "Missing callback(s)");
-                                    return false;
-                                }
+                if ((request_data_callback == null) || (request_menu_callback == null))
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing callback(s)");
+                    return false;
+                }
                 */
 
                 _ID = UniqueID.GenerateString();
@@ -98,7 +101,7 @@ namespace Core
                 _RequestDataCallback = request_data_callback;
                 _RequestMenuCallback = request_menu_callback;
 
-                _menu = new ContentMenuBar();
+                _menu = new MenubarContent();
                 _initialized = _menu.Initialize();
 
                 StackPanel stack = new StackPanel();
@@ -111,28 +114,28 @@ namespace Core
                 _content_parent.Children.Add(stack);
                 _content_parent.Children.Add(_content_child);
 
-
                 return _initialized;
             }
+
             /* TEMPLATE
             {
-                _timer.Start();
+               _timer.Start();
 
-                if (base.Initialize(request_callback))
-                {
-                   
-                    /// PLACE YOUR STUFF HERE ...
+               if (base.Initialize(request_callback))
+               {
 
-                    _initialized = true;
-                    if (_initialized)
-                    {
-                        Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
-                    }
-                }
+                   /// PLACE YOUR STUFF HERE ...
+
+                   _initialized = true;
+                   if (_initialized)
+                   {
+                       Log.Default.Msg(Log.Level.Info, "Successfully initialized: " + this.GetType().FullName);
+                   }
+               }
 
 
-                _timer.Stop();
-                return _initialized;
+               _timer.Stop();
+               return _initialized;
             }
             */
 
@@ -310,10 +313,13 @@ namespace Core
                     return false;
                 }
 
-                _menu.Clear(ContentMenuBar.PredefinedMenuOption.DATA);
+                // Clear previous menu items 
+                _menu.Clear(MenubarContent.PredefinedMenuOption.DATA);
+                // Request all menu items available for the data
                 var data_menu_items = _RequestMenuCallback(_DataUID);
                 foreach (var menu_item in data_menu_items)
                 {
+                    // Add additional callback for updating the visualization after the data has been modified via the DATA menu
                     menu_item.Click += (object sender, RoutedEventArgs e) =>
                     {
                         var sender_content = sender as System.Windows.Controls.MenuItem;
@@ -323,7 +329,7 @@ namespace Core
                         }
                         Update(true);
                     };
-                    _menu.AddMenu(ContentMenuBar.PredefinedMenuOption.DATA, menu_item);
+                    _menu.AddMenu(MenubarContent.PredefinedMenuOption.DATA, menu_item);
                 }
 
                 return true;
@@ -337,7 +343,7 @@ namespace Core
             protected bool _initialized = false;
             protected bool _created = false;
 
-            protected ContentMenuBar _menu = null;
+            protected MenubarContent _menu = null;
 
             #endregion
 
@@ -350,6 +356,30 @@ namespace Core
             /// <returns>Return the content element holding the menu.</returns>
             private Grid create_menu()
             {
+                // Set global menu items before creating menu
+
+                _edit_content_caption.Text = _TypeName;
+                _edit_content_caption.Width = 100.0;
+                _edit_content_caption.Focusable = true;
+                _edit_content_caption.Focus();
+
+                var _menu_rename = MenubarMain.GetDefaultMenuItem("Rename");
+                _menu_rename.Items.Add(_edit_content_caption);
+                _menu.AddMenu(MenubarContent.PredefinedMenuOption.CONTENT, _menu_rename);
+
+                var content_caption = new TextBlock();
+                content_caption.Style = ColorTheme.ContentCaptionStyle();
+
+                // Bind caption text block to editable text box
+                var caption_binding = new Binding("Text");
+                caption_binding.Mode = BindingMode.OneWay;
+                caption_binding.Source = _edit_content_caption;
+                content_caption.SetBinding(TextBlock.TextProperty, caption_binding);
+
+
+                /// _menu.AddMenu(ContentMenuBar.PredefinedMenuOption.CONTENT, MainMenuBar.GetDefaultMenuItem("Filter", filter_content_click));
+
+
                 var menu_grid = new Grid();
                 menu_grid.Height = 20.0;
                 menu_grid.SetResourceReference(Grid.BackgroundProperty, "Brush_MenuBarBackground");
@@ -361,11 +391,8 @@ namespace Core
                 column_menu.Width = new GridLength(1.0, GridUnitType.Star);
                 menu_grid.ColumnDefinitions.Add(column_menu);
 
-                var text = new TextBlock();
-                Grid.SetColumn(text, 0);
-                menu_grid.Children.Add(text);
-                text.Text = _Name;
-                text.Style = ColorTheme.ContentCaptionStyle();
+                Grid.SetColumn(content_caption, 0);
+                menu_grid.Children.Add(content_caption);
 
                 var menu = _menu.Attach();
                 Grid.SetColumn(menu, 1);
@@ -382,6 +409,7 @@ namespace Core
 
             private DockPanel _content_parent = null;
             private Grid _content_child = null;
+            private TextBox _edit_content_caption = new TextBox();
 
 
             /// DEBUG

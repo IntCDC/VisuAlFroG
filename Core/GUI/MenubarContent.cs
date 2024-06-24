@@ -14,14 +14,14 @@ namespace Core
 {
     namespace GUI
     {
-        public class ContentMenuBar : AbstractMenuBar<ContentMenuBar.PredefinedMenuOption>
+        public class MenubarContent : AbstractMenuBar<MenubarContent.PredefinedMenuOption>
         {
             /* ------------------------------------------------------------------*/
             #region public enum
 
             public enum PredefinedMenuOption
             {
-                OPTIONS,
+                CONTENT,
                 DATA,
             }
 
@@ -34,8 +34,8 @@ namespace Core
             {
                 if (base.Initialize())
                 {
-                    add_main_menu("Options", PredefinedMenuOption.OPTIONS);
-                    add_main_menu("Data", PredefinedMenuOption.DATA);
+                    add_main_menu("Content", PredefinedMenuOption.CONTENT);
+                    /// XXX UNUSED add_main_menu("Data", PredefinedMenuOption.DATA);
 
                 }
                 return _initialized;

@@ -54,7 +54,6 @@ namespace SciChartInterface
                 _data.Clear();
 
                 recursive_data_conversion(data);
-                _filter.Update(data);
                 _loaded = true;
             }
 
@@ -83,9 +82,14 @@ namespace SciChartInterface
                 }
             }
 
-            public override List<MenuItem> GetMenu()
+            /// <summary>
+            ///  UNUSED XXX 
+            /// </summary>
+            /// <returns></returns>
+            public override List<MenuItem> Menu()
             {
-                return _filter._Menu;
+                /// TODO
+                 return new List<MenuItem>();
             }
 
             #endregion
@@ -203,7 +207,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region private variables
 
-            private readonly DataFilterSciChartSeries _filter = new DataFilterSciChartSeries(); 
+
 
             #endregion
         }

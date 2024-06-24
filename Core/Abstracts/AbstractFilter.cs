@@ -25,7 +25,7 @@ namespace Core
 {
     namespace Data
     {
-        public abstract class AbstractDataFilter
+        public abstract class AbstractFilter
         {
             /* ------------------------------------------------------------------*/
             #region public enum
@@ -50,7 +50,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public AbstractDataFilter(Filters supported_filters)
+            public AbstractFilter(Filters supported_filters)
             {
                 _filters = supported_filters;
             }
@@ -94,7 +94,7 @@ namespace Core
 
                 if ((_filters & Filters.TRANSPOSE) == Filters.TRANSPOSE)
                 {
-                    var menu_item = ContentMenuBar.GetDefaultMenuItem("Transpose", Filter_TRANSPOSE);
+                    var menu_item = MenubarContent.GetDefaultMenuItem("Transpose", Filter_TRANSPOSE);
                     _Menu.Add(menu_item);
                 }
 
@@ -108,7 +108,7 @@ namespace Core
 
                     for (uint axis_idx = 0; axis_idx < axis_count; axis_idx++)
                     {
-                        var menu_item = ContentMenuBar.GetDefaultMenuItem(((axis_idx == 0) ? ("[X]") : ("[Y]")) + " Axis Filter");
+                        var menu_item = MenubarContent.GetDefaultMenuItem(((axis_idx == 0) ? ("[X]") : ("[Y]")) + " Axis Filter");
                         _Menu.Add(menu_item);
 
                         var radio_btn = new RadioButton();

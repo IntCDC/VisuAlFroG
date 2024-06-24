@@ -19,6 +19,7 @@ using Core.Data;
 using ReadContentMetaData_Type = System.Tuple<string, bool, bool, string>;
 
 using AttachContentMetaData_Type = System.Tuple<string, System.Windows.Controls.Panel>;
+using ContentCallbacks_Type = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.CreateContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
 
 
 namespace Visualizations
@@ -28,42 +29,50 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public functions
 
-        public bool Initialize(DataManager.GetDataCallback_Delegate getdata_callback,
-                DataManager.GetDataMenuCallback_Delegate getmenu_callback,
-                DataManager.RegisterDataCallback_Delegate register_callback,
-                DataManager.UnregisterUpdateCallback_Delegate unregister_callback)
+        public override bool Initialize()
         {
             if (_initialized)
             {
                 Terminate();
             }
-            if ((getdata_callback == null) || (getmenu_callback == null) || (register_callback == null) || (unregister_callback == null))
-            {
-                Log.Default.Msg(Log.Level.Error, "Missing callback(s)");
-                return false;
-            }
             _timer.Start();
 
-            _contents = new Dictionary<Type, Dictionary<string, AbstractVisualization>>();
-            _content_getdata_callback = getdata_callback;
-            _content_getmenu_callback = getmenu_callback;
-            _register_data_callback = register_callback;
-            _unregister_data_callback = unregister_callback;
 
+            _contents = new Dictionary<Type, Dictionary<string, AbstractVisualization>>();
 
             // Register new visualizations here:
             register_content(typeof(WPF_LogConsole));
             register_content(typeof(WPF_DataViewer));
+            register_content(typeof(WPF_FilterEditor));
             register_content(typeof(SciChart_ScatterPlot));
             register_content(typeof(SciChart_Lines));
             register_content(typeof(SciChart_Columns));
             register_content(typeof(SciChart_ParallelCoordinatesPlot));
-            /// DEBUG             register_content(typeof(CustomWPFVisualization));
-
+            /// DEBUG             
+            /// register_content(typeof(CustomWPFVisualization));
 
 
             _timer.Stop();
             _initialized = true;
+
+
+            // Data Manager
+            bool initialized = _datamanager.Initialize();
+
+            // Service Manager
+            /// after registering all contents
+            foreach (Type service_type in depending_services())
+            {
+                var new_service = (AbstractService)Activator.CreateInstance(service_type);
+                _servicemanager.AddService(new_service);
+            }
+            /// DEBUG
+            //_servicemanager.AddService(new PythonInterfaceService());
+            //_servicemanager.AddService(new WebAPIService());
+            initialized &= _servicemanager.Initialize();
+
+
+            _initialized = initialized;
             return _initialized;
         }
 
@@ -74,10 +83,9 @@ namespace Visualizations
             {
                 terminated &= clear_contents();
 
-                _content_getdata_callback = null;
-                _content_getmenu_callback = null;
-                _register_data_callback = null;
-                _unregister_data_callback = null;
+                terminated &= _servicemanager.Terminate();
+                terminated &= _datamanager.Terminate();
+                terminated &= _filtermanager.Terminate();
 
                 _initialized = false;
             }
@@ -91,7 +99,7 @@ namespace Visualizations
             {
                 foreach (var content_data in content_types.Value)
                 {
-                    configurations.Add(new AbstractVisualization.Configuration() { _ID = content_data.Value._ID, _Type = content_types.Key.FullName });
+                    configurations.Add(new AbstractVisualization.Configuration() { _ID = content_data.Value._ID, _Type = content_types.Key.FullName, _Name = content_data.Value._Name });
                 }
             }
             return ConfigurationService.Serialize<List<AbstractVisualization.Configuration>>(configurations);
@@ -129,6 +137,7 @@ namespace Visualizations
                         if (!_contents[type].ContainsKey(id))
                         {
                             var new_content = create_content(type);
+                            new_content._Name = content_configuration._Name;
                             if (new_content == null)
                             {
                                 return false;
@@ -152,43 +161,29 @@ namespace Visualizations
         }
 
         /// <summary>
-        /// Returns distinct list of valid services required by the registered contents.
+        /// Callback forwarding for ContentManager
         /// </summary>
-        /// <returns>List of service types.</returns>
-        public List<Type> DependingServices()
+        /// <returns></returns>
+        public ContentCallbacks_Type GetContentCallbacks()
         {
-            var depending_services = new List<Type>();
+            return new ContentCallbacks_Type(AvailableContentsCallback, CreateContentCallback, DeleteContentCallback);
+        }
 
-            if (_initialized)
-            {
-                // Loop over registered types
-                foreach (var content_types in _contents)
-                {
-                    _timer.Start();
+        public override void AttachMenu(MenubarMain menu_bar)
+        {
+            ///_servicemanager.AttachMenu(menu_bar);
+            ///_filtermanager.AttachMenu(menu_bar);
+            _datamanager.AttachMenu(menu_bar);
+        }
 
-                    // Create temporary instance of content
-                    Type content_type = content_types.Key;
-                    var tmp_content = (AbstractVisualization)Activator.CreateInstance(content_type);
-                    var lservice_types = tmp_content._DependingServices;
-                    foreach (Type lservice_type in lservice_types)
-                    {
-                        // Only consider valid services
-                        if ((lservice_type != null) && recursive_basetype(lservice_type, typeof(AbstractService)))
-                        {
-                            depending_services.Add(lservice_type);
-                        }
-                    }
-
-                    _timer.Stop();
-                }
-                // Remove duplicates
-                depending_services = depending_services.Distinct().ToList();
-            }
-            else
-            {
-                Log.Default.Msg(Log.Level.Error, "Initialization required prior to requesting depending services");
-            }
-            return depending_services;
+        // Callback forwarding for DataManager
+        public void UpdateInputData(GenericDataStructure input_data)
+        {
+            _datamanager.UpdateData(input_data);
+        }
+        public void SetOutputDataCallback(DataManager.SetDataCallback_Delegate _outputdata_callback)
+        {
+            _datamanager.SetOutputDataCallback(_outputdata_callback);
         }
 
         /// <summary>
@@ -212,7 +207,7 @@ namespace Visualizations
 
                 // Create temporary instance of content
                 var tmp_content = (AbstractVisualization)Activator.CreateInstance(content_type);
-                string header = tmp_content._Name;
+                string header = tmp_content._TypeName;
                 bool multiple_instances = tmp_content._MultipleInstances;
 
                 // Content is only available if multiple instance are allowed or has not been instantiated yet
@@ -287,7 +282,6 @@ namespace Visualizations
             {
                 if (content_types.Value.ContainsKey(content_id))
                 {
-                    _unregister_data_callback(content_types.Value[content_id]._DataUID);
                     content_types.Value[content_id].Detach();
                     content_types.Value[content_id].Terminate();
                     return content_types.Value.Remove(content_id);
@@ -301,6 +295,41 @@ namespace Visualizations
 
         /* ------------------------------------------------------------------*/
         #region private functions
+
+
+        /// <summary>
+        /// Returns distinct list of valid services required by the registered contents.
+        /// </summary>
+        /// <returns>List of service types.</returns>
+        public List<Type> depending_services()
+        {
+            var depending_services = new List<Type>();
+
+            // Loop over registered types
+            foreach (var content_types in _contents)
+            {
+                _timer.Start();
+
+                // Create temporary instance of content
+                Type content_type = content_types.Key;
+                var tmp_content = (AbstractVisualization)Activator.CreateInstance(content_type);
+                var lservice_types = tmp_content._DependingServices;
+                foreach (Type lservice_type in lservice_types)
+                {
+                    // Only consider valid services
+                    if ((lservice_type != null) && recursive_basetype(lservice_type, typeof(AbstractService)))
+                    {
+                        depending_services.Add(lservice_type);
+                    }
+                }
+
+                _timer.Stop();
+            }
+            // Remove duplicates
+            depending_services = depending_services.Distinct().ToList();
+
+            return depending_services;
+        }
 
         /// <summary>
         /// Register new content type.
@@ -351,9 +380,9 @@ namespace Visualizations
         private AbstractVisualization create_content(Type type)
         {
             var content = (AbstractVisualization)Activator.CreateInstance(type);
-            if (content.Initialize(_content_getdata_callback, _content_getmenu_callback))
+            if (content.Initialize(_datamanager.GetDataCallback, _datamanager.GetDataMenuCallback))
             {
-                content._DataUID = _register_data_callback(content._RequiredDataType, content.Update);
+                content._DataUID = _datamanager.RegisterDataCallback(content._RequiredDataType, content.Update);
                 // XXX Do not check for invalid DATAUID because it might be intentional that no data should have been created...
                 if (content.Create())
                 {
@@ -428,7 +457,6 @@ namespace Visualizations
             {
                 foreach (var content_data in content_types.Value)
                 {
-                    _unregister_data_callback(content_data.Value._DataUID);
                     content_data.Value.Detach();
                     terminated &= content_data.Value.Terminate();
                 }
@@ -445,10 +473,10 @@ namespace Visualizations
         // Separate dictionary for each content type
         private Dictionary<Type, Dictionary<string, AbstractVisualization>> _contents = null;
 
-        private DataManager.GetDataCallback_Delegate _content_getdata_callback = null;
-        private DataManager.GetDataMenuCallback_Delegate _content_getmenu_callback = null;
-        private DataManager.RegisterDataCallback_Delegate _register_data_callback = null;
-        private DataManager.UnregisterUpdateCallback_Delegate _unregister_data_callback = null;
+        private ServiceManager _servicemanager = new ServiceManager();
+        private DataManager _datamanager = new DataManager();
+        private FilterManager _filtermanager = new FilterManager();
+
 
         #endregion
     }

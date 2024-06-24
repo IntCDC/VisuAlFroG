@@ -254,35 +254,35 @@ namespace Core
                 style.Setters.Add(setter_background);
 
                 /*
-                                Setter setter_border = new Setter();
-                                setter_border.Property = Menu.BorderBrushProperty;
-                                setter_border.Value = new DynamicResourceExtension("Brush_MenuItemBorder");
-                                style.Setters.Add(setter_border);
+                Setter setter_border = new Setter();
+                setter_border.Property = Menu.BorderBrushProperty;
+                setter_border.Value = new DynamicResourceExtension("Brush_MenuItemBorder");
+                style.Setters.Add(setter_border);
 
-                                Setter setter_trigger_background = new Setter();
-                                setter_trigger_background.Property = MenuItem.BackgroundProperty;
-                                setter_trigger_background.Value = new DynamicResourceExtension("Brush_MenuItemBackgroundHighlight");
+                Setter setter_trigger_background = new Setter();
+                setter_trigger_background.Property = MenuItem.BackgroundProperty;
+                setter_trigger_background.Value = new DynamicResourceExtension("Brush_MenuItemBackgroundHighlight");
 
-                                Setter setter_trigger_border = new Setter();
-                                setter_trigger_border.Property = MenuItem.BorderBrushProperty;
-                                setter_trigger_border.Value = new DynamicResourceExtension("Brush_MenuItemBorderdHighlight");
+                Setter setter_trigger_border = new Setter();
+                setter_trigger_border.Property = MenuItem.BorderBrushProperty;
+                setter_trigger_border.Value = new DynamicResourceExtension("Brush_MenuItemBorderdHighlight");
 
-                                Trigger trigger = new Trigger();
-                                trigger.Property = MenuItem.IsHighlightedProperty;
-                                trigger.Value = true;
-                                trigger.Setters.Add(setter_trigger_background);
-                                trigger.Setters.Add(setter_trigger_border);
+                Trigger trigger = new Trigger();
+                trigger.Property = MenuItem.IsHighlightedProperty;
+                trigger.Value = true;
+                trigger.Setters.Add(setter_trigger_background);
+                trigger.Setters.Add(setter_trigger_border);
 
-                                ControlTemplate control_template = new ControlTemplate();
-                                control_template.TargetType = typeof(MenuItem);
-                                control_template.Triggers.Add(trigger);
+                ControlTemplate control_template = new ControlTemplate();
+                control_template.TargetType = typeof(MenuItem);
+                control_template.Triggers.Add(trigger);
 
-                                Setter setter_highlight = new Setter();
-                                setter_highlight.Property = MenuItem.TemplateProperty;
-                                setter_highlight.Value = control_template;
+                Setter setter_highlight = new Setter();
+                setter_highlight.Property = MenuItem.TemplateProperty;
+                setter_highlight.Value = control_template;
 
-                                style.Setters.Add(setter_highlight);
-                                */
+                style.Setters.Add(setter_highlight);
+                */
                 return style;
             }
 
@@ -374,12 +374,12 @@ namespace Core
                 update_menu_item_selection();
             }
 
-            public override void AttachMenu(MainMenuBar menu_bar)
+            public override void AttachMenu(MenubarMain menu_bar)
             {
                 var themes_names = Enum.GetNames(typeof(PredefinedThemes));
                 foreach (var theme_name in themes_names)
                 {
-                    var theme_item = MainMenuBar.GetDefaultMenuItem(theme_name, null);
+                    var theme_item = MenubarMain.GetDefaultMenuItem(theme_name);
                     theme_item.Click += (object sender, RoutedEventArgs e) =>
                     {
                         var sender_content = sender as MenuItem;
@@ -390,7 +390,7 @@ namespace Core
                         SetColorStyle((PredefinedThemes)Enum.Parse(typeof(PredefinedThemes), theme_name));
 
                     };
-                    menu_bar.AddMenu(MainMenuBar.PredefinedMenuOption.STYLE, theme_item);
+                    menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.STYLE, theme_item);
                     _theme_menu_items.Add(theme_item);
                 }
                 update_menu_item_selection();

@@ -31,7 +31,7 @@ namespace Core
 
             void UpdateMetaDataEntry(IMetaData updated_meta_data);
 
-            List<MenuItem> GetMenu();
+            List<MenuItem> Menu();
 
             #endregion
         }

@@ -56,7 +56,7 @@ namespace Frontend
                     Log.Default.Msg(Log.Level.Error, "Ignoring action. Application is defined as stand-alone but used via interface. Set appropriate flag in CTOR via MainWindow(true).");
                     return;
                 }
-                _basemanager.SetOutputDataCallback(output_data_callback);
+                _contentmanager.SetOutputDataCallback(output_data_callback);
             }
 
             /// <summary>
@@ -75,7 +75,7 @@ namespace Frontend
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to updating input data");
                     return;
                 }
-                _basemanager.UpdateInputData(input_data);
+                _contentmanager.UpdateInputData(input_data);
             }
 
             #endregion
@@ -123,8 +123,8 @@ namespace Frontend
 
                 // Window setup
                 InitializeComponent();
-                const string app_name = "Visual Analytics Framework for Grasshopper(VisuAlFroG)";
-                base.Title = (_standalone) ? ("[stand-alone]" + app_name) : (app_name);
+                const string app_name = "Visual Analytics Framework for Grasshopper (VisuAlFroG)";
+                base.Title = (_standalone) ? ("[stand-alone] " + app_name) : (app_name);
                 base.Icon = ImageLoader.ImageSourceFromFile(ResourcePaths.Locations.LogoIcons, "logo64.png");
                 base.WindowStartupLocation = WindowStartupLocation.CenterScreen;
                 // Default window size in pixels
@@ -154,36 +154,36 @@ namespace Frontend
                 loading_progress.SetValue(10);
 
                 // Initialize managers and services
-                _basemanager = new Visualizations.BaseManager();
+                _contentmanager = new Visualizations.ContentManager();
                 _configurationservice = new ConfigurationService();
                 _winmanager = new WindowManager();
                 _colortheme = new ColorTheme();
-                _menubar = new MainMenuBar();
+                _menubar = new MenubarMain();
 
                 loading_progress.SetValue(20);
 
                 bool initialized = true;
-                initialized &= _basemanager.Initialize();
+                initialized &= _contentmanager.Initialize();
                 initialized &= _configurationservice.Initialize();
-                initialized &= _winmanager.Initialize(_basemanager.GetContentCallbacks());
+                initialized &= _winmanager.Initialize(_contentmanager.GetContentCallbacks());
                 initialized &= _colortheme.Initialize(App.Current.Resources);
                 initialized &= _menubar.Initialize();
 
                 loading_progress.SetValue(30);
 
                 // Register configurations
-                _configurationservice.RegisterConfiguration(_basemanager._Name, _basemanager.CollectConfigurations, _basemanager.ApplyConfigurations);
+                _configurationservice.RegisterConfiguration(_contentmanager._Name, _contentmanager.CollectConfigurations, _contentmanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_winmanager._Name, _winmanager.CollectConfigurations, _winmanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_colortheme._Name, _colortheme.CollectConfigurations, _colortheme.ApplyConfigurations);
 
                 loading_progress.SetValue(40);
 
                 // Attach all main menu options (order dependent!)
-                _basemanager.AttachMenu(_menubar);
+                _contentmanager.AttachMenu(_menubar);
                 _configurationservice.AttachMenu(_menubar);
                 _colortheme.AttachMenu(_menubar);
-                _menubar.AddSeparator(MainMenuBar.PredefinedMenuOption.FILE);
-                _menubar.AddMenu(MainMenuBar.PredefinedMenuOption.FILE, MainMenuBar.GetDefaultMenuItem("Exit", close_callback_menu));
+                _menubar.AddSeparator(MenubarMain.PredefinedMenuOption.FILE);
+                _menubar.AddMenu(MenubarMain.PredefinedMenuOption.FILE, MenubarMain.GetDefaultMenuItem("Exit", exit_app_click));
 
                 loading_progress.SetValue(50);
 
@@ -212,7 +212,7 @@ namespace Frontend
                 if (_standalone)
                 {
                     var sample_data = TestData.Generate();
-                    _basemanager.UpdateInputData(sample_data);
+                    _contentmanager.UpdateInputData(sample_data);
                 }
 
                 loading_progress.SetValue(90);
@@ -232,7 +232,7 @@ namespace Frontend
                 return _initialized;
             }
 
-            private bool close_callback_menu()
+            private bool exit_app_click()
             {
                 this.Close();
                 return true;
@@ -250,10 +250,10 @@ namespace Frontend
             private CmdLineArguments _arguments = new CmdLineArguments();
 
             private ConfigurationService _configurationservice = null;
-            private Visualizations.BaseManager _basemanager = null;
+            private Visualizations.ContentManager _contentmanager = null;
             private WindowManager _winmanager = null;
             private ColorTheme _colortheme = null;
-            private MainMenuBar _menubar = null;
+            private MenubarMain _menubar = null;
 
             /// DEBUG
             private TimeBenchmark _timer = null;

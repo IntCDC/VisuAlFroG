@@ -16,12 +16,12 @@ namespace SciChartInterface
 {
     namespace Data
     {
-        public class DataFilterSciChartSeries : AbstractDataFilter
+        public class Filter : AbstractFilter
         {
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public DataFilterSciChartSeries() : base(Filters.TRANSPOSE | Filters.AXIS_SELECTION) { } // base(Filters.NONE) { } //
+            public Filter() : base(Filters.TRANSPOSE | Filters.AXIS_SELECTION) { } // base(Filters.NONE) { } //
 
             #endregion
 

@@ -91,7 +91,6 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\DataFilterSciChartSeries.cs" />
     <Compile Include="Data\DataTypeSciChartParallel.cs" />
     <Compile Include="Data\DataTypeSciChartSeries.cs" />
     <Compile Include="Data\SciChartMetaData.cs" />

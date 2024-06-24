@@ -60,7 +60,7 @@ The [citation](CITATION.cff) is based on the [Citation Cite Format](https://cita
 
 - This project is supported by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) under Germany's Excellence Strategy – EXC 2120/1 – 390831618
 - Thank you to [SciChart](https://www.scichart.com/contact-us/) for their great open source vizualization library and for allowing to distribute licensed SciChart as part of the compiled form of this software.
-- Thank you to the [Bokeh Development Team](https://github.com/bokeh/bokeh)(Anaconda, Inc., and Bokeh Contributors) for their great open source vizualization library.
+- Thank you to the [Bokeh Development Team](https://github.com/bokeh/bokeh) (Anaconda, Inc., and Bokeh Contributors) for their great open source vizualization library.
 - Thank you to Mike Bostock for the great [d3](https://github.com/bokeh/bokeh) open source data visualization library.
 - Thank you to [Craiyon](https://www.craiyon.com) AI image generator for the nice VisuAlFrog logo :satisfied:
 

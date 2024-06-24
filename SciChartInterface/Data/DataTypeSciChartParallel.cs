@@ -85,11 +85,13 @@ namespace SciChartInterface
                 /// TODO
             }
 
-            public override List<MenuItem> GetMenu()
+            /// <summary>
+            ///  UNUSED XXX 
+            /// </summary>
+            /// <returns></returns>
+            public override List<MenuItem> Menu()
             {
-
                 /// TODO 
-
                 return new List<MenuItem>();
             }
 

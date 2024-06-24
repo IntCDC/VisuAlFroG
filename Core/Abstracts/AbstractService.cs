@@ -77,7 +77,7 @@ namespace Core
             }
             */
 
-            public virtual void AttachMenu(MainMenuBar menu_bar)
+            public virtual void AttachMenu(MenubarMain menu_bar)
             {
                 throw new InvalidOperationException("This function has been called for derived class of AbstractService that does not implement this function");
             }

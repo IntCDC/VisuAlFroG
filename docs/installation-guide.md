@@ -103,7 +103,17 @@ Configurations are stored in the [JSON](https://www.json.org/json-en.html) file 
 <!-- ###################################################################### -->
 ### Known Issues
 
-- One of the following errors occurs:
+1. When VisuAlFroG is placed in Grasshopper library folder and then Grasshopper is started the following errors occur: 
+    - Object: VisuAlFroG (level 1) Exception has been thrown by the target of an invocation. TargetInvocationException
+    - Object: VisuAlFroG (level 2) Could not load file or assembly 'VisuAlFroG_WPF, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'. FileNotFoundException
+
+  **SOLUTION:**
+  - If a libraries with a different version is already referenced and used by another Rhino or Grasshopper plugin, there might be this or a similar unspecific error.
+  Uninstall old or unused plugins and try again.
+  The final solution is a clean reinstallation of Rhino followed by a reinstallation of the plugins starting with VisuAlFrog.
+
+
+2. RHINO 8: One of the following errors occurs:
   - When debugging VisuAlFroG in Visual Studio the following error occurs: **A fatal error has occurred and debugging needs to be terminated. The debugger was configured to use the Desktop CLR (.NETFramework) Managed debugger, but the target process loaded the CoreCLR (.Net Core) runtime. To debug this project, configure it to use the 'Managed (CoreCLR)' debugger.**
   - When VisuAlFroG is placed in Grasshopper library folder and then Grasshopper is started the following errors occur: 
     - Object: VisuAlFroG (level 1) Exception has been thrown by the target of an invocation. TargetInvocationException
@@ -116,10 +126,12 @@ Configurations are stored in the [JSON](https://www.json.org/json-en.html) file 
   In the Rhino command line type `SetDotNetRuntime` and then enter `Runtime=NETFramework` and confirm.
   Restart Rhino to take changes effect.
 
-- SciChart mouse interaction is not working via laptop touch pads
+
+3. SciChart mouse interaction is not working via laptop touch pads.
 
   **SOLUTION:**
   Use external mouse. 
+
 
 <!-- ###################################################################### -->
 
