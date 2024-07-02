@@ -8,6 +8,9 @@ using Core.Data;
 using System.Windows.Documents;
 using System.Windows.Data;
 using System.Globalization;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 
 
 
@@ -50,7 +53,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region public properties
 
-            public string _Name { get { return _edit_content_caption.Text;  } set { _edit_content_caption.Text = value; } }
+            public string _Name { get { return _content_caption.Text; } set { _content_caption.Text = value; } }
             public abstract string _TypeName { get; }
             public abstract bool _MultipleInstances { get; }
             public abstract List<Type> _DependingServices { get; }
@@ -358,23 +361,38 @@ namespace Core
             {
                 // Set global menu items before creating menu
 
-                _edit_content_caption.Text = _TypeName;
-                _edit_content_caption.Width = 100.0;
-                _edit_content_caption.Focusable = true;
-                _edit_content_caption.Focus();
+                _content_caption.Text = _TypeName;
+                _content_caption.IsEnabled = true;
+                _content_caption.Focusable = false;
+                _content_caption.BorderThickness = new Thickness(0, 0, 0, 0);
+                _content_caption.Cursor = Cursors.Arrow;
+                _content_caption.Style = ColorTheme.ContentCaptionStyle();
+                _content_caption.KeyUp += (object sender, KeyEventArgs e) =>
+                 {
+                     if (e.Key == System.Windows.Input.Key.Enter)
+                     {
+                         _content_caption.Focusable = false;
+                         _content_caption.Cursor = Cursors.Arrow;
+                         _content_caption.Style = ColorTheme.ContentCaptionStyle();
+                         System.Windows.Input.Keyboard.ClearFocus();
+                     }
+                 };
+                _content_caption.LostKeyboardFocus += (object sender, KeyboardFocusChangedEventArgs e) =>
+                {
+                    _content_caption.Focusable = false;
+                    _content_caption.Cursor = Cursors.Arrow;
+                    _content_caption.Style = ColorTheme.ContentCaptionStyle();
+                };
 
                 var _menu_rename = MenubarMain.GetDefaultMenuItem("Rename");
-                _menu_rename.Items.Add(_edit_content_caption);
+                _menu_rename.Click += (object sender, RoutedEventArgs e) =>
+                {
+                    _content_caption.Focusable = true;
+                    _content_caption.Style = null;
+                    _content_caption.Cursor = null;
+                    _content_caption.Focus();
+                };
                 _menu.AddMenu(MenubarContent.PredefinedMenuOption.CONTENT, _menu_rename);
-
-                var content_caption = new TextBlock();
-                content_caption.Style = ColorTheme.ContentCaptionStyle();
-
-                // Bind caption text block to editable text box
-                var caption_binding = new Binding("Text");
-                caption_binding.Mode = BindingMode.OneWay;
-                caption_binding.Source = _edit_content_caption;
-                content_caption.SetBinding(TextBlock.TextProperty, caption_binding);
 
 
                 /// _menu.AddMenu(ContentMenuBar.PredefinedMenuOption.CONTENT, MainMenuBar.GetDefaultMenuItem("Filter", filter_content_click));
@@ -391,8 +409,8 @@ namespace Core
                 column_menu.Width = new GridLength(1.0, GridUnitType.Star);
                 menu_grid.ColumnDefinitions.Add(column_menu);
 
-                Grid.SetColumn(content_caption, 0);
-                menu_grid.Children.Add(content_caption);
+                Grid.SetColumn(_content_caption, 0);
+                menu_grid.Children.Add(_content_caption);
 
                 var menu = _menu.Attach();
                 Grid.SetColumn(menu, 1);
@@ -409,8 +427,7 @@ namespace Core
 
             private DockPanel _content_parent = null;
             private Grid _content_child = null;
-            private TextBox _edit_content_caption = new TextBox();
-
+            private System.Windows.Controls.TextBox _content_caption = new System.Windows.Controls.TextBox();
 
             /// DEBUG
             protected TimeBenchmark _timer = null;

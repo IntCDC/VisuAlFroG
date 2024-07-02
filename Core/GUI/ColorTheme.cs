@@ -171,25 +171,25 @@ namespace Core
             public static Style ContentCaptionStyle()
             {
                 var style = new Style();
-                style.TargetType = typeof(TextBlock);
+                style.TargetType = typeof(TextBox);
 
                 Setter setter_foreground = new Setter();
-                setter_foreground.Property = TextBlock.ForegroundProperty;
+                setter_foreground.Property = TextBox.ForegroundProperty;
                 setter_foreground.Value = new DynamicResourceExtension("Brush_MenuBarForeground");
                 style.Setters.Add(setter_foreground);
 
                 Setter setter_background = new Setter();
-                setter_background.Property = TextBlock.BackgroundProperty;
+                setter_background.Property = TextBox.BackgroundProperty;
                 setter_background.Value = new DynamicResourceExtension("Brush_MenuBarBackground");
                 style.Setters.Add(setter_background);
 
                 Setter setter_horiz = new Setter();
-                setter_horiz.Property = TextBlock.HorizontalAlignmentProperty;
+                setter_horiz.Property = TextBox.HorizontalAlignmentProperty;
                 setter_horiz.Value = HorizontalAlignment.Left;
                 style.Setters.Add(setter_horiz);
 
                 Setter setter_vert = new Setter();
-                setter_vert.Property = TextBlock.VerticalAlignmentProperty;
+                setter_vert.Property = TextBox.VerticalAlignmentProperty;
                 setter_vert.Value = VerticalAlignment.Center;
                 style.Setters.Add(setter_vert);
 

@@ -2,8 +2,6 @@
 using System.Windows.Documents;
 using System;
 using System.Windows.Navigation;
-using System.Windows;
-using System.Windows.Media.Media3D;
 
 
 
@@ -71,8 +69,8 @@ namespace Core
             {
                 var usage_menu = GetDefaultMenuItem("Visualizations");
                 usage_menu.IsEnabled = true;
-                var usage_menu_text = GetDefaultMenuItem("Open menu with on surface.");
-                usage_menu_text.InputGestureText = "Right-Click";
+                var usage_menu_text = GetDefaultMenuItem("Open menu with [Right-Click] on application interface.");
+                //usage_menu_text.InputGestureText = "Right-Click";
                 usage_menu_text.IsEnabled = false;
                 usage_menu.Items.Add(usage_menu_text);
                 AddMenu(PredefinedMenuOption.FILE, usage_menu);
