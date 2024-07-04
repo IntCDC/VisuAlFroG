@@ -26,6 +26,8 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public functions
 
+        public WPF_DataViewer(string uid) : base(uid) { }
+
         public override bool Create()
         {
             if (!_initialized)
@@ -36,7 +38,7 @@ namespace Visualizations
             _timer.Start();
 
 
-            _Content.Name = _ID;
+            _Content.Name = _UID;
             _Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
             _Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
             _Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");

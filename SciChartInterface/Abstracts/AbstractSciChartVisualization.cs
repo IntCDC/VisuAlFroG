@@ -36,6 +36,8 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region public functions
 
+            public AbstractSciChartVisualization(string uid) : base(uid) { }
+
             public override bool Initialize(DataManager.GetDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback)
             {
                 _timer.Start();
@@ -43,7 +45,7 @@ namespace SciChartInterface
                 if (base.Initialize(request_data_callback, request_menu_callback))
                 {
                     _content_surface = new SurfaceType();
-                    _content_surface.Name = _ID;
+                    _content_surface.Name = _UID;
                     _content_surface.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
                     _content_surface.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
 

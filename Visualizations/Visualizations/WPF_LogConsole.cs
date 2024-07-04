@@ -39,6 +39,8 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public functions
 
+        public WPF_LogConsole(string uid) : base(uid) { }
+
         public override bool Create()
         {
             if (!_initialized)
@@ -61,7 +63,7 @@ namespace Visualizations
             _text_block.Width = Double.NaN; // = "Auto"
             _text_block.Height = Double.NaN; // = "Auto"
 
-            _Content.Name = _ID;
+            _Content.Name = _UID;
             _Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
             _Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
             _Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");

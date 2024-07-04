@@ -287,12 +287,12 @@ namespace Core
 
             public override void AttachMenu(MenubarMain menu_bar)
             {
-                var menu_item = MenubarMain.GetDefaultMenuItem("Send Output Data", SendData);
+                var menu_item = MenubarMain.GetDefaultMenuItem("Send to interface", SendData);
                 menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.DATA, menu_item);
 
                 menu_bar.AddSeparator(MenubarMain.PredefinedMenuOption.DATA);
 
-                menu_item = MenubarMain.GetDefaultMenuItem("Save CSV File");
+                menu_item = MenubarMain.GetDefaultMenuItem("Save (.csv)");
                 menu_item.Click += (object sender, RoutedEventArgs e) =>
                 {
                     var sender_content = sender as System.Windows.Controls.MenuItem;
@@ -304,7 +304,7 @@ namespace Core
                 };
                 menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.DATA, menu_item);
 
-                menu_item = MenubarMain.GetDefaultMenuItem("Load CSV File");
+                menu_item = MenubarMain.GetDefaultMenuItem("Load (.csv)");
                 menu_item.Click += (object sender, RoutedEventArgs e) =>
                 {
                     var sender_content = sender as System.Windows.Controls.MenuItem;

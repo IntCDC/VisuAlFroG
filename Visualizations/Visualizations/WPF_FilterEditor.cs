@@ -34,6 +34,8 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public functions
 
+        public WPF_FilterEditor(string uid) : base(uid) { }
+
         public override bool Create()
         {
             if (!_initialized)

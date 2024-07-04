@@ -11,7 +11,7 @@ using Core.Abstracts;
  */
 namespace Visualizations
 {
-    public class ServiceManager : AbstractService
+    public class InterfaceManager : AbstractService
     {
 
         /* ------------------------------------------------------------------*/

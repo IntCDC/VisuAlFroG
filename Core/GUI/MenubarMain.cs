@@ -56,7 +56,7 @@ namespace Core
                 var hyper_link = new Hyperlink();
                 hyper_link.NavigateUri = new Uri("https://github.com/IntCDC/VisuAlFroG");
                 hyper_link.RequestNavigate += event_hyperlink_requestnavigate;
-                hyper_link.Inlines.Add("GitHub Repository");
+                hyper_link.Inlines.Add("GitHub repository");
                 hyper_link.Style = ColorTheme.HyperlinkStyle();
                 var repo_menu_item = new MenuItem();
                 repo_menu_item.Style = ColorTheme.MenuItemIconStyle("github.png");
@@ -69,7 +69,7 @@ namespace Core
             {
                 var usage_menu = GetDefaultMenuItem("Visualizations");
                 usage_menu.IsEnabled = true;
-                var usage_menu_text = GetDefaultMenuItem("Open menu with [Right-Click] on application interface.");
+                var usage_menu_text = GetDefaultMenuItem("Open menu with [Right-Click] on application interface");
                 //usage_menu_text.InputGestureText = "Right-Click";
                 usage_menu_text.IsEnabled = false;
                 usage_menu.Items.Add(usage_menu_text);

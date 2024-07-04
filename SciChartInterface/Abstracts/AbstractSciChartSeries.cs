@@ -32,6 +32,8 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region public functions
 
+            public AbstractSciChartSeries(string uid) : base(uid) { }
+
             public override bool Create()
             {
                 if (!_initialized)

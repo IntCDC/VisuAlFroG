@@ -96,8 +96,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstracts\AbstractDataType.cs" />
+    <Compile Include="Abstracts\AbstractRegisterService.cs" />
     <Compile Include="Abstracts\AbstractVisualization.cs" />
     <Compile Include="Abstracts\AbstractWindow.cs" />
+    <Compile Include="Abstracts\IAbstractFilter.cs" />
     <Compile Include="Abstracts\IAbstractVisualization.cs" />
     <Compile Include="Abstracts\IAbstractConfiguration.cs" />
     <Compile Include="Abstracts\IDataType.cs" />
@@ -113,7 +115,8 @@
     <Compile Include="Data\GenericDataEntry.cs" />
     <Compile Include="Data\GenericDataStructure.cs" />
     <Compile Include="Data\GenericMetaData.cs" />
-    <Compile Include="Filtering\Filter.cs" />
+    <Compile Include="Filtering\ValueSelectionFilter.cs" />
+    <Compile Include="Filtering\ColumnSelectionFilter.cs" />
     <Compile Include="Filtering\FilterManager.cs" />
     <Compile Include="GUI\LoadingProgressBar.cs">
       <SubType>Component</SubType>

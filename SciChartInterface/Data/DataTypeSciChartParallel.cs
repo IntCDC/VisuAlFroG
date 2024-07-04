@@ -102,6 +102,9 @@ namespace SciChartInterface
 
             private void create_data(GenericDataStructure branch, ref List<DataType> value_list)
             {
+                /// XXX TODO via filter
+                int value_index = (int)branch.GetDimension() - 1;
+
                 // For each branch add all entries to one row dictionary
                 if (branch._Entries.Count > 0)
                 {
@@ -115,7 +118,7 @@ namespace SciChartInterface
                         {
                             label = generate_property_name(index);
                         }
-                        data_entry_dict.Add(label, (double)entry._Values[0]);
+                        data_entry_dict.Add(label, (double)entry._Values[value_index]);
 
                         index++;
                     }

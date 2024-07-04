@@ -43,17 +43,17 @@ namespace Core
                 valid &= check_values(input_data, ref value_count);
 
                 convert_value_type(ref output_data);
-                Log.Default.Msg(Log.Level.Info, "    >>> Successfully aligned labels.");
+                Log.Default.Msg(Log.Level.Info, "    Successfully aligned labels.");
 
                 if (!valid)
                 {
                     return false;
                 }
-                Log.Default.Msg(Log.Level.Info, "    >>> Successfully validated data.");
+                Log.Default.Msg(Log.Level.Info, "    Successfully validated data.");
 
                 uint index = 0;
                 init_index(input_data, ref index);
-                Log.Default.Msg(Log.Level.Info, "    >>> Successfully initialized data.");
+                Log.Default.Msg(Log.Level.Info, "    Successfully initialized data.");
 
                 return true;
             }
@@ -160,7 +160,7 @@ namespace Core
                         }
                         if (only_one && only_strings)
                         {
-                            Log.Default.Msg(Log.Level.Info, "        >>> Extracting column labels.");
+                            Log.Default.Msg(Log.Level.Info, "    Extracting column labels.");
                             var column_labels = data._Branches[0]._Entries;
                             data._Branches.RemoveAt(0);
                             foreach (var b in data._Branches)
@@ -215,7 +215,7 @@ namespace Core
                     }
                     if (first_string)
                     {
-                        Log.Default.Msg(Log.Level.Info, "        >>> Extracting row labels.");
+                        Log.Default.Msg(Log.Level.Info, "    Extracting row labels.");
                         foreach (var b in data._Branches)
                         {
                             var row_label = b._Entries[0]._Values[0] as string;

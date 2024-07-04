@@ -4,6 +4,8 @@ using Core.Utilities;
 using Core.GUI;
 using Core.Data;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
 
 
 
@@ -120,6 +122,8 @@ namespace Frontend
                 _timer = new TimeBenchmark();
                 _timer.Start();
 
+                ///Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+                ///Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
 
                 // Window setup
                 InitializeComponent();

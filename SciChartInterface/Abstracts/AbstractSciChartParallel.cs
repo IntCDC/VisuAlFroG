@@ -37,6 +37,8 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region public functions
 
+            public AbstractSciChartParallel(string uid) : base(uid) { }
+
             public override bool Create()
             {
                 if (!_initialized)

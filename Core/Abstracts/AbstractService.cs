@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Core.GUI;
 using Core.Utilities;
@@ -88,6 +89,7 @@ namespace Core
             #region protected variables
 
             protected bool _initialized = false;
+
             /// DEBUG
             protected TimeBenchmark _timer = null;
 

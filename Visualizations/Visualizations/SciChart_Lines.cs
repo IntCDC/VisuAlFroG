@@ -28,7 +28,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public functions
 
-
+        public SciChart_Lines(string uid) : base(uid) { }
 
         #endregion
     }

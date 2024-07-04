@@ -41,7 +41,7 @@ namespace Core
             /// </summary>
             public class Configuration : IAbstractConfigurationData
             {
-                public string _ID { get; set; }
+                public string _UID { get; set; }
                 public string _Type { get; set; }
                 public string _Name { get; set; }
                 /// TODO Add additional configuration information that should be saved here...
@@ -53,13 +53,13 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region public properties
 
+            public string _UID { get; } = UniqueID.GenerateString();
+            public int _DataUID { get; set; } = UniqueID.InvalidInt;
             public string _Name { get { return _content_caption.Text; } set { _content_caption.Text = value; } }
             public abstract string _TypeName { get; }
             public abstract bool _MultipleInstances { get; }
             public abstract List<Type> _DependingServices { get; }
             public bool _Attached { get; protected set; } = false;
-            public string _ID { get; set; } = UniqueID.InvalidString;
-            public int _DataUID { get; set; } = UniqueID.InvalidInt;
 
             public abstract Type _RequiredDataType { get; }
             public DataManager.GetDataCallback_Delegate _RequestDataCallback { get; private set; }
@@ -73,10 +73,15 @@ namespace Core
             /// <summary>
             /// Ctor.
             /// </summary>
-            public AbstractVisualization()
+            public AbstractVisualization(string uid)
             {
+                if (uid != UniqueID.InvalidString)
+                {
+                    _UID = uid;
+                }
                 _timer = new TimeBenchmark();
-            }
+            } 
+
 
             /// <summary>
             /// If derived class might requires additional data on initialization (declaring Initialize taking parameter(s)) ...
@@ -89,7 +94,6 @@ namespace Core
                 {
                     Terminate();
                 }
-                _initialized = false;
 
                 /* TEMP
                 if ((request_data_callback == null) || (request_menu_callback == null))
@@ -99,13 +103,12 @@ namespace Core
                 }
                 */
 
-                _ID = UniqueID.GenerateString();
-
                 _RequestDataCallback = request_data_callback;
                 _RequestMenuCallback = request_menu_callback;
 
                 _menu = new MenubarContent();
                 _initialized = _menu.Initialize();
+
 
                 StackPanel stack = new StackPanel();
                 stack.Children.Add(create_menu());
@@ -124,7 +127,7 @@ namespace Core
             {
                _timer.Start();
 
-               if (base.Initialize(request_callback))
+               if (base.Initialize(request_data_callback, request_menu_callback))
                {
 
                    /// PLACE YOUR STUFF HERE ...
@@ -232,8 +235,6 @@ namespace Core
             /// <returns>True on success, false otherwise.</returns>
             public virtual bool Terminate()
             {
-                _ID = UniqueID.InvalidString;
-
                 _created = false;
                 _initialized = false;
                 _Attached = false;
@@ -363,25 +364,19 @@ namespace Core
 
                 _content_caption.Text = _TypeName;
                 _content_caption.IsEnabled = true;
-                _content_caption.Focusable = false;
                 _content_caption.BorderThickness = new Thickness(0, 0, 0, 0);
-                _content_caption.Cursor = Cursors.Arrow;
-                _content_caption.Style = ColorTheme.ContentCaptionStyle();
+                reset_caption_textbox();
                 _content_caption.KeyUp += (object sender, KeyEventArgs e) =>
                  {
                      if (e.Key == System.Windows.Input.Key.Enter)
                      {
-                         _content_caption.Focusable = false;
-                         _content_caption.Cursor = Cursors.Arrow;
-                         _content_caption.Style = ColorTheme.ContentCaptionStyle();
+                         reset_caption_textbox();
                          System.Windows.Input.Keyboard.ClearFocus();
                      }
                  };
                 _content_caption.LostKeyboardFocus += (object sender, KeyboardFocusChangedEventArgs e) =>
                 {
-                    _content_caption.Focusable = false;
-                    _content_caption.Cursor = Cursors.Arrow;
-                    _content_caption.Style = ColorTheme.ContentCaptionStyle();
+                    reset_caption_textbox();
                 };
 
                 var _menu_rename = MenubarMain.GetDefaultMenuItem("Rename");
@@ -418,6 +413,13 @@ namespace Core
                 menu_grid.Children.Add(menu);
 
                 return menu_grid;
+            }
+
+            private void reset_caption_textbox()
+            {
+                _content_caption.Focusable = false;
+                _content_caption.Cursor = Cursors.Arrow;
+                _content_caption.Style = ColorTheme.ContentCaptionStyle();
             }
 
             #endregion

@@ -32,6 +32,7 @@ namespace Visualizations
             /* ------------------------------------------------------------------*/
             #region public functions
 
+            public AbstractWPFVisualization(string uid) : base(uid) { }
 
             public override bool Initialize(DataManager.GetDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback)
             {

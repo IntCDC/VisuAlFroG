@@ -24,21 +24,18 @@ using ContentCallbacks_Type = System.Tuple<Core.Abstracts.AbstractWindow.Availab
 
 namespace Visualizations
 {
-    public class ContentManager : AbstractService
+    public class ContentManager : AbstractRegisterService<AbstractVisualization>
     {
         /* ------------------------------------------------------------------*/
         #region public functions
 
         public override bool Initialize()
         {
-            if (_initialized)
+            if (!base.Initialize())
             {
-                Terminate();
+                return false;
             }
             _timer.Start();
-
-
-            _contents = new Dictionary<Type, Dictionary<string, AbstractVisualization>>();
 
             // Register new visualizations here:
             register_content(typeof(WPF_LogConsole));
@@ -64,12 +61,12 @@ namespace Visualizations
             foreach (Type service_type in depending_services())
             {
                 var new_service = (AbstractService)Activator.CreateInstance(service_type);
-                _servicemanager.AddService(new_service);
+                _interfacemanager.AddService(new_service);
             }
             /// DEBUG
             //_servicemanager.AddService(new PythonInterfaceService());
             //_servicemanager.AddService(new WebAPIService());
-            initialized &= _servicemanager.Initialize();
+            initialized &= _interfacemanager.Initialize();
 
 
             _initialized = initialized;
@@ -81,9 +78,7 @@ namespace Visualizations
             bool terminated = true;
             if (_initialized)
             {
-                terminated &= clear_contents();
-
-                terminated &= _servicemanager.Terminate();
+                terminated &= _interfacemanager.Terminate();
                 terminated &= _datamanager.Terminate();
                 terminated &= _filtermanager.Terminate();
 
@@ -99,7 +94,7 @@ namespace Visualizations
             {
                 foreach (var content_data in content_types.Value)
                 {
-                    configurations.Add(new AbstractVisualization.Configuration() { _ID = content_data.Value._ID, _Type = content_types.Key.FullName, _Name = content_data.Value._Name });
+                    configurations.Add(new AbstractVisualization.Configuration() { _UID = content_data.Value._UID, _Type = content_types.Key.FullName, _Name = content_data.Value._Name });
                 }
             }
             return ConfigurationService.Serialize<List<AbstractVisualization.Configuration>>(configurations);
@@ -127,7 +122,7 @@ namespace Visualizations
                     var type = get_type(content_configuration._Type);
                     if (_contents.ContainsKey(type))
                     {
-                        var id = content_configuration._ID;
+                        var id = content_configuration._UID;
                         if (id == UniqueID.InvalidString)
                         {
                             Log.Default.Msg(Log.Level.Warn, "Invalid content id: " + id);
@@ -136,14 +131,13 @@ namespace Visualizations
 
                         if (!_contents[type].ContainsKey(id))
                         {
-                            var new_content = create_content(type);
+                            var new_content = create_content(type, id);
                             new_content._Name = content_configuration._Name;
                             if (new_content == null)
                             {
                                 return false;
                             }
-                            new_content._ID = id;
-                            _contents[type].Add(id, new_content);
+                            _contents[type].Add(new_content._UID, new_content);
                         }
                         else
                         {
@@ -206,7 +200,7 @@ namespace Visualizations
                 var content_type = content_types.Key;
 
                 // Create temporary instance of content
-                var tmp_content = (AbstractVisualization)Activator.CreateInstance(content_type);
+                var tmp_content = (AbstractVisualization)Activator.CreateInstance(content_type, UniqueID.InvalidString);
                 string header = tmp_content._TypeName;
                 bool multiple_instances = tmp_content._MultipleInstances;
 
@@ -242,6 +236,7 @@ namespace Visualizations
             if (_contents.ContainsKey(type))
             {
                 string id = content_id;
+
                 if (!_contents[type].ContainsKey(id))
                 {
                     if (content_id != UniqueID.InvalidString)
@@ -251,12 +246,12 @@ namespace Visualizations
                     }
                     else
                     {
-                        var new_content = create_content(type);
+                        var new_content = create_content(type, UniqueID.InvalidString);
                         if (new_content == null)
                         {
                             return null;
                         }
-                        id = new_content._ID;
+                        id = new_content._UID;
                         _contents[type].Add(id, new_content);
                     }
                 }
@@ -283,6 +278,7 @@ namespace Visualizations
                 if (content_types.Value.ContainsKey(content_id))
                 {
                     content_types.Value[content_id].Detach();
+                    _datamanager.UnregisterDataCallback(content_types.Value[content_id]._DataUID);
                     content_types.Value[content_id].Terminate();
                     return content_types.Value.Remove(content_id);
                 }
@@ -294,14 +290,30 @@ namespace Visualizations
         #endregion
 
         /* ------------------------------------------------------------------*/
-        #region private functions
+        #region protected functions
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="content_data"></param>
+        /// <returns></returns>
+        protected override bool reset_content(AbstractVisualization content_value)
+        {
+            content_value.Detach();
+            _datamanager.UnregisterDataCallback(content_value._DataUID);
+            return content_value.Terminate();
+        }
+
+        #endregion
+
+        /* ------------------------------------------------------------------*/
+        #region private functions
 
         /// <summary>
         /// Returns distinct list of valid services required by the registered contents.
         /// </summary>
         /// <returns>List of service types.</returns>
-        public List<Type> depending_services()
+        private List<Type> depending_services()
         {
             var depending_services = new List<Type>();
 
@@ -312,7 +324,7 @@ namespace Visualizations
 
                 // Create temporary instance of content
                 Type content_type = content_types.Key;
-                var tmp_content = (AbstractVisualization)Activator.CreateInstance(content_type);
+                var tmp_content = (AbstractVisualization)Activator.CreateInstance(content_type, UniqueID.InvalidString);
                 var lservice_types = tmp_content._DependingServices;
                 foreach (Type lservice_type in lservice_types)
                 {
@@ -332,54 +344,13 @@ namespace Visualizations
         }
 
         /// <summary>
-        /// Register new content type.
-        /// </summary>
-        /// <param name="content_type">The content type.</param>
-        private void register_content(Type content_type)
-        {
-            // Check for required base type
-            Type type = content_type;
-            Type required_basetype = typeof(AbstractVisualization);
-            bool valid_type = false;
-            while (!recursive_basetype(type, typeof(object)))
-            {
-                if (recursive_basetype(type, required_basetype))
-                {
-                    valid_type = true;
-                    break;
-                }
-                type = type.BaseType;
-                if (type == null)
-                {
-                    break;
-                }
-            }
-            if (valid_type)
-            {
-                if (_contents.ContainsKey(content_type))
-                {
-                    Log.Default.Msg(Log.Level.Warn, "Content type already added: " + content_type.FullName);
-                }
-                else
-                {
-                    _contents.Add(content_type, new Dictionary<string, AbstractVisualization>());
-                    Log.Default.Msg(Log.Level.Info, "Registered content type: " + content_type.FullName);
-                }
-            }
-            else
-            {
-                Log.Default.Msg(Log.Level.Error, "Incompatible content type: " + content_type.FullName);
-            }
-        }
-
-        /// <summary>
         /// Initialize and create new instance of content of given type
         /// </summary>
         /// <param name="type">The content type.</param>
         /// <returns>Return instance of new content.</returns>
-        private AbstractVisualization create_content(Type type)
+        private AbstractVisualization create_content(Type type, string uid)
         {
-            var content = (AbstractVisualization)Activator.CreateInstance(type);
+            var content = (AbstractVisualization)Activator.CreateInstance(type, uid);
             if (content.Initialize(_datamanager.GetDataCallback, _datamanager.GetDataMenuCallback))
             {
                 content._DataUID = _datamanager.RegisterDataCallback(content._RequiredDataType, content.Update);
@@ -396,37 +367,11 @@ namespace Visualizations
         }
 
         /// <summary>
-        /// Check recursively for base type.
-        /// </summary>
-        /// <param name="check_type">The type to look into.</param>
-        /// <param name="reference_base_type">The base type to check for.</param>
-        /// <returns>True on success, false otherwise.</returns>
-        bool recursive_basetype(Type check_type, Type reference_base_type)
-        {
-            Type base_type = check_type;
-            bool valid_base_type = false;
-            while (base_type != typeof(object))
-            {
-                if (base_type == reference_base_type)
-                {
-                    valid_base_type = true;
-                    break;
-                }
-                base_type = base_type.BaseType;
-                if (base_type == null)
-                {
-                    break;
-                }
-            }
-            return valid_base_type;
-        }
-
-        /// <summary>
         /// Convert string to type.
         /// </summary>
         /// <param name="type_string">The type as string.</param>
         /// <returns>The requested type, default(?) otherwise.</returns>
-        public Type get_type(string type_string)
+        private Type get_type(string type_string)
         {
             Type type = default(Type);
             try
@@ -446,34 +391,12 @@ namespace Visualizations
             return type;
         }
 
-        /// <summary>
-        /// Delete all contents.
-        /// </summary>
-        /// <returns>True on success, false otherwise.</returns>
-        private bool clear_contents()
-        {
-            bool terminated = true;
-            foreach (var content_types in _contents)
-            {
-                foreach (var content_data in content_types.Value)
-                {
-                    content_data.Value.Detach();
-                    terminated &= content_data.Value.Terminate();
-                }
-                content_types.Value.Clear();
-            }
-            return terminated;
-        }
-
         #endregion
 
         /* ------------------------------------------------------------------*/
         #region private variables
 
-        // Separate dictionary for each content type
-        private Dictionary<Type, Dictionary<string, AbstractVisualization>> _contents = null;
-
-        private ServiceManager _servicemanager = new ServiceManager();
+        private InterfaceManager _interfacemanager = new InterfaceManager();
         private DataManager _datamanager = new DataManager();
         private FilterManager _filtermanager = new FilterManager();
 

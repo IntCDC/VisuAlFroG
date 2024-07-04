@@ -5,12 +5,16 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+
 using Core.Abstracts;
 using Core.GUI;
 using Core.Utilities;
+
+using SciChartInterface.Data;
 
 
 
@@ -22,7 +26,7 @@ namespace Core
 {
     namespace Data
     {
-        public class FilterManager : AbstractService
+        public class FilterManager : AbstractRegisterService<AbstractFilter>
         {
             /* ------------------------------------------------------------------*/
             #region public delegates
@@ -35,12 +39,15 @@ namespace Core
 
             public override bool Initialize()
             {
-                if (_initialized)
+                if (!base.Initialize())
                 {
-                    Terminate();
+                    return false;
                 }
                 _timer.Start();
 
+
+                register_content(typeof(ColumnSelectionFilter));
+                register_content(typeof(ValueSelectionFilter));
 
 
                 _timer.Stop();
@@ -70,8 +77,24 @@ namespace Core
             #endregion
 
             /* ------------------------------------------------------------------*/
-            #region private functions
+            #region protected functions
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="content_data"></param>
+            /// <returns></returns>
+            protected override bool reset_content(AbstractFilter content_value)
+            {
+
+                /// TODO
+                return true; // content_value.Terminate();
+            }
+
+            #endregion
+
+            /* ------------------------------------------------------------------*/
+            #region private functions
 
 
             #endregion

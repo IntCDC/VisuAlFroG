@@ -139,7 +139,7 @@ namespace Core
 
                 Setter setter_thickness = new Setter();
                 setter_thickness.Property = Menu.BorderThicknessProperty;
-                setter_thickness.Value = new Thickness(0, 0, 0, 2); ;
+                setter_thickness.Value = new Thickness(0, 0, 0, 2);
                 style.Setters.Add(setter_thickness);
 
                 return style;

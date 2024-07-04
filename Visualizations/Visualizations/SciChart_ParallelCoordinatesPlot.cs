@@ -32,6 +32,8 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public functions
 
+        public SciChart_ParallelCoordinatesPlot(string uid) : base(uid) { }
+
         public override void Update(bool new_data)
         {
             if (!_created)
