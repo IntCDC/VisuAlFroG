@@ -13,7 +13,7 @@ using Core.GUI;
 // Arguments: <content name, flag: is content available, flag: are multiple instances allowed, content type>
 using ReadContentMetaData_Type = System.Tuple<string, bool, bool, string>;
 
-using AttachContentMetaData_Type = System.Tuple<string, System.Windows.Controls.Panel>;
+using AttachContentMetaData_Type = System.Tuple<int, System.Windows.UIElement, Core.Abstracts.AbstractVisualization.AttachWindowMenu_Delegate>;
 
 
 namespace Core
@@ -27,9 +27,9 @@ namespace Core
 
             public delegate List<ReadContentMetaData_Type> AvailableContents_Delegate();
 
-            public delegate AttachContentMetaData_Type CreateContent_Delegate(string content_id, string content_type);
+            public delegate AttachContentMetaData_Type CreateContent_Delegate(int uid, string content_type);
 
-            public delegate bool DeleteContent_Delegate(string content_id);
+            public delegate bool DeleteContent_Delegate(int uid);
 
             #endregion
 

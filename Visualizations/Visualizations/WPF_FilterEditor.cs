@@ -34,7 +34,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public functions
 
-        public WPF_FilterEditor(string uid) : base(uid) { }
+        public WPF_FilterEditor(int uid) : base(uid) { }
 
         public override bool Create()
         {
@@ -67,16 +67,23 @@ namespace Visualizations
                 Log.Default.Msg(Log.Level.Error, "Creation required prior to execution");
                 return;
             }
-            // Nothing to do here...
+
+
+
+
+
         }
 
         public override bool Terminate()
         {
-
             return base.Terminate();
         }
 
+        public override void AttachMenu(MenubarWindow menubar)
+        {
+            base.AttachMenu(menubar);
 
+        }
 
 
         #endregion
@@ -86,10 +93,13 @@ namespace Visualizations
 
 
 
+
         #endregion
 
         /* ------------------------------------------------------------------*/
         #region private variables
+
+
 
 
 

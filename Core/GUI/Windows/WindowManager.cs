@@ -115,9 +115,9 @@ namespace Core
                 */
                 _window_root.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.None, 0.7);
                 _window_root._Children.Item1.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.None, 0.31);
-                _window_root._Children.Item1._Children.Item1._Leaf.CreateContent(UniqueID.InvalidString, "Visualizations.WPF_DataViewer");
-                _window_root._Children.Item1._Children.Item2._Leaf.CreateContent(UniqueID.InvalidString, "Visualizations.SciChart_Lines");
-                _window_root._Children.Item2._Leaf.CreateContent(UniqueID.InvalidString, "Visualizations.WPF_LogConsole");
+                _window_root._Children.Item1._Children.Item1._Leaf.CreateContent(UniqueID.InvalidInt, "Visualizations.WPF_DataViewer");
+                _window_root._Children.Item1._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, "Visualizations.SciChart_Lines");
+                _window_root._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, "Visualizations.WPF_LogConsole");
             }
 
             #endregion
@@ -153,6 +153,7 @@ namespace Core
                         {
                             ContentID = attached_content.Item1,
                             ContentType = attached_content.Item2,
+                            Name = branch._Leaf._Name,
                         };
                     }
                 }
@@ -183,6 +184,7 @@ namespace Core
 
                 if (configurations.Leaf != null)
                 {
+                    branch._Leaf._Name = configurations.Leaf.Name;
                     branch._Leaf.CreateContent(configurations.Leaf.ContentID, configurations.Leaf.ContentType);
                 }
                 else if (configurations.Children != null)

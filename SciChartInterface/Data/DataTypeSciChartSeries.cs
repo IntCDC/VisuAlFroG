@@ -28,16 +28,16 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public DataTypeSciChartSeries(PropertyChangedEventHandler update_data_handler, PropertyChangedEventHandler update_metadata_handler)
-                : base(update_data_handler, update_metadata_handler) { }
+            public DataTypeSciChartSeries(PropertyChangedEventHandler update_data_handler, PropertyChangedEventHandler update_metadata_handler, DataManager.GetSendOutputCallback_Delegate send_output_callback)
+                : base(update_data_handler, update_metadata_handler, send_output_callback) { }
 
             public override void UpdateData(GenericDataStructure data)
             {
-                if (_data != null)
+                if (_data_specific != null)
                 {
-                    _data.Clear();
+                    _data_specific.Clear();
                 }
-                _data = null;
+                _data_specific = null;
 
                 if (data == null)
                 {
@@ -46,14 +46,16 @@ namespace SciChartInterface
                 }
 
                 _Dimension = data.GetDimension();
+                _data_generic = data.DeepCopy(_update_metadata_handler);
 
-                if (_data == null)
+                if (_data_specific == null)
                 {
-                    _data = new List<DataType>();
+                    _data_specific = new List<DataType>();
                 }
-                _data.Clear();
+                _data_specific.Clear();
 
                 recursive_data_conversion(data);
+
                 _loaded = true;
             }
 
@@ -65,7 +67,7 @@ namespace SciChartInterface
                     return;
                 }
 
-                foreach (var data_series in _data)
+                foreach (var data_series in _data_specific)
                 {
                     using (data_series.DataSeries.SuspendUpdates())
                     {
@@ -83,13 +85,12 @@ namespace SciChartInterface
             }
 
             /// <summary>
-            ///  UNUSED XXX 
+            /// 
             /// </summary>
             /// <returns></returns>
-            public override List<MenuItem> Menu()
+            public override List<Control> GetMenu()
             {
-                /// TODO
-                 return new List<MenuItem>();
+                return base.GetMenu();
             }
 
             #endregion
@@ -122,7 +123,8 @@ namespace SciChartInterface
                             y = (double)entry._Values[1];
                             //_axis_value_map[0] = 0;
                             //_axis_value_map[1] = 1;
-                            series.AcceptsUnsortedData = true; // XXX Can result in much slower performance for unsorted data
+                            // XXX Can result in much slower performance for large unsorted data
+                            series.AcceptsUnsortedData = true; 
                         }
                         var meta_data = new SciChartMetaData(entry._Metadata._Index, entry._Metadata._Selected, _update_metadata_handler);
                         series.Append(x, y, meta_data);
@@ -132,7 +134,7 @@ namespace SciChartInterface
                     data_series.AntiAliasing = true;
                     data_series.Style = renders_series_style();
                     data_series.DataSeries = series;
-                    _data.Add(data_series);
+                    _data_specific.Add(data_series);
                 }
 
                 foreach (var b in data._Branches)

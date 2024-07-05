@@ -32,7 +32,7 @@ namespace Core
             /// </summary>
             public class Configuration : IAbstractConfigurationData
             {
-                public string _UID { get; set; }
+                public int _UID { get; set; }
                 public string _Type { get; set; }
                 public string _Name { get; set; }
                 /// TODO Add additional configuration information that should be saved here...
@@ -55,7 +55,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region public properties
 
-            public string _UID { get; } = UniqueID.GenerateString();
+            public int _UID { get; } = UniqueID.GenerateInt();
             public string _Name { get; set; }
             public bool _Attached { get; protected set; } = false;
 
@@ -64,9 +64,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public AbstractFilter(string uid)
+            public AbstractFilter(int uid)
             {
-                if (uid != UniqueID.InvalidString)
+                if (uid != UniqueID.InvalidInt)
                 {
                     _UID = uid;
                 }

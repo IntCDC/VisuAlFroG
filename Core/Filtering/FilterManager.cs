@@ -73,6 +73,20 @@ namespace Core
 
             }
 
+            public void AddFilter()
+            {
+
+            }
+
+            public void RemoveFilter()
+            {
+
+            }
+
+            public void FilterList()
+            {
+
+            }
 
             #endregion
 
@@ -87,7 +101,6 @@ namespace Core
             protected override bool reset_content(AbstractFilter content_value)
             {
 
-                /// TODO
                 return true; // content_value.Terminate();
             }
 

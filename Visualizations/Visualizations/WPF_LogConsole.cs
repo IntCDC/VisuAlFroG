@@ -18,7 +18,7 @@ using Core.GUI;
  * Default window content set in WindowManager.CreateDefault()
  * Control Hierarchy: ScrollViewer(Content) -> TextBlick(_text_block)
  * 
- * XXX TODO Optimize performance for huge amount of messages -> render only visible lines (required full copy of all messages?)
+ * TODO Optimize performance for huge amount of messages -> render only visible lines (required full copy of all messages?)
  * 
  */
 namespace Visualizations
@@ -39,7 +39,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public functions
 
-        public WPF_LogConsole(string uid) : base(uid) { }
+        public WPF_LogConsole(int uid) : base(uid) { }
 
         public override bool Create()
         {
@@ -63,19 +63,7 @@ namespace Visualizations
             _text_block.Width = Double.NaN; // = "Auto"
             _text_block.Height = Double.NaN; // = "Auto"
 
-            _Content.Name = _UID;
-            _Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-            _Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-            _Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
-            _Content.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
-            _Content.PreviewMouseWheel += event_scrollviewer_mousewheel;
-            _Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
-            _Content.Content = _text_block;
-
-            _menu.AddMenu(MenubarContent.PredefinedMenuOption.CONTENT, MenubarMain.GetDefaultMenuItem("Copy to Clipboard", clipboard_content_click));
-
-
-            // Call after _text_block has been created
+            // ! Call after _text_block has been created
             Log.Default.RegisterListener(this.LogListener);
 
 
@@ -132,6 +120,20 @@ namespace Visualizations
                 _text_block.Inlines.Add(run);
                 scroll_bottom();
             }
+        }
+
+        public override void AttachMenu(MenubarWindow menubar)
+        {
+            base.AttachMenu(menubar);
+
+            _Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            _Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            _Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
+            _Content.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
+            _Content.PreviewMouseWheel += event_scrollviewer_mousewheel;
+            _Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
+            _Content.Content = _text_block;
+            menubar.AddMenu(MenubarWindow.PredefinedMenuOption.CONTENT, MenubarMain.GetDefaultMenuItem("Copy to Clipboard", clipboard_content_click));
         }
 
         #endregion

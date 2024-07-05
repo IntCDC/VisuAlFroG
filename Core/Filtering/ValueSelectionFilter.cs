@@ -22,7 +22,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public ValueSelectionFilter(string uid) : base(uid) { }
+            public ValueSelectionFilter(int uid) : base(uid) { }
 
             #endregion
 

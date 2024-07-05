@@ -43,8 +43,8 @@ namespace GrasshopperInterface
                 "Visual Analytics",
                 "Frameworks")
         {
-            /// TODO TEST Prevent multiple instances or is it OK?
-            // XXX NewInstanceGuid();
+            /// XXX Prevent multiple instances or is it OK?
+            NewInstanceGuid();
 
             _runtimemessages = new RuntimeMessages(this);
             _timer = new TimeBenchmark();

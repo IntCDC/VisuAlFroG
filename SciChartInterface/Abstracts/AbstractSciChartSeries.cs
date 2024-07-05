@@ -7,6 +7,12 @@ using SciChartInterface.Data;
 using SciChart.Charting.Visuals.Axes;
 using System.Windows.Controls;
 using Core.GUI;
+using System.Windows;
+using System.Globalization;
+using System.Runtime.Remoting.Contexts;
+using SciChart.Charting.ChartModifiers;
+using SciChart.Charting.Visuals.Annotations;
+using System.Windows.Media;
 
 
 
@@ -32,7 +38,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public AbstractSciChartSeries(string uid) : base(uid) { }
+            public AbstractSciChartSeries(int uid) : base(uid) { }
 
             public override bool Create()
             {
@@ -48,25 +54,6 @@ namespace SciChartInterface
                     return false;
                 }
                 _timer.Start();
-
-
-                // Options --------------------------------------------
-
-                //_menu.Clear(ContentMenuBar.PredefinedMenuOption.CONTENT);
-                var option_hint = MenubarMain.GetDefaultMenuItem("Interaction");
-                var clue_item = MenubarMain.GetDefaultMenuItem("Select Series | Drag & Drop Axes");
-                clue_item.InputGestureText = "Left Mouse";
-                clue_item.IsEnabled = false;
-                option_hint.Items.Add(clue_item);
-                clue_item = MenubarMain.GetDefaultMenuItem("Zoom");
-                clue_item.InputGestureText = "Mouse Wheel";
-                clue_item.IsEnabled = false;
-                option_hint.Items.Add(clue_item);
-                clue_item = MenubarMain.GetDefaultMenuItem("Pan");
-                clue_item.InputGestureText = "Right Mouse";
-                clue_item.IsEnabled = false;
-                option_hint.Items.Add(clue_item);
-                _menu.AddMenu(MenubarContent.PredefinedMenuOption.CONTENT, option_hint);
 
 
                 // Axis --------------------------------------------
@@ -86,39 +73,45 @@ namespace SciChartInterface
                 _Content.YAxis = yAxis;
 
 
+                // Interaction -------------------------------------
+
+                /// DEBUG _Content.MouseLeftButtonUp += data_point_mouse_event;
+
+
                 // Modifiers ---------------------------------------
-                var data_point_selection = new SciChart.Charting.ChartModifiers.DataPointSelectionModifier();
+
+                var data_point_selection = new DataPointSelectionModifier();
                 data_point_selection.IsEnabled = true;
                 data_point_selection.AllowsMultiSelection = true;
 
-                _Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
+                _Content.ChartModifier = new ModifierGroup(
                     data_point_selection,
-                    new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier()
+                    new RubberBandXyZoomModifier()
                     {
                         IsEnabled = false
                     },
-                    new SciChart.Charting.ChartModifiers.ZoomExtentsModifier()
+                    new ZoomExtentsModifier()
                     {
                         IsEnabled = false
                     },
-                    new SciChart.Charting.ChartModifiers.ZoomPanModifier()
+                    new ZoomPanModifier()
                     {
                         IsEnabled = true,
-                        ExecuteOn = SciChart.Charting.ChartModifiers.ExecuteOn.MouseRightButton,
+                        ExecuteOn = ExecuteOn.MouseRightButton,
                         ClipModeX = SciChart.Charting.ClipMode.None
                     },
-                    new SciChart.Charting.ChartModifiers.MouseWheelZoomModifier()
+                    new MouseWheelZoomModifier()
                     {
                         IsEnabled = true,
                         ActionType = SciChart.Charting.ActionType.Zoom,
                         XyDirection = SciChart.Charting.XyDirection.XYDirection
                     },
-                    /* new SciChart.Charting.ChartModifiers.RolloverModifier()
+                    new RolloverModifier()
                     {
-                        IsEnabled = true,
-                        ShowTooltipOn = SciChart.Charting.ChartModifiers.ShowTooltipOptions.MouseHover,
-                    }, */
-                    new SciChart.Charting.ChartModifiers.LegendModifier()
+                        IsEnabled = false,
+                        ShowTooltipOn = ShowTooltipOptions.MouseHover,
+                    },
+                    new LegendModifier()
                     {
                         IsEnabled = true,
                         ShowLegend = true,
@@ -132,6 +125,25 @@ namespace SciChartInterface
                 return _created;
             }
 
+            public override void AttachMenu(MenubarWindow menubar)
+            {
+                base.AttachMenu(menubar);
+
+                var option_hint = MenubarMain.GetDefaultMenuItem("Interaction");
+                var clue_item = MenubarMain.GetDefaultMenuItem("Select Series | Drag & Drop Axes");
+                clue_item.InputGestureText = "Left Mouse";
+                clue_item.IsEnabled = false;
+                option_hint.Items.Add(clue_item);
+                clue_item = MenubarMain.GetDefaultMenuItem("Zoom");
+                clue_item.InputGestureText = "Mouse Wheel";
+                clue_item.IsEnabled = false;
+                option_hint.Items.Add(clue_item);
+                clue_item = MenubarMain.GetDefaultMenuItem("Pan");
+                clue_item.InputGestureText = "Right Mouse";
+                clue_item.IsEnabled = false;
+                option_hint.Items.Add(clue_item);
+                menubar.AddMenu(MenubarWindow.PredefinedMenuOption.CONTENT, option_hint);
+            }
             #endregion
 
             /* ------------------------------------------------------------------*/

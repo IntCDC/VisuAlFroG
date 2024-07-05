@@ -8,6 +8,8 @@ using System.Windows;
 using Core.Data;
 using SciChart.Charting.Visuals.RenderableSeries;
 using SciChartInterface.Data;
+using System.Windows.Media;
+using System.Globalization;
 
 
 
@@ -36,7 +38,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public AbstractSciChartVisualization(string uid) : base(uid) { }
+            public AbstractSciChartVisualization(int uid) : base(uid) { }
 
             public override bool Initialize(DataManager.GetDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback)
             {
@@ -45,7 +47,6 @@ namespace SciChartInterface
                 if (base.Initialize(request_data_callback, request_menu_callback))
                 {
                     _content_surface = new SurfaceType();
-                    _content_surface.Name = _UID;
                     _content_surface.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
                     _content_surface.BorderThickness = new Thickness(0.0, 0.0, 0.0, 0.0);
 
@@ -58,7 +59,7 @@ namespace SciChartInterface
                 return _initialized;
             }
 
-            public sealed override Panel Attach()
+            public sealed override UIElement AttachContent()
             {
                 if (!_created)
                 {
@@ -68,7 +69,7 @@ namespace SciChartInterface
 
                 _content_surface.ChartModifier.IsAttached = true;
 
-                return base.Attach();
+                return base.AttachContent();
             }
 
             public sealed override bool Detach()
@@ -104,7 +105,6 @@ namespace SciChartInterface
                 if (new_data)
                 {
                     apply_data(_Content);
-                    attach_data_menu();
                     _Content.ZoomExtents();
                 }
             }
@@ -118,7 +118,27 @@ namespace SciChartInterface
 
             protected sealed override bool apply_data<DataParentType>(out DataParentType data_parent)
             {
-                throw new InvalidOperationException("Call alternatively implemented GetData() method");
+                throw new InvalidOperationException("Call apply_data(SciChartSurface data_parent) instead.");
+            }
+
+            protected void data_point_mouse_event(object sender, System.Windows.Input.MouseButtonEventArgs e)
+            {
+                var hitTestPoint = e.GetPosition(_Content.GridLinesPanel as UIElement);
+
+                var x_value = (double)_Content.XAxis.GetDataValue(hitTestPoint.X);
+                var y_value = (double)_Content.YAxis.GetDataValue(hitTestPoint.Y);
+
+                var text_anno = new SciChart.Charting.Visuals.Annotations.TextAnnotation();
+                text_anno.FontSize = 12;
+                text_anno.Text = string.Format(CultureInfo.InvariantCulture, "X: {0:N2} Y: {1:N2}", x_value, y_value);
+                text_anno.X1 = x_value;
+                text_anno.Y1 = y_value;
+                text_anno.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x33, 0x33, 0x33));
+                text_anno.BorderBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0x22, 0x22, 0x22));
+                text_anno.BorderThickness = new Thickness(1, 1, 1, 1);
+
+                _Content.Annotations.Clear();
+                _Content.Annotations.Add(text_anno);
             }
 
             #endregion

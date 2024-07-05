@@ -29,7 +29,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public functions
 
-        public SciChart_Columns(string uid) : base(uid) { }
+        public SciChart_Columns(int uid) : base(uid) { }
 
         #endregion
     }

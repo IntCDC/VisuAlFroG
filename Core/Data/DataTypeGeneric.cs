@@ -21,23 +21,26 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public DataTypeGeneric(PropertyChangedEventHandler update_data_handler, PropertyChangedEventHandler update_metadata_handler)
-                : base(update_data_handler, update_metadata_handler) { }
+            public DataTypeGeneric(PropertyChangedEventHandler update_data_handler, PropertyChangedEventHandler update_metadata_handler, DataManager.GetSendOutputCallback_Delegate send_output_callback)
+                : base(update_data_handler, update_metadata_handler, send_output_callback) { }
 
             public override void UpdateData(GenericDataStructure data)
             {
                 _loaded = false;
-                _data = null;
+                _data_specific = null;
 
                 if (data == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing data");
                     return;
                 }
+
                 _Dimension = data.GetDimension();
 
-                _data = data.DeepCopy(_update_metadata_handler);
-                init_metadata(_data);
+                _data_generic = data.DeepCopy(_update_metadata_handler);
+                _data_specific = _data_generic;
+
+                init_metadata(_data_specific);
 
                 _loaded = true;
             }
@@ -49,7 +52,7 @@ namespace Core
                     Log.Default.Msg(Log.Level.Error, "Creation of data required prior to execution");
                     return;
                 }
-                var entry = _data.GetEntryAtIndex(updated_meta_data._Index);
+                var entry = _data_specific.GetEntryAtIndex(updated_meta_data._Index);
                 if (entry != null)
                 {
                     entry._Metadata._Selected = updated_meta_data._Selected;
@@ -60,19 +63,9 @@ namespace Core
                 }
             }
 
-
-            public override List<MenuItem> Menu()
+            public override List<Control> GetMenu()
             {
-                var menu_list = new List<MenuItem>();
-                /// XXX TODO Only for testing - this should go or be set by DataFilter
-                /*
-                if (_data != null)
-                {
-                    var transpose_item = ContentMenuBar.GetDefaultMenuItem("Transpose", _data.Transpose);
-                    menu_list.Add(transpose_item);
-                }
-                */
-                return menu_list;
+                return base.GetMenu();
             }
 
             #endregion

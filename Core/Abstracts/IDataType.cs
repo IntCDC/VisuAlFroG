@@ -4,6 +4,7 @@ using System.ComponentModel;
 using Core.Data;
 using Core.GUI;
 using System.Windows.Controls;
+using Core.Utilities;
 
 
 /*
@@ -19,7 +20,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region interface properties
 
-            object _Get { get; }
+            int _UID { get; }
+            object _Specific { get; }
+            GenericDataStructure _Generic { get; }
             uint _Dimension { get; }
 
             #endregion
@@ -31,7 +34,7 @@ namespace Core
 
             void UpdateMetaDataEntry(IMetaData updated_meta_data);
 
-            List<MenuItem> Menu();
+            List<Control> GetMenu();
 
             #endregion
         }

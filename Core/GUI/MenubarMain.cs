@@ -21,8 +21,8 @@ namespace Core
             public enum PredefinedMenuOption
             {
                 FILE,
-                DATA,
                 STYLE,
+                DATA,
                 HELP,
             }
 
@@ -40,7 +40,6 @@ namespace Core
                     add_main_menu("Style", PredefinedMenuOption.STYLE);
                     add_main_menu("Help", PredefinedMenuOption.HELP);
 
-                    add_usage_info();
                     add_repo_link();
                 }
                 return _initialized;
@@ -62,20 +61,6 @@ namespace Core
                 repo_menu_item.Style = ColorTheme.MenuItemIconStyle("github.png");
                 repo_menu_item.Header = hyper_link;
                 AddMenu(PredefinedMenuOption.HELP, repo_menu_item);
-            }
-
-
-            private void add_usage_info()
-            {
-                var usage_menu = GetDefaultMenuItem("Visualizations");
-                usage_menu.IsEnabled = true;
-                var usage_menu_text = GetDefaultMenuItem("Open menu with [Right-Click] on application interface");
-                //usage_menu_text.InputGestureText = "Right-Click";
-                usage_menu_text.IsEnabled = false;
-                usage_menu.Items.Add(usage_menu_text);
-                AddMenu(PredefinedMenuOption.FILE, usage_menu);
-
-                AddSeparator(PredefinedMenuOption.FILE);
             }
 
             /// <summary>

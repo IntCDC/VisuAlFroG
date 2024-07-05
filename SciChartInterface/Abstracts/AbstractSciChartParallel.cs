@@ -37,7 +37,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public AbstractSciChartParallel(string uid) : base(uid) { }
+            public AbstractSciChartParallel(int uid) : base(uid) { }
 
             public override bool Create()
             {
@@ -55,23 +55,9 @@ namespace SciChartInterface
                 _timer.Start();
 
 
-                // Options --------------------------------------------
+                // Interaction -------------------------------------
 
-                //_menu.Clear(ContentMenuBar.PredefinedMenuOption.CONTENT);
-                var option_hint = MenubarMain.GetDefaultMenuItem("Interaction");
-                var clue_item = MenubarMain.GetDefaultMenuItem("Select Series | Drag & Drop Axes");
-                clue_item.InputGestureText = "Left Mouse";
-                clue_item.IsEnabled = false;
-                option_hint.Items.Add(clue_item);
-                clue_item = MenubarMain.GetDefaultMenuItem("Zoom");
-                clue_item.InputGestureText = "Mouse Wheel";
-                clue_item.IsEnabled = false;
-                option_hint.Items.Add(clue_item);
-                clue_item = MenubarMain.GetDefaultMenuItem("Pan");
-                clue_item.InputGestureText = "Right Mouse";
-                clue_item.IsEnabled = false;
-                option_hint.Items.Add(clue_item);
-                _menu.AddMenu(MenubarContent.PredefinedMenuOption.CONTENT, option_hint);
+                /// DEBUG_Content.MouseLeftButtonUp += data_point_mouse_event;
 
 
                 // Modifiers ---------------------------------------
@@ -85,7 +71,7 @@ namespace SciChartInterface
                 {
                     IsEnabled = true
                 };
-                modifier_selection.SelectionChanged += event_selection_changed;
+                modifier_selection.SelectionChanged += series_selection_changed;
 
                 _Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
                     modifier_reorder_axes,
@@ -107,16 +93,16 @@ namespace SciChartInterface
                         IsEnabled = false,
                         IsXAxisOnly = true
                     },
-                    /* new SciChart.Charting.ChartModifiers.RolloverModifier()
+                    new SciChart.Charting.ChartModifiers.RolloverModifier()
                     {
                         IsEnabled = true,
                         ShowTooltipOn = SciChart.Charting.ChartModifiers.ShowTooltipOptions.MouseHover,
-                    }, */
-                    /* new SciChart.Charting.ChartModifiers.LegendModifier()
+                    },
+                    new SciChart.Charting.ChartModifiers.LegendModifier()
                     {
-                        IsEnabled = true,
+                        IsEnabled = false,
                         ShowLegend = true,
-                    }, */
+                    },
                     new SciChart.Charting.ChartModifiers.ZoomExtentsModifier()
                     {
                         IsEnabled = false
@@ -128,6 +114,26 @@ namespace SciChartInterface
                 _timer.Stop();
                 _created = true;
                 return _created;
+            }
+
+            public override void AttachMenu(MenubarWindow menubar)
+            {
+                base.AttachMenu(menubar);
+
+                var option_hint = MenubarMain.GetDefaultMenuItem("Interaction");
+                var clue_item = MenubarMain.GetDefaultMenuItem("Select Series | Drag & Drop Axes");
+                clue_item.InputGestureText = "Left Mouse";
+                clue_item.IsEnabled = false;
+                option_hint.Items.Add(clue_item);
+                clue_item = MenubarMain.GetDefaultMenuItem("Zoom");
+                clue_item.InputGestureText = "Mouse Wheel";
+                clue_item.IsEnabled = false;
+                option_hint.Items.Add(clue_item);
+                clue_item = MenubarMain.GetDefaultMenuItem("Pan");
+                clue_item.InputGestureText = "Right Mouse";
+                clue_item.IsEnabled = false;
+                option_hint.Items.Add(clue_item);
+                menubar.AddMenu(MenubarWindow.PredefinedMenuOption.CONTENT, option_hint);
             }
 
             #endregion
@@ -152,6 +158,7 @@ namespace SciChartInterface
                     if (data != null)
                     {
                         parent.ParallelCoordinateDataSource = data;
+                        parent.ParallelCoordinateDataSource.Invalidate();
 
                         return true;
                     }
@@ -176,10 +183,10 @@ namespace SciChartInterface
                 pcp_source.ReorderItems(e.OldIndex, e.NewIndex);
             }
 
-            private void event_selection_changed(object sender, EventArgs e)
+            private void series_selection_changed(object sender, EventArgs e)
             {
                 /// TODO
-                Log.Default.Msg(Log.Level.Info, "event_selection_changed...");
+                Log.Default.Msg(Log.Level.Info, "series_selection_changed...");
             }
 
             #endregion

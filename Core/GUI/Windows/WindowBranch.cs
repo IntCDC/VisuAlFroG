@@ -21,6 +21,7 @@ using Core.Abstracts;
  */
 
 using ContentCallbacks_Type = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.CreateContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
+using System.Windows.Input;
 
 
 namespace Core
@@ -49,6 +50,7 @@ namespace Core
 
             /* ------------------------------------------------------------------*/
             #region public properties 
+
 
             public Tuple<WindowBranch, WindowBranch> _Children { get; private set; } = null;
             public WindowLeaf _Leaf { get; private set; } = null;
@@ -81,7 +83,6 @@ namespace Core
 
                 _Content = new Grid();
                 _Content.Name = "grid_parent_is_root";
-
                 _Leaf = new WindowLeaf(this, _parent_is_root, _content_callbacks);
                 _Content.Children.Add(_Leaf._Content);
 

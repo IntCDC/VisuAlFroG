@@ -27,7 +27,7 @@ namespace Core
                     Terminate();
                 }
 
-                _contents = new Dictionary<Type, Dictionary<string, ContentBaseType>>();
+                _contents = new Dictionary<Type, Dictionary<int, ContentBaseType>>();
 
                 return true;
             }
@@ -82,7 +82,7 @@ namespace Core
                     }
                     else
                     {
-                        _contents.Add(content_type, new Dictionary<string, ContentBaseType>());
+                        _contents.Add(content_type, new Dictionary<int, ContentBaseType>());
                         Log.Default.Msg(Log.Level.Info, "Registered content type: " + content_type.FullName);
                     }
                 }
@@ -141,7 +141,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region protected variables
 
-            protected Dictionary<Type, Dictionary<string, ContentBaseType>> _contents = null;
+            protected Dictionary<Type, Dictionary<int, ContentBaseType>> _contents = null;
 
             #endregion
         }

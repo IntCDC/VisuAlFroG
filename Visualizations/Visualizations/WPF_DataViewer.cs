@@ -3,6 +3,7 @@ using System.Data;
 using Core.Utilities;
 using Core.Data;
 using Visualizations.WPFInterface;
+using Core.GUI;
 
 
 
@@ -26,7 +27,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public functions
 
-        public WPF_DataViewer(string uid) : base(uid) { }
+        public WPF_DataViewer(int uid) : base(uid) { }
 
         public override bool Create()
         {
@@ -38,7 +39,6 @@ namespace Visualizations
             _timer.Start();
 
 
-            _Content.Name = _UID;
             _Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
             _Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
             _Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
@@ -55,8 +55,6 @@ namespace Visualizations
                 data_grid.AutoGenerateColumns = true;
                 data_grid.ItemsSource = _table.AsDataView();
                 _Content.Content = data_grid;
-
-                attach_data_menu();
             }
 
 
@@ -87,6 +85,12 @@ namespace Visualizations
                 }
                 update_table_data(data);
             }
+        }
+
+        public override void AttachMenu(MenubarWindow menubar)
+        {
+            base.AttachMenu(menubar);
+
         }
 
         #endregion

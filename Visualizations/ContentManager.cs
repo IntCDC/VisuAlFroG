@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Utilities;
@@ -18,9 +19,9 @@ using Core.Data;
 // Arguments: <content name, flag: is content available, flag: are multiple instances allowed, content type>
 using ReadContentMetaData_Type = System.Tuple<string, bool, bool, string>;
 
-using AttachContentMetaData_Type = System.Tuple<string, System.Windows.Controls.Panel>;
 using ContentCallbacks_Type = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.CreateContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
 
+using AttachContentMetaData_Type = System.Tuple<int, System.Windows.UIElement, Core.Abstracts.AbstractVisualization.AttachWindowMenu_Delegate>;
 
 namespace Visualizations
 {
@@ -94,7 +95,7 @@ namespace Visualizations
             {
                 foreach (var content_data in content_types.Value)
                 {
-                    configurations.Add(new AbstractVisualization.Configuration() { _UID = content_data.Value._UID, _Type = content_types.Key.FullName, _Name = content_data.Value._Name });
+                    configurations.Add(new AbstractVisualization.Configuration() { _UID = content_data.Value._UID, _Type = content_types.Key.FullName });
                 }
             }
             return ConfigurationService.Serialize<List<AbstractVisualization.Configuration>>(configurations);
@@ -123,7 +124,7 @@ namespace Visualizations
                     if (_contents.ContainsKey(type))
                     {
                         var id = content_configuration._UID;
-                        if (id == UniqueID.InvalidString)
+                        if (id == UniqueID.InvalidInt)
                         {
                             Log.Default.Msg(Log.Level.Warn, "Invalid content id: " + id);
                             break;
@@ -132,7 +133,6 @@ namespace Visualizations
                         if (!_contents[type].ContainsKey(id))
                         {
                             var new_content = create_content(type, id);
-                            new_content._Name = content_configuration._Name;
                             if (new_content == null)
                             {
                                 return false;
@@ -165,8 +165,8 @@ namespace Visualizations
 
         public override void AttachMenu(MenubarMain menu_bar)
         {
-            ///_servicemanager.AttachMenu(menu_bar);
-            ///_filtermanager.AttachMenu(menu_bar);
+            /// _servicemanager.AttachMenu(menu_bar);
+            /// _filtermanager.AttachMenu(menu_bar);
             _datamanager.AttachMenu(menu_bar);
         }
 
@@ -186,12 +186,12 @@ namespace Visualizations
         /// <returns>List of available content meta data.</returns>
         public List<ReadContentMetaData_Type> AvailableContentsCallback()
         {
-            var content_ids = new List<ReadContentMetaData_Type>();
+            var uids = new List<ReadContentMetaData_Type>();
 
             if (!_initialized)
             {
                 Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                return content_ids;
+                return uids;
             }
 
             // Loop over registered types
@@ -200,26 +200,26 @@ namespace Visualizations
                 var content_type = content_types.Key;
 
                 // Create temporary instance of content
-                var tmp_content = (AbstractVisualization)Activator.CreateInstance(content_type, UniqueID.InvalidString);
+                var tmp_content = (AbstractVisualization)Activator.CreateInstance(content_type, UniqueID.InvalidInt);
                 string header = tmp_content._TypeName;
                 bool multiple_instances = tmp_content._MultipleInstances;
 
                 // Content is only available if multiple instance are allowed or has not been instantiated yet
                 bool available = (multiple_instances || (content_types.Value.IsEmpty() && !multiple_instances));
 
-                content_ids.Add(new ReadContentMetaData_Type(header, available, multiple_instances, content_type.FullName));
+                uids.Add(new ReadContentMetaData_Type(header, available, multiple_instances, content_type.FullName));
             }
 
-            return content_ids;
+            return uids;
         }
 
         /// <summary>
         /// Attach requested content to provided parent content element (called by window leaf).
         /// </summary>
-        /// <param name="content_id">The string ID of the content if present.</param>
+        /// <param name="uid">The string ID of the content if present.</param>
         /// <param name="content_type">Using string for content type to allow cross project compatibility.</param> 
         /// <returns>Tuple of content ID and the WPF Control element holding the actual content.</returns>
-        public AttachContentMetaData_Type CreateContentCallback(string content_id, string content_type)
+        public AttachContentMetaData_Type CreateContentCallback(int uid, string content_type)
         {
             if (!_initialized)
             {
@@ -235,18 +235,18 @@ namespace Visualizations
 
             if (_contents.ContainsKey(type))
             {
-                string id = content_id;
+                int id = uid;
 
                 if (!_contents[type].ContainsKey(id))
                 {
-                    if (content_id != UniqueID.InvalidString)
+                    if (uid != UniqueID.InvalidInt)
                     {
                         Log.Default.Msg(Log.Level.Warn, "Could not find requested content " + content_type + " with ID " + id);
                         return null;
                     }
                     else
                     {
-                        var new_content = create_content(type, UniqueID.InvalidString);
+                        var new_content = create_content(type, UniqueID.InvalidInt);
                         if (new_content == null)
                         {
                             return null;
@@ -256,7 +256,7 @@ namespace Visualizations
                     }
                 }
 
-                return new AttachContentMetaData_Type(id, _contents[type][id].Attach());
+                return new AttachContentMetaData_Type(id, _contents[type][id].AttachContent(), _contents[type][id].AttachMenu);
             }
             else
             {
@@ -268,22 +268,22 @@ namespace Visualizations
         /// <summary>
         /// Delete the content requested by id (called by window leaf).
         /// </summary>
-        /// <param name="content_id">The id of the content to be deleted.</param>
+        /// <param name="uid">The id of the content to be deleted.</param>
         /// <return>True on success, false otherwise.</return>
-        public bool DeleteContentCallback(string content_id)
+        public bool DeleteContentCallback(int uid)
         {
             // Loop over registered types
             foreach (var content_types in _contents)
             {
-                if (content_types.Value.ContainsKey(content_id))
+                if (content_types.Value.ContainsKey(uid))
                 {
-                    content_types.Value[content_id].Detach();
-                    _datamanager.UnregisterDataCallback(content_types.Value[content_id]._DataUID);
-                    content_types.Value[content_id].Terminate();
-                    return content_types.Value.Remove(content_id);
+                    content_types.Value[uid].Detach();
+                    _datamanager.UnregisterDataCallback(content_types.Value[uid]._DataUID);
+                    content_types.Value[uid].Terminate();
+                    return content_types.Value.Remove(uid);
                 }
             }
-            Log.Default.Msg(Log.Level.Debug, "Content not available for deletion: " + content_id);
+            Log.Default.Msg(Log.Level.Debug, "Content not available for deletion: " + uid);
             return false;
         }
 
@@ -324,7 +324,7 @@ namespace Visualizations
 
                 // Create temporary instance of content
                 Type content_type = content_types.Key;
-                var tmp_content = (AbstractVisualization)Activator.CreateInstance(content_type, UniqueID.InvalidString);
+                var tmp_content = (AbstractVisualization)Activator.CreateInstance(content_type, UniqueID.InvalidInt);
                 var lservice_types = tmp_content._DependingServices;
                 foreach (Type lservice_type in lservice_types)
                 {
@@ -348,7 +348,7 @@ namespace Visualizations
         /// </summary>
         /// <param name="type">The content type.</param>
         /// <returns>Return instance of new content.</returns>
-        private AbstractVisualization create_content(Type type, string uid)
+        private AbstractVisualization create_content(Type type, int uid)
         {
             var content = (AbstractVisualization)Activator.CreateInstance(type, uid);
             if (content.Initialize(_datamanager.GetDataCallback, _datamanager.GetDataMenuCallback))

@@ -21,7 +21,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public ColumnSelectionFilter(string uid) : base(uid) { }
+            public ColumnSelectionFilter(int uid) : base(uid) { }
 
             #endregion
 

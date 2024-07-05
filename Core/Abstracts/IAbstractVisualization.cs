@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 using Core.Data;
+using Core.GUI;
 
 
 
@@ -21,12 +23,7 @@ namespace Core
             /// <summary>
             /// The id string of the content.
             /// </summary>
-            string _UID { get; }
-
-            /// <summary>
-            /// The variable name of a specific content instance.
-            /// </summary>
-            string _Name { get; set; }
+            int _UID { get; }
 
             /// <summary>
             /// The unique type name of the content, e.g. used in the context menu to select new content type.
@@ -69,7 +66,13 @@ namespace Core
             /// Called when content element should be attached.
             /// </summary>
             /// <returns>The content to be attached by the caller.</returns>
-            Panel Attach();
+            UIElement AttachContent();
+
+            /// <summary>
+            /// Called when menu of content should be attached.
+            /// </summary>
+            /// <param name="menubar"></param>
+            void AttachMenu(MenubarWindow menubar);
 
             /// <summary>
             /// Called when the content element has been detached. Should implement counterpart to Attach().

@@ -11,6 +11,7 @@ using SciChartInterface.Abstracts;
 using Core.GUI;
 using SciChartInterface;
 using System.Windows.Media;
+using System.Runtime.Remoting.Contexts;
 
 
 
@@ -32,7 +33,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public functions
 
-        public SciChart_ParallelCoordinatesPlot(string uid) : base(uid) { }
+        public SciChart_ParallelCoordinatesPlot(int uid) : base(uid) { }
 
         public override void Update(bool new_data)
         {
@@ -94,8 +95,7 @@ namespace Visualizations
                 setter_stroke.Property = BaseRenderableSeries.StrokeProperty;
                 setter_stroke.Value = new DynamicResourceExtension("Color_StrokeDefault"); // new_color
                 render_style.Setters.Add(setter_stroke);
-                /// XXX TODO Set different colors for different series
-
+                /// TODO Is is possible to set different colors for different series?
 
                 Trigger trigger = new Trigger();
                 trigger.Property = BaseRenderableSeries.IsSelectedProperty;

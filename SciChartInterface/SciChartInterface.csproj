@@ -108,6 +108,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="SciChartCustomModifier.cs" />
     <Compile Include="SciChartRuntimeLicenseKey.cs" />
     <Compile Include="Abstracts\AbstractSciChartParallel.cs" />
     <Compile Include="Abstracts\AbstractSciChartSeries.cs" />

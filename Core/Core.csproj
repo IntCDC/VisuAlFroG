@@ -121,7 +121,7 @@
     <Compile Include="GUI\LoadingProgressBar.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\MenubarContent.cs" />
+    <Compile Include="GUI\MenubarWindow.cs" />
     <Compile Include="GUI\LoadingProgressWindow.cs">
       <SubType>Form</SubType>
     </Compile>

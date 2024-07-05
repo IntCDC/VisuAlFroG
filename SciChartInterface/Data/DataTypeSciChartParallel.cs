@@ -27,20 +27,22 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public DataTypeSciChartParallel(PropertyChangedEventHandler update_data_handler, PropertyChangedEventHandler update_metadata_handler)
-                : base(update_data_handler, update_metadata_handler) { }
+            public DataTypeSciChartParallel(PropertyChangedEventHandler update_data_handler, PropertyChangedEventHandler update_metadata_handler, DataManager.GetSendOutputCallback_Delegate send_output_callback)
+                : base(update_data_handler, update_metadata_handler, send_output_callback) { }
 
             public override void UpdateData(GenericDataStructure data)
             {
                 _loaded = false;
-                _data = null;
+                _data_specific = null;
 
                 if ((data == null) || data.IsEmpty())
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing data");
                     return;
                 }
+
                 _Dimension = data.GetDimension();
+                _data_generic = data.DeepCopy(_update_metadata_handler);
 
                 // Convert and create row data
                 List<DataType> rows_list = new List<DataType>();
@@ -68,8 +70,8 @@ namespace SciChartInterface
                         break;
                     }
                 }
-                _data = new ParallelCoordinateDataSource<DataType>(columns_list);
-                _data.SetValues(rows_list);
+                _data_specific = new ParallelCoordinateDataSource<DataType>(columns_list);
+                _data_specific.SetValues(rows_list);
 
                 _loaded = true;
             }
@@ -86,13 +88,12 @@ namespace SciChartInterface
             }
 
             /// <summary>
-            ///  UNUSED XXX 
+            ///  
             /// </summary>
             /// <returns></returns>
-            public override List<MenuItem> Menu()
+            public override List<Control> GetMenu()
             {
-                /// TODO 
-                return new List<MenuItem>();
+                return base.GetMenu();
             }
 
             #endregion

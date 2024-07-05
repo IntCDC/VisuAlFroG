@@ -30,7 +30,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public functions
 
-        public SciChart_ScatterPlot(string uid) : base(uid) { }
+        public SciChart_ScatterPlot(int uid) : base(uid) { }
 
         #endregion
     }

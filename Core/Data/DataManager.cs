@@ -8,7 +8,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
-
 using Core.Abstracts;
 using Core.GUI;
 using Core.Utilities;
@@ -29,7 +28,8 @@ namespace Core
             #region public delegates
 
             public delegate object GetDataCallback_Delegate(int data_uid);
-            public delegate List<System.Windows.Controls.MenuItem> GetDataMenuCallback_Delegate(int data_uid);
+            public delegate List<System.Windows.Controls.Control> GetDataMenuCallback_Delegate(int data_uid);
+            public delegate void GetSendOutputCallback_Delegate(int data_uid, bool only_selected);
 
             public delegate void SetDataCallback_Delegate(GenericDataStructure ouput_data);
 
@@ -53,7 +53,10 @@ namespace Core
 
 
                 // Add copy of data that is kept for reference as the original data unmodified
-                var variety = (IDataType)Activator.CreateInstance(typeof(DataTypeGeneric), (PropertyChangedEventHandler)event_data_changed, (PropertyChangedEventHandler)event_metadata_changed);
+                var variety = (IDataType)Activator.CreateInstance(typeof(DataTypeGeneric),
+                    (PropertyChangedEventHandler)event_data_changed, 
+                    (PropertyChangedEventHandler)event_metadata_changed,
+                    (GetSendOutputCallback_Delegate)event_send_output);
                 _data_library.Add(UniqueID.GenerateInt(), new DataDescription(((bool new_data) => { }), variety));
                 _original_data_hash = _data_library.Last().Key;
 
@@ -138,15 +141,17 @@ namespace Core
 
                 if (data_type != null)
                 {
-                    var variety = (IDataType)Activator.CreateInstance(data_type, (PropertyChangedEventHandler)event_data_changed, (PropertyChangedEventHandler)event_metadata_changed);
+                    var variety = (IDataType)Activator.CreateInstance(data_type, 
+                        (PropertyChangedEventHandler)event_data_changed, 
+                        (PropertyChangedEventHandler)event_metadata_changed,
+                        (GetSendOutputCallback_Delegate)event_send_output);
                     if (variety == null)
                     {
                         Log.Default.Msg(Log.Level.Error, "Expected data type of IDataVariety but received: " + data_type.FullName);
                         return UniqueID.InvalidInt;
                     }
 
-                    var data_uid = UniqueID.GenerateInt();
-                    _data_library.Add(data_uid, new DataDescription(update_callback, variety));
+                    _data_library.Add(variety._UID, new DataDescription(update_callback, variety));
                     Log.Default.Msg(Log.Level.Info, "Added new data type: " + data_type.FullName);
 
                     // Load original data if available
@@ -156,7 +161,7 @@ namespace Core
                         variety.UpdateData(original_data);
                     }
 
-                    return data_uid;
+                    return variety._UID;
                 }
                 else
                 {
@@ -211,7 +216,7 @@ namespace Core
                     return null;
 
                 }
-                return _data_library[data_uid]._Data._Get;
+                return _data_library[data_uid]._Data._Specific;
             }
 
             /// <summary>
@@ -219,7 +224,7 @@ namespace Core
             /// </summary>
             /// <param name="data_uid"></param>
             /// <returns></returns>
-            public List<System.Windows.Controls.MenuItem> GetDataMenuCallback(int data_uid)
+            public List<System.Windows.Controls.Control> GetDataMenuCallback(int data_uid)
             {
                 if (!_initialized)
                 {
@@ -233,67 +238,13 @@ namespace Core
                     return null;
 
                 }
-                return _data_library[data_uid]._Data.Menu();
-            }
-
-            /// <summary>
-            /// Send changed output data to interface
-            /// </summary>
-            public bool SendData()
-            {
-                var out_data = new GenericDataStructure();
-                var original_data = (GenericDataStructure)GetDataCallback(_original_data_hash);
-                if ((original_data != null) && (!original_data.IsEmpty()))
-                {
-                    var metadata_list = original_data.GetListMetaData();
-                    foreach (var meta_data in metadata_list)
-                    {
-                        if (meta_data._Selected)
-                        {
-                            var metadata_entry = new GenericDataEntry();
-                            metadata_entry.AddValue(meta_data._Selected);
-                            metadata_entry.AddValue(meta_data._Index);
-                            out_data.AddEntry(metadata_entry);
-                        }
-                    }
-
-                }
-                if (_outputdata_callback != null)
-                {
-                    _outputdata_callback(out_data);
-                }
-                else
-                {
-                    // Alternatively try to save output data in CSV format
-                    if (CSV_DataHandling.ConvertToCSV(out_data, out string csv_data_string))
-                    {
-                        string title = "Send Output Data";
-                        string message = "No callback available to send the output data.\nDo you want to save the data to a CSV file?\nIf not, nothing will happen...";
-                        MessageBoxButtons buttons = MessageBoxButtons.YesNo;
-                        DialogResult result = System.Windows.Forms.MessageBox.Show(message, title, buttons);
-                        if (result == DialogResult.Yes)
-                        {
-                            FileDialogHelper.Save(csv_data_string, "Save Output Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("output_data", "csv"));
-                        }
-                    }
-                    else
-                    {
-                        Log.Default.Msg(Log.Level.Warn, "No callback available to send the output data. Since data can not be converted to CSV format, nothing happens...");
-                    }
-                }
-
-                return true;
+                return _data_library[data_uid]._Data.GetMenu();
             }
 
             public override void AttachMenu(MenubarMain menu_bar)
             {
-                var menu_item = MenubarMain.GetDefaultMenuItem("Send to interface", SendData);
-                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.DATA, menu_item);
-
-                menu_bar.AddSeparator(MenubarMain.PredefinedMenuOption.DATA);
-
-                menu_item = MenubarMain.GetDefaultMenuItem("Save (.csv)");
-                menu_item.Click += (object sender, RoutedEventArgs e) =>
+                var save_menu_item = MenubarMain.GetDefaultMenuItem("Save (.csv)");
+                save_menu_item.Click += (object sender, RoutedEventArgs e) =>
                 {
                     var sender_content = sender as System.Windows.Controls.MenuItem;
                     if (sender_content == null)
@@ -302,10 +253,10 @@ namespace Core
                     }
                     CSV_DataHandling.SaveToFile((GenericDataStructure)GetDataCallback(_original_data_hash));
                 };
-                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.DATA, menu_item);
+                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.DATA, save_menu_item);
 
-                menu_item = MenubarMain.GetDefaultMenuItem("Load (.csv)");
-                menu_item.Click += (object sender, RoutedEventArgs e) =>
+                var load_menu_item = MenubarMain.GetDefaultMenuItem("Load (.csv)");
+                load_menu_item.Click += (object sender, RoutedEventArgs e) =>
                 {
                     var sender_content = sender as System.Windows.Controls.MenuItem;
                     if (sender_content == null)
@@ -317,13 +268,62 @@ namespace Core
                         UpdateData(data);
                     }
                 };
-                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.DATA, menu_item);
+                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.DATA, load_menu_item);
             }
 
             #endregion
 
             /* ------------------------------------------------------------------*/
             #region private functions
+
+            /// <summary>
+            /// Send changed output data to interface
+            /// </summary>
+            public void event_send_output(int data_uid, bool only_selected)
+            {
+                if (!_data_library.ContainsKey(data_uid))
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Requested data menu not available for given data UID: " + data_uid.ToString());
+                    return ;
+
+                }
+                var out_data = _data_library[data_uid]._Data._Generic;
+                if ((out_data != null) && (!out_data.IsEmpty()))
+                {
+                    if (only_selected)
+                    {
+                        var out_data_selected = new GenericDataStructure();
+
+                        /// TODO
+
+
+                        out_data = out_data_selected;
+                    }
+                    if (_outputdata_callback != null)
+                    {
+                        _outputdata_callback(out_data);
+                    }
+                    else
+                    {
+                        // Alternatively try to save output data in CSV format
+                        if (CSV_DataHandling.ConvertToCSV(out_data, out string csv_data_string))
+                        {
+                            string title = "Send Output Data";
+                            string message = "No callback available to send the output data.\nDo you want to save the data to a CSV file?\nIf not, nothing will happen...";
+                            MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                            DialogResult result = System.Windows.Forms.MessageBox.Show(message, title, buttons);
+                            if (result == DialogResult.Yes)
+                            {
+                                FileDialogHelper.Save(csv_data_string, "Save Output Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("output_data", "csv"));
+                            }
+                        }
+                        else
+                        {
+                            Log.Default.Msg(Log.Level.Warn, "No callback available to send the output data. Since data can not be converted to CSV format, nothing happens...");
+                        }
+                    }
+                }
+            }
 
             /// <summary>
             /// Callback provided for getting notified on changed meta data 
@@ -362,7 +362,6 @@ namespace Core
                     Log.Default.Msg(Log.Level.Error, "Unknown sender");
                     return;
                 }
-
                 // Update data entry in all data series
                 foreach (var pair in _data_library)
                 {
@@ -381,7 +380,6 @@ namespace Core
                         default: break;
 
                     }
-
                     pair.Value._UpdateVisualization(false);
                 }
             }
@@ -398,7 +396,6 @@ namespace Core
                     _UpdateVisualization = update_vis_callback;
                     _Data = data;
                 }
-
                 public UpdateVisualizationCallback_Delegate _UpdateVisualization { get; private set; }
                 public IDataType _Data { get; private set; }
             }
