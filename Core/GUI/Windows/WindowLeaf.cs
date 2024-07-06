@@ -121,10 +121,38 @@ namespace Core
                     {
                         _content_child.Children.Add(content_metadata.Item2);
                         _AttachedContent = new AttachedContent_Type(content_metadata.Item1, content_type);
-                        content_metadata.Item3(_menu);
-                        if (_Name == "") {
-                            _Name = content_type;
+
+                        /// XXX Exclude some content from having the following menu --- Find better solution!
+                        if (!((content_type == AbstractVisualization.TypeString_FilterEditor) || (content_type == AbstractVisualization.TypeString_LogConsole)))
+                        {
+                            var filter_menu_item = MenubarMain.GetDefaultMenuItem("Open 'Filter Editor'", open_filter_editor);
+
+                            List<ReadContentMetaData_Type> available_child_content = _content_callbacks.Item1();
+                            foreach (var content_data in available_child_content)
+                            {
+                                if (content_data.Item4 == AbstractVisualization.TypeString_FilterEditor)
+                                {
+                                    filter_menu_item.Name = conform_name(content_data.Item1);
+                                    break;
+                                }
+                            }
+                            if (filter_menu_item.Name == "")
+                            {
+                                Log.Default.Msg(Log.Level.Error, "Could not find content.");
+                            }
+                            _menu.AddMenu(MenubarWindow.PredefinedMenuOption.DATA, filter_menu_item);
+                            var parent = filter_menu_item.Parent as MenuItem;
+                            if (parent != null)
+                            {
+                                parent.SubmenuOpened += event_togglecontent_click;
+                            }
+                            else
+                            {
+                                Log.Default.Msg(Log.Level.Error, "Missing parent menu item.");
+                            }
                         }
+                        content_metadata.Item3(_menu);
+                        if (_Name == "") _Name = content_type;
                     }
                     else
                     {
@@ -166,6 +194,177 @@ namespace Core
 
             /* ------------------------------------------------------------------*/
             #region private functions
+
+            /// <summary>
+            /// Create content menu.
+            /// </summary>
+            /// <returns>Return the content element holding the menu.</returns>
+            private Grid create_menu()
+            {
+                _menu.Initialize();
+
+                // ----- VIEW -----------------------------------------
+                var menu_grid = new Grid();
+                menu_grid.Height = 20.0;
+                menu_grid.SetResourceReference(Grid.BackgroundProperty, "Brush_MenuBarBackground");
+
+                var column_label = new ColumnDefinition();
+                column_label.Width = new GridLength(0.0, GridUnitType.Auto);
+                menu_grid.ColumnDefinitions.Add(column_label);
+                var column_menu = new ColumnDefinition();
+                column_menu.Width = new GridLength(1.0, GridUnitType.Star);
+                menu_grid.ColumnDefinitions.Add(column_menu);
+
+                Grid.SetColumn(_content_caption, 0);
+                menu_grid.Children.Add(_content_caption);
+
+                var menu = _menu.Attach();
+                Grid.SetColumn(menu, 1);
+                menu.Style = ColorTheme.ContentMenuBarStyle();
+                menu_grid.Children.Add(menu);
+
+                // Set global menu items before creating menu
+                _content_caption.IsEnabled = true;
+                _content_caption.BorderThickness = new Thickness(0, 0, 0, 0);
+                reset_caption_textbox();
+                _content_caption.KeyUp += (object sender, KeyEventArgs e) =>
+                {
+                    if (e.Key == Key.Enter)
+                    {
+                        reset_caption_textbox();
+                        Keyboard.ClearFocus();
+                    }
+                };
+                _content_caption.LostKeyboardFocus += (object sender, KeyboardFocusChangedEventArgs e) =>
+                {
+                    reset_caption_textbox();
+                };
+
+                var _menu_rename = MenubarMain.GetDefaultMenuItem("Rename");
+                _menu_rename.Click += (object sender, RoutedEventArgs e) =>
+                {
+                    _content_caption.Focusable = true;
+                    _content_caption.Style = null;
+                    _content_caption.Cursor = null;
+                    _content_caption.Focus();
+                };
+                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, _menu_rename);
+
+                _menu.AddSeparator(MenubarWindow.PredefinedMenuOption.VIEW);
+
+                // Horizontal 
+                var item_horizontal_top = new MenuItem();
+                item_horizontal_top.Style = ColorTheme.MenuItemIconStyle("align-top.png");
+                item_horizontal_top.Header = "Align Top";
+                item_horizontal_top.Name = _item_id_hori_top;
+                item_horizontal_top.Click += event_menuitem_click;
+
+                var item_horizontal_bottom = new MenuItem();
+                item_horizontal_bottom.Style = ColorTheme.MenuItemIconStyle("align-bottom.png");
+                item_horizontal_bottom.Header = "Align Bottom";
+                item_horizontal_bottom.Name = _item_id_hori_bottom;
+                item_horizontal_bottom.Click += event_menuitem_click;
+
+                var item_horizontal = new MenuItem();
+                item_horizontal.Style = ColorTheme.MenuItemIconStyle("split-horizontal.png");
+                item_horizontal.Header = "Horizontal Split";
+                item_horizontal.Items.Add(item_horizontal_top);
+                item_horizontal.Items.Add(item_horizontal_bottom);
+                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_horizontal);
+
+                // Vertical
+                var item_vertical_left = new MenuItem();
+                item_vertical_left.Style = ColorTheme.MenuItemIconStyle("align-left.png");
+                item_vertical_left.Header = "Align Left";
+                item_vertical_left.Name = _item_id_vert_Left;
+                item_vertical_left.Click += event_menuitem_click;
+
+                var item_vertical_right = new MenuItem();
+                item_vertical_right.Style = ColorTheme.MenuItemIconStyle("align-right.png");
+                item_vertical_right.Header = "Align Right";
+                item_vertical_right.Name = _item_id_vert_right;
+                item_vertical_right.Click += event_menuitem_click;
+
+                var item_vertical = new MenuItem();
+                item_vertical.Style = ColorTheme.MenuItemIconStyle("split-vertical.png");
+                item_vertical.Header = "Vertical Split";
+                item_vertical.Items.Add(item_vertical_left);
+                item_vertical.Items.Add(item_vertical_right);
+                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_vertical);
+
+                // Enable deletion of child only if it is not root
+                var item_delete = new MenuItem();
+                item_delete.Style = ColorTheme.MenuItemIconStyle("delete-window.png");
+                item_delete.Header = "Delete Window";
+                item_delete.Name = _item_id_window_delete;
+                item_delete.MouseLeftButtonDown += event_menuitem_click;
+                item_delete.IsEnabled = (!_parent_is_root);
+                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_delete);
+
+                _menu.AddSeparator(MenubarWindow.PredefinedMenuOption.VIEW);
+
+                var item_content_add = new MenuItem();
+                item_content_add.Style = ColorTheme.MenuItemIconStyle("add-content.png");
+                item_content_add.Header = "Add Content";
+                item_content_add.SubmenuOpened += event_togglecontent_click;
+                // Call Available Contents
+                List<ReadContentMetaData_Type> available_child_content = _content_callbacks.Item1();
+                foreach (var content_data in available_child_content)
+                {
+                    // Item index: 1=name, 2=available, 3=is-multi, 4=type
+                    var content_item = new MenuItem();
+                    content_item.Style = ColorTheme.MenuItemIconStyle();
+
+                    content_item.Header = content_data.Item1;
+                    content_item.Name = conform_name(content_data.Item1); // Name
+                    content_item.IsEnabled = content_data.Item2; // Available
+                    if (content_data.Item3) // Multiple instances allowed
+                    {
+                        content_item.Style = ColorTheme.MenuItemIconStyle("multi-instance.png");
+                        content_item.ToolTip = "Multiple Instances";
+                    }
+                    else
+                    {
+                        content_item.Style = ColorTheme.MenuItemIconStyle("single-instance.png");
+                        content_item.ToolTip = "Single Instance";
+                    }
+                    content_item.Click += event_menuitem_click;
+                    item_content_add.Items.Add(content_item);
+                }
+                if (item_content_add.Items.IsEmpty)
+                {
+                    item_content_add.IsEnabled = false;
+                }
+                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_content_add);
+
+                var item_content_delete = new MenuItem();
+                item_content_delete.Style = ColorTheme.MenuItemIconStyle("delete-content.png");
+                item_content_delete.Header = "Delete Content";
+                item_content_delete.Name = _item_id_delete_content;
+                item_content_delete.Click += event_menuitem_click;
+                if (_AttachedContent == null)
+                {
+                    item_content_delete.IsEnabled = false;
+                }
+                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_content_delete);
+
+                var item_content_dad = new MenuItem();
+                item_content_dad.Style = ColorTheme.MenuItemIconStyle("drag-and-drop.png");
+                item_content_dad.Header = "Content Swap";
+                item_content_dad.IsHitTestVisible = false;
+                item_content_dad.Focusable = false;
+                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_content_dad);
+
+                var item_content_dad_text = new MenuItem();
+                item_content_dad_text.Header = "Drag&Drop [Middle Mouse Button]";
+                item_content_dad_text.IsEnabled = false;
+                item_content_dad.Items.Add(item_content_dad_text);
+
+                // ----- DATA -----------------------------------------
+                // attached on creation of content, see CreateContent()
+
+                return menu_grid;
+            }
 
             /// <summary>
             /// Called when a menu item is clicked.
@@ -219,6 +418,48 @@ namespace Core
                         CreateContent(UniqueID.InvalidInt, content_data.Item4);
                     }
                 }
+            }
+
+            private void event_togglecontent_click(object sender, RoutedEventArgs e)
+            {
+                var parent_menu = sender as MenuItem;
+                if (parent_menu == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unexpected sender");
+                    return;
+                }
+
+                List<ReadContentMetaData_Type> available_child_content = _content_callbacks.Item1();
+                foreach (var content_data in available_child_content)
+                {
+                    foreach (var item in parent_menu.Items)
+                    {
+                        var menu_item = item as MenuItem;
+                        if (menu_item == null)
+                        {
+                            continue;
+                        }
+                        if (menu_item.Name == conform_name(content_data.Item1))
+                        {
+                            menu_item.IsEnabled = content_data.Item2;
+                        }
+                    }
+                }
+            }
+
+            private bool open_filter_editor()
+            {
+                var previous_parent_branch = _parent_branch;
+                _parent_branch.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.Top_Left, 0.7);
+                previous_parent_branch._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_FilterEditor);
+                return true;
+            }
+
+            private void reset_caption_textbox()
+            {
+                _content_caption.Focusable = false;
+                _content_caption.Cursor = Cursors.Arrow;
+                _content_caption.Style = ColorTheme.ContentCaptionStyle();
             }
 
             /// <summary>
@@ -329,186 +570,13 @@ namespace Core
             /// <returns>The conform output name.</returns>
             private string conform_name(string name)
             {
-                var conform_name = name.Replace(" ", ""); ;
+                var conform_name = name.Replace(" ", "");
+                conform_name = conform_name.Replace("_", "");
+                conform_name = conform_name.Replace(".", "");
                 conform_name = conform_name.Replace("(", "");
                 conform_name = conform_name.Replace(")", "");
                 conform_name = Regex.Replace(conform_name, "[0-9]", "");
                 return conform_name;
-            }
-
-
-            /// <summary>
-            /// Create content menu.
-            /// </summary>
-            /// <returns>Return the content element holding the menu.</returns>
-            private Grid create_menu()
-            {
-                _menu.Initialize();
-
-                var menu_grid = new Grid();
-                menu_grid.Height = 20.0;
-                menu_grid.SetResourceReference(Grid.BackgroundProperty, "Brush_MenuBarBackground");
-
-                var column_label = new ColumnDefinition();
-                column_label.Width = new GridLength(0.0, GridUnitType.Auto);
-                menu_grid.ColumnDefinitions.Add(column_label);
-                var column_menu = new ColumnDefinition();
-                column_menu.Width = new GridLength(1.0, GridUnitType.Star);
-                menu_grid.ColumnDefinitions.Add(column_menu);
-
-                Grid.SetColumn(_content_caption, 0);
-                menu_grid.Children.Add(_content_caption);
-
-                var menu = _menu.Attach();
-                Grid.SetColumn(menu, 1);
-                menu.Style = ColorTheme.ContentMenuBarStyle();
-                menu_grid.Children.Add(menu);
-
-
-                // Set global menu items before creating menu
-                _content_caption.IsEnabled = true;
-                _content_caption.BorderThickness = new Thickness(0, 0, 0, 0);
-                reset_caption_textbox();
-                _content_caption.KeyUp += (object sender, KeyEventArgs e) =>
-                {
-                    if (e.Key == System.Windows.Input.Key.Enter)
-                    {
-                        reset_caption_textbox();
-                        System.Windows.Input.Keyboard.ClearFocus();
-                    }
-                };
-                _content_caption.LostKeyboardFocus += (object sender, KeyboardFocusChangedEventArgs e) =>
-                {
-                    reset_caption_textbox();
-                };
-
-                var _menu_rename = MenubarMain.GetDefaultMenuItem("Rename");
-                _menu_rename.Click += (object sender, RoutedEventArgs e) =>
-                {
-                    _content_caption.Focusable = true;
-                    _content_caption.Style = null;
-                    _content_caption.Cursor = null;
-                    _content_caption.Focus();
-                };
-                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, _menu_rename);
-
-                _menu.AddSeparator(MenubarWindow.PredefinedMenuOption.VIEW);
-
-                // Horizontal 
-                var item_horizontal_top = new MenuItem();
-                item_horizontal_top.Style = ColorTheme.MenuItemIconStyle("align-top.png");
-                item_horizontal_top.Header = "Align Top";
-                item_horizontal_top.Name = _item_id_hori_top;
-                item_horizontal_top.Click += event_menuitem_click;
-
-                var item_horizontal_bottom = new MenuItem();
-                item_horizontal_bottom.Style = ColorTheme.MenuItemIconStyle("align-bottom.png");
-                item_horizontal_bottom.Header = "Align Bottom";
-                item_horizontal_bottom.Name = _item_id_hori_bottom;
-                item_horizontal_bottom.Click += event_menuitem_click;
-
-                var item_horizontal = new MenuItem();
-                item_horizontal.Style = ColorTheme.MenuItemIconStyle("split-horizontal.png");
-                item_horizontal.Header = "Horizontal Split";
-                item_horizontal.Items.Add(item_horizontal_top);
-                item_horizontal.Items.Add(item_horizontal_bottom);
-                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_horizontal);
-
-                // Vertical
-                var item_vertical_left = new MenuItem();
-                item_vertical_left.Style = ColorTheme.MenuItemIconStyle("align-left.png");
-                item_vertical_left.Header = "Align Left";
-                item_vertical_left.Name = _item_id_vert_Left;
-                item_vertical_left.Click += event_menuitem_click;
-
-                var item_vertical_right = new MenuItem();
-                item_vertical_right.Style = ColorTheme.MenuItemIconStyle("align-right.png");
-                item_vertical_right.Header = "Align Right";
-                item_vertical_right.Name = _item_id_vert_right;
-                item_vertical_right.Click += event_menuitem_click;
-
-                var item_vertical = new MenuItem();
-                item_vertical.Style = ColorTheme.MenuItemIconStyle("split-vertical.png");
-                item_vertical.Header = "Vertical Split";
-                item_vertical.Items.Add(item_vertical_left);
-                item_vertical.Items.Add(item_vertical_right);
-                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_vertical);
-
-                // Enable deletion of child only if it is not root
-                var item_delete = new MenuItem();
-                item_delete.Style = ColorTheme.MenuItemIconStyle("delete-window.png");
-                item_delete.Header = "Delete Window";
-                item_delete.Name = _item_id_window_delete;
-                item_delete.Click += event_menuitem_click;
-                item_delete.IsEnabled = (!_parent_is_root);
-                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_delete);
-
-                _menu.AddSeparator(MenubarWindow.PredefinedMenuOption.VIEW);
-
-                var item_content_add = new MenuItem();
-                item_content_add.Style = ColorTheme.MenuItemIconStyle("add-content.png");
-                item_content_add.Header = "Add Content";
-                // Call Available Contents
-                List<ReadContentMetaData_Type> available_child_content = _content_callbacks.Item1();
-                foreach (var content_data in available_child_content)
-                {
-                    // Item index: 1=name, 2=available, 3=is-multi, 4=type
-                    var content_item = new MenuItem();
-                    content_item.Style = ColorTheme.MenuItemIconStyle();
-
-                    content_item.Header = content_data.Item1;
-                    content_item.Name = conform_name(content_data.Item1); // Name
-                    content_item.IsEnabled = content_data.Item2; // Available
-                    if (content_data.Item3) // Multiple instances allowed
-                    {
-                        content_item.Style = ColorTheme.MenuItemIconStyle("multi-instance.png");
-                        content_item.ToolTip = "Multiple instances";
-                    }
-                    else
-                    {
-                        content_item.Style = ColorTheme.MenuItemIconStyle("single-instance.png");
-                        content_item.ToolTip = "Only single instance";
-                    }
-                    content_item.Click += event_menuitem_click;
-                    item_content_add.Items.Add(content_item);
-                }
-                if (item_content_add.Items.IsEmpty)
-                {
-                    item_content_add.IsEnabled = false;
-                }
-                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_content_add);
-
-                var item_content_delete = new MenuItem();
-                item_content_delete.Style = ColorTheme.MenuItemIconStyle("delete-content.png");
-                item_content_delete.Header = "Delete Content";
-                item_content_delete.Name = _item_id_delete_content;
-                item_content_delete.Click += event_menuitem_click;
-                if (_AttachedContent == null)
-                {
-                    item_content_delete.IsEnabled = false;
-                }
-                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_content_delete);
-
-                var item_content_dad = new MenuItem();
-                item_content_dad.Style = ColorTheme.MenuItemIconStyle("drag-and-drop.png");
-                item_content_dad.Header = "Content Swap";
-                item_content_dad.IsHitTestVisible = false;
-                item_content_dad.Focusable = false;
-                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_content_dad);
-
-                var item_content_dad_text = new MenuItem();
-                item_content_dad_text.Header = "Drag&Drop [Middle Mouse Button]";
-                item_content_dad_text.IsEnabled = false;
-                item_content_dad.Items.Add(item_content_dad_text);
-
-                return menu_grid;
-            }
-
-            private void reset_caption_textbox()
-            {
-                _content_caption.Focusable = false;
-                _content_caption.Cursor = Cursors.Arrow;
-                _content_caption.Style = ColorTheme.ContentCaptionStyle();
             }
 
             #endregion

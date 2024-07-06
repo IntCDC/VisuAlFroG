@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+
 using Core.Abstracts;
 using Core.GUI;
 using Core.Utilities;
@@ -54,9 +55,9 @@ namespace Core
 
                 // Add copy of data that is kept for reference as the original data unmodified
                 var variety = (IDataType)Activator.CreateInstance(typeof(DataTypeGeneric),
-                    (PropertyChangedEventHandler)event_data_changed, 
+                    (PropertyChangedEventHandler)event_data_changed,
                     (PropertyChangedEventHandler)event_metadata_changed,
-                    (GetSendOutputCallback_Delegate)event_send_output);
+                    ((_outputdata_callback != null) ? ((GetSendOutputCallback_Delegate)event_send_output) : (null)));
                 _data_library.Add(UniqueID.GenerateInt(), new DataDescription(((bool new_data) => { }), variety));
                 _original_data_hash = _data_library.Last().Key;
 
@@ -141,10 +142,10 @@ namespace Core
 
                 if (data_type != null)
                 {
-                    var variety = (IDataType)Activator.CreateInstance(data_type, 
-                        (PropertyChangedEventHandler)event_data_changed, 
+                    var variety = (IDataType)Activator.CreateInstance(data_type,
+                        (PropertyChangedEventHandler)event_data_changed,
                         (PropertyChangedEventHandler)event_metadata_changed,
-                        (GetSendOutputCallback_Delegate)event_send_output);
+                        ((_outputdata_callback != null) ? ((GetSendOutputCallback_Delegate)event_send_output) : (null)));
                     if (variety == null)
                     {
                         Log.Default.Msg(Log.Level.Error, "Expected data type of IDataVariety but received: " + data_type.FullName);
@@ -284,7 +285,7 @@ namespace Core
                 if (!_data_library.ContainsKey(data_uid))
                 {
                     Log.Default.Msg(Log.Level.Warn, "Requested data menu not available for given data UID: " + data_uid.ToString());
-                    return ;
+                    return;
 
                 }
                 var out_data = _data_library[data_uid]._Data._Generic;
@@ -305,22 +306,7 @@ namespace Core
                     }
                     else
                     {
-                        // Alternatively try to save output data in CSV format
-                        if (CSV_DataHandling.ConvertToCSV(out_data, out string csv_data_string))
-                        {
-                            string title = "Send Output Data";
-                            string message = "No callback available to send the output data.\nDo you want to save the data to a CSV file?\nIf not, nothing will happen...";
-                            MessageBoxButtons buttons = MessageBoxButtons.YesNo;
-                            DialogResult result = System.Windows.Forms.MessageBox.Show(message, title, buttons);
-                            if (result == DialogResult.Yes)
-                            {
-                                FileDialogHelper.Save(csv_data_string, "Save Output Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("output_data", "csv"));
-                            }
-                        }
-                        else
-                        {
-                            Log.Default.Msg(Log.Level.Warn, "No callback available to send the output data. Since data can not be converted to CSV format, nothing happens...");
-                        }
+                        Log.Default.Msg(Log.Level.Warn, "No callback available to send the output data.");
                     }
                 }
             }
@@ -349,8 +335,7 @@ namespace Core
             }
 
             /// <summary>
-            /// Callback provided for getting notified on changed meta data 
-            /// !!! This function is currently called for every single change !!!
+            /// Callback provided for getting notified on changes that should be applied globally
             /// </summary>
             /// <param name="sender">The sender object.</param>
             /// <param name="e">The property changed event arguments.</param>

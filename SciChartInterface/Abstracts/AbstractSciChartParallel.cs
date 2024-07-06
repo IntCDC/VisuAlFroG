@@ -121,6 +121,7 @@ namespace SciChartInterface
                 base.AttachMenu(menubar);
 
                 var option_hint = MenubarMain.GetDefaultMenuItem("Interaction");
+
                 var clue_item = MenubarMain.GetDefaultMenuItem("Select Series | Drag & Drop Axes");
                 clue_item.InputGestureText = "Left Mouse";
                 clue_item.IsEnabled = false;

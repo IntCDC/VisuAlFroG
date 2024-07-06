@@ -235,28 +235,34 @@ namespace Visualizations
 
             if (_contents.ContainsKey(type))
             {
-                int id = uid;
-
-                if (!_contents[type].ContainsKey(id))
+                if ((_contents[type].Count == 0) || ((_contents[type].Count >= 1) && (_contents[type].First().Value._MultipleInstances)))
                 {
-                    if (uid != UniqueID.InvalidInt)
+                    int id = uid;
+
+                    if (!_contents[type].ContainsKey(id))
                     {
-                        Log.Default.Msg(Log.Level.Warn, "Could not find requested content " + content_type + " with ID " + id);
-                        return null;
-                    }
-                    else
-                    {
-                        var new_content = create_content(type, UniqueID.InvalidInt);
-                        if (new_content == null)
+                        if (uid != UniqueID.InvalidInt)
                         {
+                            Log.Default.Msg(Log.Level.Warn, "Could not find requested content " + content_type + " with ID " + id);
                             return null;
                         }
-                        id = new_content._UID;
-                        _contents[type].Add(id, new_content);
+                        else
+                        {
+                            var new_content = create_content(type, UniqueID.InvalidInt);
+                            if (new_content == null)
+                            {
+                                return null;
+                            }
+                            id = new_content._UID;
+                            _contents[type].Add(id, new_content);
+                        }
                     }
+                    return new AttachContentMetaData_Type(id, _contents[type][id].AttachContent(), _contents[type][id].AttachMenu);
                 }
-
-                return new AttachContentMetaData_Type(id, _contents[type][id].AttachContent(), _contents[type][id].AttachMenu);
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Content is single instance and already created: " + content_type.ToString());
+                }
             }
             else
             {

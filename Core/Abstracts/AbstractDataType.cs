@@ -38,7 +38,7 @@ namespace Core
 
             public AbstractDataType(PropertyChangedEventHandler update_data_handler, PropertyChangedEventHandler update_metadata_handler, DataManager.GetSendOutputCallback_Delegate send_output_callback)
             {
-                if ((update_data_handler == null) || (update_metadata_handler == null) ||(send_output_callback == null))
+                if ((update_data_handler == null) || (update_metadata_handler == null)) // ||(send_output_callback == null))
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing handler(s) or callback(s)");
                     return;
@@ -55,8 +55,12 @@ namespace Core
             public virtual List<Control> GetMenu()
             {
                 var menu_items = new List<Control>();
-                var send_menu_item = MenubarWindow.GetDefaultMenuItem("Send to interface", menu_send_ouput);
+                var send_menu_item = MenubarWindow.GetDefaultMenuItem("Output to External Interface ", menu_ouput_interface);
+                send_menu_item.IsEnabled = (_send_output_callback != null);
                 menu_items.Add(send_menu_item);
+
+                var save_menu_item = MenubarWindow.GetDefaultMenuItem("Save (.csv) ", menu_save_data);
+                menu_items.Add(save_menu_item);
 
                 return menu_items;
             }
@@ -66,11 +70,23 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region private functions 
 
-            private bool menu_send_ouput()
+            private bool menu_ouput_interface()
             {
-                _send_output_callback(_UID, false);
+                if (_send_output_callback != null)
+                {
+                    _send_output_callback(_UID, false);
+                    return true;
+                }
+                return false;
+            }
 
-                return true;
+            private bool menu_save_data()
+            {
+                if (CSV_DataHandling.ConvertToCSV(_data_generic, out string csv_data_string))
+                {
+                    return FileDialogHelper.Save(csv_data_string, "Save Output Data", "CSV files (*.csv)|*.csv", ResourcePaths.CreateFileName("output_data", "csv"));
+                }
+                return false;
             }
 
             #endregion

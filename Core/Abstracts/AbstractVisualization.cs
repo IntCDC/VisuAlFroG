@@ -25,6 +25,15 @@ namespace Core
     {
         public abstract class AbstractVisualization : IAbstractVisualization
         {
+            /* ------------------------------------------------------------------*/
+            #region public static properties
+
+            public static string TypeString_LogConsole { get; }    = "Visualizations.WPF_LogConsole";
+            public static string TypeString_FilterEditor { get; }  = "Visualizations.WPF_FilterEditor";
+            public static string TypeString_DataViewer { get; }    = "Visualizations.WPF_DataViewer";
+            public static string TypeString_SciChartLines { get; } = "Visualizations.SciChart_Lines";
+
+            #endregion
 
             /* ------------------------------------------------------------------*/
             #region public delegate

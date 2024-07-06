@@ -115,9 +115,9 @@ namespace Core
                 */
                 _window_root.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.None, 0.7);
                 _window_root._Children.Item1.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.None, 0.31);
-                _window_root._Children.Item1._Children.Item1._Leaf.CreateContent(UniqueID.InvalidInt, "Visualizations.WPF_DataViewer");
-                _window_root._Children.Item1._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, "Visualizations.SciChart_Lines");
-                _window_root._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, "Visualizations.WPF_LogConsole");
+                _window_root._Children.Item1._Children.Item1._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_DataViewer);
+                _window_root._Children.Item1._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_SciChartLines);
+                _window_root._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_LogConsole);
             }
 
             #endregion

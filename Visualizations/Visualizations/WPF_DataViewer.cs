@@ -50,7 +50,7 @@ namespace Visualizations
             {
                 create_table(data);
 
-                System.Windows.Controls.DataGrid data_grid = new System.Windows.Controls.DataGrid();
+                var data_grid = new DataGrid();
                 data_grid.IsReadOnly = true;
                 data_grid.AutoGenerateColumns = true;
                 data_grid.ItemsSource = _table.AsDataView();
@@ -256,7 +256,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region private variables
 
-        private System.Data.DataTable _table = null;
+        private DataTable _table = null;
 
         #endregion
     }
