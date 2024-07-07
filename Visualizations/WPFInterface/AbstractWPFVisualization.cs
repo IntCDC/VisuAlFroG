@@ -49,7 +49,7 @@ namespace Visualizations
             }
 
             /* TEMPLATE
-            public override bool Create()
+            public override bool CreateUI()
             {
                 if (!_initialized)
                 {

@@ -98,7 +98,11 @@ namespace Visualizations
                     configurations.Add(new AbstractVisualization.Configuration() { _UID = content_data.Value._UID, _Type = content_types.Key.FullName });
                 }
             }
-            return ConfigurationService.Serialize<List<AbstractVisualization.Configuration>>(configurations);
+            string visualization_configuration_string = ConfigurationService.Serialize<List<AbstractVisualization.Configuration>>(configurations);
+
+            var datamanager_configiguration_string = _datamanager.CollectConfigurations();
+            
+            return visualization_configuration_string + datamanager_configiguration_string;
         }
 
         public bool ApplyConfigurations(string configurations)
@@ -108,6 +112,7 @@ namespace Visualizations
                 Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
                 return false;
             }
+            bool success = false;
 
             var visualization_configurations = ConfigurationService.Deserialize<List<AbstractVisualization.Configuration>>(configurations);
             if (visualization_configurations != null)
@@ -149,9 +154,12 @@ namespace Visualizations
                         Log.Default.Msg(Log.Level.Error, "Unregistered content type: " + type.ToString());
                     }
                 }
-                return true;
+                success &= true;
             }
-            return false;
+
+            success &= _datamanager.ApplyConfigurations(configurations);
+
+            return success;
         }
 
         /// <summary>
@@ -235,13 +243,13 @@ namespace Visualizations
 
             if (_contents.ContainsKey(type))
             {
-                if ((_contents[type].Count == 0) || ((_contents[type].Count >= 1) && (_contents[type].First().Value._MultipleInstances)))
+                if ((_contents[type].Count == 0) || ((_contents[type].Count >= 1) && (_contents[type].First().Value._MultipleInstances || (!_contents[type].First().Value._MultipleInstances && _contents[type].ContainsKey(uid)))))
                 {
                     int id = uid;
 
                     if (!_contents[type].ContainsKey(id))
                     {
-                        if (uid != UniqueID.InvalidInt)
+                        if (id != UniqueID.InvalidInt)
                         {
                             Log.Default.Msg(Log.Level.Warn, "Could not find requested content " + content_type + " with ID " + id);
                             return null;
@@ -257,7 +265,7 @@ namespace Visualizations
                             _contents[type].Add(id, new_content);
                         }
                     }
-                    return new AttachContentMetaData_Type(id, _contents[type][id].AttachContent(), _contents[type][id].AttachMenu);
+                    return new AttachContentMetaData_Type(id, _contents[type][id].GetUI(), _contents[type][id].AttachMenu);
                 }
                 else
                 {
@@ -283,7 +291,6 @@ namespace Visualizations
             {
                 if (content_types.Value.ContainsKey(uid))
                 {
-                    content_types.Value[uid].Detach();
                     _datamanager.UnregisterDataCallback(content_types.Value[uid]._DataUID);
                     content_types.Value[uid].Terminate();
                     return content_types.Value.Remove(uid);
@@ -305,7 +312,6 @@ namespace Visualizations
         /// <returns></returns>
         protected override bool reset_content(AbstractVisualization content_value)
         {
-            content_value.Detach();
             _datamanager.UnregisterDataCallback(content_value._DataUID);
             return content_value.Terminate();
         }
@@ -361,8 +367,12 @@ namespace Visualizations
             {
                 content._DataUID = _datamanager.RegisterDataCallback(content._RequiredDataType, content.Update);
                 // XXX Do not check for invalid DATAUID because it might be intentional that no data should have been created...
-                if (content.Create())
+                if (content.CreateUI())
                 {
+                    if (type == typeof(WPF_FilterEditor)) {
+                        /// TODO Pass callbacks add/remove from filter manager
+                        /// TODO Pass callback ListUpdate to filter manager
+                    }
                     content.Update(true);
                     return content;
                 }

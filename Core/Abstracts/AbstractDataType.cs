@@ -55,11 +55,11 @@ namespace Core
             public virtual List<Control> GetMenu()
             {
                 var menu_items = new List<Control>();
-                var send_menu_item = MenubarWindow.GetDefaultMenuItem("Output to External Interface ", menu_ouput_interface);
+                var send_menu_item = MenubarWindow.GetDefaultMenuItem("Output to External Interface ", callback_output_interface);
                 send_menu_item.IsEnabled = (_send_output_callback != null);
                 menu_items.Add(send_menu_item);
 
-                var save_menu_item = MenubarWindow.GetDefaultMenuItem("Save (.csv) ", menu_save_data);
+                var save_menu_item = MenubarWindow.GetDefaultMenuItem("Save (.csv) ", callback_save_data);
                 menu_items.Add(save_menu_item);
 
                 return menu_items;
@@ -70,7 +70,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region private functions 
 
-            private bool menu_ouput_interface()
+            private bool callback_output_interface()
             {
                 if (_send_output_callback != null)
                 {
@@ -80,7 +80,7 @@ namespace Core
                 return false;
             }
 
-            private bool menu_save_data()
+            private bool callback_save_data()
             {
                 if (CSV_DataHandling.ConvertToCSV(_data_generic, out string csv_data_string))
                 {

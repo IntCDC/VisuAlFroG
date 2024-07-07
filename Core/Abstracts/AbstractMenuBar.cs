@@ -72,7 +72,7 @@ namespace Core
                 return _initialized;
             }
 
-            public Control Attach()
+            public Control AttachUI()
             {
                 if (!_initialized)
                 {

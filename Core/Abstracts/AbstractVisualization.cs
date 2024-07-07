@@ -66,7 +66,6 @@ namespace Core
             public abstract string _TypeName { get; }
             public abstract bool _MultipleInstances { get; }
             public abstract List<Type> _DependingServices { get; }
-            public bool _Attached { get; protected set; } = false;
 
             public abstract Type _RequiredDataType { get; }
             public DataManager.GetDataCallback_Delegate _RequestDataCallback { get; private set; }
@@ -142,7 +141,7 @@ namespace Core
             /// Called to actually (re-)create the WPF content on any changes
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
-            public abstract bool Create();
+            public abstract bool CreateUI();
             /* TEMPLATE
                 if (!_initialized)
                 {
@@ -169,15 +168,13 @@ namespace Core
             /// Called when content element is being attached to a parent element.
             /// </summary>
             /// <returns>The WPF control element holding the content.</returns>
-            public virtual UIElement AttachContent()
+            public virtual UIElement GetUI()
             {
                 if (!_created)
                 {
                     Log.Default.Msg(Log.Level.Error, "Creation of content required prior to execution");
                     return null;
                 }
-
-                _Attached = true;
                 return _content;
             }
             /* TEMPLATE
@@ -191,34 +188,7 @@ namespace Core
                 /// PLACE YOUR STUFF HERE ...
 
                 AttachChildContent(_content);
-                return base.Attach();
-            }
-            */
-
-            /// <summary>
-            /// Called when content has been detached. 
-            /// </summary>
-            /// <returns>True on success, false otherwise.</returns>
-            public virtual bool Detach()
-            {
-                if (!_Attached)
-                {
-                    if (_content != null)
-                    {
-                        _content.Children.Clear();
-                    }
-                    _Attached = false;
-                }
-                return true;
-            }
-            /* TEMPLATE
-            {
-                if (!_attached)
-                {
-                    /// PLACE YOUR STUFF HERE ...
-
-                }
-                return base.Detach();
+                return base.AttachUI();
             }
             */
 
@@ -230,7 +200,6 @@ namespace Core
             {
                 _created = false;
                 _initialized = false;
-                _Attached = false;
 
                 _content = null;
                 _timer = null;

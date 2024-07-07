@@ -40,7 +40,7 @@ namespace SciChartInterface
 
             public AbstractSciChartSeries(int uid) : base(uid) { }
 
-            public override bool Create()
+            public override bool CreateUI()
             {
                 if (!_initialized)
                 {

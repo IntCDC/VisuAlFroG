@@ -11,6 +11,7 @@ using static Core.GUI.ColorTheme;
 using Core.GUI;
 using Core.Utilities;
 using Core.Abstracts;
+using System.Runtime.Remoting.Contexts;
 
 
 
@@ -35,6 +36,7 @@ namespace Core
                 public int _UID { get; set; }
                 public string _Type { get; set; }
                 public string _Name { get; set; }
+                public List<int> _UIDList { get; set; } // Content or Data ?
                 /// TODO Add additional configuration information that should be saved here...
                 /// and adjust de-/serialization methods in ContenManager accordingly
             }
@@ -72,6 +74,29 @@ namespace Core
                 }
             }
 
+            /// <summary>
+            /// Call in inherited class via base.CreateUI()
+            /// </summary>
+            public virtual bool CreateUI()
+            {
+
+
+
+                _created = true;
+                return _created;
+            }
+
+            public UIElement GetUI()
+            {
+                if (!_created)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Creation of content required prior to execution");
+                    return null;
+                }
+
+                _Attached = true;
+                return _content;
+            }
 
             #endregion
 
@@ -99,7 +124,8 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region private variables
 
-
+            private Grid _content = null;
+            private bool _created = false;
 
             #endregion
 

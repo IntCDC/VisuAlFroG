@@ -272,6 +272,35 @@ namespace Core
                 menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.DATA, load_menu_item);
             }
 
+
+            public string CollectConfigurations()
+            {
+                var filter_configurations = new List<AbstractFilter.Configuration>();
+
+
+
+
+                return ConfigurationService.Serialize<List<AbstractFilter.Configuration>>(filter_configurations);
+            }
+
+            public bool ApplyConfigurations(string configurations)
+            {
+                if (!_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return false;
+                }
+
+                var filtermanager_configurations = ConfigurationService.Deserialize<List<AbstractFilter.Configuration>>(configurations);
+                if (filtermanager_configurations != null)
+                {
+
+
+                    return true;
+                }
+                return false;
+            }
+
             #endregion
 
             /* ------------------------------------------------------------------*/

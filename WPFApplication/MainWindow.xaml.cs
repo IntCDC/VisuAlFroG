@@ -193,11 +193,11 @@ namespace Frontend
 
                 // Attach main menu bar to content
                 _menubar_element.Children.Clear();
-                _menubar_element.Children.Add(_menubar.Attach());
+                _menubar_element.Children.Add(_menubar.AttachUI());
                 _menubar_element.UpdateLayout();
                 // Attach window manager to content
                 _subwindows_element.Children.Clear();
-                _subwindows_element.Children.Add(_winmanager.Attach());
+                _subwindows_element.Children.Add(_winmanager.AttachUI());
                 _subwindows_element.UpdateLayout();
 
                 loading_progress.SetValue(60);

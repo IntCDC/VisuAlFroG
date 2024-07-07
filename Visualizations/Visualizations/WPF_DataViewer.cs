@@ -14,7 +14,7 @@ using Core.GUI;
  */
 namespace Visualizations
 {
-    public class WPF_DataViewer : AbstractWPFVisualization<System.Windows.Controls.ScrollViewer>
+    public class WPF_DataViewer : AbstractWPFVisualization<ScrollViewer>
     {
         /* ------------------------------------------------------------------*/
         #region public properties
@@ -29,7 +29,7 @@ namespace Visualizations
 
         public WPF_DataViewer(int uid) : base(uid) { }
 
-        public override bool Create()
+        public override bool CreateUI()
         {
             if (!_initialized)
             {
@@ -74,7 +74,7 @@ namespace Visualizations
             if (new_data)
             {
                 // Re-creation of content is required for new data
-                Create();
+                CreateUI();
             }
             else
             {

@@ -40,11 +40,6 @@ namespace Core
             /// </summary>
             List<Type> _DependingServices { get; }
 
-            /// <summary>
-            /// Returns whether WPF content is attached or not.
-            /// </summary>
-            bool _Attached { get; }
-
             #endregion
 
             /* ------------------------------------------------------------------*/
@@ -60,25 +55,19 @@ namespace Core
             /// Create the content. To be called only once.
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
-            bool Create();
+            bool CreateUI();
 
             /// <summary>
             /// Called when content element should be attached.
             /// </summary>
             /// <returns>The content to be attached by the caller.</returns>
-            UIElement AttachContent();
+            UIElement GetUI();
 
             /// <summary>
             /// Called when menu of content should be attached.
             /// </summary>
             /// <param name="menubar"></param>
             void AttachMenu(MenubarWindow menubar);
-
-            /// <summary>
-            /// Called when the content element has been detached. Should implement counterpart to Attach().
-            /// </summary>
-            /// <returns>True on success, false otherwise.</returns>
-            bool Detach();
 
             /// <summary>
             /// Terminate the content. Should implement counterpart to Initialize().

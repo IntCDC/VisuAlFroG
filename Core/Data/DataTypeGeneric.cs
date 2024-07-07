@@ -26,20 +26,20 @@ namespace Core
 
             public override void UpdateData(GenericDataStructure data)
             {
-                _loaded = false;
-                _data_specific = null;
-
                 if (data == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing data");
                     return;
                 }
 
-                _Dimension = data.GetDimension();
+                _data_generic = null;
+                _data_specific = null;
+                _loaded = false;
 
+
+                _Dimension = data.GetDimension();
                 _data_generic = data.DeepCopy(_update_metadata_handler);
                 _data_specific = _data_generic;
-
                 init_metadata(_data_specific);
 
                 _loaded = true;

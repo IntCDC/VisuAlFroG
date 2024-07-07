@@ -73,18 +73,15 @@ namespace Core
 
             }
 
-            public void AddFilter()
+            public void AddFilterCallback()
             {
+
 
             }
 
-            public void RemoveFilter()
+            public void RemoveFilterCallback()
             {
 
-            }
-
-            public void FilterList()
-            {
 
             }
 

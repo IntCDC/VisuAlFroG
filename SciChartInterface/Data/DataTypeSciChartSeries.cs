@@ -33,29 +33,19 @@ namespace SciChartInterface
 
             public override void UpdateData(GenericDataStructure data)
             {
-                if (_data_specific != null)
-                {
-                    _data_specific.Clear();
-                }
-                _data_specific = null;
-
                 if (data == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing data");
                     return;
                 }
 
+                _data_specific = new List<DataType>();
+                _data_generic = null;
+                _loaded = false;
+
                 _Dimension = data.GetDimension();
                 _data_generic = data.DeepCopy(_update_metadata_handler);
-
-                if (_data_specific == null)
-                {
-                    _data_specific = new List<DataType>();
-                }
-                _data_specific.Clear();
-
-                recursive_data_conversion(data);
-
+                specificdata_conversion(data);
                 _loaded = true;
             }
 
@@ -98,7 +88,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region private functions
 
-            private void recursive_data_conversion(GenericDataStructure data)
+            private void specificdata_conversion(GenericDataStructure data)
             {
                 // For each branch add all leafs to one data series
                 if (data._Entries.Count > 0)
@@ -139,7 +129,7 @@ namespace SciChartInterface
 
                 foreach (var b in data._Branches)
                 {
-                    recursive_data_conversion(b);
+                    specificdata_conversion(b);
                 }
             }
 

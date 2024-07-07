@@ -10,6 +10,7 @@ using Core.Abstracts;
 using Core.Data;
 using System.ComponentModel;
 using System.Windows.Controls;
+using SciChart.Core.Extensions;
 
 
 
@@ -32,48 +33,63 @@ namespace SciChartInterface
 
             public override void UpdateData(GenericDataStructure data)
             {
-                _loaded = false;
-                _data_specific = null;
-
-                if ((data == null) || data.IsEmpty())
+                if (data == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing data");
                     return;
                 }
 
+                _data_specific = null;
+                _data_generic = null;
+                _loaded = false;
+
+
                 _Dimension = data.GetDimension();
                 _data_generic = data.DeepCopy(_update_metadata_handler);
 
-                // Convert and create row data
-                List<DataType> rows_list = new List<DataType>();
-                create_data(data, ref rows_list);
-
-                // Create property names for columns
-                int index = 0;
-                var tmp_row = rows_list[0] as IDictionary<string, object>;
-                ParallelCoordinateDataItem<DataType, double>[] columns_list = new ParallelCoordinateDataItem<DataType, double>[tmp_row.Count];
-                foreach (var kvp in tmp_row)
+                // Create value - property name pairs
+                List<DataType> value_series = new List<DataType>();
+                specificdata_conversion(data, ref value_series);
+                if (value_series.IsEmpty())
                 {
-                    string property_name = kvp.Key;
+                    Log.Default.Msg(Log.Level.Error, "Missing values");
+                    return;
+                }
+
+                // Create data item accessors for number each series
+                int index = 0;
+                var example_series = value_series[0] as IDictionary<string, object>;
+                var value_count = example_series.Count;
+                ParallelCoordinateDataItem<DataType, double>[] columns_list = new ParallelCoordinateDataItem<DataType, double>[value_count];
+                foreach (var series in example_series)
+                {
+                    string property_name = series.Key;
                     columns_list[index] = new ParallelCoordinateDataItem<DataType, double>(p =>
                         {
                             var p_dict = p as IDictionary<string, object>;
                             return (double)p_dict[property_name];
                         })
                     {
-                        Title = kvp.Key,
+                        Title     = property_name,
                         AxisStyle = axes_style()
                     };
                     index++;
-                    if (index >= tmp_row.Count)
+                    if (index >= value_count)
                     {
                         break;
                     }
                 }
-                _data_specific = new ParallelCoordinateDataSource<DataType>(columns_list);
-                _data_specific.SetValues(rows_list);
 
-                _loaded = true;
+                try
+                {
+                    _data_specific = new ParallelCoordinateDataSource<DataType>(columns_list);
+                    _data_specific.SetValues(value_series);
+                    _loaded = true;
+                }
+                catch (Exception exc)
+                {
+                    Log.Default.Msg(Log.Level.Error, exc.Message);
+                }
             }
 
             public override void UpdateMetaDataEntry(IMetaData updated_meta_data)
@@ -101,12 +117,12 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region private functions
 
-            private void create_data(GenericDataStructure branch, ref List<DataType> value_list)
+            private void specificdata_conversion(GenericDataStructure branch, ref List<DataType> value_list)
             {
                 /// XXX TODO via filter
                 int value_index = (int)branch.GetDimension() - 1;
 
-                // For each branch add all entries to one row dictionary
+                // For each branch add all values to same series
                 if (branch._Entries.Count > 0)
                 {
                     dynamic data_entry = new DataType();
@@ -128,7 +144,7 @@ namespace SciChartInterface
 
                 foreach (var b in branch._Branches)
                 {
-                    create_data(b, ref value_list);
+                    specificdata_conversion(b, ref value_list);
                 }
             }
 

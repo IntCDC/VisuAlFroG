@@ -51,7 +51,7 @@ namespace Core
                 return _initialized;
             }
 
-            public Panel Attach()
+            public Panel AttachUI()
             {
                 if (!_initialized)
                 {

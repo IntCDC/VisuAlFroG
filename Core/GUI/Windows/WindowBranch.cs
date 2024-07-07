@@ -30,7 +30,6 @@ namespace Core
     {
         public class WindowBranch : AbstractWindow
         {
-
             /* ------------------------------------------------------------------*/
             #region public classes 
 

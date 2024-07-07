@@ -59,7 +59,7 @@ namespace SciChartInterface
                 return _initialized;
             }
 
-            public sealed override UIElement AttachContent()
+            public sealed override UIElement GetUI()
             {
                 if (!_created)
                 {
@@ -69,23 +69,14 @@ namespace SciChartInterface
 
                 _content_surface.ChartModifier.IsAttached = true;
 
-                return base.AttachContent();
-            }
-
-            public sealed override bool Detach()
-            {
-                if (!_Attached)
-                {
-                    // Required to release mouse handling
-                    _content_surface.ChartModifier.IsAttached = false;
-                }
-                return base.Detach();
+                return base.GetUI();
             }
 
             public override bool Terminate()
             {
                 if (_created)
                 {
+                    _content_surface.ChartModifier.IsAttached = false;
                     _content_surface.Dispose();
                     _content_surface = null;
 

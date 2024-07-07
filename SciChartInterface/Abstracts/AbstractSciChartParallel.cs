@@ -39,7 +39,7 @@ namespace SciChartInterface
 
             public AbstractSciChartParallel(int uid) : base(uid) { }
 
-            public override bool Create()
+            public override bool CreateUI()
             {
                 if (!_initialized)
                 {
@@ -61,49 +61,49 @@ namespace SciChartInterface
 
 
                 // Modifiers ---------------------------------------
-                var modifier_reorder_axes = new SciChart.Charting.ChartModifiers.ParallelAxisReorderModifier()
+                var modifier_reorder_axes = new ParallelAxisReorderModifier()
                 {
                     IsEnabled = true
                 };
                 modifier_reorder_axes.AxesReordered += event_axes_reordered;
 
-                var modifier_selection = new SciChart.Charting.ChartModifiers.SeriesSelectionModifier()
+                var modifier_selection = new SeriesSelectionModifier()
                 {
                     IsEnabled = true
                 };
                 modifier_selection.SelectionChanged += series_selection_changed;
 
-                _Content.ChartModifier = new SciChart.Charting.ChartModifiers.ModifierGroup(
+                _Content.ChartModifier = new ModifierGroup(
                     modifier_reorder_axes,
                     modifier_selection,
-                    new SciChart.Charting.ChartModifiers.ZoomPanModifier()
+                    new ZoomPanModifier()
                     {
                         IsEnabled = true,
-                        ExecuteOn = SciChart.Charting.ChartModifiers.ExecuteOn.MouseRightButton,
+                        ExecuteOn = ExecuteOn.MouseRightButton,
                         ClipModeX = SciChart.Charting.ClipMode.None,
                     },
-                    new SciChart.Charting.ChartModifiers.MouseWheelZoomModifier()
+                    new MouseWheelZoomModifier()
                     {
                         IsEnabled = true,
                         ActionType = SciChart.Charting.ActionType.Zoom,
                         XyDirection = SciChart.Charting.XyDirection.XYDirection
                     },
-                    new SciChart.Charting.ChartModifiers.RubberBandXyZoomModifier()
+                    new RubberBandXyZoomModifier()
                     {
                         IsEnabled = false,
                         IsXAxisOnly = true
                     },
-                    new SciChart.Charting.ChartModifiers.RolloverModifier()
+                    new RolloverModifier()
                     {
-                        IsEnabled = true,
-                        ShowTooltipOn = SciChart.Charting.ChartModifiers.ShowTooltipOptions.MouseHover,
+                        IsEnabled = false,
+                        ShowTooltipOn = ShowTooltipOptions.MouseHover,
                     },
-                    new SciChart.Charting.ChartModifiers.LegendModifier()
+                    new LegendModifier()
                     {
                         IsEnabled = false,
                         ShowLegend = true,
                     },
-                    new SciChart.Charting.ChartModifiers.ZoomExtentsModifier()
+                    new ZoomExtentsModifier()
                     {
                         IsEnabled = false
                     }

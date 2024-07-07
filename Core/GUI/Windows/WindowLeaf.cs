@@ -10,7 +10,7 @@ using Core.Utilities;
 
 
 // Additional types only used here:
-using DragDrop_Type = System.Tuple<Core.GUI.WindowLeaf, int, string>;
+using DragDrop_Type = System.Tuple<Core.GUI.WindowLeaf, int, string, string>;
 using AttachedContent_Type = System.Tuple<int, string>;
 
 
@@ -122,6 +122,8 @@ namespace Core
                         _content_child.Children.Add(content_metadata.Item2);
                         _AttachedContent = new AttachedContent_Type(content_metadata.Item1, content_type);
 
+                        _menu.Clear(MenubarWindow.PredefinedMenuOption.CONTENT);
+                        _menu.Clear(MenubarWindow.PredefinedMenuOption.DATA);
                         /// XXX Exclude some content from having the following menu --- Find better solution!
                         if (!((content_type == AbstractVisualization.TypeString_FilterEditor) || (content_type == AbstractVisualization.TypeString_LogConsole)))
                         {
@@ -152,6 +154,7 @@ namespace Core
                             }
                         }
                         content_metadata.Item3(_menu);
+
                         if (_Name == "") _Name = content_type;
                     }
                     else
@@ -218,7 +221,7 @@ namespace Core
                 Grid.SetColumn(_content_caption, 0);
                 menu_grid.Children.Add(_content_caption);
 
-                var menu = _menu.Attach();
+                var menu = _menu.AttachUI();
                 Grid.SetColumn(menu, 1);
                 menu.Style = ColorTheme.ContentMenuBarStyle();
                 menu_grid.Children.Add(menu);
@@ -496,7 +499,7 @@ namespace Core
                 }
                 if ((_AttachedContent != null) && (e.MiddleButton == MouseButtonState.Pressed))
                 {
-                    var drag_and_drop_load = new DragDrop_Type(this, _AttachedContent.Item1, _AttachedContent.Item2);
+                    var drag_and_drop_load = new DragDrop_Type(this, _AttachedContent.Item1, _AttachedContent.Item2, _Name);
                     // Only detach content
                     delete_content(true);
                     DragDrop.DoDragDrop(sender_grid, drag_and_drop_load, DragDropEffects.All);
@@ -553,9 +556,11 @@ namespace Core
                     if ((source_content.Item1 != null) && (target_content != null))
                     {
                         source_content.Item1.CreateContent(target_content.Item1, target_content.Item2);
+                        source_content.Item1._Name = _Name;
                     }
                     // Drop content from source in target
                     CreateContent(source_content.Item2, source_content.Item3);
+                    _Name = source_content.Item4;
                 }
                 else
                 {

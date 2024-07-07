@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Controls;
 using Core.Data;
+using System.Windows;
 
 
 
@@ -38,37 +39,18 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region interface functions
 
-/*
             /// <summary>
-            /// Initialize the content.
+            /// Called when content element should be attached.
             /// </summary>
-            /// <returns>True on success, false otherwise.</returns>
-            bool Initialize();
+            /// <returns>The content to be attached by the caller.</returns>
+            UIElement GetUI();
 
             /// <summary>
             /// Create the content. To be called only once.
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
-            bool Create();
+            bool CreateUI();
 
-            /// <summary>
-            /// Called when content element should be attached.
-            /// </summary>
-            /// <returns>The content to be attached by the caller.</returns>
-            Panel Attach();
-
-            /// <summary>
-            /// Called when the content element has been detached. Should implement counterpart to Attach().
-            /// </summary>
-            /// <returns>True on success, false otherwise.</returns>
-            bool Detach();
-
-            /// <summary>
-            /// Terminate the content. Should implement counterpart to Initialize().
-            /// </summary>
-            /// <returns>True on success, false otherwise.</returns>
-            bool Terminate();
-*/
             #endregion
         }
     }

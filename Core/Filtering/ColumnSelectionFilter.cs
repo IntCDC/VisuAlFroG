@@ -23,6 +23,15 @@ namespace SciChartInterface
 
             public ColumnSelectionFilter(int uid) : base(uid) { }
 
+            public override bool CreateUI()
+            {
+                bool created = base.CreateUI();
+
+
+
+                return created;
+            }
+
             #endregion
 
             /* ------------------------------------------------------------------*/
