@@ -50,10 +50,8 @@ namespace Core
             /// </summary>
             public class Configuration : IAbstractConfigurationData
             {
-                public int _UID { get; set; }
-                public string _Type { get; set; }
-                /// TODO Add additional configuration information that should be saved here...
-                /// and adjust de-/serialization methods in ContenManager accordingly
+                public int UID { get; set; }
+                public string Type { get; set; }
             }
 
             #endregion
@@ -68,7 +66,7 @@ namespace Core
             public abstract List<Type> _DependingServices { get; }
 
             public abstract Type _RequiredDataType { get; }
-            public DataManager.GetDataCallback_Delegate _RequestDataCallback { get; private set; }
+            public DataManager.GetSpecificDataCallback_Delegate _RequestDataCallback { get; private set; }
             public DataManager.GetDataMenuCallback_Delegate _RequestMenuCallback { get; private set; }
 
             #endregion
@@ -94,7 +92,7 @@ namespace Core
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
             /// <exception cref="InvalidOperationException">...throw error when method of base class is called instead.</exception>
-            public virtual bool Initialize(DataManager.GetDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback)
+            public virtual bool Initialize(DataManager.GetSpecificDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback)
             {
                 if (_initialized)
                 {
@@ -177,20 +175,6 @@ namespace Core
                 }
                 return _content;
             }
-            /* TEMPLATE
-            {
-                if (!_created)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Creation of content required prior to execution");
-                    return null;
-                }
-
-                /// PLACE YOUR STUFF HERE ...
-
-                AttachChildContent(_content);
-                return base.AttachUI();
-            }
-            */
 
             /// <summary>
             /// Called when content should be terminated. Should implement counterpart to Initialize().

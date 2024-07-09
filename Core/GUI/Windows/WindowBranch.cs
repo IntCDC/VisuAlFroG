@@ -21,7 +21,6 @@ using Core.Abstracts;
  */
 
 using ContentCallbacks_Type = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.CreateContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
-using System.Windows.Input;
 
 
 namespace Core

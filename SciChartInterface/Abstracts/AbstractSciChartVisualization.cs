@@ -40,7 +40,7 @@ namespace SciChartInterface
 
             public AbstractSciChartVisualization(int uid) : base(uid) { }
 
-            public override bool Initialize(DataManager.GetDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback)
+            public override bool Initialize(DataManager.GetSpecificDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback)
             {
                 _timer.Start();
 

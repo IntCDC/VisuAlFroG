@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.IO.Ports;
-using System.Linq;
-using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Forms;
-
+using System.Collections.Generic;
 using Core.Abstracts;
 using Core.GUI;
 using Core.Utilities;
-
-using SciChartInterface.Data;
+using Core.Filter;
+using Core.Data;
 
 
 
@@ -24,27 +15,57 @@ using SciChartInterface.Data;
  */
 namespace Core
 {
-    namespace Data
+    namespace Filter
     {
         public class FilterManager : AbstractRegisterService<AbstractFilter>
         {
             /* ------------------------------------------------------------------*/
+            #region public classes
+
+            /// <summary>
+            /// Class defining the configuration required for restoring filters.
+            /// </summary>
+            public class Configuration : IAbstractConfigurationData
+            {
+                public List<AbstractFilter.Configuration> FilterList { get; set; }
+            }
+
+            public class FilterListMetadata
+            {
+                public int ID { get; set; }
+                public string Name { get; set; }
+                public Type Type { get; set; }
+            }
+
+            #endregion
+
+            /* ------------------------------------------------------------------*/
             #region public delegates
 
+            public delegate bool CreateFilterCallback_Delegate(Type filter_type);
+            public delegate bool DeleteFilterCallback_Delegate(int filter_uid);
+            public delegate void ModifyUIFilterList_Delegate(UIElement element, AbstractFilter.ListModification mod);
 
             #endregion
 
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public override bool Initialize()
+            public bool Initialize(DataManager.GetGenericDataCallback_Delegate get_selected_data_callback, DataManager.UpdateSelectedDataCallback_Delegate update_selected_data_callback)
             {
                 if (!base.Initialize())
                 {
                     return false;
                 }
+                if ((update_selected_data_callback == null) || (get_selected_data_callback == null))
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing callback(s)");
+                }
                 _timer.Start();
 
+
+                _get_selected_data_callback = get_selected_data_callback;
+                _update_selected_data_callback = update_selected_data_callback;
 
                 register_content(typeof(ColumnSelectionFilter));
                 register_content(typeof(ValueSelectionFilter));
@@ -59,30 +80,136 @@ namespace Core
             {
                 if (_initialized)
                 {
-
+                    _content_metadata = null;
+                    _update_selected_data_callback = null;
+                    _get_selected_data_callback = null;
+                    _modify_ui_filter_list_callback = null;
 
                     _initialized = false;
                 }
                 return true;
             }
 
-
-            public override void AttachMenu(MenubarMain menu_bar)
+            public List<FilterListMetadata> GetFilterTypeList()
             {
-
-
+                int id = 0;
+                var list = new List<FilterListMetadata>();
+                foreach (var filter_data in _contents)
+                {
+                    var filter_metadata = new FilterListMetadata();
+                    filter_metadata.ID = id; // for enumeration in combobox
+                    filter_metadata.Name = filter_data.Key.Name;
+                    filter_metadata.Type = filter_data.Key;
+                    list.Add(filter_metadata);
+                    id++;
+                }
+                return list;
             }
 
-            public void AddFilterCallback()
+            public void SetModifyUIFilterList(ModifyUIFilterList_Delegate modify_ui_filter_list_callback)
             {
-
-
+                _modify_ui_filter_list_callback = modify_ui_filter_list_callback;
             }
 
-            public void RemoveFilterCallback()
+            public bool CreateFilterCallback(Type filter_type)
             {
+                if (!_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return false;
+                }
+                if (filter_type == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unable to find type: " + filter_type);
+                    return false;
+                }
 
+                if (_contents.ContainsKey(filter_type))
+                {
+                    var filter = (AbstractFilter)Activator.CreateInstance(filter_type);
+                    if (filter.Initialize(_get_selected_data_callback, _update_selected_data_callback, _modify_ui_filter_list_callback))
+                    {
+                        filter.ProvideContentDataCallback(_content_metadata);
+                        if (filter.CreateUI())
+                        {
+                            _contents[filter_type].Add(filter._UID, filter);                           
+                            return true;
+                        }
+                        else
+                        {
+                            Log.Default.Msg(Log.Level.Error, "Unable to create the UI of the new filter: " + filter_type.ToString());
+                        }
+                    }
+                    else
+                    {
+                        Log.Default.Msg(Log.Level.Error, "Unable to initialize the new filter: " + filter_type.ToString());
+                    }
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unregistered filter type: " + filter_type.ToString());
+                }
+                return false;
+            }
 
+            public bool DeleteFilterCallback(int filter_uid)
+            {
+                // Loop over registered types
+                foreach (var filter_types in _contents)
+                {
+                    if (filter_types.Value.ContainsKey(filter_uid))
+                    {
+                        filter_types.Value[filter_uid].Terminate();
+                        return filter_types.Value.Remove(filter_uid);
+                    }
+                }
+                Log.Default.Msg(Log.Level.Debug, "Filter not available for deletion: " + filter_uid);
+                return false;
+            }
+
+            public string CollectConfigurations()
+            {
+                var filtermanager_configuration = new FilterManager.Configuration();
+
+                foreach (var filter_metadata in _contents)
+                {
+                    /// TODO collect filter configurations
+                }
+
+                return ConfigurationService.Serialize<FilterManager.Configuration>(filtermanager_configuration);
+            }
+
+            public bool ApplyConfigurations(string configurations)
+            {
+                if (!_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return false;
+                }
+
+                var filtermanager_configuration = ConfigurationService.Deserialize<FilterManager.Configuration>(configurations);
+                if (filtermanager_configuration != null)
+                {
+                    foreach (var filtermetadata in filtermanager_configuration.FilterList)
+                    {
+                        // TODO Apply configuration and create filters
+                    }
+                    return true;
+                }
+                return false;
+            }
+
+            public void ProvideContentDataCallback(List<AbstractFilter.ContentMetadata> content_metadata)
+            {
+                _content_metadata = content_metadata;
+
+                foreach (var filter_type in _contents)
+                {
+                    foreach (var filter in filter_type.Value)
+                    {
+                        filter.Value.ProvideContentDataCallback(content_metadata);
+                    }
+                }
             }
 
             #endregion
@@ -91,14 +218,13 @@ namespace Core
             #region protected functions
 
             /// <summary>
-            /// 
+            /// Reset specific filter (only used in AbstractRegisterService)
             /// </summary>
-            /// <param name="content_data"></param>
+            /// <param name="filter_value"></param>
             /// <returns></returns>
-            protected override bool reset_content(AbstractFilter content_value)
+            protected override bool reset_content(AbstractFilter filter_value)
             {
-
-                return true; // content_value.Terminate();
+                return filter_value.Terminate();
             }
 
             #endregion
@@ -112,7 +238,10 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region private variables
 
-
+            private List<AbstractFilter.ContentMetadata> _content_metadata = null;
+            private DataManager.UpdateSelectedDataCallback_Delegate _update_selected_data_callback = null;
+            private DataManager.GetGenericDataCallback_Delegate _get_selected_data_callback = null;
+            private ModifyUIFilterList_Delegate _modify_ui_filter_list_callback = null;
 
             #endregion
         }

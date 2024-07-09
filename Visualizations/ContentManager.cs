@@ -8,6 +8,7 @@ using System.Reflection;
 using SciChart.Core.Extensions;
 using Core.GUI;
 using Core.Data;
+using Core.Filter;
 
 
 
@@ -18,10 +19,9 @@ using Core.Data;
 
 // Arguments: <content name, flag: is content available, flag: are multiple instances allowed, content type>
 using ReadContentMetaData_Type = System.Tuple<string, bool, bool, string>;
-
 using ContentCallbacks_Type = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.CreateContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
-
 using AttachContentMetaData_Type = System.Tuple<int, System.Windows.UIElement, Core.Abstracts.AbstractVisualization.AttachWindowMenu_Delegate>;
+
 
 namespace Visualizations
 {
@@ -56,6 +56,9 @@ namespace Visualizations
 
             // Data Manager
             bool initialized = _datamanager.Initialize();
+
+            // FilterManager
+            initialized &= _filtermanager.Initialize(_datamanager.GetGenericDataCallback, _datamanager.UpdateSelectedDataCallback);
 
             // Service Manager
             /// after registering all contents
@@ -95,14 +98,14 @@ namespace Visualizations
             {
                 foreach (var content_data in content_types.Value)
                 {
-                    configurations.Add(new AbstractVisualization.Configuration() { _UID = content_data.Value._UID, _Type = content_types.Key.FullName });
+                    configurations.Add(new AbstractVisualization.Configuration() { UID = content_data.Value._UID, Type = content_types.Key.FullName });
                 }
             }
             string visualization_configuration_string = ConfigurationService.Serialize<List<AbstractVisualization.Configuration>>(configurations);
 
-            var datamanager_configiguration_string = _datamanager.CollectConfigurations();
+            var filtermanager_configiguration_string = _filtermanager.CollectConfigurations();
             
-            return visualization_configuration_string + datamanager_configiguration_string;
+            return visualization_configuration_string + filtermanager_configiguration_string;
         }
 
         public bool ApplyConfigurations(string configurations)
@@ -125,10 +128,10 @@ namespace Visualizations
 
                 foreach (var content_configuration in visualization_configurations)
                 {
-                    var type = get_type(content_configuration._Type);
+                    var type = get_type(content_configuration.Type);
                     if (_contents.ContainsKey(type))
                     {
-                        var id = content_configuration._UID;
+                        var id = content_configuration.UID;
                         if (id == UniqueID.InvalidInt)
                         {
                             Log.Default.Msg(Log.Level.Warn, "Invalid content id: " + id);
@@ -146,7 +149,7 @@ namespace Visualizations
                         }
                         else
                         {
-                            Log.Default.Msg(Log.Level.Error, "Content " + content_configuration._Type + " with ID " + id + " already exists");
+                            Log.Default.Msg(Log.Level.Error, "Content " + content_configuration.Type + " with ID " + id + " already exists");
                         }
                     }
                     else
@@ -157,7 +160,8 @@ namespace Visualizations
                 success &= true;
             }
 
-            success &= _datamanager.ApplyConfigurations(configurations);
+            // First create content and then create filters relying on content
+            success &= _filtermanager.ApplyConfigurations(configurations);
 
             return success;
         }
@@ -181,7 +185,7 @@ namespace Visualizations
         // Callback forwarding for DataManager
         public void UpdateInputData(GenericDataStructure input_data)
         {
-            _datamanager.UpdateData(input_data);
+            _datamanager.UpdateAllDataCallback(input_data);
         }
         public void SetOutputDataCallback(DataManager.SetDataCallback_Delegate _outputdata_callback)
         {
@@ -224,10 +228,10 @@ namespace Visualizations
         /// <summary>
         /// Attach requested content to provided parent content element (called by window leaf).
         /// </summary>
-        /// <param name="uid">The string ID of the content if present.</param>
+        /// <param name="content_uid">The string ID of the content if present.</param>
         /// <param name="content_type">Using string for content type to allow cross project compatibility.</param> 
         /// <returns>Tuple of content ID and the WPF Control element holding the actual content.</returns>
-        public AttachContentMetaData_Type CreateContentCallback(int uid, string content_type)
+        public AttachContentMetaData_Type CreateContentCallback(int content_uid, string content_type)
         {
             if (!_initialized)
             {
@@ -243,15 +247,15 @@ namespace Visualizations
 
             if (_contents.ContainsKey(type))
             {
-                if ((_contents[type].Count == 0) || ((_contents[type].Count >= 1) && (_contents[type].First().Value._MultipleInstances || (!_contents[type].First().Value._MultipleInstances && _contents[type].ContainsKey(uid)))))
+                if ((_contents[type].Count == 0) || ((_contents[type].Count >= 1) && (_contents[type].First().Value._MultipleInstances || (!_contents[type].First().Value._MultipleInstances && _contents[type].ContainsKey(content_uid)))))
                 {
-                    int id = uid;
+                    int temp_uid = content_uid;
 
-                    if (!_contents[type].ContainsKey(id))
+                    if (!_contents[type].ContainsKey(temp_uid))
                     {
-                        if (id != UniqueID.InvalidInt)
+                        if (temp_uid != UniqueID.InvalidInt)
                         {
-                            Log.Default.Msg(Log.Level.Warn, "Could not find requested content " + content_type + " with ID " + id);
+                            Log.Default.Msg(Log.Level.Warn, "Could not find requested content " + content_type + " with ID " + temp_uid);
                             return null;
                         }
                         else
@@ -261,11 +265,11 @@ namespace Visualizations
                             {
                                 return null;
                             }
-                            id = new_content._UID;
-                            _contents[type].Add(id, new_content);
+                            temp_uid = new_content._UID;
+                            _contents[type].Add(temp_uid, new_content);
                         }
                     }
-                    return new AttachContentMetaData_Type(id, _contents[type][id].GetUI(), _contents[type][id].AttachMenu);
+                    return new AttachContentMetaData_Type(temp_uid, _contents[type][temp_uid].GetUI(), _contents[type][temp_uid].AttachMenu);
                 }
                 else
                 {
@@ -284,19 +288,19 @@ namespace Visualizations
         /// </summary>
         /// <param name="uid">The id of the content to be deleted.</param>
         /// <return>True on success, false otherwise.</return>
-        public bool DeleteContentCallback(int uid)
+        public bool DeleteContentCallback(int content_uid)
         {
             // Loop over registered types
             foreach (var content_types in _contents)
             {
-                if (content_types.Value.ContainsKey(uid))
+                if (content_types.Value.ContainsKey(content_uid))
                 {
-                    _datamanager.UnregisterDataCallback(content_types.Value[uid]._DataUID);
-                    content_types.Value[uid].Terminate();
-                    return content_types.Value.Remove(uid);
+                    _datamanager.UnregisterDataCallback(content_types.Value[content_uid]._DataUID);
+                    content_types.Value[content_uid].Terminate();
+                    return content_types.Value.Remove(content_uid);
                 }
             }
-            Log.Default.Msg(Log.Level.Debug, "Content not available for deletion: " + uid);
+            Log.Default.Msg(Log.Level.Debug, "Content not available for deletion: " + content_uid);
             return false;
         }
 
@@ -306,9 +310,9 @@ namespace Visualizations
         #region protected functions
 
         /// <summary>
-        /// 
+        /// Reset specific content (only used in AbstractRegisterService)
         /// </summary>
-        /// <param name="content_data"></param>
+        /// <param name="filter_value"></param>
         /// <returns></returns>
         protected override bool reset_content(AbstractVisualization content_value)
         {
@@ -363,15 +367,18 @@ namespace Visualizations
         private AbstractVisualization create_content(Type type, int uid)
         {
             var content = (AbstractVisualization)Activator.CreateInstance(type, uid);
-            if (content.Initialize(_datamanager.GetDataCallback, _datamanager.GetDataMenuCallback))
+            if (content.Initialize(_datamanager.GetSpecificDataCallback, _datamanager.GetDataMenuCallback))
             {
                 content._DataUID = _datamanager.RegisterDataCallback(content._RequiredDataType, content.Update);
-                // XXX Do not check for invalid DATAUID because it might be intentional that no data should have been created...
+                // Do not check for invalid DATAUID because it might be intentional that no data should have been created
                 if (content.CreateUI())
                 {
+                    /// Filter Editor requires some more information...
                     if (type == typeof(WPF_FilterEditor)) {
-                        /// TODO Pass callbacks add/remove from filter manager
-                        /// TODO Pass callback ListUpdate to filter manager
+                        var filter_editor = content as WPF_FilterEditor;
+                        filter_editor.UpdateFilterTypeList(_filtermanager.GetFilterTypeList());
+                        filter_editor.SetCreateFilterCallback(_filtermanager.CreateFilterCallback);
+                        _filtermanager.SetModifyUIFilterList(filter_editor.ModifyUIFilterList);
                     }
                     content.Update(true);
                     return content;

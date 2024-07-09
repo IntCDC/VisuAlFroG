@@ -151,7 +151,7 @@ namespace Core
                     {
                         configurations.Leaf = new WindowLeaf.Configuration()
                         {
-                            ContentID = attached_content.Item1,
+                            ContentUID = attached_content.Item1,
                             ContentType = attached_content.Item2,
                             Name = branch._Leaf._Name,
                         };
@@ -185,7 +185,7 @@ namespace Core
                 if (configurations.Leaf != null)
                 {
                     branch._Leaf._Name = configurations.Leaf.Name;
-                    branch._Leaf.CreateContent(configurations.Leaf.ContentID, configurations.Leaf.ContentType);
+                    branch._Leaf.CreateContent(configurations.Leaf.ContentUID, configurations.Leaf.ContentType);
                 }
                 else if (configurations.Children != null)
                 {

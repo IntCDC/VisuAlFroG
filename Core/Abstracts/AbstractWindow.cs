@@ -27,9 +27,9 @@ namespace Core
 
             public delegate List<ReadContentMetaData_Type> AvailableContents_Delegate();
 
-            public delegate AttachContentMetaData_Type CreateContent_Delegate(int uid, string content_type);
+            public delegate AttachContentMetaData_Type CreateContent_Delegate(int content_uid, string content_type);
 
-            public delegate bool DeleteContent_Delegate(int uid);
+            public delegate bool DeleteContent_Delegate(int content_uid);
 
             #endregion
 

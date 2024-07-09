@@ -28,11 +28,14 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region public delegates
 
-            public delegate object GetDataCallback_Delegate(int data_uid);
+            public delegate object GetSpecificDataCallback_Delegate(int data_uid);
             public delegate List<System.Windows.Controls.Control> GetDataMenuCallback_Delegate(int data_uid);
-            public delegate void GetSendOutputCallback_Delegate(int data_uid, bool only_selected);
 
+            public delegate void GetSendOutputCallback_Delegate(int data_uid, bool only_selected);
             public delegate void SetDataCallback_Delegate(GenericDataStructure ouput_data);
+
+            public delegate GenericDataStructure GetGenericDataCallback_Delegate(int data_uid);
+            public delegate void UpdateSelectedDataCallback_Delegate(GenericDataStructure input_data, List<int> data_uids);
 
             public delegate int RegisterDataCallback_Delegate(Type data_type, UpdateVisualizationCallback_Delegate update_callback);
             public delegate void UnregisterUpdateCallback_Delegate(int data_uid);
@@ -57,7 +60,7 @@ namespace Core
                 var variety = (IDataType)Activator.CreateInstance(typeof(DataTypeGeneric),
                     (PropertyChangedEventHandler)event_data_changed,
                     (PropertyChangedEventHandler)event_metadata_changed,
-                    ((_outputdata_callback != null) ? ((GetSendOutputCallback_Delegate)event_send_output) : (null)));
+                    ((_outputdata_callback != null) ? ((GetSendOutputCallback_Delegate)callback_send_output) : (null)));
                 _data_library.Add(UniqueID.GenerateInt(), new DataDescription(((bool new_data) => { }), variety));
                 _original_data_hash = _data_library.Last().Key;
 
@@ -86,7 +89,7 @@ namespace Core
             /// Callback to propagate new input data to the data manager.
             /// </summary>
             /// <param name="input_data">The new input data.</param>
-            public void UpdateData(GenericDataStructure input_data)
+            public void UpdateAllDataCallback(GenericDataStructure input_data)
             {
                 if (!_initialized)
                 {
@@ -112,6 +115,35 @@ namespace Core
                 Log.Default.Msg(Log.Level.Info, "...done.");
 
                 _timer.Stop();
+            }
+
+            /// <summary>
+            /// Callback to propagate new input data to selected data types in the data manager.
+            /// </summary>
+            /// <param name="input_data">The new input data.</param>
+            public void UpdateSelectedDataCallback(GenericDataStructure input_data, List<int> data_uids)
+            {
+                if (!_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return;
+                }
+                if (input_data == null)
+                {
+                    Log.Default.Msg(Log.Level.Warn, "No input data available");
+                    return;
+                }
+
+                foreach (int data_uid in data_uids)
+                {
+                    if (!_data_library.ContainsKey(data_uid))
+                    {
+                        Log.Default.Msg(Log.Level.Error, "Received unknown data UID");
+                        continue;
+                    }
+                    _data_library[data_uid]._Data.UpdateData(input_data);
+                    _data_library[data_uid]._UpdateVisualization(true);
+                }
             }
 
             /// <summary>
@@ -145,7 +177,7 @@ namespace Core
                     var variety = (IDataType)Activator.CreateInstance(data_type,
                         (PropertyChangedEventHandler)event_data_changed,
                         (PropertyChangedEventHandler)event_metadata_changed,
-                        ((_outputdata_callback != null) ? ((GetSendOutputCallback_Delegate)event_send_output) : (null)));
+                        ((_outputdata_callback != null) ? ((GetSendOutputCallback_Delegate)callback_send_output) : (null)));
                     if (variety == null)
                     {
                         Log.Default.Msg(Log.Level.Error, "Expected data type of IDataVariety but received: " + data_type.FullName);
@@ -156,7 +188,7 @@ namespace Core
                     Log.Default.Msg(Log.Level.Info, "Added new data type: " + data_type.FullName);
 
                     // Load original data if available
-                    var original_data = (GenericDataStructure)GetDataCallback(_original_data_hash);
+                    var original_data = (GenericDataStructure)GetSpecificDataCallback(_original_data_hash);
                     if ((original_data != null) && (!original_data.IsEmpty()))
                     {
                         variety.UpdateData(original_data);
@@ -199,11 +231,11 @@ namespace Core
             }
 
             /// <summary>
-            /// Return the data for the requested type.
+            /// Return the data type specific data for the requested type.
             /// </summary>
             /// <param name="data_uid">The UID of the requested data.</param>
             /// <returns>The data as generic object. Cast to requested type manually.</returns>
-            public object GetDataCallback(int data_uid)
+            public object GetSpecificDataCallback(int data_uid)
             {
                 if (!_initialized)
                 {
@@ -218,6 +250,23 @@ namespace Core
 
                 }
                 return _data_library[data_uid]._Data._Specific;
+            }
+
+            public GenericDataStructure GetGenericDataCallback(int data_uid)
+            {
+                if (!_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return null;
+                }
+
+                if (!_data_library.ContainsKey(data_uid))
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Requested data not available for given data UID: " + data_uid.ToString());
+                    return null;
+
+                }
+                return _data_library[data_uid]._Data._Generic;
             }
 
             /// <summary>
@@ -252,7 +301,7 @@ namespace Core
                     {
                         return;
                     }
-                    CSV_DataHandling.SaveToFile((GenericDataStructure)GetDataCallback(_original_data_hash));
+                    CSV_DataHandling.SaveToFile((GenericDataStructure)GetSpecificDataCallback(_original_data_hash));
                 };
                 menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.DATA, save_menu_item);
 
@@ -266,39 +315,10 @@ namespace Core
                     }
                     if (CSV_DataHandling.LoadFromFile(out GenericDataStructure data))
                     {
-                        UpdateData(data);
+                        UpdateAllDataCallback(data);
                     }
                 };
                 menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.DATA, load_menu_item);
-            }
-
-
-            public string CollectConfigurations()
-            {
-                var filter_configurations = new List<AbstractFilter.Configuration>();
-
-
-
-
-                return ConfigurationService.Serialize<List<AbstractFilter.Configuration>>(filter_configurations);
-            }
-
-            public bool ApplyConfigurations(string configurations)
-            {
-                if (!_initialized)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return false;
-                }
-
-                var filtermanager_configurations = ConfigurationService.Deserialize<List<AbstractFilter.Configuration>>(configurations);
-                if (filtermanager_configurations != null)
-                {
-
-
-                    return true;
-                }
-                return false;
             }
 
             #endregion
@@ -309,7 +329,7 @@ namespace Core
             /// <summary>
             /// Send changed output data to interface
             /// </summary>
-            public void event_send_output(int data_uid, bool only_selected)
+            public void callback_send_output(int data_uid, bool only_selected)
             {
                 if (!_data_library.ContainsKey(data_uid))
                 {

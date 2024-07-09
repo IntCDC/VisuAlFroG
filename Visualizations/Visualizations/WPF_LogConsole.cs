@@ -63,6 +63,13 @@ namespace Visualizations
             _text_block.Width = Double.NaN; // = "Auto"
             _text_block.Height = Double.NaN; // = "Auto"
 
+            _Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            _Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            _Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
+            _Content.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
+            _Content.PreviewMouseWheel += event_scrollviewer_mousewheel;
+            _Content.Content = _text_block;
+
             // ! Call after _text_block has been created
             Log.Default.RegisterListener(this.LogListener);
 
@@ -125,14 +132,6 @@ namespace Visualizations
         public override void AttachMenu(MenubarWindow menubar)
         {
             base.AttachMenu(menubar);
-
-            _Content.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-            _Content.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-            _Content.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
-            _Content.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
-            _Content.PreviewMouseWheel += event_scrollviewer_mousewheel;
-            _Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
-            _Content.Content = _text_block;
             menubar.AddMenu(MenubarWindow.PredefinedMenuOption.CONTENT, MenubarMain.GetDefaultMenuItem("Copy to Clipboard", clipboard_content_click));
         }
 

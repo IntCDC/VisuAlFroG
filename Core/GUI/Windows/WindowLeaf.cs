@@ -21,8 +21,8 @@ using AttachedContent_Type = System.Tuple<int, string>;
 
 // Arguments: <content name, flag: is content available, flag: are multiple instances allowed, content type>
 using ReadContentMetaData_Type = System.Tuple<string, bool, bool, string>;
-
 using ContentCallbacks_Type = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.CreateContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
+
 
 namespace Core
 {
@@ -39,7 +39,7 @@ namespace Core
             public class Configuration : IAbstractConfigurationData
             {
                 public string Name { get; set; }
-                public int ContentID { get; set; }
+                public int ContentUID { get; set; }
                 public string ContentType { get; set; }
             }
 

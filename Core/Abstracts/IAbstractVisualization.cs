@@ -49,7 +49,7 @@ namespace Core
             /// Initialize the content.
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
-            bool Initialize(DataManager.GetDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback);
+            bool Initialize(DataManager.GetSpecificDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback);
 
             /// <summary>
             /// Create the content. To be called only once.
