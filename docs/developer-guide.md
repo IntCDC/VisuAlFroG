@@ -8,6 +8,7 @@
 
 - [Rhino 8](#rhino-8)
 - [Custom Visualization](#custom-visualization)
+- [Custom Filter](#custom-filter)
 - [Code Style](#code-style)
 - [Resource Files](#resource-files)
 
@@ -18,8 +19,9 @@
 <!-- ###################################################################### -->
 ## Rhino 8
 
-- In Visual Studio open the NuGet package manager of the VisuAlFroG solution and update the Grasshopper package to version 8.
-- Open the project file ..\GrasshopperInterface\GrasshopperInterface.csproj in a text editor and change the path to the Rhino executable accordingly in the tag `StartProgram`.
+- In Visual Studio open the **NuGet package manager** of the *VisuAlFroG* solution and update the *Grasshopper* package to version 8.
+- Open the project file `..\GrasshopperInterface\GrasshopperInterface.csproj` in a text editor and change the path to the Rhino executable file (*Rhino.exe*) in the tag `StartProgram` accordingly.
+- Rebuild the complete *VisuAlFroG* solution
 
 
 <!-- ###################################################################### -->
@@ -27,20 +29,19 @@
 
 ### C#/WPF
 
-- Open Visual Studio and copy the file `../Visualizations/WPFInterface/template/CustomWPFVisualization.cs.template` to `../Visualizations/Visualizations/<NAME OF YOUR VISUALIZATION>.cs`
-- Rename the class `CustomWPFVisualization` to `<NAME OF YOUR VISUALIZATION>`
-- Change the name property of your new visualization class:
+- Open Visual Studio and copy the file from `../Visualizations/WPFInterface/template/CustomWPFVisualization.cs.template` to `../Visualizations/Visualizations/CustomWPFVisualization.cs`
+- Rename the file and the class from `CustomWPFVisualization` to `<NAME OF YOUR VISUALIZATION>`
+- Change the type name property of your new visualization class:
 ```C#
-    public override string Name { get { return "<NAME OF YOUR VISUALIZATION>"; } }
+    public override string _TypeName { get { return "<NAME OF YOUR VISUALIZATION>"; } }
 ```
-- Open the file `../Visualizations/ContentManager.cs` and add register your new visualization in the *Visualization.ContentManager.Initialize* method below the already registered contents via:
+- Open the file `../Visualizations/ContentManager.cs` and register your new visualization in the *Visualization.ContentManager.Initialize* method below the already registered contents via:
 ```C#
     register_content(typeof(<NAME OF YOUR VISUALIZATION>));
 ```
-- The default content element can be accessed via the `Content`propoerty. The default content element `Canvas` is defined in the template of the inherited class `AbstractWPFVisualization` and can be changed to any `UIElement`.
+- The default content element can be accessed via the `_Content` propoerty. The default content element `Canvas` is defined in the template of the inherited class `AbstractWPFVisualization` and can be changed to any more suitable `UIElement`.
         
 
-<!--
 ### d3
 
 <TODO>
@@ -48,7 +49,15 @@
 ### Bokeh (Python)
 
 <TODO>
--->
+
+
+
+<!-- ###################################################################### -->
+## Custom Filter
+
+<TODO>
+
+
 
 
 <!-- ###################################################################### -->

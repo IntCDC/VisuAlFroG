@@ -10,6 +10,10 @@ using Core.Abstracts;
 using Visualizations.WPFInterface;
 using Core.GUI;
 using Core.Filter;
+using System.Globalization;
+using System.Windows.Documents;
+using System.Windows.Data;
+using System.Globalization;
 
 
 
@@ -56,18 +60,59 @@ namespace Visualizations
             _add_filter_list = new ComboBox();
             _add_filter_list.IsEditable = false;
             _add_filter_list.DisplayMemberPath = "Name";
-            _add_filter_list.Text = "LABEL";
+            _add_filter_list.SelectedIndex = 0;
+
 
             var add_button = new Button();
-            add_button.SetResourceReference(Button.BackgroundProperty, "Brush_Background");
-            add_button.SetResourceReference(Button.ForegroundProperty, "Brush_Foreground");
-            add_button.FontWeight = FontWeights.Bold;
-            var button_label = "  Add Filter  ";
-            add_button.Content = button_label;
+            string label = "  Add Filter  ";
+            add_button.Content = label;
+            var formattedText = new FormattedText(label, CultureInfo.GetCultureInfo("en-us"), FlowDirection.LeftToRight, new Typeface("Verdana"), add_button.FontSize, Brushes.Black);
+            var text_width = formattedText.Width;
+            add_button.Width = text_width;
             add_button.Click += event_apply_button;
-            add_button.Width = 75.0;
 
-            _filter_list = new StackPanel();
+            /*
+            add_button.FontWeight = FontWeights.Bold;
+            add_button.SetResourceReference(Button.ForegroundProperty, "Brush_Foreground");
+
+            // Invert background color on mouse over
+            var button_style = new Style();
+            button_style.TargetType = typeof(Button);
+
+            Setter setter_background = new Setter();
+            setter_background.Property = Button.BackgroundProperty;
+            setter_background.Value = new DynamicResourceExtension("Brush_Background");
+            button_style.Setters.Add(setter_background);
+
+            var border = new FrameworkElementFactory(typeof(Border));
+
+            var button_binding = new Binding("Background");
+            button_binding.Mode = BindingMode.TwoWay;
+            button_binding.Source = add_button;
+            border.SetBinding(Border.BackgroundProperty, button_binding);
+
+            var control_template = new ControlTemplate();
+            control_template.TargetType = typeof(Button);
+            control_template.VisualTree = border;
+
+            Trigger trigger = new Trigger();
+            trigger.Property = Button.IsMouseOverProperty;
+            trigger.Value = true;
+
+            Setter setter_trigger_b = new Setter();
+            setter_trigger_b.Property = Button.BackgroundProperty;
+            setter_trigger_b.Value = new DynamicResourceExtension("Brush_Foreground");
+            trigger.Setters.Add(setter_trigger_b);
+
+            control_template.Triggers.Add(trigger);
+
+            Setter setter_template = new Setter();
+            setter_template.Property = Button.TemplateProperty;
+            setter_template.Value = control_template;
+
+            button_style.Setters.Add(setter_template);
+            add_button.Style = button_style;
+            */
 
             var filter_list_scrolling = new ScrollViewer();
             filter_list_scrolling.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
@@ -75,19 +120,25 @@ namespace Visualizations
             filter_list_scrolling.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
             filter_list_scrolling.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
             filter_list_scrolling.PreviewMouseWheel += event_scrollviewer_mousewheel;
+
+            _filter_list = new StackPanel();
             filter_list_scrolling.Content = _filter_list;
 
             var top_grid = new Grid();
+
             var column_label = new ColumnDefinition();
-            column_label.Width = new GridLength(0.0, GridUnitType.Auto);
+            column_label.Width = new GridLength(text_width);
             top_grid.ColumnDefinitions.Add(column_label);
+            Grid.SetColumn(add_button, 0);
+            top_grid.Children.Add(add_button);
+
             var column_list = new ColumnDefinition();
             column_list.Width = new GridLength(1.0, GridUnitType.Star);
             top_grid.ColumnDefinitions.Add(column_list);
-            Grid.SetColumn(_add_filter_list, 0);
+            Grid.SetColumn(_add_filter_list, 1);
             top_grid.Children.Add(_add_filter_list);
-            Grid.SetColumn(add_button, 1);
-            top_grid.Children.Add(add_button);
+
+
 
             DockPanel.SetDock(top_grid, System.Windows.Controls.Dock.Top);
             _Content.Children.Add(top_grid);
@@ -175,14 +226,18 @@ namespace Visualizations
             var selected_item = _add_filter_list.SelectedItem as FilterManager.FilterListMetadata;
             if (selected_item == null)
             {
-                Log.Default.Msg(Log.Level.Error, "Unknown selected item type");
+                Log.Default.Msg(Log.Level.Warn, "Select filter type before trying to add a new filter.");
+                return;
             }
             if (_create_filter_callback == null)
             {
                 Log.Default.Msg(Log.Level.Error, "Missing callback to create new filter type.");
                 return;
             }
-            _create_filter_callback(selected_item.Type);
+            if (selected_item.Type != null)
+            {
+                _create_filter_callback(selected_item.Type);
+            }
         }
 
         private void event_scrollviewer_mousewheel(object sender, System.Windows.Input.MouseWheelEventArgs e)

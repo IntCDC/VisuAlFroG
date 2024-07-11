@@ -301,12 +301,6 @@ namespace Core
             #endregion
 
             /* ------------------------------------------------------------------*/
-            #region private functions
-
-
-            #endregion
-
-            /* ------------------------------------------------------------------*/
             #region private variables
 
             private Grid _content = null;

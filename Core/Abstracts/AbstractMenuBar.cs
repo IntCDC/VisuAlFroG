@@ -100,7 +100,8 @@ namespace Core
                     _main_menu_items[main_option].Items.Add(menu_item);
                     _main_menu_items[main_option].IsEnabled = true;
                 }
-                else {
+                else
+                {
                     Log.Default.Msg(Log.Level.Warn, "Could not find main menu option: '" + main_option.ToString() + "'");
                 }
             }
@@ -128,6 +129,24 @@ namespace Core
                 return true;
             }
 
+            public MenuItem FindMenuItemByName(string name)
+            {
+                foreach (var item in _content.Items)
+                {
+                    var menu_item = item as MenuItem;
+                    if (menu_item != null)
+                    {
+                        var returned_item = recursive_find_menu_item_by_name(menu_item, name);
+                        if (returned_item != null)
+                        {
+                            return returned_item;
+                        }
+                    }
+                }
+                Log.Default.Msg(Log.Level.Error, "Could not find menu item: '" + name + "'");
+                return null;
+            }
+
             #endregion
 
             /* ------------------------------------------------------------------*/
@@ -147,6 +166,32 @@ namespace Core
             #region protected variables
 
             protected bool _initialized = false;
+
+            #endregion
+
+            /* ------------------------------------------------------------------*/
+            #region private variables
+
+            private MenuItem recursive_find_menu_item_by_name(MenuItem parent, string name)
+            {
+                if (parent.Name == name)
+                {
+                    return parent;
+                }
+                foreach (var item in parent.Items)
+                {
+                    var menu_item = item as MenuItem;
+                    if (menu_item != null)
+                    {
+                        var returned_item = recursive_find_menu_item_by_name(menu_item, name);
+                        if (returned_item != null)
+                        {
+                            return returned_item;
+                        }
+                    }
+                }
+                return null;
+            }
 
             #endregion
 

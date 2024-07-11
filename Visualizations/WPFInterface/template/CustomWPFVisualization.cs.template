@@ -32,7 +32,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public properties
 
-        public override string _Name { get { return "CustomWPFVisualization"; } }
+        public override string _TypeName { get { return "CustomWPFVisualization"; } }
         public override bool _MultipleInstances { get { return true; } }
 
         #endregion
@@ -40,7 +40,9 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public functions
 
-        public override bool Create()
+        public CustomWPFVisualization(int uid) : base(uid) { }
+
+        public override bool CreateUI()
         {
             if (!_initialized)
             {
@@ -82,7 +84,7 @@ namespace Visualizations
             if (new_data)
             {
                 // Re-creation of content is required for new data
-                Create();
+                CreateUI();
             }
             else
             {

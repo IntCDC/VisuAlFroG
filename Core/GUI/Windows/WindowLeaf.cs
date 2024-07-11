@@ -122,12 +122,18 @@ namespace Core
                         _content_child.Children.Add(content_metadata.Item2);
                         _AttachedContent = new AttachedContent_Type(content_metadata.Item1, content_type);
 
+                        var menu_item = _menu.FindMenuItemByName(_item_id_delete_content);
+                        if (menu_item != null)
+                        {
+                            menu_item.IsEnabled = true;
+                        }
+
                         _menu.Clear(MenubarWindow.PredefinedMenuOption.CONTENT);
                         _menu.Clear(MenubarWindow.PredefinedMenuOption.DATA);
                         /// XXX Exclude some content from having the following menu --- Find better solution!
                         if (!((content_type == AbstractVisualization.TypeString_FilterEditor) || (content_type == AbstractVisualization.TypeString_LogConsole)))
                         {
-                            var filter_menu_item = MenubarMain.GetDefaultMenuItem("Open 'Filter Editor'", open_filter_editor);
+                            var filter_menu_item = MenubarMain.GetDefaultMenuItem("Open filter editor", open_filter_editor);
 
                             List<ReadContentMetaData_Type> available_child_content = _content_callbacks.Item1();
                             foreach (var content_data in available_child_content)
@@ -345,10 +351,8 @@ namespace Core
                 item_content_delete.Header = "Delete Content";
                 item_content_delete.Name = _item_id_delete_content;
                 item_content_delete.Click += event_menuitem_click;
-                if (_AttachedContent == null)
-                {
-                    item_content_delete.IsEnabled = false;
-                }
+                item_content_delete.IsEnabled = false;
+
                 _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_content_delete);
 
                 var item_content_dad = new MenuItem();
@@ -408,6 +412,7 @@ namespace Core
                 else if (uid == _item_id_delete_content)
                 {
                     delete_content();
+                    sender_content.IsEnabled = false;
                 }
 
                 // Call Available Contents

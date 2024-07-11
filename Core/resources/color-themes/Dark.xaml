@@ -9,7 +9,7 @@
 	<SolidColorBrush x:Key="Brush_Foreground" Color="WhiteSmoke"/>
 	<SolidColorBrush x:Key="Brush_Background" Color="Black"/>
 
-	<SolidColorBrush x:Key="Brush_TextDisabled" Color="Gray"/>
+	<SolidColorBrush x:Key="Brush_TextDisabled" Color="LightGray"/>
 	
 	<SolidColorBrush x:Key="Brush_LogMessageInfo" Color="White"/>
 	<SolidColorBrush x:Key="Brush_LogMessageDebug" Color="Gray"/>

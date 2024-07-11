@@ -12,6 +12,7 @@ using Core.Abstracts;
 using Core.Filter;
 using Core.Data;
 using static Core.Filter.FilterManager;
+using System.Runtime.Remoting.Contexts;
 
 
 
@@ -102,7 +103,7 @@ namespace Core
             {
                 if (_initialized)
                 {
-                    /// TODO Call _modify_ui_filter_list_callback( , ListModification.ADD)
+                    _modify_ui_filter_list_callback(_content, ListModification.DELETE);
 
                     _content = null;
                     _update_selected_data_callback = null;
@@ -133,7 +134,9 @@ namespace Core
                 _timer.Start();
 
 
-                var rename_button = new Button();
+                _content = new Grid();
+
+                                var rename_button = new Button();
                 var endisable_button = new Button();
                 var delete_button = new Button();
                 var apply_button = new Button(); // Disable on hit, but enable when anything changes
@@ -142,10 +145,13 @@ namespace Core
 
                 // Get generic data of DataType -> apply changed data to DataType
 
-                /// TODO Call _modify_ui_filter_list_callback( , ListModification.ADD)
-
-                /// TODO attach 
+                // Add custom UI of inheriting filter
                 var child = create_ui();
+
+
+
+                // Attach filter UI to filter list of Filter Editor
+                _modify_ui_filter_list_callback(_content, ListModification.ADD);
 
 
                 _timer.Stop();

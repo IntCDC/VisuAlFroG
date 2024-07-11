@@ -1,0 +1,63 @@
+﻿using System.Windows;
+using System.Collections.Generic;
+using System.Windows.Controls;
+using Core.Data;
+using Core.Utilities;
+using Core.Abstracts;
+
+
+/*
+
+INSTRUCTIONS for creating own custom data filter:
+
+see https://github.com/IntCDC/VisuAlFroG/blob/main/docs/developer-uide.md
+
+*/
+
+
+/*
+ *  Custom Data Filter
+ * 
+ */
+namespace Core
+{
+    namespace Filter
+    {
+        public class CustomFilter : AbstractFilter
+        {
+            /* ------------------------------------------------------------------*/
+            #region public classes
+
+            /// <summary>
+            /// Class defining the configuration required for restoring content.
+            /// </summary>
+            public class Configuration : AbstractFilter.Configuration
+            {
+                //TODO Add additional information required to restore the filter
+            }
+
+            #endregion
+
+            /* ------------------------------------------------------------------*/
+            #region public functions
+
+
+
+            #endregion
+
+            /* ------------------------------------------------------------------*/
+            #region protected functions
+
+            protected override UIElement create_ui()
+            {
+                var ui = new Grid();
+
+				// Place the UI stuff of your filter here...
+
+                return ui;
+            }
+
+            #endregion
+        }
+    }
+}

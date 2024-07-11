@@ -139,7 +139,7 @@ namespace Core
 
                 Setter setter_thickness = new Setter();
                 setter_thickness.Property = Menu.BorderThicknessProperty;
-                setter_thickness.Value = new Thickness(0, 0, 0, 2);
+                setter_thickness.Value = new Thickness(0, 0, 0, _GridSplitterSize);
                 style.Setters.Add(setter_thickness);
 
                 return style;
@@ -206,30 +206,6 @@ namespace Core
                 return style;
             }
 
-            public static Style MenuItemHighlightStyle()
-            {
-                var style = new Style();
-                style.TargetType = typeof(MenuItem);
-
-                Setter setter_foreground = new Setter();
-                setter_foreground.Property = Menu.ForegroundProperty;
-                setter_foreground.Value = Brushes.LightGray;
-                style.Setters.Add(setter_foreground);
-
-
-                Setter setter_background = new Setter();
-                setter_background.Property = Menu.BackgroundProperty;
-                setter_background.Value = Brushes.DarkRed;
-                style.Setters.Add(setter_background);
-
-                Setter setter_border = new Setter();
-                setter_border.Property = Menu.BorderBrushProperty;
-                setter_border.Value = Brushes.Black;
-                style.Setters.Add(setter_border);
-
-                return style;
-            }
-
             public static Style MenuItemIconStyle(string icon_filename = null)
             {
                 var style = new Style();
@@ -252,46 +228,6 @@ namespace Core
                 setter_background.Property = MenuItem.BackgroundProperty;
                 setter_background.Value = new DynamicResourceExtension("Brush_MenuItemBackground");
                 style.Setters.Add(setter_background);
-
-                /*
-                Setter setter_border = new Setter();
-                setter_border.Property = Menu.BorderBrushProperty;
-                setter_border.Value = new DynamicResourceExtension("Brush_MenuItemBorder");
-                style.Setters.Add(setter_border);
-
-                Setter setter_trigger_background = new Setter();
-                setter_trigger_background.Property = MenuItem.BackgroundProperty;
-                setter_trigger_background.Value = new DynamicResourceExtension("Brush_MenuItemBackgroundHighlight");
-
-                Setter setter_trigger_border = new Setter();
-                setter_trigger_border.Property = MenuItem.BorderBrushProperty;
-                setter_trigger_border.Value = new DynamicResourceExtension("Brush_MenuItemBorderdHighlight");
-
-                Trigger trigger = new Trigger();
-                trigger.Property = MenuItem.IsHighlightedProperty;
-                trigger.Value = true;
-                trigger.Setters.Add(setter_trigger_background);
-                trigger.Setters.Add(setter_trigger_border);
-
-                ControlTemplate control_template = new ControlTemplate();
-                control_template.TargetType = typeof(MenuItem);
-                control_template.Triggers.Add(trigger);
-
-                Setter setter_highlight = new Setter();
-                setter_highlight.Property = MenuItem.TemplateProperty;
-                setter_highlight.Value = control_template;
-
-                style.Setters.Add(setter_highlight);
-                */
-                return style;
-            }
-
-            // CONTEXT MENU ---------------------
-
-            public static Style ContextMenuStyle()
-            {
-                var style = new Style();
-                style.TargetType = typeof(ContextMenu);
 
                 return style;
             }
@@ -400,6 +336,7 @@ namespace Core
 
             /* ------------------------------------------------------------------*/
             #region private functions 
+
             private void update_menu_item_selection()
             {
                 foreach (var theme_meu_item in _theme_menu_items)
