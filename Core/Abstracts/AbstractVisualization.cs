@@ -5,12 +5,6 @@ using Core.Utilities;
 using System.Windows;
 using Core.GUI;
 using Core.Data;
-using System.Windows.Documents;
-using System.Windows.Data;
-using System.Globalization;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
 
 
 

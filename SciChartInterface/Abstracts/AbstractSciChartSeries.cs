@@ -113,7 +113,7 @@ namespace SciChartInterface
                     },
                     new LegendModifier()
                     {
-                        IsEnabled = true,
+                        IsEnabled = false,
                         ShowLegend = true,
                     }
                 );

@@ -180,16 +180,17 @@ namespace Frontend
                 _configurationservice.RegisterConfiguration(_winmanager._Name, _winmanager.CollectConfigurations, _winmanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_colortheme._Name, _colortheme.CollectConfigurations, _colortheme.ApplyConfigurations);
 
-                loading_progress.SetValue(40);
+                loading_progress.SetValue(50);
 
                 // Attach all main menu options (order dependent!)
                 _contentmanager.AttachMenu(_menubar);
                 _configurationservice.AttachMenu(_menubar);
                 _colortheme.AttachMenu(_menubar);
+                _winmanager.AttachMenu(_menubar);
                 _menubar.AddSeparator(MenubarMain.PredefinedMenuOption.FILE);
                 _menubar.AddMenu(MenubarMain.PredefinedMenuOption.FILE, MenubarMain.GetDefaultMenuItem("Exit", exit_app_click));
 
-                loading_progress.SetValue(50);
+                loading_progress.SetValue(60);
 
                 // Attach main menu bar to content
                 _menubar_element.Children.Clear();
@@ -200,24 +201,21 @@ namespace Frontend
                 _subwindows_element.Children.Add(_winmanager.AttachUI());
                 _subwindows_element.UpdateLayout();
 
-                loading_progress.SetValue(60);
+                loading_progress.SetValue(70);
 
                 // Evaluate previously parsed command line arguments
                 _arguments.Evaluate();
 
-                loading_progress.SetValue(70);
-
-                // Load default window configuration
-                _winmanager.CreateDefault();
-
                 loading_progress.SetValue(80);
 
+                /// DEBUG
                 /// Provide example data for detached mode
                 if (_standalone)
                 {
                     var sample_data = TestData.Generate();
                     _contentmanager.UpdateInputData(sample_data);
                 }
+                /// DEBUG
 
                 loading_progress.SetValue(90);
 

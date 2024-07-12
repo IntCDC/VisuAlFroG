@@ -5,7 +5,6 @@ using System.Windows.Documents;
 using System;
 using System.Windows.Navigation;
 using System.Collections.Generic;
-using static Core.GUI.MenubarMain;
 
 
 

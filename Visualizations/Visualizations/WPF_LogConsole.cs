@@ -15,11 +15,6 @@ using Core.GUI;
 /*
  * Log Window Content
  * 
- * Default window content set in WindowManager.CreateDefault()
- * Control Hierarchy: ScrollViewer(Content) -> TextBlick(_text_block)
- * 
- * TODO Optimize performance for huge amount of messages -> render only visible lines (required full copy of all messages?)
- * 
  */
 namespace Visualizations
 {
@@ -125,7 +120,7 @@ namespace Visualizations
                     return;
                 }
                 _text_block.Inlines.Add(run);
-                scroll_bottom();
+                _Content.ScrollToBottom();
             }
         }
 
@@ -158,16 +153,6 @@ namespace Visualizations
             scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);
             scv.UpdateLayout();
             e.Handled = true;
-        }
-
-        protected void set_scroll_background(string background_color_resource_name)
-        {
-            _Content.SetResourceReference(ScrollViewer.BackgroundProperty, background_color_resource_name);
-        }
-
-        protected void scroll_bottom()
-        {
-            _Content.ScrollToBottom();
         }
 
         #endregion

@@ -22,6 +22,7 @@ using AttachedContent_Type = System.Tuple<int, string>;
 // Arguments: <content name, flag: is content available, flag: are multiple instances allowed, content type>
 using ReadContentMetaData_Type = System.Tuple<string, bool, bool, string>;
 using ContentCallbacks_Type = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.CreateContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
+using System.Windows.Data;
 
 
 namespace Core
@@ -79,11 +80,11 @@ namespace Core
                 }
 
                 _menu = new MenubarWindow();
-                _content_caption = new TextBox();
+                _content_caption = new RenameLabel();
+                _content_child = new Grid();
 
                 _Name = "";
 
-                _content_child = new Grid();
                 _content_child.SetResourceReference(Grid.BackgroundProperty, "Brush_Background");
                 _content_child.Name = "grid_" + UniqueID.GenerateString();
 
@@ -114,7 +115,7 @@ namespace Core
             public void CreateContent(int uid, string content_type)
             {
                 // Call Create Content
-                var content_metadata = _content_callbacks.Item2(uid, content_type);
+                var content_metadata = _content_callbacks.Item2(uid, content_type, create_caption_binding());
                 if (content_metadata != null)
                 {
                     if ((content_metadata.Item1 != UniqueID.InvalidInt) && (content_metadata.Item2 != null))
@@ -133,7 +134,7 @@ namespace Core
                         /// XXX Exclude some content from having the following menu --- Find better solution!
                         if (!((content_type == AbstractVisualization.TypeString_FilterEditor) || (content_type == AbstractVisualization.TypeString_LogConsole)))
                         {
-                            var filter_menu_item = MenubarMain.GetDefaultMenuItem("Open filter editor", open_filter_editor);
+                            var filter_menu_item = MenubarMain.GetDefaultMenuItem("Open Filter Editor", open_filter_editor);
 
                             List<ReadContentMetaData_Type> available_child_content = _content_callbacks.Item1();
                             foreach (var content_data in available_child_content)
@@ -196,6 +197,9 @@ namespace Core
             public void ResetLeaf()
             {
                 delete_content();
+                _content_child = null;
+                _menu = null;
+                _content_caption = null;
                 base.reset();
             }
 
@@ -231,23 +235,6 @@ namespace Core
                 Grid.SetColumn(menu, 1);
                 menu.Style = ColorTheme.ContentMenuBarStyle();
                 menu_grid.Children.Add(menu);
-
-                // Set global menu items before creating menu
-                _content_caption.IsEnabled = true;
-                _content_caption.BorderThickness = new Thickness(0, 0, 0, 0);
-                reset_caption_textbox();
-                _content_caption.KeyUp += (object sender, KeyEventArgs e) =>
-                {
-                    if (e.Key == Key.Enter)
-                    {
-                        reset_caption_textbox();
-                        Keyboard.ClearFocus();
-                    }
-                };
-                _content_caption.LostKeyboardFocus += (object sender, KeyboardFocusChangedEventArgs e) =>
-                {
-                    reset_caption_textbox();
-                };
 
                 var _menu_rename = MenubarMain.GetDefaultMenuItem("Rename");
                 _menu_rename.Click += (object sender, RoutedEventArgs e) =>
@@ -352,19 +339,18 @@ namespace Core
                 item_content_delete.Name = _item_id_delete_content;
                 item_content_delete.Click += event_menuitem_click;
                 item_content_delete.IsEnabled = false;
-
                 _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_content_delete);
 
                 var item_content_dad = new MenuItem();
                 item_content_dad.Style = ColorTheme.MenuItemIconStyle("drag-and-drop.png");
                 item_content_dad.Header = "Content Swap";
-                item_content_dad.IsHitTestVisible = false;
-                item_content_dad.Focusable = false;
                 _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_content_dad);
 
                 var item_content_dad_text = new MenuItem();
                 item_content_dad_text.Header = "Drag&Drop [Middle Mouse Button]";
                 item_content_dad_text.IsEnabled = false;
+                item_content_dad_text.IsHitTestVisible = false;
+                item_content_dad_text.Focusable = false;
                 item_content_dad.Items.Add(item_content_dad_text);
 
                 // ----- DATA -----------------------------------------
@@ -383,7 +369,7 @@ namespace Core
                 var sender_content = sender as MenuItem;
                 if (sender_content == null)
                 {
-                    Log.Default.Msg(Log.Level.Error, "Expected menu item");
+                    Log.Default.Msg(Log.Level.Error, "Unexpected sender");
                     return;
                 }
 
@@ -461,13 +447,6 @@ namespace Core
                 _parent_branch.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.Top_Left, 0.7);
                 previous_parent_branch._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_FilterEditor);
                 return true;
-            }
-
-            private void reset_caption_textbox()
-            {
-                _content_caption.Focusable = false;
-                _content_caption.Cursor = Cursors.Arrow;
-                _content_caption.Style = ColorTheme.ContentCaptionStyle();
             }
 
             /// <summary>
@@ -589,6 +568,15 @@ namespace Core
                 return conform_name;
             }
 
+            private Binding create_caption_binding()
+            {
+                var caption_binding = new Binding("Text");
+                caption_binding.Mode = BindingMode.TwoWay;
+                caption_binding.Source = _content_caption;
+                return caption_binding;
+                /// _filter_caption.SetBinding(TextBlock.TextProperty, caption_binding);
+            }
+
             #endregion
 
             /* ------------------------------------------------------------------*/
@@ -596,7 +584,7 @@ namespace Core
 
             private Grid _content_child = null;
             private MenubarWindow _menu = null;
-            private TextBox _content_caption = null;
+            private RenameLabel _content_caption = null;
 
             private readonly string _item_id_hori_top = "item_horizontal_top_" + UniqueID.GenerateString();
             private readonly string _item_id_hori_bottom = "item_horizontal_bottom_" + UniqueID.GenerateString();

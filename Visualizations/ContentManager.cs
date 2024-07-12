@@ -9,6 +9,7 @@ using SciChart.Core.Extensions;
 using Core.GUI;
 using Core.Data;
 using Core.Filter;
+using System.Windows.Data;
 
 
 
@@ -231,7 +232,7 @@ namespace Visualizations
         /// <param name="content_uid">The string ID of the content if present.</param>
         /// <param name="content_type">Using string for content type to allow cross project compatibility.</param> 
         /// <returns>Tuple of content ID and the WPF Control element holding the actual content.</returns>
-        public AttachContentMetaData_Type CreateContentCallback(int content_uid, string content_type)
+        public AttachContentMetaData_Type CreateContentCallback(int content_uid, string content_type, Binding name_binding)
         {
             if (!_initialized)
             {
@@ -269,6 +270,14 @@ namespace Visualizations
                             _contents[type].Add(temp_uid, new_content);
                         }
                     }
+
+                    // Only add content with valid data uid to filter list
+                    int data_uid = _contents[type][temp_uid]._DataUID;
+                    if (data_uid != UniqueID.InvalidInt) {
+                        var content_metadata = new AbstractFilter.ContentMetadata() { NameBinding = name_binding, DataUID = data_uid };
+                        _filtermanager.AddContentMetadataCallback(content_metadata);
+                    }
+
                     return new AttachContentMetaData_Type(temp_uid, _contents[type][temp_uid].GetUI(), _contents[type][temp_uid].AttachMenu);
                 }
                 else
@@ -295,7 +304,14 @@ namespace Visualizations
             {
                 if (content_types.Value.ContainsKey(content_uid))
                 {
-                    _datamanager.UnregisterDataCallback(content_types.Value[content_uid]._DataUID);
+                    // Filter Editor requires special handling
+                    if (content_types.Key == typeof(WPF_FilterEditor))
+                    {
+                        /// XXX TODO Delete all filters?
+                    }
+                    int data_uid = content_types.Value[content_uid]._DataUID;
+                    _filtermanager.DeleteContentMetadataCallback(data_uid);
+                    _datamanager.UnregisterDataCallback(data_uid);
                     content_types.Value[content_uid].Terminate();
                     return content_types.Value.Remove(content_uid);
                 }
@@ -312,10 +328,15 @@ namespace Visualizations
         /// <summary>
         /// Reset specific content (only used in AbstractRegisterService)
         /// </summary>
-        /// <param name="filter_value"></param>
+        /// <param name="content_value"></param>
         /// <returns></returns>
         protected override bool reset_content(AbstractVisualization content_value)
         {
+            // Filter Editor requires special handling
+            if (content_value.GetType() == typeof(WPF_FilterEditor))
+            {
+                /// XXX TODO Delete all filters?
+            }
             _datamanager.UnregisterDataCallback(content_value._DataUID);
             return content_value.Terminate();
         }

@@ -24,5 +24,7 @@
 	<SolidColorBrush x:Key="Brush_MenuBarBorder" Color="LightSteelBlue"/>
 
 	<SolidColorBrush x:Key="Brush_MenuItemForeground" Color="Black"/>
-	
+
+    <SolidColorBrush x:Key="Brush_ApplyDirtyBackground" Color="IndianRed"/>
+    
 </ResourceDictionary>

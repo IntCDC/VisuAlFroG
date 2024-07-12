@@ -6,6 +6,7 @@ using Core.GUI;
 using Core.Utilities;
 using Core.Filter;
 using Core.Data;
+using static Core.Abstracts.AbstractFilter;
 
 
 
@@ -64,6 +65,8 @@ namespace Core
                 _timer.Start();
 
 
+                _content_metadata = new List<AbstractFilter.ContentMetadata>();
+
                 _get_selected_data_callback = get_selected_data_callback;
                 _update_selected_data_callback = update_selected_data_callback;
 
@@ -97,7 +100,7 @@ namespace Core
                 foreach (var filter_data in _contents)
                 {
                     var filter_metadata = new FilterListMetadata();
-                    filter_metadata.ID = id; // for enumeration in combobox
+                    ///filter_metadata.ID = id; // for enumeration in combobox
                     filter_metadata.Name = filter_data.Key.Name;
                     filter_metadata.Type = filter_data.Key;
                     list.Add(filter_metadata);
@@ -109,6 +112,13 @@ namespace Core
             public void SetModifyUIFilterList(ModifyUIFilterList_Delegate modify_ui_filter_list_callback)
             {
                 _modify_ui_filter_list_callback = modify_ui_filter_list_callback;
+                foreach (var filter_data in _contents)
+                {
+                    foreach (var filter in filter_data.Value)
+                    {
+                        _modify_ui_filter_list_callback(filter.Value.GetUI(), AbstractFilter.ListModification.ADD);
+                    }
+                }
             }
 
             public bool CreateFilterCallback(Type filter_type)
@@ -127,12 +137,12 @@ namespace Core
                 if (_contents.ContainsKey(filter_type))
                 {
                     var filter = (AbstractFilter)Activator.CreateInstance(filter_type);
-                    if (filter.Initialize(_get_selected_data_callback, _update_selected_data_callback, _modify_ui_filter_list_callback))
+                    if (filter.Initialize(_get_selected_data_callback, _update_selected_data_callback, _modify_ui_filter_list_callback, DeleteFilterCallback))
                     {
-                        filter.ProvideContentDataCallback(_content_metadata);
                         if (filter.CreateUI())
                         {
-                            _contents[filter_type].Add(filter._UID, filter);                           
+                            filter.ContentMetadataListCallback(_content_metadata);
+                            _contents[filter_type].Add(filter._UID, filter);
                             return true;
                         }
                         else
@@ -199,15 +209,34 @@ namespace Core
                 return false;
             }
 
-            public void ProvideContentDataCallback(List<AbstractFilter.ContentMetadata> content_metadata)
+            public void AddContentMetadataCallback(AbstractFilter.ContentMetadata content_metadata)
             {
-                _content_metadata = content_metadata;
+                _content_metadata.Add(content_metadata);
 
                 foreach (var filter_type in _contents)
                 {
                     foreach (var filter in filter_type.Value)
                     {
-                        filter.Value.ProvideContentDataCallback(content_metadata);
+                        filter.Value.ContentMetadataListCallback(_content_metadata);
+                    }
+                }
+            }
+
+            public void DeleteContentMetadataCallback(int data_uid)
+            {
+                foreach (var cm in _content_metadata)
+                {
+                    if (cm.DataUID == data_uid)
+                    {
+                        _content_metadata.Remove(cm);
+                        break;
+                    }
+                }
+                foreach (var filter_type in _contents)
+                {
+                    foreach (var filter in filter_type.Value)
+                    {
+                        filter.Value.ContentMetadataListCallback(_content_metadata);
                     }
                 }
             }
@@ -238,7 +267,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region private variables
 
+            // Required to provide new filters with content metadata
             private List<AbstractFilter.ContentMetadata> _content_metadata = null;
+
             private DataManager.UpdateSelectedDataCallback_Delegate _update_selected_data_callback = null;
             private DataManager.GetGenericDataCallback_Delegate _get_selected_data_callback = null;
             private ModifyUIFilterList_Delegate _modify_ui_filter_list_callback = null;

@@ -14,6 +14,7 @@ using Core.GUI;
 using ReadContentMetaData_Type = System.Tuple<string, bool, bool, string>;
 
 using AttachContentMetaData_Type = System.Tuple<int, System.Windows.UIElement, Core.Abstracts.AbstractVisualization.AttachWindowMenu_Delegate>;
+using System.Windows.Data;
 
 
 namespace Core
@@ -27,7 +28,7 @@ namespace Core
 
             public delegate List<ReadContentMetaData_Type> AvailableContents_Delegate();
 
-            public delegate AttachContentMetaData_Type CreateContent_Delegate(int content_uid, string content_type);
+            public delegate AttachContentMetaData_Type CreateContent_Delegate(int content_uid, string content_type, Binding name_binding);
 
             public delegate bool DeleteContent_Delegate(int content_uid);
 

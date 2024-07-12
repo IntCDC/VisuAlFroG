@@ -46,6 +46,9 @@ namespace Core
             protected override UIElement create_ui()
             {
                 var ui = new Grid();
+                _Name = "Value Selection";
+
+                ui.Height = 150;
 
 
                 return ui;

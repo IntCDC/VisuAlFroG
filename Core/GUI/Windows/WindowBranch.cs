@@ -214,8 +214,7 @@ namespace Core
 
                 if (_Leaf != null)
                 {
-                    /// Don't do that because this will delete newly added visualizations having the same ID as the previous one:
-                    //_Leaf.ResetLeaf();
+                    _Leaf.ResetLeaf();
                     _Leaf = null;
                 }
                 _Orientation = SplitOrientation.None;
@@ -418,8 +417,7 @@ namespace Core
                 _Children = null;
                 if (_Leaf != null)
                 {
-                    /// Don't do that because this will delete newly added visualizations having the same ID as the previous one:
-                    //_Leaf.ResetLeaf();
+                    _Leaf.ResetLeaf();
                     _Leaf = null;
                 }
                 _Orientation = SplitOrientation.None;

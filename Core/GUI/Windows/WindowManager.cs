@@ -93,37 +93,61 @@ namespace Core
                 return false;
             }
 
-            /// <summary>
-            /// Load default window configuration.
-            /// </summary>
-            public void CreateDefault()
+            public override void AttachMenu(MenubarMain menu_bar)
             {
-                if (!_initialized)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return;
-                }
+                var default_item = MenubarMain.GetDefaultMenuItem("Load Default", menu_create_default);
+                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.VIEW, default_item);
 
-                /*
-                _______________________________
-                |Data Viewer |                |
-                |            |                |
-                |            |                |
-                |____________|________________|
-                |Log Console                  |
-                |_____________________________|
-                */
-                _window_root.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.None, 0.7);
-                _window_root._Children.Item1.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.None, 0.31);
-                _window_root._Children.Item1._Children.Item1._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_DataViewer);
-                _window_root._Children.Item1._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_SciChartLines);
-                _window_root._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_LogConsole);
+                var clear_item = MenubarMain.GetDefaultMenuItem("Clear All", menu_clear_all);
+                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.VIEW, clear_item);
             }
 
             #endregion
 
             /* ------------------------------------------------------------------*/
             #region private functions
+
+            /// <summary>
+            /// Remove all windows and their content.
+            /// </summary>
+            private bool menu_clear_all()
+            {
+                _window_root.ResetRoot();
+                return true;
+            }
+
+            /// <summary>
+            /// Load default window configuration.
+            /// </summary>
+            private bool menu_create_default()
+            {
+                if (!_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return false;
+                }
+
+                _window_root.ResetRoot();
+
+                /*
+                ___________________________________
+                |Data Viewer |Lines      |Filter  |
+                |            |           |        |
+                |            |           |        |
+                |____________|___________|        |
+                |Log Console             |        |
+                |________________________|________|
+                */
+                _window_root.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.None, 0.8);
+                _window_root._Children.Item1.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.None, 0.7);
+                _window_root._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_FilterEditor);
+                _window_root._Children.Item1._Children.Item1.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.None, 0.31);
+                _window_root._Children.Item1._Children.Item1._Children.Item1._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_DataViewer);
+                _window_root._Children.Item1._Children.Item1._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_SciChartLines);
+                _window_root._Children.Item1._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_LogConsole);
+
+                return true;
+            }
 
             /// <summary>
             /// Traverse window tree in breadth first order to gather all configurations recursively.
