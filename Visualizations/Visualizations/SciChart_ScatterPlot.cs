@@ -23,7 +23,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public properties
 
-        public override string _TypeName { get { return "Scatter Plot (SciChart)"; } }
+        public override string _Name { get { return "Scatter Plot (SciChart)"; } }
 
         #endregion
 

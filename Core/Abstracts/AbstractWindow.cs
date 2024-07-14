@@ -13,7 +13,7 @@ using Core.GUI;
 // Arguments: <content name, flag: is content available, flag: are multiple instances allowed, content type>
 using ReadContentMetaData_Type = System.Tuple<string, bool, bool, string>;
 
-using AttachContentMetaData_Type = System.Tuple<int, System.Windows.UIElement, Core.Abstracts.AbstractVisualization.AttachWindowMenu_Delegate>;
+using AttachContentMetaData_Type = System.Tuple<int, string, System.Windows.UIElement, Core.Abstracts.AbstractVisualization.AttachWindowMenu_Delegate>;
 using System.Windows.Data;
 
 

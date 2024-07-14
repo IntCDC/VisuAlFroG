@@ -28,7 +28,7 @@ namespace Core
             /// <summary>
             /// The unique type name of the content, e.g. used in the context menu to select new content type.
             /// </summary>
-            string _TypeName { get; }
+            string _Name { get; }
 
             /// <summary>
             /// True if multiple instances of the content would be created, false otherwise.

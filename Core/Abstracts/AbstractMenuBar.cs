@@ -146,6 +146,19 @@ namespace Core
                 return null;
             }
 
+
+            public void AddSubMenuOpenEvent(EnumOptionType main_option, RoutedEventHandler event_handler)
+            {
+                if (_main_menu_items.ContainsKey(main_option))
+                {
+                    _main_menu_items[main_option].SubmenuOpened += event_handler;
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Could not find main menu option: '" + main_option.ToString() + "'");
+                }
+            }
+
             #endregion
 
             /* ------------------------------------------------------------------*/

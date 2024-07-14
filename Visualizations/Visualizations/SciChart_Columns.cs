@@ -22,7 +22,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public properties
 
-        public override string _TypeName { get { return "Columns (SciChart)"; } }
+        public override string _Name { get { return "Columns (SciChart)"; } }
 
         #endregion
 

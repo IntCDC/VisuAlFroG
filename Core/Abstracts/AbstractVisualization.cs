@@ -55,7 +55,7 @@ namespace Core
 
             public int _UID { get; } = UniqueID.GenerateInt();
             public int _DataUID { get; set; } = UniqueID.InvalidInt;
-            public abstract string _TypeName { get; }
+            public abstract string _Name { get; }
             public abstract bool _MultipleInstances { get; }
             public abstract List<Type> _DependingServices { get; }
 

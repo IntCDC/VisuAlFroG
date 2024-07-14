@@ -176,6 +176,8 @@ namespace Frontend
                 loading_progress.SetValue(30);
 
                 // Register configurations
+                /// TODO var filtermanager = _contentmanager.GetFilterManager();
+                ///      _configurationservice.RegisterConfiguration(filtermanager._Name, filtermanager.CollectConfigurations, filtermanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_contentmanager._Name, _contentmanager.CollectConfigurations, _contentmanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_winmanager._Name, _winmanager.CollectConfigurations, _winmanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_colortheme._Name, _colortheme.CollectConfigurations, _colortheme.ApplyConfigurations);

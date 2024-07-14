@@ -236,14 +236,15 @@ namespace Core
             /// Request the parent branch to delete this branch holding a leaf.
             /// Called by the leaf of this branch.
             /// </summary>
-            public void DeleteLeaf()
+            public bool DeleteLeaf()
             {
                 if (_parent_branch == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Parent should not be null");
-                    return;
+                    return false;
                 }
                 _parent_branch.delete_childbranch(this);
+                return true;
             }
 
             #endregion

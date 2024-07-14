@@ -24,7 +24,7 @@ namespace Core
                 VIEW,
                 STYLE,
                 DATA,
-                HELP,
+                INFO,
             }
 
             #endregion
@@ -40,7 +40,7 @@ namespace Core
                     add_main_menu("View", PredefinedMenuOption.VIEW);
                     add_main_menu("Data", PredefinedMenuOption.DATA);
                     add_main_menu("Style", PredefinedMenuOption.STYLE);
-                    add_main_menu("Help", PredefinedMenuOption.HELP);
+                    add_main_menu("Info", PredefinedMenuOption.INFO);
 
                     add_repo_link();
                 }
@@ -62,7 +62,7 @@ namespace Core
                 var repo_menu_item = new MenuItem();
                 repo_menu_item.Style = ColorTheme.MenuItemIconStyle("github.png");
                 repo_menu_item.Header = hyper_link;
-                AddMenu(PredefinedMenuOption.HELP, repo_menu_item);
+                AddMenu(PredefinedMenuOption.INFO, repo_menu_item);
             }
 
             /// <summary>

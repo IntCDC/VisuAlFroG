@@ -21,7 +21,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public properties
 
-        public override string _TypeName { get { return "Lines (SciChart)"; } }
+        public override string _Name { get { return "Lines (SciChart)"; } }
 
         #endregion
 

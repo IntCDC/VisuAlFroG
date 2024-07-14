@@ -23,7 +23,7 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public properties
 
-        public override string _TypeName { get { return "Log Console (WPF)"; } }
+        public override string _Name { get { return "Log Messages"; } }
         public override bool _MultipleInstances { get { return false; } }
 
         // Indicates to not create an unused copy of the data

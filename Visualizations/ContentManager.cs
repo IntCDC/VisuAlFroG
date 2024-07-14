@@ -21,7 +21,7 @@ using System.Windows.Data;
 // Arguments: <content name, flag: is content available, flag: are multiple instances allowed, content type>
 using ReadContentMetaData_Type = System.Tuple<string, bool, bool, string>;
 using ContentCallbacks_Type = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.CreateContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
-using AttachContentMetaData_Type = System.Tuple<int, System.Windows.UIElement, Core.Abstracts.AbstractVisualization.AttachWindowMenu_Delegate>;
+using AttachContentMetaData_Type = System.Tuple<int, string, System.Windows.UIElement, Core.Abstracts.AbstractVisualization.AttachWindowMenu_Delegate>;
 
 
 namespace Visualizations
@@ -102,11 +102,7 @@ namespace Visualizations
                     configurations.Add(new AbstractVisualization.Configuration() { UID = content_data.Value._UID, Type = content_types.Key.FullName });
                 }
             }
-            string visualization_configuration_string = ConfigurationService.Serialize<List<AbstractVisualization.Configuration>>(configurations);
-
-            var filtermanager_configiguration_string = _filtermanager.CollectConfigurations();
-            
-            return visualization_configuration_string + filtermanager_configiguration_string;
+            return ConfigurationService.Serialize<List<AbstractVisualization.Configuration>>(configurations);
         }
 
         public bool ApplyConfigurations(string configurations)
@@ -147,6 +143,7 @@ namespace Visualizations
                                 return false;
                             }
                             _contents[type].Add(new_content._UID, new_content);
+                            success &= true;
                         }
                         else
                         {
@@ -158,12 +155,7 @@ namespace Visualizations
                         Log.Default.Msg(Log.Level.Error, "Unregistered content type: " + type.ToString());
                     }
                 }
-                success &= true;
             }
-
-            // First create content and then create filters relying on content
-            success &= _filtermanager.ApplyConfigurations(configurations);
-
             return success;
         }
 
@@ -188,6 +180,7 @@ namespace Visualizations
         {
             _datamanager.UpdateAllDataCallback(input_data);
         }
+
         public void SetOutputDataCallback(DataManager.SetDataCallback_Delegate _outputdata_callback)
         {
             _datamanager.SetOutputDataCallback(_outputdata_callback);
@@ -214,7 +207,7 @@ namespace Visualizations
 
                 // Create temporary instance of content
                 var tmp_content = (AbstractVisualization)Activator.CreateInstance(content_type, UniqueID.InvalidInt);
-                string header = tmp_content._TypeName;
+                string header = tmp_content._Name;
                 bool multiple_instances = tmp_content._MultipleInstances;
 
                 // Content is only available if multiple instance are allowed or has not been instantiated yet
@@ -278,7 +271,7 @@ namespace Visualizations
                         _filtermanager.AddContentMetadataCallback(content_metadata);
                     }
 
-                    return new AttachContentMetaData_Type(temp_uid, _contents[type][temp_uid].GetUI(), _contents[type][temp_uid].AttachMenu);
+                    return new AttachContentMetaData_Type(temp_uid, _contents[type][temp_uid]._Name, _contents[type][temp_uid].GetUI(), _contents[type][temp_uid].AttachMenu);
                 }
                 else
                 {

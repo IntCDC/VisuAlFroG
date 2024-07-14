@@ -65,28 +65,34 @@ namespace Core
             /// <param name="content_callbacks">The content callbacks required in the window leaf.</param>
             public WindowLeaf(WindowBranch parent_branch, bool parent_is_root, ContentCallbacks_Type content_callbacks)
             {
-                _parent_branch = parent_branch;
-                _parent_is_root = parent_is_root;
-                _content_callbacks = content_callbacks;
-                if (_parent_branch == null)
+                if (parent_branch == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Parameter parent_branch should not be null");
                     return;
                 }
-                if (_content_callbacks == null)
+                if (content_callbacks == null)
                 {
                     Log.Default.Msg(Log.Level.Error, "Parameter content_callbacks should not be null");
                     return;
                 }
+                _parent_branch = parent_branch;
+                _parent_is_root = parent_is_root;
+                _content_callbacks = content_callbacks;
 
                 _menu = new MenubarWindow();
                 _content_caption = new RenameLabel();
                 _content_child = new Grid();
 
-                _Name = "";
+                _AttachedContent = null;
+                _Name = _default_caption;
 
                 _content_child.SetResourceReference(Grid.BackgroundProperty, "Brush_Background");
                 _content_child.Name = "grid_" + UniqueID.GenerateString();
+                // Drag and drop
+                _content_child.MouseMove += event_content_mousemove;
+                _content_child.AllowDrop = true;
+                _content_child.DragOver += event_content_dragover;
+                _content_child.Drop += event_content_drop;
 
                 var content_panel = new DockPanel();
                 StackPanel stack = new StackPanel();
@@ -97,14 +103,6 @@ namespace Core
 
                 _Content = new Grid();
                 _Content.Children.Add(content_panel);
-
-                delete_content();
-
-                // Drag and drop
-                _content_child.MouseMove += event_content_mousemove;
-                _content_child.AllowDrop = true;
-                _content_child.DragOver += event_content_dragover;
-                _content_child.Drop += event_content_drop;
             }
 
             /// <summary>
@@ -118,23 +116,29 @@ namespace Core
                 var content_metadata = _content_callbacks.Item2(uid, content_type, create_caption_binding());
                 if (content_metadata != null)
                 {
-                    if ((content_metadata.Item1 != UniqueID.InvalidInt) && (content_metadata.Item2 != null))
+                    if ((content_metadata.Item1 != UniqueID.InvalidInt) && (content_metadata.Item3 != null))
                     {
-                        _content_child.Children.Add(content_metadata.Item2);
+                        _content_child.Children.Add(content_metadata.Item3);
                         _AttachedContent = new AttachedContent_Type(content_metadata.Item1, content_type);
 
-                        var menu_item = _menu.FindMenuItemByName(_item_id_delete_content);
-                        if (menu_item != null)
+                        // Enable delete content option
+                        var delete_content_menu_item = _menu.FindMenuItemByName(_item_id_delete_content);
+                        if (delete_content_menu_item != null)
                         {
-                            menu_item.IsEnabled = true;
+                            delete_content_menu_item.IsEnabled = true;
                         }
 
+                        // Set content caption
+                        _Name = content_metadata.Item2;
+
                         _menu.Clear(MenubarWindow.PredefinedMenuOption.CONTENT);
+
                         _menu.Clear(MenubarWindow.PredefinedMenuOption.DATA);
-                        /// XXX Exclude some content from having the following menu --- Find better solution!
+                        /// XXX Exclude some content from having the following menu --- Find better solution... Check if DataUID=Invalid but not available here
                         if (!((content_type == AbstractVisualization.TypeString_FilterEditor) || (content_type == AbstractVisualization.TypeString_LogConsole)))
                         {
                             var filter_menu_item = MenubarMain.GetDefaultMenuItem("Open Filter Editor", open_filter_editor);
+                            _menu.AddMenu(MenubarWindow.PredefinedMenuOption.DATA, filter_menu_item);
 
                             List<ReadContentMetaData_Type> available_child_content = _content_callbacks.Item1();
                             foreach (var content_data in available_child_content)
@@ -149,7 +153,6 @@ namespace Core
                             {
                                 Log.Default.Msg(Log.Level.Error, "Could not find content.");
                             }
-                            _menu.AddMenu(MenubarWindow.PredefinedMenuOption.DATA, filter_menu_item);
                             var parent = filter_menu_item.Parent as MenuItem;
                             if (parent != null)
                             {
@@ -159,10 +162,9 @@ namespace Core
                             {
                                 Log.Default.Msg(Log.Level.Error, "Missing parent menu item.");
                             }
-                        }
-                        content_metadata.Item3(_menu);
 
-                        if (_Name == "") _Name = content_type;
+                        }
+                        content_metadata.Item4(_menu);
                     }
                     else
                     {
@@ -207,6 +209,27 @@ namespace Core
 
             /* ------------------------------------------------------------------*/
             #region private functions
+
+            /// <summary>
+            /// Delete attached content permanently.
+            /// </summary>
+            private void delete_content(bool only_detach = false)
+            {
+                _content_child.Children.Clear();
+                _Name = _default_caption;
+                if (_AttachedContent != null)
+                {
+                    if (!only_detach)
+                    {
+                        if (_AttachedContent.Item1 != UniqueID.InvalidInt)
+                        {
+                            // Call Delete Content
+                            _content_callbacks.Item3(_AttachedContent.Item1);
+                        }
+                    }
+                    _AttachedContent = null;
+                }
+            }
 
             /// <summary>
             /// Create content menu.
@@ -293,8 +316,8 @@ namespace Core
                 item_delete.Style = ColorTheme.MenuItemIconStyle("delete-window.png");
                 item_delete.Header = "Delete Window";
                 item_delete.Name = _item_id_window_delete;
-                item_delete.MouseLeftButtonDown += event_menuitem_click;
-                item_delete.IsEnabled = (!_parent_is_root);
+                item_delete.Click += event_menuitem_click;
+                _menu.AddSubMenuOpenEvent(MenubarWindow.PredefinedMenuOption.VIEW, event_menuitem_deletewindow_state);
                 _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_delete);
 
                 _menu.AddSeparator(MenubarWindow.PredefinedMenuOption.VIEW);
@@ -398,6 +421,7 @@ namespace Core
                 else if (uid == _item_id_delete_content)
                 {
                     delete_content();
+                    // Disable delete content option
                     sender_content.IsEnabled = false;
                 }
 
@@ -411,6 +435,20 @@ namespace Core
                         delete_content();
                         CreateContent(UniqueID.InvalidInt, content_data.Item4);
                     }
+                }
+            }
+
+            /// <summary>
+            /// Called to dynamically determine whether the delete window option should be active or not.
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+            private void event_menuitem_deletewindow_state(object sender, RoutedEventArgs e)
+            {
+                var target_menuitem = _menu.FindMenuItemByName(_item_id_window_delete);
+                if (target_menuitem != null)
+                {
+                    target_menuitem.IsEnabled = (!_parent_is_root);
                 }
             }
 
@@ -447,26 +485,6 @@ namespace Core
                 _parent_branch.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.Top_Left, 0.7);
                 previous_parent_branch._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_FilterEditor);
                 return true;
-            }
-
-            /// <summary>
-            /// Delete attached content permanently.
-            /// </summary>
-            private void delete_content(bool only_detach = false)
-            {
-                _content_child.Children.Clear();
-                if (_AttachedContent != null)
-                {
-                    if (!only_detach)
-                    {
-                        if (_AttachedContent.Item1 != UniqueID.InvalidInt)
-                        {
-                            // Call Delete Content
-                            _content_callbacks.Item3(_AttachedContent.Item1);
-                        }
-                    }
-                    _AttachedContent = null;
-                }
             }
 
             /// <summary>
@@ -574,7 +592,7 @@ namespace Core
                 caption_binding.Mode = BindingMode.TwoWay;
                 caption_binding.Source = _content_caption;
                 return caption_binding;
-                /// _filter_caption.SetBinding(TextBlock.TextProperty, caption_binding);
+                /// Client: _filter_caption.SetBinding(TextBlock.TextProperty, caption_binding);
             }
 
             #endregion
@@ -585,6 +603,8 @@ namespace Core
             private Grid _content_child = null;
             private MenubarWindow _menu = null;
             private RenameLabel _content_caption = null;
+
+            private const string _default_caption = "[ ]";
 
             private readonly string _item_id_hori_top = "item_horizontal_top_" + UniqueID.GenerateString();
             private readonly string _item_id_hori_bottom = "item_horizontal_bottom_" + UniqueID.GenerateString();
