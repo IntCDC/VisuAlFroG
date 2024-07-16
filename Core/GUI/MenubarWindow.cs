@@ -23,7 +23,7 @@ namespace Core
             public enum PredefinedMenuOption
             {
                 VIEW,
-                CONTENT,
+                OPTIONS,
                 DATA,
             }
 
@@ -37,7 +37,7 @@ namespace Core
                 if (base.Initialize())
                 {
                     add_main_menu("View", PredefinedMenuOption.VIEW);
-                    add_main_menu("Content", PredefinedMenuOption.CONTENT);
+                    add_main_menu("Options", PredefinedMenuOption.OPTIONS);
                     add_main_menu("Data", PredefinedMenuOption.DATA);
 
                 }

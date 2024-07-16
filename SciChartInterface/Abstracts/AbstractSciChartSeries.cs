@@ -143,7 +143,7 @@ namespace SciChartInterface
                 clue_item.InputGestureText = "Right Mouse";
                 clue_item.IsEnabled = false;
                 option_hint.Items.Add(clue_item);
-                menubar.AddMenu(MenubarWindow.PredefinedMenuOption.CONTENT, option_hint);
+                menubar.AddMenu(MenubarWindow.PredefinedMenuOption.OPTIONS, option_hint);
             }
             #endregion
 

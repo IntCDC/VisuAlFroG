@@ -35,7 +35,7 @@ namespace Core
             public delegate void SetDataCallback_Delegate(GenericDataStructure ouput_data);
 
             public delegate GenericDataStructure GetGenericDataCallback_Delegate(int data_uid);
-            public delegate void UpdateSelectedDataCallback_Delegate(GenericDataStructure input_data, List<int> data_uids);
+            public delegate void UpdateSelectedDataCallback_Delegate(int data_uid, GenericDataStructure input_data);
 
             public delegate int RegisterDataCallback_Delegate(Type data_type, UpdateVisualizationCallback_Delegate update_callback);
             public delegate void UnregisterUpdateCallback_Delegate(int data_uid);
@@ -121,7 +121,7 @@ namespace Core
             /// Callback to propagate new input data to selected data types in the data manager.
             /// </summary>
             /// <param name="input_data">The new input data.</param>
-            public void UpdateSelectedDataCallback(GenericDataStructure input_data, List<int> data_uids)
+            public void UpdateSelectedDataCallback(int data_uid, GenericDataStructure input_data)
             {
                 if (!_initialized)
                 {
@@ -134,16 +134,12 @@ namespace Core
                     return;
                 }
 
-                foreach (int data_uid in data_uids)
+                if (!_data_library.ContainsKey(data_uid))
                 {
-                    if (!_data_library.ContainsKey(data_uid))
-                    {
-                        Log.Default.Msg(Log.Level.Error, "Received unknown data UID");
-                        continue;
-                    }
-                    _data_library[data_uid]._Data.UpdateData(input_data);
-                    _data_library[data_uid]._UpdateVisualization(true);
+                    Log.Default.Msg(Log.Level.Error, "Received unknown data UID");
                 }
+                _data_library[data_uid]._Data.UpdateData(input_data);
+                _data_library[data_uid]._UpdateVisualization(true);
             }
 
             /// <summary>

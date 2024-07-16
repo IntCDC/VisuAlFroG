@@ -116,8 +116,7 @@
     <Compile Include="Data\GenericDataStructure.cs" />
     <Compile Include="Data\GenericMetaData.cs" />
     <None Include="Filtering\Filter.cs.template" />
-    <Compile Include="Filtering\ValueSelectionFilter.cs" />
-    <Compile Include="Filtering\ColumnSelectionFilter.cs" />
+    <Compile Include="Filtering\TransposeFilter.cs" />
     <Compile Include="Filtering\FilterManager.cs" />
     <Compile Include="GUI\LoadingProgressBar.cs">
       <SubType>Component</SubType>

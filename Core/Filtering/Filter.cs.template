@@ -10,7 +10,7 @@ using Core.Abstracts;
 
 INSTRUCTIONS for creating own custom data filter:
 
-see https://github.com/IntCDC/VisuAlFroG/blob/main/docs/developer-uide.md
+see https://github.com/IntCDC/VisuAlFroG/blob/main/docs/developer-guide.md
 
 */
 
@@ -31,16 +31,17 @@ namespace Core
             /// <summary>
             /// Class defining the configuration required for restoring content.
             /// </summary>
+            /*
             public class Configuration : AbstractFilter.Configuration
             {
-                //TODO Add additional information required to restore the filter
+                /// XXX TODO Add additional information required to restore the filter
             }
+*           */
 
             #endregion
 
             /* ------------------------------------------------------------------*/
             #region public functions
-
 
 
             #endregion
@@ -50,11 +51,23 @@ namespace Core
 
             protected override UIElement create_ui()
             {
-                var ui = new Grid();
+                _Name = "Transpose"; 
 
-				// Place the UI stuff of your filter here...
+                var ui = new TextBlock();
+                ui.Text = "Filter description ...";
+
+
+                // Call when value has changed and filter should be applied with changes
+                // set_apply_dirty();
+
 
                 return ui;
+            }
+
+            protected override void apply_filter(GenericDataStructure in_out_data)
+            {
+                // Change in_out_data accodingly...
+
             }
 
             #endregion

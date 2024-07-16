@@ -131,7 +131,7 @@ namespace Core
                         // Set content caption
                         _Name = content_metadata.Item2;
 
-                        _menu.Clear(MenubarWindow.PredefinedMenuOption.CONTENT);
+                        _menu.Clear(MenubarWindow.PredefinedMenuOption.OPTIONS);
 
                         _menu.Clear(MenubarWindow.PredefinedMenuOption.DATA);
                         /// XXX Exclude some content from having the following menu --- Find better solution... Check if DataUID=Invalid but not available here

@@ -45,7 +45,7 @@ namespace SciChartInterface
 
 
                 _Dimension = data.GetDimension();
-                _data_generic = data.DeepCopy(_update_metadata_handler);
+                _data_generic = data.DeepCopy();
 
                 // Create value - property name pairs
                 List<DataType> value_series = new List<DataType>();

@@ -18,7 +18,7 @@ namespace Core
 {
     namespace Filter
     {
-        public class ColumnSelectionFilter : AbstractFilter
+        public class TransposeFilter : AbstractFilter
         {
             /* ------------------------------------------------------------------*/
             #region public classes
@@ -26,16 +26,17 @@ namespace Core
             /// <summary>
             /// Class defining the configuration required for restoring content.
             /// </summary>
+            /*
             public class Configuration : AbstractFilter.Configuration
             {
                 /// XXX TODO Add additional information required to restore the filter
             }
+*           */
 
             #endregion
 
             /* ------------------------------------------------------------------*/
             #region public functions
-
 
 
             #endregion
@@ -45,13 +46,22 @@ namespace Core
 
             protected override UIElement create_ui()
             {
-                var ui = new Grid();
-                _Name = "Column Selection";
+                _Name = "Transpose"; 
 
-                ui.Height = 150;
+                var ui = new TextBlock();
+                ui.Text = "Transpose tabular 2D data";
+
+
+                // Call when filter option has changed and filter should be applied again
+                // SetDirty();
 
 
                 return ui;
+            }
+
+            protected override void apply_filter(GenericDataStructure in_out_data)
+            {
+                in_out_data.Transpose();
             }
 
             #endregion

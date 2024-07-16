@@ -56,12 +56,12 @@ namespace Visualizations
             _add_filter_list.IsEditable = false;
             _add_filter_list.DisplayMemberPath = "Name";
             _add_filter_list.SelectedIndex = 0;
-            _add_filter_list.Margin = new Thickness(0.0, 2.0, 2.0, 2.0);
+            _add_filter_list.Margin = new Thickness(0.0, _margin, _margin, _margin);
 
             var add_button = new Button();
             add_button.Content = " Add Filter ";
             add_button.Click += event_apply_button;
-            add_button.Margin = new Thickness(2.0, 4.0, 2.0, 4.0);
+            add_button.Margin = new Thickness(_margin, _margin/2.0, _margin, _margin/2.0);
 
             _list_scrolling = new ScrollViewer();
             _list_scrolling.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
@@ -77,16 +77,16 @@ namespace Visualizations
             note.Text = "Filters are applied sequentially from top to bottom.";
             note.SetResourceReference(TextBlock.BackgroundProperty, "Brush_Background");
             note.SetResourceReference(TextBlock.ForegroundProperty, "Brush_Foreground");
-            note.Margin = new Thickness(5.0, 5.0, 5.0, 5.0);
+            note.Margin = new Thickness(_margin);
 
             var note_border = new Border();
             note_border.Child = note;
             note_border.SetResourceReference(Border.BackgroundProperty, "Brush_Background");
-            note_border.BorderThickness = new Thickness(0.0, 0.0, 0.0, 2.0);
+            note_border.BorderThickness = new Thickness(0.0, 0.0, 0.0, _border_thickness);
             note_border.SetResourceReference(Border.BorderBrushProperty, "Brush_Foreground");
             note_border.CornerRadius = new CornerRadius(0);
 
-            note_border.Margin = new Thickness(0.0, 0.0, 0.0, 5.0);
+            note_border.Margin = new Thickness(0.0, 0.0, 0.0, _margin);
 
             var caption_grid = new Grid();
 
@@ -235,6 +235,9 @@ namespace Visualizations
 
         /* ------------------------------------------------------------------*/
         #region private variables
+
+        private const double _margin = 5.0;
+        private const double _border_thickness = 2.0;
 
         private ComboBox _add_filter_list = null;
         private ScrollViewer _list_scrolling = null;

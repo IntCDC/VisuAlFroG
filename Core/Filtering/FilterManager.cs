@@ -46,6 +46,7 @@ namespace Core
             public delegate bool CreateFilterCallback_Delegate(Type filter_type);
             public delegate bool DeleteFilterCallback_Delegate(int filter_uid);
             public delegate void ModifyUIFilterList_Delegate(UIElement element, AbstractFilter.ListModification mod);
+            public delegate void FilterChanged_Delegate(int filter_uid, List<int> data_uids);
 
             #endregion
 
@@ -65,13 +66,13 @@ namespace Core
                 _timer.Start();
 
 
-                _content_metadata = new List<AbstractFilter.ContentMetadata>();
+                _contents_metadata = new List<AbstractFilter.ContentMetadata>();
+                _ordered_filter_list = new List<int>();
 
                 _get_selected_data_callback = get_selected_data_callback;
                 _update_selected_data_callback = update_selected_data_callback;
 
-                register_content(typeof(ColumnSelectionFilter));
-                register_content(typeof(ValueSelectionFilter));
+                register_content(typeof(TransposeFilter));
 
 
                 _timer.Stop();
@@ -83,7 +84,9 @@ namespace Core
             {
                 if (_initialized)
                 {
-                    _content_metadata = null;
+                    _contents_metadata = null;
+                    _ordered_filter_list.Clear();
+                    _ordered_filter_list = null;
                     _update_selected_data_callback = null;
                     _get_selected_data_callback = null;
                     _modify_ui_filter_list_callback = null;
@@ -100,7 +103,7 @@ namespace Core
                 foreach (var filter_data in _contents)
                 {
                     var filter_metadata = new FilterListMetadata();
-                    ///filter_metadata.ID = id; // for enumeration in combobox
+                    ///filter_metadata.ID = id; /// required for enumeration in combobox?
                     filter_metadata.Name = filter_data.Key.Name;
                     filter_metadata.Type = filter_data.Key;
                     list.Add(filter_metadata);
@@ -112,13 +115,6 @@ namespace Core
             public void SetModifyUIFilterList(ModifyUIFilterList_Delegate modify_ui_filter_list_callback)
             {
                 _modify_ui_filter_list_callback = modify_ui_filter_list_callback;
-                foreach (var filter_data in _contents)
-                {
-                    foreach (var filter in filter_data.Value)
-                    {
-                        _modify_ui_filter_list_callback(filter.Value.GetUI(), AbstractFilter.ListModification.ADD);
-                    }
-                }
             }
 
             public bool CreateFilterCallback(Type filter_type)
@@ -137,12 +133,15 @@ namespace Core
                 if (_contents.ContainsKey(filter_type))
                 {
                     var filter = (AbstractFilter)Activator.CreateInstance(filter_type);
-                    if (filter.Initialize(_get_selected_data_callback, _update_selected_data_callback, _modify_ui_filter_list_callback, DeleteFilterCallback))
+                    if (filter.Initialize(_get_selected_data_callback, _update_selected_data_callback, this.filter_changed, DeleteFilterCallback))
                     {
                         if (filter.CreateUI())
                         {
-                            filter.ContentMetadataListCallback(_content_metadata);
+                            filter.ContentMetadataListCallback(_contents_metadata);
                             _contents[filter_type].Add(filter._UID, filter);
+                            _ordered_filter_list.Add(filter._UID);
+                            // Add filter to UI list
+                            _modify_ui_filter_list_callback(filter.GetUI(), ListModification.ADD);
                             return true;
                         }
                         else
@@ -169,7 +168,11 @@ namespace Core
                 {
                     if (filter_types.Value.ContainsKey(filter_uid))
                     {
+                        // Remove filter from UI list
+                        _modify_ui_filter_list_callback(filter_types.Value[filter_uid].GetUI(), ListModification.DELETE);
                         filter_types.Value[filter_uid].Terminate();
+                        // Call after terminate
+                        _ordered_filter_list.Remove(filter_types.Value[filter_uid]._UID);
                         return filter_types.Value.Remove(filter_uid);
                     }
                 }
@@ -211,24 +214,24 @@ namespace Core
 
             public void AddContentMetadataCallback(AbstractFilter.ContentMetadata content_metadata)
             {
-                _content_metadata.Add(content_metadata);
+                _contents_metadata.Add(content_metadata);
 
                 foreach (var filter_type in _contents)
                 {
                     foreach (var filter in filter_type.Value)
                     {
-                        filter.Value.ContentMetadataListCallback(_content_metadata);
+                        filter.Value.ContentMetadataListCallback(_contents_metadata);
                     }
                 }
             }
 
             public void DeleteContentMetadataCallback(int data_uid)
             {
-                foreach (var cm in _content_metadata)
+                foreach (var cm in _contents_metadata)
                 {
                     if (cm.DataUID == data_uid)
                     {
-                        _content_metadata.Remove(cm);
+                        _contents_metadata.Remove(cm);
                         break;
                     }
                 }
@@ -236,7 +239,7 @@ namespace Core
                 {
                     foreach (var filter in filter_type.Value)
                     {
-                        filter.Value.ContentMetadataListCallback(_content_metadata);
+                        filter.Value.ContentMetadataListCallback(_contents_metadata);
                     }
                 }
             }
@@ -261,6 +264,30 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region private functions
 
+            void filter_changed(int filter_uid, List<int> data_uids)
+            {
+                // Notify all subsequent filters that previous filter has changed and that their original data has changed
+                if (!_ordered_filter_list.Contains(filter_uid))
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing filter UID");
+
+                }
+
+                var index = _ordered_filter_list.FindIndex(f => (f == filter_uid));
+                for (int i = index+1; i < _ordered_filter_list.Count; i++)
+                {
+                    foreach (var filter_type in _contents)
+                    {
+                        foreach (var filter in filter_type.Value)
+                        {
+                            if (filter.Value._UID == _ordered_filter_list[i])
+                            {
+                                filter.Value.SetDirty(data_uids);
+                            }
+                        }
+                    }
+                }
+            }
 
             #endregion
 
@@ -268,7 +295,9 @@ namespace Core
             #region private variables
 
             // Required to provide new filters with content metadata
-            private List<AbstractFilter.ContentMetadata> _content_metadata = null;
+            private List<AbstractFilter.ContentMetadata> _contents_metadata = null;
+
+            private List<int> _ordered_filter_list = null;
 
             private DataManager.UpdateSelectedDataCallback_Delegate _update_selected_data_callback = null;
             private DataManager.GetGenericDataCallback_Delegate _get_selected_data_callback = null;

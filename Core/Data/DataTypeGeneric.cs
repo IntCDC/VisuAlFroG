@@ -38,7 +38,7 @@ namespace Core
 
 
                 _Dimension = data.GetDimension();
-                _data_generic = data.DeepCopy(_update_metadata_handler);
+                _data_generic = data.DeepCopy();
                 _data_specific = _data_generic;
                 init_metadata(_data_specific);
 

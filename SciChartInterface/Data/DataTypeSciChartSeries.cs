@@ -44,7 +44,7 @@ namespace SciChartInterface
                 _loaded = false;
 
                 _Dimension = data.GetDimension();
-                _data_generic = data.DeepCopy(_update_metadata_handler);
+                _data_generic = data.DeepCopy();
                 specificdata_conversion(data);
                 _loaded = true;
             }

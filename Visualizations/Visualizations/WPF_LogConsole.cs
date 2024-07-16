@@ -127,7 +127,7 @@ namespace Visualizations
         public override void AttachMenu(MenubarWindow menubar)
         {
             base.AttachMenu(menubar);
-            menubar.AddMenu(MenubarWindow.PredefinedMenuOption.CONTENT, MenubarMain.GetDefaultMenuItem("Copy to Clipboard", clipboard_content_click));
+            menubar.AddMenu(MenubarWindow.PredefinedMenuOption.OPTIONS, MenubarMain.GetDefaultMenuItem("Copy to Clipboard", clipboard_content_click));
         }
 
         #endregion

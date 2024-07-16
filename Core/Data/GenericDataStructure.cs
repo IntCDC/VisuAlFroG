@@ -33,6 +33,17 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region public functions
 
+            ///  DEBUG
+            public GenericDataStructure() 
+            {
+                Log.Default.Msg(Log.Level.Debug, " ----> Created new instance of GenericDataStructure");
+            }
+            ~GenericDataStructure()
+            {
+                Log.Default.Msg(Log.Level.Debug, " ----< Deleted instance of GenericDataStructure");
+            }
+            /// DEBUG
+
             public void AddBranch(GenericDataStructure branch) { _Branches.Add(branch); }
 
             public void AddEntry(GenericDataEntry entry) { _Entries.Add(entry); }
@@ -140,13 +151,13 @@ namespace Core
                 return true;
             }
 
-            public GenericDataStructure DeepCopy(PropertyChangedEventHandler update_metadata_handler)
+            public GenericDataStructure DeepCopy()
             {
                 var branch_clone = new GenericDataStructure();
 
                 foreach (var branch in _Branches)
                 {
-                    branch_clone.AddBranch(branch.DeepCopy(update_metadata_handler));
+                    branch_clone.AddBranch(branch.DeepCopy());
                 }
                 foreach (var entry in _Entries)
                 {
@@ -160,11 +171,8 @@ namespace Core
                     {
                         entry_clone._Types.Add(type);
                     }
-                    entry_clone._Metadata._Index = entry._Metadata._Index;
-                    entry_clone._Metadata._Label = entry._Metadata._Label;
-                    entry_clone._Metadata._Dimension = entry._Metadata._Dimension;
-                    entry_clone._Metadata._Selected = entry._Metadata._Selected;
-                    entry_clone._Metadata.PropertyChanged += update_metadata_handler;
+                    // Do not clone metadata since this should be shared even with deep copies
+                    entry_clone._Metadata = entry._Metadata;
                     branch_clone.AddEntry(entry_clone);
                 }
                 branch_clone._Label = _Label;
