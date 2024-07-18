@@ -604,7 +604,7 @@ namespace Core
             private MenubarWindow _menu = null;
             private RenameLabel _content_caption = null;
 
-            private const string _default_caption = "[ ]";
+            private const string _default_caption = "...";
 
             private readonly string _item_id_hori_top = "item_horizontal_top_" + UniqueID.GenerateString();
             private readonly string _item_id_hori_bottom = "item_horizontal_bottom_" + UniqueID.GenerateString();

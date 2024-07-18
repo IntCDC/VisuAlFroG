@@ -16,14 +16,14 @@ see https://github.com/IntCDC/VisuAlFroG/blob/main/docs/developer-guide.md
 
 
 /*
- *  Custom Data Filter
+ *  Custom Row Selection Data Filter
  * 
  */
 namespace Core
 {
     namespace Filter
     {
-        public class CustomFilter : AbstractFilter
+        public class RowSelectionFilter : AbstractFilter
         {
             /* ------------------------------------------------------------------*/
             #region public classes
@@ -43,6 +43,11 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region public functions
 
+            public RowSelectionFilter()
+            {
+                _Name = "Row/Series Selection";
+                _UniqueContent = true;
+            }
 
             #endregion
 
@@ -51,16 +56,21 @@ namespace Core
 
             protected override UIElement create_update_ui(in GenericDataStructure in_data)
             {
-                _Name = "Transpose"; 
+                if (in_data == null)
+                {
+                    _ui_element.Text = "Select content to retrieve row information.";
+                    return _ui_element;
+                }
+                else
+                {
+                    _ui_element.Text = "Select rows/series:";
 
-                var ui = new TextBlock();
-                ui.Text = "Filter description ...";
+                    // Call when value has changed and filter should be applied with changes
+                    // set_apply_dirty();
 
 
-                // Call when value has changed and filter should be applied with changes
-                // set_apply_dirty();
-
-                return ui;
+                    return _ui_element;
+                }                
             }
 
             protected override void apply_filter(GenericDataStructure out_data)
@@ -68,6 +78,14 @@ namespace Core
                 // Change in_out_data accordingly...
 
             }
+
+            #endregion
+
+            /* ------------------------------------------------------------------*/
+            #region private variables
+
+            private TextBlock _ui_element = new TextBlock();
+
 
             #endregion
         }

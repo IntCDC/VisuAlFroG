@@ -11,8 +11,6 @@ using Core.Utilities;
 using Core.Abstracts;
 using Core.Filter;
 using Core.Data;
-using System.Runtime.Remoting.Contexts;
-using System.Windows.Input;
 using System.Windows.Data;
 
 
@@ -21,11 +19,6 @@ using System.Windows.Data;
  * Abstract data filter
  * 
  */
-
-///                              considered, list modification,                              original data of content
-using ChangedContentApplyData_Type = System.Tuple<bool, Core.Abstracts.AbstractFilter.ListModification, Core.Data.GenericDataStructure>;
-
-
 namespace Core
 {
     namespace Abstracts
@@ -72,15 +65,18 @@ namespace Core
 
             public int _UID { get; } = UniqueID.GenerateInt();
             public string _Name { get { return _filter_caption.Text; } protected set { _filter_caption.Text = value; } }
+            public bool _UniqueContent { get; protected set; } = false;
 
             #endregion
 
             /* ------------------------------------------------------------------*/
             #region public functions
 
+            public AbstractFilter() { }
+
             public bool Initialize(DataManager.GetGenericDataCallback_Delegate get_selected_data_callback,
                 DataManager.UpdateSelectedDataCallback_Delegate update_selected_data_callback,
-FilterManager.FilterChanged_Delegate filter_changed_callback,
+                FilterManager.FilterChanged_Delegate filter_changed_callback,
                 FilterManager.DeleteFilterCallback_Delegate delete_self_callback)
             {
                 if (_initialized)
@@ -99,7 +95,8 @@ FilterManager.FilterChanged_Delegate filter_changed_callback,
                 _filter_changed_callback = filter_changed_callback;
                 _delete_self_callback = delete_self_callback;
 
-                _checked_content_changes = new Dictionary<int, ChangedContentApplyData_Type>();
+                _applied = new Dictionary<int, Tuple<ListModification, GenericDataStructure>>();
+                _reserved = new Dictionary<int, Tuple<ListModification, GenericDataStructure>>();
 
 
                 _timer.Stop();
@@ -115,18 +112,33 @@ FilterManager.FilterChanged_Delegate filter_changed_callback,
             {
                 if (_initialized)
                 {
-                    // Notify subsequent filters that this filter has changed (= will be deleted)
-                    _filter_changed_callback(_UID, _get_checked_content_list());
-
                     // Revert all data changes
-                    foreach (int key in _checked_content_changes.Keys.ToList())
+                    foreach (var item in _applied)
                     {
-                        _update_selected_data_callback(key, _checked_content_changes[key].Item3);
+                        _update_selected_data_callback(item.Key, item.Value.Item2);
+                    }
+
+                    // Notify subsequent filters that this filter has changed (= will be deleted)
+                    var changed_content_list = new List<int>();
+                    foreach (var item in _applied)
+                    {
+                        changed_content_list.Add(item.Key);
+                    }
+                    foreach (var item in _reserved)
+                    {
+                        if (item.Value.Item1 == ListModification.DELETE)
+                        {
+                            changed_content_list.Add(item.Key);
+                        }
+                    }
+                    if (changed_content_list.Count > 0)
+                    {
+                        _filter_changed_callback(_UID, changed_content_list);
                     }
 
                     _content = null;
                     _filter_caption = null;
-                    _visualizations_list = null;
+                    _checkable_content_list = null;
                     _apply_button = null;
 
                     _update_selected_data_callback = null;
@@ -134,8 +146,10 @@ FilterManager.FilterChanged_Delegate filter_changed_callback,
                     _filter_changed_callback = null;
                     _delete_self_callback = null;
 
-                    _checked_content_changes.Clear();
-                    _checked_content_changes = null;
+                    _applied.Clear();
+                    _applied = null;
+                    _reserved.Clear();
+                    _reserved = null;
 
                     _created = false;
                     _initialized = false;
@@ -161,8 +175,7 @@ FilterManager.FilterChanged_Delegate filter_changed_callback,
                 _timer.Start();
 
                 _content = new Border();
-                _filter_caption = new RenameLabel();
-                _visualizations_list = new StackPanel();
+                _checkable_content_list = new StackPanel();
                 _apply_button = new Button();
 
                 _filter_caption.Margin = new Thickness(_margin, _margin, _margin, 0.0);
@@ -218,16 +231,16 @@ FilterManager.FilterChanged_Delegate filter_changed_callback,
                 Grid.SetColumn(delete_button, 2);
                 button_grid.Children.Add(delete_button);
 
-                var apply_grid = new Grid();
+                var list_caption_grid = new Grid();
 
                 var list_label = new TextBlock();
                 list_label.Text = "Select Content";
                 list_label.Margin = new Thickness(_margin, _margin, 0.0, 0.0);
                 var apply_text_column = new ColumnDefinition();
                 apply_text_column.Width = new GridLength(1.0, GridUnitType.Auto);
-                apply_grid.ColumnDefinitions.Add(apply_text_column);
+                list_caption_grid.ColumnDefinitions.Add(apply_text_column);
                 Grid.SetColumn(_apply_button, 0);
-                apply_grid.Children.Add(list_label);
+                list_caption_grid.Children.Add(list_label);
 
                 var hrule = new Border();
                 hrule.SetResourceReference(Border.BackgroundProperty, "Brush_Background");
@@ -240,38 +253,54 @@ FilterManager.FilterChanged_Delegate filter_changed_callback,
                 hrule.HorizontalAlignment = HorizontalAlignment.Stretch;
                 var apply_rule_column = new ColumnDefinition();
                 apply_rule_column.Width = new GridLength(1.0, GridUnitType.Star);
-                apply_grid.ColumnDefinitions.Add(apply_rule_column);
+                list_caption_grid.ColumnDefinitions.Add(apply_rule_column);
                 Grid.SetColumn(hrule, 1);
-                apply_grid.Children.Add(hrule);
+                list_caption_grid.Children.Add(hrule);
 
                 var content_grid = new Grid();
 
+                int row_index = -1;
                 var caption_row = new RowDefinition();
                 caption_row.Height = new GridLength(1.0, GridUnitType.Auto);
                 content_grid.RowDefinitions.Add(caption_row);
-                Grid.SetRow(_filter_caption, 0);
+                Grid.SetRow(_filter_caption, ++row_index);
                 content_grid.Children.Add(_filter_caption);
 
                 var button_row = new RowDefinition();
                 button_row.Height = new GridLength(1.0, GridUnitType.Auto);
                 content_grid.RowDefinitions.Add(button_row);
-                Grid.SetRow(button_grid, 1);
+                Grid.SetRow(button_grid, ++row_index);
                 content_grid.Children.Add(button_grid);
 
                 var list_caption_row = new RowDefinition();
                 list_caption_row.Height = new GridLength(1.0, GridUnitType.Auto);
                 content_grid.RowDefinitions.Add(list_caption_row);
-                Grid.SetRow(apply_grid, 2);
-                content_grid.Children.Add(apply_grid);
+                Grid.SetRow(list_caption_grid, ++row_index);
+                content_grid.Children.Add(list_caption_grid);
+
+                if (_UniqueContent)
+                {
+                    var unique_label = new TextBlock();
+                    unique_label.Text = "(filter only allows individual selection)";
+                    unique_label.TextWrapping = TextWrapping.Wrap;
+                    unique_label.Margin = new Thickness(_margin, _margin, 0.0, 0.0);
+                    var unique_label_row = new RowDefinition();
+                    unique_label_row.Height = new GridLength(1.0, GridUnitType.Auto);
+                    content_grid.RowDefinitions.Add(unique_label_row);
+                    Grid.SetRow(unique_label, 3);
+                    content_grid.Children.Add(unique_label);
+
+                    row_index++;
+                }
 
                 var list_row = new RowDefinition();
                 list_row.Height = new GridLength(1.0, GridUnitType.Auto);
                 content_grid.RowDefinitions.Add(list_row);
-                Grid.SetRow(_visualizations_list, 3);
-                content_grid.Children.Add(_visualizations_list);
+                Grid.SetRow(_checkable_content_list, ++row_index);
+                content_grid.Children.Add(_checkable_content_list);
 
 
-                var child = create_ui();
+                var child = create_update_ui(null);
 
                 var child_border = new Border();
                 child_border.SetResourceReference(Border.BackgroundProperty, "Brush_Background");
@@ -284,7 +313,7 @@ FilterManager.FilterChanged_Delegate filter_changed_callback,
                 var filter_row = new RowDefinition();
                 filter_row.Height = new GridLength(1.0, GridUnitType.Auto);
                 content_grid.RowDefinitions.Add(filter_row);
-                Grid.SetRow(child_border, 4);
+                Grid.SetRow(child_border, ++row_index);
                 content_grid.Children.Add(child_border);
 
                 _content.SetResourceReference(Border.BackgroundProperty, "Brush_Background");
@@ -322,8 +351,7 @@ FilterManager.FilterChanged_Delegate filter_changed_callback,
                     return;
                 }
 
-                _visualizations_list.Children.Clear();
-
+                _checkable_content_list.Children.Clear();
                 foreach (var metadata in content_metadata)
                 {
                     var check = new CheckBox();
@@ -332,42 +360,44 @@ FilterManager.FilterChanged_Delegate filter_changed_callback,
                     check.Tag = metadata.DataUID;
                     check.Click += _event_content_checked;
                     check.SetResourceReference(CheckBox.ForegroundProperty, "Brush_Foreground");
-                    _visualizations_list.Children.Add(check);
+                    _checkable_content_list.Children.Add(check);
                 }
             }
 
             /// <summary>
-            /// 
+            /// Force apply changes when previous filter has been changed
             /// </summary>
-            public void SetDirty(List<int> data_uids = null)
+            /// <param name="data_uids"></param>
+            public void SubsequentApply(List<int> data_uids)
             {
-                bool checked_content = false;
-                if (data_uids == null)
+                foreach (var data_uid in data_uids)
                 {
-                    // If not data_uids are given, set all checked content "not considered" = false ...
-                    foreach (int key in _checked_content_changes.Keys.ToList())
+                    if (_reserved.ContainsKey(data_uid) && (_reserved[data_uid].Item1 == ListModification.DELETE))
                     {
-                        if (_checked_content_changes[key].Item2 == ListModification.ADD)
-                        {
-                            _checked_content_changes[key] = new ChangedContentApplyData_Type(false, ListModification.ADD, _checked_content_changes[key].Item3);
-                            checked_content = true;
-                        }
+                        _reserved.Remove(data_uid);
+                        Log.Default.Msg(Log.Level.Debug, "   [[[ " + _Name + "]]] Deleted: " + data_uid.ToString());
+                    }
+                    else if (!_reserved.ContainsKey(data_uid) && _applied.ContainsKey(data_uid))
+                    {
+                        _reserved.Add(data_uid, new Tuple<ListModification, GenericDataStructure>(ListModification.ADD, null));
+                        Log.Default.Msg(Log.Level.Debug, "   [[[ " + _Name + "]]]  Added:   " + data_uid.ToString());
                     }
                 }
-                else
-                {
-                    // ... else set only checked content  "not considered" = false
-                    foreach (var data_uid in data_uids)
-                    {
-                        if (_checked_content_changes.ContainsKey(data_uid) && (_checked_content_changes[data_uid].Item2 == ListModification.ADD))
-                        {
-                            _checked_content_changes[data_uid] = new ChangedContentApplyData_Type(false, ListModification.ADD, _checked_content_changes[data_uid].Item3);
-                            checked_content = true;
-                        }
-                    }
-                }
+                // notify_changes = false prevents double execution
+                _apply_changes(false);
+            }
 
-                if (checked_content)
+            public void SetDirty()
+            {
+                foreach (var item in _applied)
+                {
+                    if (!_reserved.ContainsKey(item.Key))
+                    {
+                        _reserved.Add(item.Key, new Tuple<ListModification, GenericDataStructure>(ListModification.ADD, null));
+                        Log.Default.Msg(Log.Level.Debug, "   [[[ " + _Name + "]]]  Added:   " + item.Key.ToString());
+                    }
+                }
+                if (_reserved.Count > 0)
                 {
                     _set_dirty(true);
                 }
@@ -378,12 +408,12 @@ FilterManager.FilterChanged_Delegate filter_changed_callback,
             /* ------------------------------------------------------------------*/
             #region protected functions
 
-            protected virtual UIElement create_ui()
+            protected virtual UIElement create_update_ui(in GenericDataStructure in_data)
             {
                 throw new InvalidOperationException("Should be implemented by inheriting class.");
             }
 
-            protected virtual void apply_filter(GenericDataStructure in_out_data)
+            protected virtual void apply_filter(GenericDataStructure out_data)
             {
                 throw new InvalidOperationException("Should be implemented by inheriting class.");
             }
@@ -404,36 +434,158 @@ FilterManager.FilterChanged_Delegate filter_changed_callback,
                 var data_uid = (int)checkbox.Tag;
                 var is_checked = (bool)checkbox.IsChecked;
 
-                if (_checked_content_changes.ContainsKey(data_uid))
+                if (is_checked)
                 {
-                    bool content_considered = _checked_content_changes[data_uid].Item1;
-
-                    if ((is_checked && (_checked_content_changes[data_uid].Item2 == ListModification.DELETE)) ||
-                        (!is_checked && (_checked_content_changes[data_uid].Item2 == ListModification.ADD)))
+                    if (_reserved.ContainsKey(data_uid))
                     {
-                        var mod = (_checked_content_changes[data_uid].Item2 == ListModification.ADD) ? (ListModification.DELETE) : (ListModification.ADD);
-                        if (content_considered)
+                        if (_reserved[data_uid].Item1 == ListModification.DELETE)
                         {
-                            _checked_content_changes[data_uid] = new ChangedContentApplyData_Type(false, mod, _checked_content_changes[data_uid].Item3);
+                            // If content should be removed and now added ... remove from reserved list
+                            _reserved.Remove(data_uid);
+                            Log.Default.Msg(Log.Level.Debug, "   [[[ " + _Name + "]]]  Deleted: " + data_uid.ToString());
+                        }
+                        // If content has already been reserved for being added, don't do anything. This case can not happen!
+                    }
+                    else // !_reserved.ContainsKey(data_uid)
+                    {
+                        if (_applied.ContainsKey(data_uid))
+                        {
+                            if (_applied[data_uid].Item1 == ListModification.ADD)
+                            {
+                                // If content has previously already been applied, don't reserve to be reapplied
+                            }
+                            // If content has already been applied for being delete, don't do anything. This case can not happen (there won't be an entry for this case in _applied)!
                         }
                         else
                         {
-                            // Ignore changes reverted before having been applied
-                            _checked_content_changes.Remove(data_uid);
+                            _reserved.Add(data_uid, new Tuple<ListModification, GenericDataStructure>(ListModification.ADD, null));
+                            Log.Default.Msg(Log.Level.Debug, "   [[[ " + _Name + "]]]  Added:   " + data_uid.ToString());
+                        }
+                    }
+                    _disable_content_checkboxes(data_uid);
+                }
+                else
+                {
+                    if (_reserved.ContainsKey(data_uid))
+                    {
+                        if (_reserved[data_uid].Item1 == ListModification.ADD)
+                        {
+                            // If content should be added and now removed ... remove from reserved list
+                            _reserved.Remove(data_uid);
+                            Log.Default.Msg(Log.Level.Debug, "   [[[ " + _Name + "]]] Deleted: " + data_uid.ToString());
+                        }
+                        // If content has already been reserved for being delete, don't do anything. This case can not happen!
+                    }
+                    else // !_reserved.ContainsKey(data_uid)
+                    {
+                        if (_applied.ContainsKey(data_uid))
+                        {
+                            if (_applied[data_uid].Item1 == ListModification.ADD)
+                            {
+                                // If content has previously already been applied, reserve content for deletion
+                                _reserved.Add(data_uid, new Tuple<ListModification, GenericDataStructure>(ListModification.DELETE, _applied[data_uid].Item2));
+                                Log.Default.Msg(Log.Level.Debug, "   [[[ " + _Name + "]]] Added:   " + data_uid.ToString());
+                            }
+                            // If content has already been applied for being delete, don't do anything. This case can not happen (there won't be an entry for this case in _applied)!
+                        }
+                        else
+                        {
+                            // If content has not been applied, don't do anything. 
+                        }
+                    }
+                    _enable_content_checkboxes();
+                }
+
+                bool dirty = !(_reserved.Count == 0);
+                if (_reserved.Count > 0)
+                {
+                    dirty = (_applied.Count != _reserved.Count);
+                    foreach (var key_applied in _applied.Keys.ToList())
+                    {
+                        if (!_reserved.ContainsKey(key_applied))
+                        {
+                            dirty = true;
+                        }
+                        else if (_reserved[key_applied].Item1 != _applied[key_applied].Item1)
+                        {
+                            dirty = true;
+                        }
+                    }
+                    foreach (var key_reserved in _reserved.Keys.ToList())
+                    {
+                        if (!_applied.ContainsKey(key_reserved))
+                        {
+                            dirty = true;
+                        }
+                        else if (_reserved[key_reserved].Item1 != _applied[key_reserved].Item1)
+                        {
+                            dirty = true;
                         }
                     }
                 }
-                else if (is_checked)
-                {
-                    _checked_content_changes[data_uid] = new ChangedContentApplyData_Type(false, ListModification.ADD, null);
-                }
+                _set_dirty(dirty);
+            }
 
-                bool considered = true;
-                foreach (var content_tuple in _checked_content_changes)
+            private void _apply_changes(bool notify_changes = true)
+            {
+                _applied.Clear();
+                var changed_content_list = new List<int>();
+
+                var save_border_thickness = _content.BorderThickness;
+                var save_border_color = _content.BorderBrush;
+                _content.BorderThickness = new Thickness(_border_thickness * 3.0);
+                _content.SetResourceReference(Border.BorderBrushProperty, "Brush_ApplyDirtyBackground");
+                Miscellaneous.AllowGlobalUIUpdate();
+
+                foreach (var item in _reserved)
                 {
-                    considered &= content_tuple.Value.Item1;
+                    var data_uid = item.Key;
+
+                    if (item.Value.Item1 == ListModification.ADD)
+                    {
+                        var original_data = _get_selected_data_callback(data_uid);
+                        original_data = original_data.DeepCopy();
+
+                        var filter_data = original_data.DeepCopy();
+                        apply_filter(filter_data);
+                        _update_selected_data_callback(data_uid, filter_data);
+
+                        var applied_data = new Tuple<ListModification, GenericDataStructure>(ListModification.ADD, original_data);
+
+                        _applied.Add(data_uid, applied_data);
+                        changed_content_list.Add(data_uid);
+                    }
+                    else // if (item.Value.Item1 == ListModification.DELETE)
+                    {
+                        // Undo changes applied by the filter
+                        if (item.Value.Item2 != null)
+                        {
+                            _update_selected_data_callback(data_uid, item.Value.Item2);
+                            _enable_content_checkboxes();
+                            changed_content_list.Add(data_uid);
+                        }
+                        else
+                        {
+                            Log.Default.Msg(Log.Level.Error, "Missing original data to revert filter");
+                        }
+                    }
                 }
-                _set_dirty(!considered);
+                _set_dirty(false);
+
+                _content.BorderThickness = save_border_thickness;
+                _content.BorderBrush = save_border_color;
+                Miscellaneous.AllowGlobalUIUpdate();
+
+                if (notify_changes)
+                {
+                    // Notify subsequent filters on change
+                    if (changed_content_list.Count > 0)
+                    {
+                        _filter_changed_callback(_UID, changed_content_list);
+                    }
+                }
+                _reserved.Clear();
+                Log.Default.Msg(Log.Level.Debug, "   [[[ " + _Name + "]]] Cleared:  _reserved");
             }
 
             private void _event_apply_button(object sender, RoutedEventArgs e)
@@ -444,52 +596,7 @@ FilterManager.FilterChanged_Delegate filter_changed_callback,
                     Log.Default.Msg(Log.Level.Error, "Unexpected sender");
                     return;
                 }
-
-                bool filter_changed = false;
-
-                foreach (int key in _checked_content_changes.Keys.ToList())
-                {
-                    var data_uid = key;
-
-                    if (!_checked_content_changes[data_uid].Item1)
-                    {
-                        if (_checked_content_changes[data_uid].Item2 == ListModification.ADD)
-                        {
-                            var original_data = _get_selected_data_callback(data_uid);
-                            original_data = original_data.DeepCopy(); /// XXX Required?
-
-                            var filter_data = original_data.DeepCopy();
-                            apply_filter(filter_data);
-                            _update_selected_data_callback(data_uid, filter_data);
-
-                            // Add original data only for the first time the filter is applied
-                            var kept_original_data = _checked_content_changes[data_uid].Item3;
-                            _checked_content_changes[data_uid] = new ChangedContentApplyData_Type(true, ListModification.ADD, ((kept_original_data == null) ? (original_data) : (kept_original_data)));
-                            filter_changed = true;
-                        }
-                        else if (_checked_content_changes[data_uid].Item2 == ListModification.DELETE)
-                        {
-                            // Undo changes applied by the filter
-                            if (_checked_content_changes[data_uid].Item3 != null)
-                            {
-                                _update_selected_data_callback(data_uid, _checked_content_changes[data_uid].Item3);
-                                _checked_content_changes.Remove(data_uid);
-                                filter_changed = true;
-                            }
-                            else
-                            {
-                                Log.Default.Msg(Log.Level.Error, "Missing original data");
-                            }
-                        }
-                    }
-                }
-
-                // Notify filter manager on change
-                if (filter_changed)
-                {
-                    _filter_changed_callback(_UID, _get_checked_content_list());
-                }
-                _set_dirty(false);
+                _apply_changes();
             }
 
             private void _set_dirty(bool dirty)
@@ -505,18 +612,49 @@ FilterManager.FilterChanged_Delegate filter_changed_callback,
                 }
             }
 
-            private List<int> _get_checked_content_list()
+            private void _enable_content_checkboxes()
             {
-                var checked_content_lsit = new List<int>();
-
-                foreach (int key in _checked_content_changes.Keys.ToList())
+                // Only for unique content:
+                // Enable all other content for being selectable again
+                if (_UniqueContent)
                 {
-                    if (_checked_content_changes[key].Item2 == ListModification.ADD)
+                    foreach (var child in _checkable_content_list.Children)
                     {
-                        checked_content_lsit.Add(key);
+                        var content_item = child as CheckBox;
+                        if (content_item == null)
+                        {
+                            Log.Default.Msg(Log.Level.Error, "Unexpected item type");
+                            continue;
+                        }
+                        content_item.IsEnabled = true;
                     }
                 }
-                return checked_content_lsit;
+            }
+
+            private void _disable_content_checkboxes(int data_uid)
+            {
+                // Only for unique content:
+                // Disable all other content and request update of filter UI
+                if (_UniqueContent)
+                {
+                    var original_data = _get_selected_data_callback(data_uid);
+                    original_data = original_data.DeepCopy();
+                    create_update_ui(original_data);
+
+                    foreach (var child in _checkable_content_list.Children)
+                    {
+                        var content_item = child as CheckBox;
+                        if (content_item == null)
+                        {
+                            Log.Default.Msg(Log.Level.Error, "Unexpected item type");
+                            continue;
+                        }
+                        if ((int)content_item.Tag != data_uid)
+                        {
+                            content_item.IsEnabled = false;
+                        }
+                    }
+                }
             }
 
             #endregion
@@ -529,9 +667,11 @@ FilterManager.FilterChanged_Delegate filter_changed_callback,
 
             private bool _created = false;
 
+            // Required to be available in cotr of derived filter
+            private RenameLabel _filter_caption = new RenameLabel();
+
             private Border _content = null;
-            private RenameLabel _filter_caption = null;
-            private StackPanel _visualizations_list = null;
+            private StackPanel _checkable_content_list = null;
             private Button _apply_button = null;
             private Brush _apply_button_default_background = null;
 
@@ -541,7 +681,8 @@ FilterManager.FilterChanged_Delegate filter_changed_callback,
             private FilterManager.DeleteFilterCallback_Delegate _delete_self_callback = null;
 
             // Track content selection changes
-            private Dictionary<int, ChangedContentApplyData_Type> _checked_content_changes = null;
+            private Dictionary<int, Tuple<ListModification, GenericDataStructure>> _applied = null;
+            private Dictionary<int, Tuple<ListModification, GenericDataStructure>> _reserved = null;
 
             #endregion
         }

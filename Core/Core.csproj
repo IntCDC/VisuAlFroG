@@ -115,6 +115,7 @@
     <Compile Include="Data\GenericDataEntry.cs" />
     <Compile Include="Data\GenericDataStructure.cs" />
     <Compile Include="Data\GenericMetaData.cs" />
+    <Compile Include="Filtering\RowSelectionFilter.cs" />
     <None Include="Filtering\Filter.cs.template" />
     <Compile Include="Filtering\TransposeFilter.cs" />
     <Compile Include="Filtering\FilterManager.cs" />
@@ -139,6 +140,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\CmdLineArguments.cs" />
     <Compile Include="Utilities\FileDialogHelper.cs" />
+    <Compile Include="Utilities\Miscellaneous.cs" />
     <Compile Include="Utilities\ResourcePaths.cs" />
     <Compile Include="Utilities\ImageLoader.cs" />
     <Compile Include="Utilities\Log.cs" />

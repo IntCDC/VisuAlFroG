@@ -7,6 +7,10 @@ using Core.Utilities;
 using Core.Filter;
 using Core.Data;
 using static Core.Abstracts.AbstractFilter;
+using System.Runtime.Remoting.Contexts;
+using System.Windows.Controls;
+using SciChart.Charting.Model.Filters;
+using System.Xml.Linq;
 
 
 
@@ -31,22 +35,14 @@ namespace Core
                 public List<AbstractFilter.Configuration> FilterList { get; set; }
             }
 
-            public class FilterListMetadata
-            {
-                public int ID { get; set; }
-                public string Name { get; set; }
-                public Type Type { get; set; }
-            }
-
             #endregion
 
             /* ------------------------------------------------------------------*/
             #region public delegates
 
-            public delegate bool CreateFilterCallback_Delegate(Type filter_type);
             public delegate bool DeleteFilterCallback_Delegate(int filter_uid);
-            public delegate void ModifyUIFilterList_Delegate(UIElement element, AbstractFilter.ListModification mod);
             public delegate void FilterChanged_Delegate(int filter_uid, List<int> data_uids);
+            public delegate UIElement GetUICallback_Delegate();
 
             #endregion
 
@@ -73,7 +69,24 @@ namespace Core
                 _update_selected_data_callback = update_selected_data_callback;
 
                 register_content(typeof(TransposeFilter));
+                register_content(typeof(RowSelectionFilter));
+                /// >>> Register your new filter type here:
+                /// register_content(typeof(CustomFilter));
 
+
+                _add_filter_list = new ComboBox();
+                _list_scrolling = new ScrollViewer();
+                _filter_list = new StackPanel();
+
+                var list = new List<FilterTypeMetadata>();
+                foreach (var filter_data in _contents)
+                {
+                    var filter_metadata = new FilterTypeMetadata();
+                    filter_metadata.Name = filter_data.Key.Name;
+                    filter_metadata.Type = filter_data.Key;
+                    list.Add(filter_metadata);
+                }
+                _add_filter_list.ItemsSource = list;
 
                 _timer.Stop();
                 _initialized = true;
@@ -84,81 +97,27 @@ namespace Core
             {
                 if (_initialized)
                 {
+                    _contents_metadata.Clear();
                     _contents_metadata = null;
+
                     _ordered_filter_list.Clear();
                     _ordered_filter_list = null;
+
                     _update_selected_data_callback = null;
                     _get_selected_data_callback = null;
-                    _modify_ui_filter_list_callback = null;
+
+                    _add_filter_list = null;
+                    _list_scrolling = null;
+                    _filter_list = null;
 
                     _initialized = false;
                 }
                 return true;
             }
 
-            public List<FilterListMetadata> GetFilterTypeList()
+            public UIElement GetUI()
             {
-                int id = 0;
-                var list = new List<FilterListMetadata>();
-                foreach (var filter_data in _contents)
-                {
-                    var filter_metadata = new FilterListMetadata();
-                    ///filter_metadata.ID = id; /// required for enumeration in combobox?
-                    filter_metadata.Name = filter_data.Key.Name;
-                    filter_metadata.Type = filter_data.Key;
-                    list.Add(filter_metadata);
-                    id++;
-                }
-                return list;
-            }
-
-            public void SetModifyUIFilterList(ModifyUIFilterList_Delegate modify_ui_filter_list_callback)
-            {
-                _modify_ui_filter_list_callback = modify_ui_filter_list_callback;
-            }
-
-            public bool CreateFilterCallback(Type filter_type)
-            {
-                if (!_initialized)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
-                    return false;
-                }
-                if (filter_type == null)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Unable to find type: " + filter_type);
-                    return false;
-                }
-
-                if (_contents.ContainsKey(filter_type))
-                {
-                    var filter = (AbstractFilter)Activator.CreateInstance(filter_type);
-                    if (filter.Initialize(_get_selected_data_callback, _update_selected_data_callback, this.filter_changed, DeleteFilterCallback))
-                    {
-                        if (filter.CreateUI())
-                        {
-                            filter.ContentMetadataListCallback(_contents_metadata);
-                            _contents[filter_type].Add(filter._UID, filter);
-                            _ordered_filter_list.Add(filter._UID);
-                            // Add filter to UI list
-                            _modify_ui_filter_list_callback(filter.GetUI(), ListModification.ADD);
-                            return true;
-                        }
-                        else
-                        {
-                            Log.Default.Msg(Log.Level.Error, "Unable to create the UI of the new filter: " + filter_type.ToString());
-                        }
-                    }
-                    else
-                    {
-                        Log.Default.Msg(Log.Level.Error, "Unable to initialize the new filter: " + filter_type.ToString());
-                    }
-                }
-                else
-                {
-                    Log.Default.Msg(Log.Level.Error, "Unregistered filter type: " + filter_type.ToString());
-                }
-                return false;
+                return _create_ui();
             }
 
             public bool DeleteFilterCallback(int filter_uid)
@@ -169,7 +128,8 @@ namespace Core
                     if (filter_types.Value.ContainsKey(filter_uid))
                     {
                         // Remove filter from UI list
-                        _modify_ui_filter_list_callback(filter_types.Value[filter_uid].GetUI(), ListModification.DELETE);
+                        _filter_list.Children.Remove(filter_types.Value[filter_uid].GetUI());
+
                         filter_types.Value[filter_uid].Terminate();
                         // Call after terminate
                         _ordered_filter_list.Remove(filter_types.Value[filter_uid]._UID);
@@ -264,6 +224,52 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region private functions
 
+            private bool _create_filter_callback(Type filter_type)
+            {
+                if (!_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return false;
+                }
+                if (filter_type == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unable to find type: " + filter_type);
+                    return false;
+                }
+
+                if (_contents.ContainsKey(filter_type))
+                {
+                    var filter = (AbstractFilter)Activator.CreateInstance(filter_type);
+                    if (filter.Initialize(_get_selected_data_callback, _update_selected_data_callback, this.filter_changed, DeleteFilterCallback))
+                    {
+                        if (filter.CreateUI())
+                        {
+                            filter.ContentMetadataListCallback(_contents_metadata);
+                            _contents[filter_type].Add(filter._UID, filter);
+                            _ordered_filter_list.Add(filter._UID);
+
+                            // Add to UI list
+                            _filter_list.Children.Add(filter.GetUI());
+                            _list_scrolling.ScrollToBottom();
+                            return true;
+                        }
+                        else
+                        {
+                            Log.Default.Msg(Log.Level.Error, "Unable to create the UI of the new filter: " + filter_type.ToString());
+                        }
+                    }
+                    else
+                    {
+                        Log.Default.Msg(Log.Level.Error, "Unable to initialize the new filter: " + filter_type.ToString());
+                    }
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unregistered filter type: " + filter_type.ToString());
+                }
+                return false;
+            }
+
             void filter_changed(int filter_uid, List<int> data_uids)
             {
                 // Notify all subsequent filters that previous filter has changed and that their original data has changed
@@ -274,7 +280,7 @@ namespace Core
                 }
 
                 var index = _ordered_filter_list.FindIndex(f => (f == filter_uid));
-                for (int i = index+1; i < _ordered_filter_list.Count; i++)
+                for (int i = index + 1; i < _ordered_filter_list.Count; i++)
                 {
                     foreach (var filter_type in _contents)
                     {
@@ -282,11 +288,120 @@ namespace Core
                         {
                             if (filter.Value._UID == _ordered_filter_list[i])
                             {
-                                filter.Value.SetDirty(data_uids);
+                                filter.Value.SubsequentApply(data_uids);
                             }
                         }
                     }
                 }
+            }
+
+            private UIElement _create_ui()
+            {
+                _add_filter_list.IsEditable = false;
+                _add_filter_list.DisplayMemberPath = "Name";
+                _add_filter_list.SelectedIndex = 0;
+                _add_filter_list.Margin = new Thickness(0.0, _margin, _margin, _margin);
+
+                var add_button = new Button();
+                add_button.Content = " Add Filter ";
+                add_button.Click += event_apply_button;
+                add_button.Margin = new Thickness(_margin, _margin / 2.0, _margin, _margin / 2.0);
+
+                _list_scrolling.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                _list_scrolling.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+                _list_scrolling.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
+                _list_scrolling.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
+                _list_scrolling.PreviewMouseWheel += event_scrollviewer_mousewheel;
+
+                _list_scrolling.Content = _filter_list;
+
+                var note = new TextBlock();
+                note.Text = "NOTE: Filters are applied sequentially from top to bottom. " +
+                            "On filter change, below filters with same checked content are automatically re-applied.";
+                note.TextWrapping = TextWrapping.Wrap;
+                note.SetResourceReference(TextBlock.BackgroundProperty, "Brush_Background");
+                note.SetResourceReference(TextBlock.ForegroundProperty, "Brush_Foreground");
+                note.Margin = new Thickness(_margin);
+
+                var hrule = new Border();
+                hrule.SetResourceReference(Border.BackgroundProperty, "Brush_Background");
+                hrule.SetResourceReference(Border.BorderBrushProperty, "Brush_Foreground");
+                hrule.BorderThickness = new Thickness(_border_thickness);
+                hrule.Margin = new Thickness(_margin);
+                hrule.CornerRadius = new CornerRadius(0);
+                hrule.Height = _border_thickness;
+                hrule.VerticalAlignment = VerticalAlignment.Bottom;
+                hrule.HorizontalAlignment = HorizontalAlignment.Stretch;
+
+                var caption_grid = new Grid();
+
+                var add_grid = new Grid();
+                var column_label = new ColumnDefinition();
+                column_label.Width = new GridLength(0.0, GridUnitType.Auto);
+                add_grid.ColumnDefinitions.Add(column_label);
+                Grid.SetColumn(add_button, 0);
+                add_grid.Children.Add(add_button);
+
+                var column_list = new ColumnDefinition();
+                column_list.Width = new GridLength(1.0, GridUnitType.Star);
+                add_grid.ColumnDefinitions.Add(column_list);
+                Grid.SetColumn(_add_filter_list, 1);
+                add_grid.Children.Add(_add_filter_list);
+
+                var row_index = -1;
+
+                var row_note = new RowDefinition();
+                row_note.Height = new GridLength(1.0, GridUnitType.Star);
+                caption_grid.RowDefinitions.Add(row_note);
+                Grid.SetRow(note, ++row_index);
+                caption_grid.Children.Add(note);
+
+                var apply_row = new RowDefinition();
+                apply_row.Height = new GridLength(1.0, GridUnitType.Star);
+                caption_grid.RowDefinitions.Add(apply_row);
+                Grid.SetRow(add_grid, ++row_index);
+                caption_grid.Children.Add(add_grid);
+
+                var row_hrule = new RowDefinition();
+                row_hrule.Height = new GridLength(1.0, GridUnitType.Star);
+                caption_grid.RowDefinitions.Add(row_hrule);
+                Grid.SetRow(hrule, ++row_index);
+                caption_grid.Children.Add(hrule);
+
+                var parent = new DockPanel();
+                DockPanel.SetDock(caption_grid, System.Windows.Controls.Dock.Top);
+                parent.Children.Add(caption_grid);
+                parent.Children.Add(_list_scrolling);
+
+                return parent;
+            }
+
+            private void event_apply_button(object sender, RoutedEventArgs e)
+            {
+                var apply_button = sender as Button;
+                if (apply_button == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unexpected sender.");
+                    return;
+                }
+                var selected_item = _add_filter_list.SelectedItem as FilterManager.FilterTypeMetadata;
+                if (selected_item == null)
+                {
+                    Log.Default.Msg(Log.Level.Warn, "Select filter type before trying to add a new filter.");
+                    return;
+                }
+                if (selected_item.Type != null)
+                {
+                    _create_filter_callback(selected_item.Type);
+                }
+            }
+
+            private void event_scrollviewer_mousewheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+            {
+                ScrollViewer scv = (ScrollViewer)sender;
+                scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);
+                scv.UpdateLayout();
+                e.Handled = true;
             }
 
             #endregion
@@ -294,14 +409,26 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region private variables
 
+            private class FilterTypeMetadata
+            {
+                public int ID { get; set; }
+                public string Name { get; set; }
+                public Type Type { get; set; }
+            }
+
+            private const double _margin = 5.0;
+            private const double _border_thickness = 2.0;
+
+            private ComboBox _add_filter_list = null;
+            private ScrollViewer _list_scrolling = null;
+            private StackPanel _filter_list = null;
+
             // Required to provide new filters with content metadata
             private List<AbstractFilter.ContentMetadata> _contents_metadata = null;
-
             private List<int> _ordered_filter_list = null;
 
             private DataManager.UpdateSelectedDataCallback_Delegate _update_selected_data_callback = null;
             private DataManager.GetGenericDataCallback_Delegate _get_selected_data_callback = null;
-            private ModifyUIFilterList_Delegate _modify_ui_filter_list_callback = null;
 
             #endregion
         }

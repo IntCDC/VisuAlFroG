@@ -47,7 +47,7 @@ namespace Visualizations
             register_content(typeof(SciChart_Lines));
             register_content(typeof(SciChart_Columns));
             register_content(typeof(SciChart_ParallelCoordinatesPlot));
-            /// DEBUG             
+            /// >>> Register your new content/visualization here:        
             /// register_content(typeof(CustomWPFVisualization));
 
 
@@ -297,11 +297,6 @@ namespace Visualizations
             {
                 if (content_types.Value.ContainsKey(content_uid))
                 {
-                    // Filter Editor requires special handling
-                    if (content_types.Key == typeof(WPF_FilterEditor))
-                    {
-                        /// XXX TODO Delete all filters?
-                    }
                     int data_uid = content_types.Value[content_uid]._DataUID;
                     _filtermanager.DeleteContentMetadataCallback(data_uid);
                     _datamanager.UnregisterDataCallback(data_uid);
@@ -325,11 +320,6 @@ namespace Visualizations
         /// <returns></returns>
         protected override bool reset_content(AbstractVisualization content_value)
         {
-            // Filter Editor requires special handling
-            if (content_value.GetType() == typeof(WPF_FilterEditor))
-            {
-                /// XXX TODO Delete all filters?
-            }
             _datamanager.UnregisterDataCallback(content_value._DataUID);
             return content_value.Terminate();
         }
@@ -385,15 +375,16 @@ namespace Visualizations
             {
                 content._DataUID = _datamanager.RegisterDataCallback(content._RequiredDataType, content.Update);
                 // Do not check for invalid DATAUID because it might be intentional that no data should have been created
+
+                // Filter Editor requires some more information
+                if (type == typeof(WPF_FilterEditor))
+                {
+                    var filter_editor = content as WPF_FilterEditor;
+                    filter_editor.RequestUICallback(_filtermanager.GetUI);
+                }
+
                 if (content.CreateUI())
                 {
-                    /// Filter Editor requires some more information...
-                    if (type == typeof(WPF_FilterEditor)) {
-                        var filter_editor = content as WPF_FilterEditor;
-                        filter_editor.UpdateFilterTypeList(_filtermanager.GetFilterTypeList());
-                        filter_editor.SetCreateFilterCallback(_filtermanager.CreateFilterCallback);
-                        _filtermanager.SetModifyUIFilterList(filter_editor.ModifyUIFilterList);
-                    }
                     content.Update(true);
                     return content;
                 }

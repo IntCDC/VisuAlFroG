@@ -21,47 +21,28 @@ namespace Core
         public class TransposeFilter : AbstractFilter
         {
             /* ------------------------------------------------------------------*/
-            #region public classes
-
-            /// <summary>
-            /// Class defining the configuration required for restoring content.
-            /// </summary>
-            /*
-            public class Configuration : AbstractFilter.Configuration
-            {
-                /// XXX TODO Add additional information required to restore the filter
-            }
-*           */
-
-            #endregion
-
-            /* ------------------------------------------------------------------*/
             #region public functions
 
+            public TransposeFilter()
+            {
+                _Name = "Transpose";
+            }
 
             #endregion
 
             /* ------------------------------------------------------------------*/
             #region protected functions
 
-            protected override UIElement create_ui()
+            protected override UIElement create_update_ui(in GenericDataStructure in_data)
             {
-                _Name = "Transpose"; 
-
                 var ui = new TextBlock();
-                ui.Text = "Transpose tabular 2D data";
-
-
-                // Call when filter option has changed and filter should be applied again
-                // SetDirty();
-
-
+                ui.Text = "Transpose tabular 2D data.";
                 return ui;
             }
 
-            protected override void apply_filter(GenericDataStructure in_out_data)
+            protected override void apply_filter(GenericDataStructure out_data)
             {
-                in_out_data.Transpose();
+                out_data.Transpose();
             }
 
             #endregion
