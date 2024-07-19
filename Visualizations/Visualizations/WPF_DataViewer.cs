@@ -121,7 +121,7 @@ namespace Visualizations
 
             column = new DataColumn();
             column.DataType = typeof(uint);
-            column.ColumnName = "BranchIndex";
+            column.ColumnName = "BranchIdx";
             column.DefaultValue = uint.MaxValue;
             _table.Columns.Add(column);
 
@@ -133,7 +133,7 @@ namespace Visualizations
 
             column = new DataColumn();
             column.DataType = typeof(uint);
-            column.ColumnName = "EntryIndex";
+            column.ColumnName = "EntryIdx";
             column.DefaultValue = uint.MaxValue;
             _table.Columns.Add(column);
 
@@ -195,10 +195,10 @@ namespace Visualizations
             {
                 var row = _table.NewRow();
                 row["Index"] = entry._Metadata._Index;
-                row["EntryIndex"] = ei;
+                row["EntryIdx"] = ei;
                 row["EntryLabel"] = entry._Metadata._Label;
                 row["Selected"] = entry._Metadata._Selected;
-                row["BranchIndex"] = branch_index;
+                row["BranchIdx"] = branch_index;
                 row["BranchLabel"] = branch._Label;
                 /// row[level_str] = "X";
 

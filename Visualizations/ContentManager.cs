@@ -40,13 +40,13 @@ namespace Visualizations
             _timer.Start();
 
             // Register new visualizations here:
-            register_content(typeof(WPF_LogConsole));
-            register_content(typeof(WPF_DataViewer));
-            register_content(typeof(WPF_FilterEditor));
-            register_content(typeof(SciChart_ScatterPlot));
-            register_content(typeof(SciChart_Lines));
-            register_content(typeof(SciChart_Columns));
-            register_content(typeof(SciChart_ParallelCoordinatesPlot));
+            register_entry(typeof(WPF_LogConsole));
+            register_entry(typeof(WPF_DataViewer));
+            register_entry(typeof(WPF_FilterEditor));
+            register_entry(typeof(SciChart_ScatterPlot));
+            register_entry(typeof(SciChart_Lines));
+            register_entry(typeof(SciChart_Columns));
+            register_entry(typeof(SciChart_ParallelCoordinatesPlot));
             /// >>> Register your new content/visualization here:        
             /// register_content(typeof(CustomWPFVisualization));
 
@@ -80,7 +80,7 @@ namespace Visualizations
 
         public override bool Terminate()
         {
-            bool terminated = true;
+            bool terminated = base.Terminate();
             if (_initialized)
             {
                 terminated &= _interfacemanager.Terminate();
@@ -88,6 +88,7 @@ namespace Visualizations
                 terminated &= _filtermanager.Terminate();
 
                 _initialized = false;
+                terminated &= true;
             }
             return terminated;
         }
@@ -95,7 +96,7 @@ namespace Visualizations
         public string CollectConfigurations()
         {
             var configurations = new List<AbstractVisualization.Configuration>();
-            foreach (var content_types in _contents)
+            foreach (var content_types in _entries)
             {
                 foreach (var content_data in content_types.Value)
                 {
@@ -117,7 +118,7 @@ namespace Visualizations
             var visualization_configurations = ConfigurationService.Deserialize<List<AbstractVisualization.Configuration>>(configurations);
             if (visualization_configurations != null)
             {
-                if (!clear_contents())
+                if (!reset_entry())
                 {
                     Log.Default.Msg(Log.Level.Warn, "Unable to clear content properly");
                     return false;
@@ -126,7 +127,7 @@ namespace Visualizations
                 foreach (var content_configuration in visualization_configurations)
                 {
                     var type = get_type(content_configuration.Type);
-                    if (_contents.ContainsKey(type))
+                    if (_entries.ContainsKey(type))
                     {
                         var id = content_configuration.UID;
                         if (id == UniqueID.InvalidInt)
@@ -135,14 +136,14 @@ namespace Visualizations
                             break;
                         }
 
-                        if (!_contents[type].ContainsKey(id))
+                        if (!_entries[type].ContainsKey(id))
                         {
                             var new_content = create_content(type, id);
                             if (new_content == null)
                             {
                                 return false;
                             }
-                            _contents[type].Add(new_content._UID, new_content);
+                            _entries[type].Add(new_content._UID, new_content);
                             success &= true;
                         }
                         else
@@ -156,6 +157,7 @@ namespace Visualizations
                     }
                 }
             }
+
             return success;
         }
 
@@ -173,6 +175,11 @@ namespace Visualizations
             /// _servicemanager.AttachMenu(menu_bar);
             /// _filtermanager.AttachMenu(menu_bar);
             _datamanager.AttachMenu(menu_bar);
+        }
+
+        public FilterManager GetFilterManager()
+        {
+            return _filtermanager;
         }
 
         // Callback forwarding for DataManager
@@ -201,7 +208,7 @@ namespace Visualizations
             }
 
             // Loop over registered types
-            foreach (var content_types in _contents)
+            foreach (var content_types in _entries)
             {
                 var content_type = content_types.Key;
 
@@ -239,13 +246,13 @@ namespace Visualizations
                 return null;
             }
 
-            if (_contents.ContainsKey(type))
+            if (_entries.ContainsKey(type))
             {
-                if ((_contents[type].Count == 0) || ((_contents[type].Count >= 1) && (_contents[type].First().Value._MultipleInstances || (!_contents[type].First().Value._MultipleInstances && _contents[type].ContainsKey(content_uid)))))
+                if ((_entries[type].Count == 0) || ((_entries[type].Count >= 1) && (_entries[type].First().Value._MultipleInstances || (!_entries[type].First().Value._MultipleInstances && _entries[type].ContainsKey(content_uid)))))
                 {
                     int temp_uid = content_uid;
 
-                    if (!_contents[type].ContainsKey(temp_uid))
+                    if (!_entries[type].ContainsKey(temp_uid))
                     {
                         if (temp_uid != UniqueID.InvalidInt)
                         {
@@ -260,18 +267,19 @@ namespace Visualizations
                                 return null;
                             }
                             temp_uid = new_content._UID;
-                            _contents[type].Add(temp_uid, new_content);
+                            _entries[type].Add(temp_uid, new_content);
                         }
                     }
 
                     // Only add content with valid data uid to filter list
-                    int data_uid = _contents[type][temp_uid]._DataUID;
-                    if (data_uid != UniqueID.InvalidInt) {
+                    int data_uid = _entries[type][temp_uid]._DataUID;
+                    if (data_uid != UniqueID.InvalidInt)
+                    {
                         var content_metadata = new AbstractFilter.ContentMetadata() { NameBinding = name_binding, DataUID = data_uid };
                         _filtermanager.AddContentMetadataCallback(content_metadata);
                     }
 
-                    return new AttachContentMetaData_Type(temp_uid, _contents[type][temp_uid]._Name, _contents[type][temp_uid].GetUI(), _contents[type][temp_uid].AttachMenu);
+                    return new AttachContentMetaData_Type(temp_uid, _entries[type][temp_uid]._Name, _entries[type][temp_uid].GetUI(), _entries[type][temp_uid].AttachMenu);
                 }
                 else
                 {
@@ -293,7 +301,7 @@ namespace Visualizations
         public bool DeleteContentCallback(int content_uid)
         {
             // Loop over registered types
-            foreach (var content_types in _contents)
+            foreach (var content_types in _entries)
             {
                 if (content_types.Value.ContainsKey(content_uid))
                 {
@@ -318,7 +326,7 @@ namespace Visualizations
         /// </summary>
         /// <param name="content_value"></param>
         /// <returns></returns>
-        protected override bool reset_content(AbstractVisualization content_value)
+        protected override bool reset_entry(AbstractVisualization content_value)
         {
             _datamanager.UnregisterDataCallback(content_value._DataUID);
             return content_value.Terminate();
@@ -338,7 +346,7 @@ namespace Visualizations
             var depending_services = new List<Type>();
 
             // Loop over registered types
-            foreach (var content_types in _contents)
+            foreach (var content_types in _entries)
             {
                 _timer.Start();
 
@@ -380,7 +388,7 @@ namespace Visualizations
                 if (type == typeof(WPF_FilterEditor))
                 {
                     var filter_editor = content as WPF_FilterEditor;
-                    filter_editor.RequestUICallback(_filtermanager.GetUI);
+                    filter_editor.FilterManagerCallbacks(_filtermanager.GetUI, _filtermanager.Reset);
                 }
 
                 if (content.CreateUI())
@@ -392,31 +400,6 @@ namespace Visualizations
             content = null;
             Log.Default.Msg(Log.Level.Error, "Unable to initialize or create content: " + type.FullName);
             return null;
-        }
-
-        /// <summary>
-        /// Convert string to type.
-        /// </summary>
-        /// <param name="type_string">The type as string.</param>
-        /// <returns>The requested type, default(?) otherwise.</returns>
-        private Type get_type(string type_string)
-        {
-            Type type = default(Type);
-            try
-            {
-                // Try to load type from current assembly (suppress errors -> return null on error)
-                type = Type.GetType(type_string);
-                if (type == null)
-                {
-                    // Try to load type from Core assembly - trow error if this is also not possible
-                    type = Assembly.Load("Core").GetType(type_string, true);
-                }
-            }
-            catch (TypeLoadException e)
-            {
-                Log.Default.Msg(Log.Level.Error, e.Message);
-            }
-            return type;
         }
 
         #endregion

@@ -75,7 +75,10 @@ namespace Core
 
             protected override void apply_filter(GenericDataStructure out_data)
             {
-                // Change in_out_data accordingly...
+                // Change out_data accordingly...
+
+
+
 
             }
 
@@ -85,7 +88,6 @@ namespace Core
             #region private variables
 
             private TextBlock _ui_element = new TextBlock();
-
 
             #endregion
         }

@@ -11,6 +11,7 @@ using System.Runtime.Remoting.Contexts;
 using System.Windows.Controls;
 using SciChart.Charting.Model.Filters;
 using System.Xml.Linq;
+using System.Runtime.InteropServices;
 
 
 
@@ -43,6 +44,7 @@ namespace Core
             public delegate bool DeleteFilterCallback_Delegate(int filter_uid);
             public delegate void FilterChanged_Delegate(int filter_uid, List<int> data_uids);
             public delegate UIElement GetUICallback_Delegate();
+            public delegate void ResetFilterManagerCallback_Delegate();
 
             #endregion
 
@@ -68,8 +70,8 @@ namespace Core
                 _get_selected_data_callback = get_selected_data_callback;
                 _update_selected_data_callback = update_selected_data_callback;
 
-                register_content(typeof(TransposeFilter));
-                register_content(typeof(RowSelectionFilter));
+                register_entry(typeof(TransposeFilter));
+                register_entry(typeof(RowSelectionFilter));
                 /// >>> Register your new filter type here:
                 /// register_content(typeof(CustomFilter));
 
@@ -79,7 +81,7 @@ namespace Core
                 _filter_list = new StackPanel();
 
                 var list = new List<FilterTypeMetadata>();
-                foreach (var filter_data in _contents)
+                foreach (var filter_data in _entries)
                 {
                     var filter_metadata = new FilterTypeMetadata();
                     filter_metadata.Name = filter_data.Key.Name;
@@ -95,6 +97,7 @@ namespace Core
 
             public override bool Terminate()
             {
+                bool terminated = base.Terminate();
                 if (_initialized)
                 {
                     _contents_metadata.Clear();
@@ -111,19 +114,25 @@ namespace Core
                     _filter_list = null;
 
                     _initialized = false;
+                    terminated &= true;
                 }
-                return true;
+                return terminated;
             }
 
             public UIElement GetUI()
             {
+                if (!_initialized)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return null;
+                }
                 return _create_ui();
             }
 
             public bool DeleteFilterCallback(int filter_uid)
             {
                 // Loop over registered types
-                foreach (var filter_types in _contents)
+                foreach (var filter_types in _entries)
                 {
                     if (filter_types.Value.ContainsKey(filter_uid))
                     {
@@ -143,10 +152,15 @@ namespace Core
             public string CollectConfigurations()
             {
                 var filtermanager_configuration = new FilterManager.Configuration();
+                filtermanager_configuration.FilterList = new List<AbstractFilter.Configuration>();
 
-                foreach (var filter_metadata in _contents)
+                foreach (var filter_types in _entries)
                 {
-                    /// TODO collect filter configurations
+                    foreach (var filter in filter_types.Value)
+                    {
+                        var filter_config = new AbstractFilter.Configuration() { UID = filter.Value._UID, Type = filter_types.Key.FullName, Name = filter.Value._Name };
+                        filtermanager_configuration.FilterList.Add(filter_config);
+                    }
                 }
 
                 return ConfigurationService.Serialize<FilterManager.Configuration>(filtermanager_configuration);
@@ -163,9 +177,9 @@ namespace Core
                 var filtermanager_configuration = ConfigurationService.Deserialize<FilterManager.Configuration>(configurations);
                 if (filtermanager_configuration != null)
                 {
-                    foreach (var filtermetadata in filtermanager_configuration.FilterList)
+                    foreach (var filter_config in filtermanager_configuration.FilterList)
                     {
-                        // TODO Apply configuration and create filters
+                        _create_filter_callback(get_type(filter_config.Type));
                     }
                     return true;
                 }
@@ -176,7 +190,7 @@ namespace Core
             {
                 _contents_metadata.Add(content_metadata);
 
-                foreach (var filter_type in _contents)
+                foreach (var filter_type in _entries)
                 {
                     foreach (var filter in filter_type.Value)
                     {
@@ -195,13 +209,21 @@ namespace Core
                         break;
                     }
                 }
-                foreach (var filter_type in _contents)
+                foreach (var filter_type in _entries)
                 {
                     foreach (var filter in filter_type.Value)
                     {
                         filter.Value.ContentMetadataListCallback(_contents_metadata);
                     }
                 }
+            }
+
+            public void Reset()
+            {
+                var get_selected_data_callback = _get_selected_data_callback;
+                var update_selected_data_callback = _update_selected_data_callback;
+                Terminate();
+                Initialize(get_selected_data_callback, update_selected_data_callback);
             }
 
             #endregion
@@ -214,7 +236,7 @@ namespace Core
             /// </summary>
             /// <param name="filter_value"></param>
             /// <returns></returns>
-            protected override bool reset_content(AbstractFilter filter_value)
+            protected override bool reset_entry(AbstractFilter filter_value)
             {
                 return filter_value.Terminate();
             }
@@ -237,7 +259,7 @@ namespace Core
                     return false;
                 }
 
-                if (_contents.ContainsKey(filter_type))
+                if (_entries.ContainsKey(filter_type))
                 {
                     var filter = (AbstractFilter)Activator.CreateInstance(filter_type);
                     if (filter.Initialize(_get_selected_data_callback, _update_selected_data_callback, this.filter_changed, DeleteFilterCallback))
@@ -245,7 +267,7 @@ namespace Core
                         if (filter.CreateUI())
                         {
                             filter.ContentMetadataListCallback(_contents_metadata);
-                            _contents[filter_type].Add(filter._UID, filter);
+                            _entries[filter_type].Add(filter._UID, filter);
                             _ordered_filter_list.Add(filter._UID);
 
                             // Add to UI list
@@ -276,13 +298,12 @@ namespace Core
                 if (!_ordered_filter_list.Contains(filter_uid))
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing filter UID");
-
+                    return;
                 }
-
                 var index = _ordered_filter_list.FindIndex(f => (f == filter_uid));
                 for (int i = index + 1; i < _ordered_filter_list.Count; i++)
                 {
-                    foreach (var filter_type in _contents)
+                    foreach (var filter_type in _entries)
                     {
                         foreach (var filter in filter_type.Value)
                         {

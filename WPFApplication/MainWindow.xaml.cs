@@ -176,9 +176,10 @@ namespace Frontend
                 loading_progress.SetValue(30);
 
                 // Register configurations
-                /// TODO var filtermanager = _contentmanager.GetFilterManager();
-                ///      _configurationservice.RegisterConfiguration(filtermanager._Name, filtermanager.CollectConfigurations, filtermanager.ApplyConfigurations);
+                /// ! DO NOT CHANGE THE ORDER (is there a fix to make it order independent?)
                 _configurationservice.RegisterConfiguration(_contentmanager._Name, _contentmanager.CollectConfigurations, _contentmanager.ApplyConfigurations);
+                var filtermanager = _contentmanager.GetFilterManager();
+                _configurationservice.RegisterConfiguration(filtermanager._Name, filtermanager.CollectConfigurations, filtermanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_winmanager._Name, _winmanager.CollectConfigurations, _winmanager.ApplyConfigurations);
                 _configurationservice.RegisterConfiguration(_colortheme._Name, _colortheme.CollectConfigurations, _colortheme.ApplyConfigurations);
 
@@ -189,7 +190,7 @@ namespace Frontend
                 _configurationservice.AttachMenu(_menubar);
                 _colortheme.AttachMenu(_menubar);
                 _winmanager.AttachMenu(_menubar);
-                _menubar.AddSeparator(MenubarMain.PredefinedMenuOption.FILE);
+                /// _menubar.AddSeparator(MenubarMain.PredefinedMenuOption.FILE);
                 _menubar.AddMenu(MenubarMain.PredefinedMenuOption.FILE, MenubarMain.GetDefaultMenuItem("Exit", exit_app_click));
 
                 loading_progress.SetValue(60);

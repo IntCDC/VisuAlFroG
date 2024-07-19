@@ -36,7 +36,6 @@ namespace Core
                 public int UID { get; set; }
                 public string Type { get; set; }
                 public string Name { get; set; }
-                public List<int> ContentUIDList { get; set; }
             }
 
             public class ContentMetadata
@@ -375,12 +374,10 @@ namespace Core
                     if (_reserved.ContainsKey(data_uid) && (_reserved[data_uid].Item1 == ListModification.DELETE))
                     {
                         _reserved.Remove(data_uid);
-                        Log.Default.Msg(Log.Level.Debug, "   [[[ " + _Name + "]]] Deleted: " + data_uid.ToString());
                     }
                     else if (!_reserved.ContainsKey(data_uid) && _applied.ContainsKey(data_uid))
                     {
                         _reserved.Add(data_uid, new Tuple<ListModification, GenericDataStructure>(ListModification.ADD, null));
-                        Log.Default.Msg(Log.Level.Debug, "   [[[ " + _Name + "]]]  Added:   " + data_uid.ToString());
                     }
                 }
                 // notify_changes = false prevents double execution
@@ -394,7 +391,6 @@ namespace Core
                     if (!_reserved.ContainsKey(item.Key))
                     {
                         _reserved.Add(item.Key, new Tuple<ListModification, GenericDataStructure>(ListModification.ADD, null));
-                        Log.Default.Msg(Log.Level.Debug, "   [[[ " + _Name + "]]]  Added:   " + item.Key.ToString());
                     }
                 }
                 if (_reserved.Count > 0)
@@ -442,7 +438,6 @@ namespace Core
                         {
                             // If content should be removed and now added ... remove from reserved list
                             _reserved.Remove(data_uid);
-                            Log.Default.Msg(Log.Level.Debug, "   [[[ " + _Name + "]]]  Deleted: " + data_uid.ToString());
                         }
                         // If content has already been reserved for being added, don't do anything. This case can not happen!
                     }
@@ -459,7 +454,6 @@ namespace Core
                         else
                         {
                             _reserved.Add(data_uid, new Tuple<ListModification, GenericDataStructure>(ListModification.ADD, null));
-                            Log.Default.Msg(Log.Level.Debug, "   [[[ " + _Name + "]]]  Added:   " + data_uid.ToString());
                         }
                     }
                     _disable_content_checkboxes(data_uid);
@@ -472,7 +466,6 @@ namespace Core
                         {
                             // If content should be added and now removed ... remove from reserved list
                             _reserved.Remove(data_uid);
-                            Log.Default.Msg(Log.Level.Debug, "   [[[ " + _Name + "]]] Deleted: " + data_uid.ToString());
                         }
                         // If content has already been reserved for being delete, don't do anything. This case can not happen!
                     }
@@ -484,7 +477,6 @@ namespace Core
                             {
                                 // If content has previously already been applied, reserve content for deletion
                                 _reserved.Add(data_uid, new Tuple<ListModification, GenericDataStructure>(ListModification.DELETE, _applied[data_uid].Item2));
-                                Log.Default.Msg(Log.Level.Debug, "   [[[ " + _Name + "]]] Added:   " + data_uid.ToString());
                             }
                             // If content has already been applied for being delete, don't do anything. This case can not happen (there won't be an entry for this case in _applied)!
                         }
@@ -585,7 +577,6 @@ namespace Core
                     }
                 }
                 _reserved.Clear();
-                Log.Default.Msg(Log.Level.Debug, "   [[[ " + _Name + "]]] Cleared:  _reserved");
             }
 
             private void _event_apply_button(object sender, RoutedEventArgs e)

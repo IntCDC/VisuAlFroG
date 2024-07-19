@@ -159,7 +159,7 @@ namespace Core
             /// <returns>True on success, false otherwise.</returns>
             public bool LoadFile(string configuration_file)
             {
-                try
+                if (configuration_file != "")
                 {
                     var fileStream = new FileStream(configuration_file, FileMode.Open, FileAccess.Read, FileShare.Read);
                     using (StreamReader reader = new StreamReader(fileStream))
@@ -179,10 +179,6 @@ namespace Core
                         return true;
                     }
                 }
-                catch (Exception exc)
-                {
-                    Log.Default.Msg(Log.Level.Error, exc.Message);
-                }
                 return false;
             }
 
@@ -197,7 +193,7 @@ namespace Core
                 var config_menu = MenubarMain.GetDefaultMenuItem("Configuration");
                 config_menu.Items.Add(MenubarMain.GetDefaultMenuItem("Save", Save));
                 config_menu.Items.Add(MenubarMain.GetDefaultMenuItem("Load", LoadFileDialog));
-                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.FILE, config_menu);
+                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.CONTENT, config_menu);
             }
 
             #endregion

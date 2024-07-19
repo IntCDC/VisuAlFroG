@@ -81,6 +81,16 @@ namespace Visualizations
         {
             if (_initialized)
             {
+                if (_reset_filtermanager_callback != null)
+                {
+                    _reset_filtermanager_callback();
+                }
+                else
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing callback to reset filter manager. Set before calling this function.");
+                }
+
+                _reset_filtermanager_callback = null;
                 _get_ui_callback = null;
                 _initialized = false;
             }
@@ -93,9 +103,14 @@ namespace Visualizations
         }
 
 
-        public void RequestUICallback(GetUICallback_Delegate get_ui_callback)
+        public void FilterManagerCallbacks(GetUICallback_Delegate get_ui_callback, ResetFilterManagerCallback_Delegate reset_filtermanager_callback)
         {
+            if ((get_ui_callback == null) || (reset_filtermanager_callback == null))
+            {
+                Log.Default.Msg(Log.Level.Error, "Missing callback(s)");
+            }
             _get_ui_callback = get_ui_callback;
+            _reset_filtermanager_callback = reset_filtermanager_callback;
         }
 
         #endregion
@@ -104,6 +119,7 @@ namespace Visualizations
         #region private variables
 
         private GetUICallback_Delegate _get_ui_callback = null;
+        private ResetFilterManagerCallback_Delegate _reset_filtermanager_callback = null;
 
         #endregion
     }

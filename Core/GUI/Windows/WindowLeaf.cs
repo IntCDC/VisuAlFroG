@@ -23,6 +23,7 @@ using AttachedContent_Type = System.Tuple<int, string>;
 using ReadContentMetaData_Type = System.Tuple<string, bool, bool, string>;
 using ContentCallbacks_Type = System.Tuple<Core.Abstracts.AbstractWindow.AvailableContents_Delegate, Core.Abstracts.AbstractWindow.CreateContent_Delegate, Core.Abstracts.AbstractWindow.DeleteContent_Delegate>;
 using System.Windows.Data;
+using System.Linq;
 
 
 namespace Core
@@ -82,6 +83,7 @@ namespace Core
                 _menu = new MenubarWindow();
                 _content_caption = new RenameLabel();
                 _content_child = new Grid();
+                _attached_type_text = new TextBlock();
 
                 _AttachedContent = null;
                 _Name = _default_caption;
@@ -93,6 +95,14 @@ namespace Core
                 _content_child.AllowDrop = true;
                 _content_child.DragOver += event_content_dragover;
                 _content_child.Drop += event_content_drop;
+
+                // Default usage hint
+                /*
+                var info_text = new TextBlock();
+                info_text.Text = "HINT: Add new content via menu 'Content' -> 'Add Content'";
+                info_text.SetResourceReference(TextBlock.ForegroundProperty, "Brush_TextDisabled");
+                _content_child.Children.Add(info_text);
+                */
 
                 var content_panel = new DockPanel();
                 StackPanel stack = new StackPanel();
@@ -131,7 +141,11 @@ namespace Core
                         // Set content caption
                         _Name = content_metadata.Item2;
 
-                        _menu.Clear(MenubarWindow.PredefinedMenuOption.OPTIONS);
+                        var split_typenames = content_type.Split(new[] { '.' }, 2);
+                        _attached_type_text.Text = "  (" + split_typenames[(split_typenames.Count() - 1)] + ")";
+                        _attached_type_text.SetResourceReference(TextBlock.ForegroundProperty, "Brush_TextDisabled");
+
+                        _menu.Clear(MenubarWindow.PredefinedMenuOption.VIEW);
 
                         _menu.Clear(MenubarWindow.PredefinedMenuOption.DATA);
                         /// XXX Exclude some content from having the following menu --- Find better solution... Check if DataUID=Invalid but not available here
@@ -199,9 +213,12 @@ namespace Core
             public void ResetLeaf()
             {
                 delete_content();
+
                 _content_child = null;
                 _menu = null;
                 _content_caption = null;
+                _attached_type_text = null;
+
                 base.reset();
             }
 
@@ -217,6 +234,8 @@ namespace Core
             {
                 _content_child.Children.Clear();
                 _Name = _default_caption;
+                _attached_type_text.Text = "";
+
                 if (_AttachedContent != null)
                 {
                     if (!only_detach)
@@ -248,8 +267,11 @@ namespace Core
                 column_label.Width = new GridLength(0.0, GridUnitType.Auto);
                 menu_grid.ColumnDefinitions.Add(column_label);
                 var column_menu = new ColumnDefinition();
-                column_menu.Width = new GridLength(1.0, GridUnitType.Star);
+                column_menu.Width = new GridLength(1.0, GridUnitType.Auto);
                 menu_grid.ColumnDefinitions.Add(column_menu);
+                var info_menu = new ColumnDefinition();
+                info_menu.Width = new GridLength(1.0, GridUnitType.Auto);
+                menu_grid.ColumnDefinitions.Add(info_menu);
 
                 Grid.SetColumn(_content_caption, 0);
                 menu_grid.Children.Add(_content_caption);
@@ -259,6 +281,11 @@ namespace Core
                 menu.Style = ColorTheme.ContentMenuBarStyle();
                 menu_grid.Children.Add(menu);
 
+                _attached_type_text.Text = "";
+                Grid.SetColumn(_attached_type_text, 2);
+                menu_grid.Children.Add(_attached_type_text);
+
+
                 var _menu_rename = MenubarMain.GetDefaultMenuItem("Rename");
                 _menu_rename.Click += (object sender, RoutedEventArgs e) =>
                 {
@@ -267,9 +294,9 @@ namespace Core
                     _content_caption.Cursor = null;
                     _content_caption.Focus();
                 };
-                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, _menu_rename);
+                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.CONTENT, _menu_rename);
 
-                _menu.AddSeparator(MenubarWindow.PredefinedMenuOption.VIEW);
+                _menu.AddSeparator(MenubarWindow.PredefinedMenuOption.CONTENT);
 
                 // Horizontal 
                 var item_horizontal_top = new MenuItem();
@@ -289,7 +316,7 @@ namespace Core
                 item_horizontal.Header = "Horizontal Split";
                 item_horizontal.Items.Add(item_horizontal_top);
                 item_horizontal.Items.Add(item_horizontal_bottom);
-                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_horizontal);
+                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.CONTENT, item_horizontal);
 
                 // Vertical
                 var item_vertical_left = new MenuItem();
@@ -309,7 +336,7 @@ namespace Core
                 item_vertical.Header = "Vertical Split";
                 item_vertical.Items.Add(item_vertical_left);
                 item_vertical.Items.Add(item_vertical_right);
-                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_vertical);
+                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.CONTENT, item_vertical);
 
                 // Enable deletion of child only if it is not root
                 var item_delete = new MenuItem();
@@ -317,10 +344,10 @@ namespace Core
                 item_delete.Header = "Delete Window";
                 item_delete.Name = _item_id_window_delete;
                 item_delete.Click += event_menuitem_click;
-                _menu.AddSubMenuOpenEvent(MenubarWindow.PredefinedMenuOption.VIEW, event_menuitem_deletewindow_state);
-                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_delete);
+                _menu.AddSubMenuOpenEvent(MenubarWindow.PredefinedMenuOption.CONTENT, event_menuitem_deletewindow_state);
+                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.CONTENT, item_delete);
 
-                _menu.AddSeparator(MenubarWindow.PredefinedMenuOption.VIEW);
+                _menu.AddSeparator(MenubarWindow.PredefinedMenuOption.CONTENT);
 
                 var item_content_add = new MenuItem();
                 item_content_add.Style = ColorTheme.MenuItemIconStyle("add-content.png");
@@ -354,7 +381,7 @@ namespace Core
                 {
                     item_content_add.IsEnabled = false;
                 }
-                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_content_add);
+                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.CONTENT, item_content_add);
 
                 var item_content_delete = new MenuItem();
                 item_content_delete.Style = ColorTheme.MenuItemIconStyle("delete-content.png");
@@ -362,12 +389,12 @@ namespace Core
                 item_content_delete.Name = _item_id_delete_content;
                 item_content_delete.Click += event_menuitem_click;
                 item_content_delete.IsEnabled = false;
-                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_content_delete);
+                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.CONTENT, item_content_delete);
 
                 var item_content_dad = new MenuItem();
                 item_content_dad.Style = ColorTheme.MenuItemIconStyle("drag-and-drop.png");
                 item_content_dad.Header = "Content Swap";
-                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.VIEW, item_content_dad);
+                _menu.AddMenu(MenubarWindow.PredefinedMenuOption.CONTENT, item_content_dad);
 
                 var item_content_dad_text = new MenuItem();
                 item_content_dad_text.Header = "Drag&Drop [Middle Mouse Button]";
@@ -603,6 +630,7 @@ namespace Core
             private Grid _content_child = null;
             private MenubarWindow _menu = null;
             private RenameLabel _content_caption = null;
+            private TextBlock _attached_type_text = null;
 
             private const string _default_caption = "...";
 

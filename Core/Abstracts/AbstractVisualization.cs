@@ -5,6 +5,7 @@ using Core.Utilities;
 using System.Windows;
 using Core.GUI;
 using Core.Data;
+using System.Runtime.Remoting.Contexts;
 
 
 
@@ -179,7 +180,9 @@ namespace Core
                 _created = false;
                 _initialized = false;
 
+                _content.Children.Clear();
                 _content = null;
+
                 _timer = null;
 
                 _RequestDataCallback = null;

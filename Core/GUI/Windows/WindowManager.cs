@@ -95,11 +95,13 @@ namespace Core
 
             public override void AttachMenu(MenubarMain menu_bar)
             {
-                var default_item = MenubarMain.GetDefaultMenuItem("Load Default", menu_create_default);
-                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.VIEW, default_item);
-
                 var clear_item = MenubarMain.GetDefaultMenuItem("Clear All", menu_clear_all);
-                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.VIEW, clear_item);
+                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.CONTENT, clear_item);
+
+                menu_bar.AddSeparator(MenubarMain.PredefinedMenuOption.CONTENT);
+
+                var default_item = MenubarMain.GetDefaultMenuItem("Load DEBUG Contents", menu_create_default);
+                menu_bar.AddMenu(MenubarMain.PredefinedMenuOption.CONTENT, default_item);
             }
 
             #endregion
@@ -208,8 +210,8 @@ namespace Core
 
                 if (configurations.Leaf != null)
                 {
-                    branch._Leaf._Name = configurations.Leaf.Name;
                     branch._Leaf.CreateContent(configurations.Leaf.ContentUID, configurations.Leaf.ContentType);
+                    branch._Leaf._Name = configurations.Leaf.Name;
                 }
                 else if (configurations.Children != null)
                 {

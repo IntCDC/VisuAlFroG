@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using Core.GUI;
 using Core.Utilities;
@@ -14,7 +15,7 @@ namespace Core
 {
     namespace Abstracts
     {
-        public abstract class AbstractRegisterService<ContentBaseType> : AbstractService
+        public abstract class AbstractRegisterService<entryBaseType> : AbstractService
         {
 
             /* ------------------------------------------------------------------*/
@@ -27,15 +28,14 @@ namespace Core
                     Terminate();
                 }
 
-                _contents = new Dictionary<Type, Dictionary<int, ContentBaseType>>();
+                _entries = new Dictionary<Type, Dictionary<int, entryBaseType>>();
 
                 return true;
             }
 
             public override bool Terminate()
             {
-                clear_contents();
-
+                reset_entry();
                 return true;
             }
 
@@ -45,7 +45,32 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region abstract functions
 
-            protected abstract bool reset_content(ContentBaseType content_value);
+            protected abstract bool reset_entry(entryBaseType entry_value);
+
+            /// <summary>
+            /// Convert string to type.
+            /// </summary>
+            /// <param name="type_string">The type as string.</param>
+            /// <returns>The requested type, default(?) otherwise.</returns>
+            protected Type get_type(string type_string)
+            {
+                Type type = default(Type);
+                try
+                {
+                    // Try to load type from current assembly (suppress errors -> return null on error)
+                    type = Type.GetType(type_string);
+                    if (type == null)
+                    {
+                        // Try to load type from Core assembly - trow error if this is also not possible
+                        type = Assembly.Load("Visualizations").GetType(type_string, true);
+                    }
+                }
+                catch (TypeLoadException e)
+                {
+                    Log.Default.Msg(Log.Level.Error, e.Message);
+                }
+                return type;
+            }
 
             #endregion
 
@@ -53,17 +78,17 @@ namespace Core
             #region protected functions
 
             /// <summary>
-            /// Register new content type.
+            /// Register new entry type.
             /// </summary>
-            /// <param name="content_type">The content type.</param>
-            protected void register_content(Type content_type)
+            /// <param name="entry_type">The entry type.</param>
+            protected void register_entry(Type entry_type)
             {
                 // Check for required base type
-                Type type = content_type;
+                Type type = entry_type;
                 bool valid_type = false;
                 while (!recursive_basetype(type, typeof(object)))
                 {
-                    if (recursive_basetype(type, typeof(ContentBaseType)))
+                    if (recursive_basetype(type, typeof(entryBaseType)))
                     {
                         valid_type = true;
                         break;
@@ -76,19 +101,19 @@ namespace Core
                 }
                 if (valid_type)
                 {
-                    if (_contents.ContainsKey(content_type))
+                    if (_entries.ContainsKey(entry_type))
                     {
-                        Log.Default.Msg(Log.Level.Warn, "Content type already added: " + content_type.FullName);
+                        Log.Default.Msg(Log.Level.Warn, "entry type already added: " + entry_type.FullName);
                     }
                     else
                     {
-                        _contents.Add(content_type, new Dictionary<int, ContentBaseType>());
-                        Log.Default.Msg(Log.Level.Info, "Registered content type: " + content_type.FullName);
+                        _entries.Add(entry_type, new Dictionary<int, entryBaseType>());
+                        Log.Default.Msg(Log.Level.Info, "Registered entry type: " + entry_type.FullName);
                     }
                 }
                 else
                 {
-                    Log.Default.Msg(Log.Level.Error, "Incompatible content type: " + content_type.FullName);
+                    Log.Default.Msg(Log.Level.Error, "Incompatible entry type: " + entry_type.FullName);
                 }
             }
 
@@ -119,19 +144,19 @@ namespace Core
             }
 
             /// <summary>
-            /// Delete all contents.
+            /// Delete all entrys.
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
-            protected bool clear_contents()
+            protected bool reset_entry()
             {
                 bool terminated = true;
-                foreach (var content_types in _contents)
+                foreach (var entry_types in _entries)
                 {
-                    foreach (var content_data in content_types.Value)
+                    foreach (var entry_data in entry_types.Value)
                     {
-                        terminated &= reset_content(content_data.Value);
+                        terminated &= reset_entry(entry_data.Value);
                     }
-                    content_types.Value.Clear();
+                    entry_types.Value.Clear();
                 }
                 return terminated;
             }
@@ -141,7 +166,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region protected variables
 
-            protected Dictionary<Type, Dictionary<int, ContentBaseType>> _contents = null;
+            protected Dictionary<Type, Dictionary<int, entryBaseType>> _entries = null;
 
             #endregion
         }
