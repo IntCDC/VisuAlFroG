@@ -12,6 +12,9 @@ using Core.Abstracts;
 using Core.Filter;
 using Core.Data;
 using System.Windows.Data;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+
 
 
 
@@ -33,9 +36,7 @@ namespace Core
             /// </summary>
             public class Configuration : IAbstractConfigurationData
             {
-                public int UID { get; set; }
                 public string Type { get; set; }
-                public string Name { get; set; }
             }
 
             public class ContentMetadata
@@ -61,6 +62,9 @@ namespace Core
 
             /* ------------------------------------------------------------------*/
             #region public properties
+
+            public const double _Margin = 5.0;
+            public const double _BorderThickness = 2.0;
 
             public int _UID { get; } = UniqueID.GenerateInt();
             public string _Name { get { return _filter_caption.Text; } protected set { _filter_caption.Text = value; } }
@@ -136,6 +140,7 @@ namespace Core
                     }
 
                     _content = null;
+                    _border = null;
                     _filter_caption = null;
                     _checkable_content_list = null;
                     _apply_button = null;
@@ -173,17 +178,18 @@ namespace Core
                 }
                 _timer.Start();
 
-                _content = new Border();
+                _content = new Grid();
+                _border = new Border();
                 _checkable_content_list = new StackPanel();
                 _apply_button = new Button();
 
-                _filter_caption.Margin = new Thickness(_margin, _margin, _margin, 0.0);
+                _filter_caption.Margin = new Thickness(_Margin, _Margin, _Margin, 0.0);
                 _filter_caption.HorizontalAlignment = HorizontalAlignment.Stretch;
 
                 var button_grid = new Grid();
 
                 _apply_button.Content = " Apply ";
-                _apply_button.Margin = new Thickness(_margin, _margin, 0.0, 0.0);
+                _apply_button.Margin = new Thickness(_Margin, _Margin, 0.0, 0.0);
                 _apply_button.Click += _event_apply_button;
                 _apply_button_default_background = _apply_button.Background;
                 _apply_button.IsEnabled = false;
@@ -196,7 +202,7 @@ namespace Core
 
                 var rename_button = new Button();
                 rename_button.Content = " Rename ";
-                rename_button.Margin = new Thickness(_margin, _margin, 0.0, 0.0);
+                rename_button.Margin = new Thickness(_Margin, _Margin, 0.0, 0.0);
                 rename_button.Click += (object sender, RoutedEventArgs e) =>
                 {
                     _filter_caption.Focusable = true;
@@ -212,7 +218,7 @@ namespace Core
 
                 var delete_button = new Button();
                 delete_button.Content = " Delete ";
-                delete_button.Margin = new Thickness(_margin, _margin, 0.0, 0.0);
+                delete_button.Margin = new Thickness(_Margin, _Margin, 0.0, 0.0);
                 delete_button.Click += (object sender, RoutedEventArgs e) =>
                 {
                     if (_delete_self_callback != null)
@@ -234,7 +240,7 @@ namespace Core
 
                 var list_label = new TextBlock();
                 list_label.Text = "Select Content";
-                list_label.Margin = new Thickness(_margin, _margin, 0.0, 0.0);
+                list_label.Margin = new Thickness(_Margin, _Margin, 0.0, 0.0);
                 var apply_text_column = new ColumnDefinition();
                 apply_text_column.Width = new GridLength(1.0, GridUnitType.Auto);
                 list_caption_grid.ColumnDefinitions.Add(apply_text_column);
@@ -244,10 +250,10 @@ namespace Core
                 var hrule = new Border();
                 hrule.SetResourceReference(Border.BackgroundProperty, "Brush_Background");
                 hrule.SetResourceReference(Border.BorderBrushProperty, "Brush_Foreground");
-                hrule.BorderThickness = new Thickness(_border_thickness);
-                hrule.Margin = new Thickness(_margin);
+                hrule.BorderThickness = new Thickness(_BorderThickness);
+                hrule.Margin = new Thickness(_Margin);
                 hrule.CornerRadius = new CornerRadius(0);
-                hrule.Height = _border_thickness;
+                hrule.Height = _BorderThickness;
                 hrule.VerticalAlignment = VerticalAlignment.Bottom;
                 hrule.HorizontalAlignment = HorizontalAlignment.Stretch;
                 var apply_rule_column = new ColumnDefinition();
@@ -282,7 +288,7 @@ namespace Core
                     var unique_label = new TextBlock();
                     unique_label.Text = "(filter only allows individual selection)";
                     unique_label.TextWrapping = TextWrapping.Wrap;
-                    unique_label.Margin = new Thickness(_margin, _margin, 0.0, 0.0);
+                    unique_label.Margin = new Thickness(_Margin, _Margin, 0.0, 0.0);
                     var unique_label_row = new RowDefinition();
                     unique_label_row.Height = new GridLength(1.0, GridUnitType.Auto);
                     content_grid.RowDefinitions.Add(unique_label_row);
@@ -304,9 +310,9 @@ namespace Core
                 var child_border = new Border();
                 child_border.SetResourceReference(Border.BackgroundProperty, "Brush_Background");
                 child_border.SetResourceReference(Border.BorderBrushProperty, "Brush_Foreground");
-                child_border.BorderThickness = new Thickness(_border_thickness);
+                child_border.BorderThickness = new Thickness(_BorderThickness);
                 child_border.CornerRadius = new CornerRadius(0);
-                child_border.Margin = new Thickness(_margin);
+                child_border.Margin = new Thickness(_Margin);
                 child_border.Child = child;
 
                 var filter_row = new RowDefinition();
@@ -315,13 +321,26 @@ namespace Core
                 Grid.SetRow(child_border, ++row_index);
                 content_grid.Children.Add(child_border);
 
-                _content.SetResourceReference(Border.BackgroundProperty, "Brush_Background");
-                _content.BorderThickness = new Thickness(_border_thickness);
-                _content.SetResourceReference(Border.BorderBrushProperty, "Brush_Foreground");
-                _content.CornerRadius = new CornerRadius(0);
-                _content.Margin = new Thickness(_margin);
-                _content.Child = content_grid;
+                _border.SetResourceReference(Border.BackgroundProperty, "Brush_Background");
+                _border.BorderThickness = new Thickness(_BorderThickness);
+                _border.SetResourceReference(Border.BorderBrushProperty, "Brush_Foreground");
+                _border.CornerRadius = new CornerRadius(0);
+                _border.Margin = new Thickness(_Margin);
+                _border.Child = content_grid;
 
+                var border_row = new RowDefinition();
+                border_row.Height = new GridLength(1.0, GridUnitType.Auto);
+                _content.RowDefinitions.Add(border_row);
+                Grid.SetRow(_border, 0);
+                _content.Children.Add(_border);
+
+                /*
+                var arrow_row = new RowDefinition();
+                arrow_row.Height = new GridLength(1.0, GridUnitType.Auto);
+                _content.RowDefinitions.Add(arrow_row);
+                Grid.SetRow(..., 1);
+                _content.Children.Add(...);
+                */
 
                 _timer.Stop();
                 _created = true;
@@ -355,7 +374,7 @@ namespace Core
                 {
                     var check = new CheckBox();
                     check.SetBinding(CheckBox.ContentProperty, metadata.NameBinding);
-                    check.Margin = new Thickness(_margin, _margin, 0.0, 0.0);
+                    check.Margin = new Thickness(_Margin, _Margin, 0.0, 0.0);
                     check.Tag = metadata.DataUID;
                     check.Click += _event_content_checked;
                     check.SetResourceReference(CheckBox.ForegroundProperty, "Brush_Foreground");
@@ -390,7 +409,7 @@ namespace Core
                 {
                     if (!_reserved.ContainsKey(item.Key))
                     {
-                        _reserved.Add(item.Key, new Tuple<ListModification, GenericDataStructure>(ListModification.ADD, null));
+                        _reserved.Add(item.Key, new Tuple<ListModification, GenericDataStructure>(ListModification.ADD, item.Value.Item2));
                     }
                 }
                 if (_reserved.Count > 0)
@@ -523,11 +542,14 @@ namespace Core
                 _applied.Clear();
                 var changed_content_list = new List<int>();
 
-                var save_border_thickness = _content.BorderThickness;
-                var save_border_color = _content.BorderBrush;
-                _content.BorderThickness = new Thickness(_border_thickness * 3.0);
-                _content.SetResourceReference(Border.BorderBrushProperty, "Brush_ApplyDirtyBackground");
+                var save_BorderThickness = _border.BorderThickness;
+                var save_border_color = _border.BorderBrush;
+                _border.BorderThickness = new Thickness(_BorderThickness * 3.0);
+                _border.SetResourceReference(Border.BorderBrushProperty, "Brush_ApplyDirtyBackground");
                 Miscellaneous.AllowGlobalUIUpdate();
+
+                bool added = false;
+                bool deleted = false;
 
                 foreach (var item in _reserved)
                 {
@@ -535,8 +557,12 @@ namespace Core
 
                     if (item.Value.Item1 == ListModification.ADD)
                     {
-                        var original_data = _get_selected_data_callback(data_uid);
-                        original_data = original_data.DeepCopy();
+                        var original_data = item.Value.Item2;
+                        if (original_data == null)
+                        {
+                            original_data = _get_selected_data_callback(data_uid);
+                            original_data = original_data.DeepCopy();
+                        }
 
                         var filter_data = original_data.DeepCopy();
                         apply_filter(filter_data);
@@ -545,6 +571,7 @@ namespace Core
                         var applied_data = new Tuple<ListModification, GenericDataStructure>(ListModification.ADD, original_data);
 
                         _applied.Add(data_uid, applied_data);
+                        added = true;
                         changed_content_list.Add(data_uid);
                     }
                     else // if (item.Value.Item1 == ListModification.DELETE)
@@ -553,8 +580,8 @@ namespace Core
                         if (item.Value.Item2 != null)
                         {
                             _update_selected_data_callback(data_uid, item.Value.Item2);
-                            _enable_content_checkboxes();
                             changed_content_list.Add(data_uid);
+                            deleted = true;
                         }
                         else
                         {
@@ -562,10 +589,14 @@ namespace Core
                         }
                     }
                 }
+                if (!added && deleted)
+                {
+                    _enable_content_checkboxes();
+                }
                 _set_dirty(false);
 
-                _content.BorderThickness = save_border_thickness;
-                _content.BorderBrush = save_border_color;
+                _border.BorderThickness = save_BorderThickness;
+                _border.BorderBrush = save_border_color;
                 Miscellaneous.AllowGlobalUIUpdate();
 
                 if (notify_changes)
@@ -609,6 +640,7 @@ namespace Core
                 // Enable all other content for being selectable again
                 if (_UniqueContent)
                 {
+                    create_update_ui(null);
                     foreach (var child in _checkable_content_list.Children)
                     {
                         var content_item = child as CheckBox;
@@ -653,18 +685,16 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region private variables
 
-            private const double _margin = 5.0;
-            private const double _border_thickness = 2.0;
-
             private bool _created = false;
 
-            // Required to be available in cotr of derived filter
+            // Required to be available in ctor of derived filter
             private RenameLabel _filter_caption = new RenameLabel();
 
-            private Border _content = null;
+            private Grid _content = null;
+            private Border _border = null;
             private StackPanel _checkable_content_list = null;
             private Button _apply_button = null;
-            private Brush _apply_button_default_background = null;
+            private System.Windows.Media.Brush _apply_button_default_background = null;
 
             private DataManager.UpdateSelectedDataCallback_Delegate _update_selected_data_callback = null;
             private DataManager.GetGenericDataCallback_Delegate _get_selected_data_callback = null;

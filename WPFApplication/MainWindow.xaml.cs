@@ -139,7 +139,7 @@ namespace Frontend
                 LoadingProgressWindow loading_progress = new LoadingProgressWindow();
 
                 // Explicitly disable debug messages
-                Log.Default.DisableDebug = false;
+                Log.Default.DisableDebug = true;
                 Log.Default.DumpFile = true;
 
 

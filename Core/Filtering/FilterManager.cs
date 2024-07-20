@@ -158,7 +158,7 @@ namespace Core
                 {
                     foreach (var filter in filter_types.Value)
                     {
-                        var filter_config = new AbstractFilter.Configuration() { UID = filter.Value._UID, Type = filter_types.Key.FullName, Name = filter.Value._Name };
+                        var filter_config = new AbstractFilter.Configuration() { Type = filter_types.Key.FullName };
                         filtermanager_configuration.FilterList.Add(filter_config);
                     }
                 }
@@ -321,12 +321,12 @@ namespace Core
                 _add_filter_list.IsEditable = false;
                 _add_filter_list.DisplayMemberPath = "Name";
                 _add_filter_list.SelectedIndex = 0;
-                _add_filter_list.Margin = new Thickness(0.0, _margin, _margin, _margin);
+                _add_filter_list.Margin = new Thickness(0.0, _Margin, _Margin, _Margin);
 
                 var add_button = new Button();
                 add_button.Content = " Add Filter ";
                 add_button.Click += event_apply_button;
-                add_button.Margin = new Thickness(_margin, _margin / 2.0, _margin, _margin / 2.0);
+                add_button.Margin = new Thickness(_Margin, _Margin / 2.0, _Margin, _Margin / 2.0);
 
                 _list_scrolling.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
                 _list_scrolling.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
@@ -342,15 +342,15 @@ namespace Core
                 note.TextWrapping = TextWrapping.Wrap;
                 note.SetResourceReference(TextBlock.BackgroundProperty, "Brush_Background");
                 note.SetResourceReference(TextBlock.ForegroundProperty, "Brush_Foreground");
-                note.Margin = new Thickness(_margin);
+                note.Margin = new Thickness(_Margin);
 
                 var hrule = new Border();
                 hrule.SetResourceReference(Border.BackgroundProperty, "Brush_Background");
                 hrule.SetResourceReference(Border.BorderBrushProperty, "Brush_Foreground");
-                hrule.BorderThickness = new Thickness(_border_thickness);
-                hrule.Margin = new Thickness(_margin);
+                hrule.BorderThickness = new Thickness(_BorderThickness);
+                hrule.Margin = new Thickness(_Margin);
                 hrule.CornerRadius = new CornerRadius(0);
-                hrule.Height = _border_thickness;
+                hrule.Height = _BorderThickness;
                 hrule.VerticalAlignment = VerticalAlignment.Bottom;
                 hrule.HorizontalAlignment = HorizontalAlignment.Stretch;
 
@@ -436,9 +436,6 @@ namespace Core
                 public string Name { get; set; }
                 public Type Type { get; set; }
             }
-
-            private const double _margin = 5.0;
-            private const double _border_thickness = 2.0;
 
             private ComboBox _add_filter_list = null;
             private ScrollViewer _list_scrolling = null;

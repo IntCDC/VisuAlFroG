@@ -70,7 +70,7 @@ namespace SciChartInterface
                             return (double)p_dict[property_name];
                         })
                     {
-                        Title     = property_name,
+                        Title = property_name,
                         AxisStyle = axes_style()
                     };
                     index++;
@@ -119,32 +119,39 @@ namespace SciChartInterface
 
             private void specificdata_conversion(GenericDataStructure branch, ref List<DataType> value_list)
             {
-                /// XXX TODO via filter
-                int value_index = (int)branch.GetDimension() - 1;
-
-                // For each branch add all values to same series
-                if (branch._Entries.Count > 0)
+                try
                 {
-                    dynamic data_entry = new DataType();
-                    var data_entry_dict = data_entry as IDictionary<string, object>;
-                    int index = 0;
-                    foreach (var entry in branch._Entries)
+                    /// XXX TODO via filter
+                    int value_index = (int)branch.GetDimension() - 1;
+
+                    // For each branch add all values to same series
+                    if (branch._Entries.Count > 0)
                     {
-                        string label = entry._Metadata._Label;
-                        if (label == "")
+                        dynamic data_entry = new DataType();
+                        var data_entry_dict = data_entry as IDictionary<string, object>;
+                        int index = 0;
+                        foreach (var entry in branch._Entries)
                         {
-                            label = generate_property_name(index);
+                            string label = entry._Metadata._Label;
+                            if (label == "")
+                            {
+                                label = generate_property_name(index);
+                            }
+                            data_entry_dict.Add(label, (double)entry._Values[value_index]);
+
+                            index++;
                         }
-                        data_entry_dict.Add(label, (double)entry._Values[value_index]);
-
-                        index++;
+                        value_list.Add(data_entry);
                     }
-                    value_list.Add(data_entry);
-                }
 
-                foreach (var b in branch._Branches)
+                    foreach (var b in branch._Branches)
+                    {
+                        specificdata_conversion(b, ref value_list);
+                    }
+                }
+                catch (Exception exc)
                 {
-                    specificdata_conversion(b, ref value_list);
+                    Log.Default.Msg(Log.Level.Error, exc.Message);
                 }
             }
 

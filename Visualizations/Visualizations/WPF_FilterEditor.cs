@@ -92,6 +92,7 @@ namespace Visualizations
 
                 _reset_filtermanager_callback = null;
                 _get_ui_callback = null;
+
                 _initialized = false;
             }
             return base.Terminate();

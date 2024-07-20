@@ -151,7 +151,15 @@ namespace SciChartInterface
                 }
 
                 var parent = data_parent as SciChartParallelCoordinateSurface;
+                /*if (parent.ParallelCoordinateDataSource != null)
+                {
+                    if (parent.ParallelCoordinateDataSource is ParallelCoordinateDataSource<DataType> data_source) {
+                        data_source.SetValues(null);
+                        data_source.Invalidate();
+                    }
+                }*/
                 parent.ParallelCoordinateDataSource = null;
+                parent.UpdateLayout();
 
                 try
                 {
@@ -160,6 +168,7 @@ namespace SciChartInterface
                     {
                         parent.ParallelCoordinateDataSource = data;
                         parent.ParallelCoordinateDataSource.Invalidate();
+                        parent.UpdateLayout();
 
                         return true;
                     }

@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using Core.Data;
 using Core.Utilities;
 using Core.Abstracts;
+using System;
 
 
 /*
@@ -56,30 +57,150 @@ namespace Core
 
             protected override UIElement create_update_ui(in GenericDataStructure in_data)
             {
+                if (_ui_element == null)
+                {
+                    _ui_element = new Grid();
+                }
+                _ui_element.Children.Clear();
+
                 if (in_data == null)
                 {
-                    _ui_element.Text = "Select content to retrieve row information.";
+                    var info = new TextBlock();
+                    info.Text = "Select content to retrieve row information";
+                    info.SetResourceReference(TextBlock.ForegroundProperty, "Brush_LogMessageWarn");
+                    info.FontWeight = FontWeights.Bold;
+                    info.Margin = new Thickness(_Margin);
+
+                    _ui_element.Children.Add(info);
                     return _ui_element;
                 }
                 else
                 {
-                    _ui_element.Text = "Select rows/series:";
+                    if (_checkable_content_list == null)
+                    {
+                        _checkable_content_list = new StackPanel();
+                    }
+                    _checkable_content_list.Children.Clear();
 
-                    // Call when value has changed and filter should be applied with changes
-                    // set_apply_dirty();
+                    var info = new TextBlock();
+                    info.Text = "Select rows/series:";
+                    info.FontWeight = FontWeights.Bold;
+                    info.Margin = new Thickness(_Margin);
 
+                    var deselect_button = new Button();
+                    deselect_button.Content = "Clear Selection";
+                    deselect_button.Click += _event_deselect_button;
+                    deselect_button.Margin = new Thickness(_Margin);
+                    deselect_button.HorizontalAlignment = HorizontalAlignment.Left;
+                    deselect_button.Width = Miscellaneous.MeasureButtonString(deselect_button).Width + (2 * _Margin);
+                    _deselect = true;
+
+                    _checkable_content_list.Children.Clear();
+                    foreach (var branch in in_data._Branches)
+                    {
+                        var check = new CheckBox();
+                        check.Margin = new Thickness(_Margin);
+                        check.Click += _event_row_checked;
+                        check.Content = branch._Label;
+                        check.IsChecked = true;
+                        check.SetResourceReference(CheckBox.ForegroundProperty, "Brush_Foreground");
+                        _checkable_content_list.Children.Add(check);
+                    }
+
+                    var top_row = new RowDefinition();
+                    top_row.Height = new GridLength(1.0, GridUnitType.Auto);
+                    _ui_element.RowDefinitions.Add(top_row);
+                    Grid.SetRow(info, 0);
+                    _ui_element.Children.Add(info);
+
+                    var button_row = new RowDefinition();
+                    button_row.Height = new GridLength(1.0, GridUnitType.Auto);
+                    _ui_element.RowDefinitions.Add(button_row);
+                    Grid.SetRow(deselect_button, 1);
+                    _ui_element.Children.Add(deselect_button);
+
+                    var list_row = new RowDefinition();
+                    list_row.Height = new GridLength(1.0, GridUnitType.Auto);
+                    _ui_element.RowDefinitions.Add(list_row);
+                    Grid.SetRow(_checkable_content_list, 2);
+                    _ui_element.Children.Add(_checkable_content_list);
 
                     return _ui_element;
-                }                
+                }
             }
 
             protected override void apply_filter(GenericDataStructure out_data)
             {
                 // Change out_data accordingly...
+                foreach (var child in _checkable_content_list.Children)
+                {
+                    var checkable_row = child as CheckBox;
+                    if (checkable_row == null)
+                    {
+                        Log.Default.Msg(Log.Level.Error, "Unexpected sender");
+                        return;
+                    }
 
+                    var is_selected = (bool)checkable_row.IsChecked;
+                    var row_name = (string)checkable_row.Content;
 
+                    for (int i = 0; i < out_data._Branches.Count; i++)
+                    {
+                        if (!is_selected && (row_name == out_data._Branches[i]._Label))
+                        {
+                            out_data._Branches.RemoveAt(i);
+                        }
+                    }
+                }
+            }
 
+            #endregion
 
+            /* ------------------------------------------------------------------*/
+            #region private functions
+
+            private void _event_row_checked(object sender, RoutedEventArgs e)
+            {
+                var checkbox = sender as CheckBox;
+                if (checkbox == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unexpected sender");
+                    return;
+                }
+                //var is_checked = (bool)checkbox.IsChecked;
+                base.SetDirty();
+            }
+
+            private void _event_deselect_button(object sender, RoutedEventArgs e)
+            {
+                var deselect_button = sender as Button;
+                if (deselect_button == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unexpected sender");
+                }
+
+                foreach (var child in _checkable_content_list.Children)
+                {
+                    var checkable_row = child as CheckBox;
+                    if (checkable_row == null)
+                    {
+                        Log.Default.Msg(Log.Level.Error, "Unexpected sender");
+                        return;
+                    }
+                    checkable_row.IsChecked = !_deselect;
+                }
+
+                if (_deselect)
+                {
+                    deselect_button.Content = "Select All";
+                    _deselect = false;
+                }
+                else
+                {
+                    deselect_button.Content = "Clear Selection";
+                    _deselect = true;
+                }
+                deselect_button.Width = Miscellaneous.MeasureButtonString(deselect_button).Width + (2*_Margin);
             }
 
             #endregion
@@ -87,7 +208,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region private variables
 
-            private TextBlock _ui_element = new TextBlock();
+            private Grid _ui_element = null;
+            private StackPanel _checkable_content_list = null;
+            private bool _deselect = true;
 
             #endregion
         }
