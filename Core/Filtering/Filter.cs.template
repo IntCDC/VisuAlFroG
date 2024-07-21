@@ -21,55 +21,106 @@ see https://github.com/IntCDC/VisuAlFroG/blob/main/docs/developer-guide.md
  */
 namespace Core
 {
-    namespace Filter
-    {
-        public class CustomFilter : AbstractFilter
-        {
-            /* ------------------------------------------------------------------*/
-            #region public classes
+	namespace Filter
+	{
+		public class CustomFilter : AbstractFilter
+		{
+			/* ------------------------------------------------------------------*/
+			#region public classes
 
-            /// <summary>
-            /// Class defining the configuration required for restoring content.
-            /// </summary>
-            /*
+			/// <summary>
+			/// Class defining the configuration required for restoring content.
+			/// </summary>
+			/*
             public class Configuration : AbstractFilter.Configuration
             {
                 /// XXX TODO Add additional information required to restore the filter
             }
 *           */
 
-            #endregion
+			#endregion
 
-            /* ------------------------------------------------------------------*/
-            #region public functions
+			/* ------------------------------------------------------------------*/
+			#region public functions
+
+			public CustomFilter()
+			{
+				_Name = "Filter Name";
+				/// TODO Uncomment if filter should only be applied to one content at once:
+				//_UniqueContent = true;
+			}
+
+			#endregion
+
+			/* ------------------------------------------------------------------*/
+			#region protected functions
+
+			protected override UIElement create_update_ui(in GenericDataStructure in_data)
+			{
+				if (_ui_element == null)
+				{
+					_ui_element = new Grid();
+				}
+				_ui_element.Children.Clear();
+
+				/// TODO Uncomment if filter should only be applied to one content at once:
+				/*if (in_data == null)
+				{
+					var info = new TextBlock();
+					info.Text = "Select content to retrieve required filter information";
+					info.SetResourceReference(TextBlock.ForegroundProperty, "Brush_LogMessageWarn");
+					info.FontWeight = FontWeights.Bold;
+					info.Margin = new Thickness(_Margin);
+
+					_ui_element.Children.Add(info);
+					return _ui_element;
+				}
+				else
+				{*/
+					var info = new TextBlock();
+					info.Text = "TODO Add description";
+					info.FontWeight = FontWeights.Bold;
+					info.Margin = new Thickness(_Margin);
 
 
-            #endregion
-
-            /* ------------------------------------------------------------------*/
-            #region protected functions
-
-            protected override UIElement create_update_ui(in GenericDataStructure in_data)
-            {
-                _Name = "Transpose"; 
-
-                var ui = new TextBlock();
-                ui.Text = "Filter description ...";
+					/// TODO Create the filter UI and add it to the ui_element
 
 
-                // Call when value has changed and filter should be applied with changes
-                // set_apply_dirty();
+					return _ui_element;
+				}
+			//}
 
-                return ui;
-            }
+			protected override void apply_filter(GenericDataStructure out_data)
+			{
+				/// TODO Modify  out_data accordingly:
+				/*for (int i = 0; i < out_data._Branches.Count; i++)
+				{
+					/// Use this loop if you modify the branches
+				}
+				foreach (var branch in out_data._Branches)
+				{
+					for (int i = 0; i < branch._Entries.Count; i++)
+					{
+						/// Use this loop if you modify the entries
+					}
+				}*/
+			}
 
-            protected override void apply_filter(GenericDataStructure out_data)
-            {
-                // Change in_out_data accordingly...
+			#endregion
 
-            }
+			/* ------------------------------------------------------------------*/
+			#region private functions
 
-            #endregion
-        }
-    }
+
+
+			#endregion
+
+			/* ------------------------------------------------------------------*/
+			#region private variables
+
+			private Grid _ui_element = null;
+
+			#endregion
+		}
+	}
 }

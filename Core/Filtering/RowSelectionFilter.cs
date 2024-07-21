@@ -66,7 +66,7 @@ namespace Core
                 if (in_data == null)
                 {
                     var info = new TextBlock();
-                    info.Text = "Select content to retrieve row information";
+                    info.Text = "Select content to retrieve required filter information";
                     info.SetResourceReference(TextBlock.ForegroundProperty, "Brush_LogMessageWarn");
                     info.FontWeight = FontWeights.Bold;
                     info.Margin = new Thickness(_Margin);
