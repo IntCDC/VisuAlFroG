@@ -12,9 +12,7 @@ using Core.Abstracts;
 using Core.Filter;
 using Core.Data;
 using System.Windows.Data;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-
+using System.Windows.Shapes;
 
 
 
@@ -325,7 +323,7 @@ namespace Core
                 _border.BorderThickness = new Thickness(_BorderThickness);
                 _border.SetResourceReference(Border.BorderBrushProperty, "Brush_Foreground");
                 _border.CornerRadius = new CornerRadius(0);
-                _border.Margin = new Thickness(_Margin);
+                _border.Margin = new Thickness(_Margin, _Margin, _Margin, 0.0);
                 _border.Child = content_grid;
 
                 var border_row = new RowDefinition();
@@ -334,13 +332,22 @@ namespace Core
                 Grid.SetRow(_border, 0);
                 _content.Children.Add(_border);
 
-                /*
+                var size = new System.Windows.Size(200.0, 20.0);
+                Polygon arrow = new Polygon();
+                arrow.StrokeThickness = 0;
+                arrow.HorizontalAlignment = HorizontalAlignment.Center;
+                arrow.VerticalAlignment = VerticalAlignment.Top;
+                arrow.Points = new PointCollection() { new System.Windows.Point(0, 0), new System.Windows.Point(size.Width, 0), new System.Windows.Point(size.Width / 2.0, size.Height) };
+                arrow.SetResourceReference(Polygon.FillProperty, "Brush_MenuBarBackground");
+                //arrow.Stretch = Stretch.UniformToFill;
+                var canvas = new Grid();
+                canvas.Children.Add(arrow);
+
                 var arrow_row = new RowDefinition();
                 arrow_row.Height = new GridLength(1.0, GridUnitType.Auto);
                 _content.RowDefinitions.Add(arrow_row);
-                Grid.SetRow(..., 1);
-                _content.Children.Add(...);
-                */
+                Grid.SetRow(canvas, 1);
+                _content.Children.Add(canvas);
 
                 _timer.Stop();
                 _created = true;

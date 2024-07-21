@@ -35,9 +35,12 @@ namespace Core
 
             protected override UIElement create_update_ui(in GenericDataStructure in_data)
             {
-                var ui = new TextBlock();
-                ui.Text = "Transpose tabular 2D data.";
-                return ui;
+                var info = new TextBlock();
+                info.Text = "Transpose tabular 2D data.";
+                info.FontWeight = FontWeights.Bold;
+                info.Margin = new Thickness(_Margin);
+
+                return info;
             }
 
             protected override void apply_filter(GenericDataStructure out_data)
