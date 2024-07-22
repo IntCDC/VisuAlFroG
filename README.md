@@ -21,7 +21,7 @@ New custom visualizations can be based on the following existing visualization l
 Predefined standard visualizations like *Scatter Plot*, *Line Chart*, *Column/Bar Chart*, and *Parallel Coordinates Plot (PCP)* are already provided based on the SciChart library.
 
 <!-- Teaser Image -->
-![visualfrog-teaser](https://github.com/IntCDC/VisuAlFroG/assets/30432154/872b11ca-e1eb-44e9-a9d9-a983a693d2f6)
+![visualfrog-teaser](docs/visualfrog-screenshot.png)
 
 
 ## Documentation
