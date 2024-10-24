@@ -17,14 +17,14 @@ see https://github.com/IntCDC/VisuAlFroG/blob/main/docs/developer-guide.md
 
 
 /*
- *  Custom Row Selection Data Filter
+ *  Custom Column Selection Data Filter
  * 
  */
 namespace Core
 {
     namespace Filter
     {
-        public class RowSelectionFilter : AbstractFilter
+        public class ColumnSelectionFilter : AbstractFilter
         {
             /* ------------------------------------------------------------------*/
             #region public classes
@@ -44,9 +44,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public RowSelectionFilter()
+            public ColumnSelectionFilter()
             {
-                _Name = "Row/Series Selection";
+                _Name = "Column Selection";
                 _UniqueContent = true;
             }
 
@@ -83,7 +83,7 @@ namespace Core
                     _checkable_content_list.Children.Clear();
 
                     var info = new TextBlock();
-                    info.Text = "Select rows/series:";
+                    info.Text = "Select columns:";
                     info.FontWeight = FontWeights.Bold;
                     info.Margin = new Thickness(_Margin);
 
@@ -96,15 +96,22 @@ namespace Core
                     _deselect = true;
 
                     _checkable_content_list.Children.Clear();
-                    foreach (var row in in_data._Branches)
+                    if (in_data._Branches.Count < 1)
                     {
-                        var check = new CheckBox();
-                        check.Margin = new Thickness(_Margin);
-                        check.Click += _event_row_checked;
-                        check.Content = row._Label;
-                        check.IsChecked = true;
-                        check.SetResourceReference(CheckBox.ForegroundProperty, "Brush_Foreground");
-                        _checkable_content_list.Children.Add(check);
+                        Log.Default.Msg(Log.Level.Error, "Missing rows...");
+                    }
+                    else
+                    {
+                        foreach (var column in in_data._Branches[0]._Entries)
+                        {
+                            var check = new CheckBox();
+                            check.Margin = new Thickness(_Margin);
+                            check.Click += _event_column_checked;
+                            check.Content = column._Metadata._Label;
+                            check.IsChecked = true;
+                            check.SetResourceReference(CheckBox.ForegroundProperty, "Brush_Foreground");
+                            _checkable_content_list.Children.Add(check);
+                        }
                     }
 
                     var top_row = new RowDefinition();
@@ -134,21 +141,31 @@ namespace Core
                 // Change out_data accordingly...
                 foreach (var child in _checkable_content_list.Children)
                 {
-                    var checkable_row = child as CheckBox;
-                    if (checkable_row == null)
+                    var checkable_column = child as CheckBox;
+                    if (checkable_column == null)
                     {
                         Log.Default.Msg(Log.Level.Error, "Unexpected sender");
                         return;
                     }
 
-                    var is_selected = (bool)checkable_row.IsChecked;
-                    var row_name = (string)checkable_row.Content;
+                    var is_selected = (bool)checkable_column.IsChecked;
+                    var column_name = (string)checkable_column.Content;
 
-                    for (int i = 0; i < out_data._Branches.Count; i++)
+                    if (out_data._Branches.Count < 1)
                     {
-                        if (!is_selected && (row_name == out_data._Branches[i]._Label))
+                        Log.Default.Msg(Log.Level.Error, "Missing rows...");
+                    }
+                    else
+                    {
+                        for (int i = 0; i < out_data._Branches[0]._Entries.Count; i++)
                         {
-                            out_data._Branches.RemoveAt(i);
+                            if (!is_selected && (column_name == out_data._Branches[0]._Entries[i]._Metadata._Label))
+                            {
+                                for (int j = 0; j < out_data._Branches.Count; j++)
+                                {
+                                    out_data._Branches[j]._Entries.RemoveAt(i);
+                                }
+                            }
                         }
                     }
                 }
@@ -159,7 +176,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region private functions
 
-            private void _event_row_checked(object sender, RoutedEventArgs e)
+            private void _event_column_checked(object sender, RoutedEventArgs e)
             {
                 var checkbox = sender as CheckBox;
                 if (checkbox == null)
@@ -181,13 +198,13 @@ namespace Core
 
                 foreach (var child in _checkable_content_list.Children)
                 {
-                    var checkable_row = child as CheckBox;
-                    if (checkable_row == null)
+                    var checkable_column = child as CheckBox;
+                    if (checkable_column == null)
                     {
                         Log.Default.Msg(Log.Level.Error, "Unexpected sender");
                         return;
                     }
-                    checkable_row.IsChecked = !_deselect;
+                    checkable_column.IsChecked = !_deselect;
                 }
 
                 if (_deselect)
@@ -202,7 +219,7 @@ namespace Core
                     _deselect = true;
                     base.SetDirty();
                 }
-                deselect_button.Width = Miscellaneous.MeasureButtonString(deselect_button).Width + (2*_Margin);
+                deselect_button.Width = Miscellaneous.MeasureButtonString(deselect_button).Width + (2 * _Margin);
             }
 
             #endregion

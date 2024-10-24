@@ -483,6 +483,8 @@ namespace Core
                         }
                     }
                     _disable_content_checkboxes(data_uid);
+
+                    /// Note: Newly selected content is not 'dirty', so no need to set 'Apply' button dirty...
                 }
                 else
                 {
@@ -512,36 +514,11 @@ namespace Core
                         }
                     }
                     _enable_content_checkboxes();
-                }
 
-                bool dirty = !(_reserved.Count == 0);
-                if (_reserved.Count > 0)
-                {
-                    dirty = (_applied.Count != _reserved.Count);
-                    foreach (var key_applied in _applied.Keys.ToList())
-                    {
-                        if (!_reserved.ContainsKey(key_applied))
-                        {
-                            dirty = true;
-                        }
-                        else if (_reserved[key_applied].Item1 != _applied[key_applied].Item1)
-                        {
-                            dirty = true;
-                        }
-                    }
-                    foreach (var key_reserved in _reserved.Keys.ToList())
-                    {
-                        if (!_applied.ContainsKey(key_reserved))
-                        {
-                            dirty = true;
-                        }
-                        else if (_reserved[key_reserved].Item1 != _applied[key_reserved].Item1)
-                        {
-                            dirty = true;
-                        }
-                    }
+                    // When content is unchecked, apply changes directly without waiting for user to press 'Apply'.
+                    // Otherwise further changes can result in inconsistency.
+                    _apply_changes();
                 }
-                _set_dirty(dirty);
             }
 
             private void _apply_changes(bool notify_changes = true)
@@ -578,8 +555,8 @@ namespace Core
                         var applied_data = new Tuple<ListModification, GenericDataStructure>(ListModification.ADD, original_data);
 
                         _applied.Add(data_uid, applied_data);
-                        added = true;
                         changed_content_list.Add(data_uid);
+                        added = true;
                     }
                     else // if (item.Value.Item1 == ListModification.DELETE)
                     {

@@ -115,6 +115,7 @@
     <Compile Include="Data\GenericDataEntry.cs" />
     <Compile Include="Data\GenericDataStructure.cs" />
     <Compile Include="Data\GenericMetaData.cs" />
+    <Compile Include="Filtering\ColumnSelectionFilter.cs" />
     <Compile Include="Filtering\RowSelectionFilter.cs" />
     <None Include="Filtering\Filter.cs.template" />
     <Compile Include="Filtering\TransposeFilter.cs" />

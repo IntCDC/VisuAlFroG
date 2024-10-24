@@ -72,6 +72,7 @@ namespace Core
 
                 register_entry(typeof(TransposeFilter));
                 register_entry(typeof(RowSelectionFilter));
+                register_entry(typeof(ColumnSelectionFilter));
                 /// >>> Register your new filter type here:
                 /// register_content(typeof(CustomFilter));
 
@@ -441,7 +442,7 @@ namespace Core
             private ScrollViewer _list_scrolling = null;
             private StackPanel _filter_list = null;
 
-            // Required to provide new filters with content metadata
+            // Required to provide new filters with content meta data
             private List<AbstractFilter.ContentMetadata> _contents_metadata = null;
             private List<int> _ordered_filter_list = null;
 
