@@ -5,13 +5,10 @@ using SciChart.Charting.Visuals;
 using SciChart.Charting.Visuals.RenderableSeries;
 using SciChartInterface.Data;
 using SciChart.Charting.Visuals.Axes;
-using System.Windows.Controls;
+using SciChart.Charting.Visuals.PointMarkers;
 using Core.GUI;
 using System.Windows;
-using System.Globalization;
-using System.Runtime.Remoting.Contexts;
 using SciChart.Charting.ChartModifiers;
-using SciChart.Charting.Visuals.Annotations;
 using System.Windows.Media;
 
 
@@ -60,7 +57,7 @@ namespace SciChartInterface
                 var xAxis = new NumericAxis()
                 {
                     AxisTitle = "X Axis",
-                    DrawMajorBands = false
+                    DrawMajorBands = false,
                 };
                 _Content.XAxis = xAxis;
 
@@ -75,17 +72,23 @@ namespace SciChartInterface
 
                 // Interaction -------------------------------------
 
-                /// DEBUG _Content.MouseLeftButtonUp += data_point_mouse_event;
+                /// DEBUG 
+                _Content.MouseLeftButtonUp += data_point_mouse_event;
 
 
                 // Modifiers ---------------------------------------
 
-                var data_point_selection = new DataPointSelectionModifier();
-                data_point_selection.IsEnabled = true;
-                data_point_selection.AllowsMultiSelection = true;
+                var modifier_selection_point = new DataPointSelectionModifier();
+                modifier_selection_point.IsEnabled = true;
+                modifier_selection_point.AllowsMultiSelection = true;
 
+                var modifier_selection_series = new SeriesSelectionModifier();
+                modifier_selection_series.IsEnabled = true;
+                modifier_selection_series.SelectionChanged += series_selection_changed;
+                
                 _Content.ChartModifier = new ModifierGroup(
-                    data_point_selection,
+                    modifier_selection_point,
+                    modifier_selection_series,
                     new RubberBandXyZoomModifier()
                     {
                         IsEnabled = false
@@ -108,8 +111,10 @@ namespace SciChartInterface
                     },
                     new RolloverModifier()
                     {
-                        IsEnabled = false,
-                        ShowTooltipOn = ShowTooltipOptions.MouseHover,
+                        IsEnabled = true,
+                        ShowTooltipOn = ShowTooltipOptions.MouseOver,
+                        HoverDelay = 0.0,
+                        ShowAxisLabels = false,
                     },
                     new LegendModifier()
                     {
@@ -175,6 +180,8 @@ namespace SciChartInterface
                     {
                         foreach (var data_series in data)
                         {
+                            data_series.AntiAliasing = true;
+                            data_series.Style = get_series_style();
                             data_parent.RenderableSeries.Add(data_series);
                         }
                         return true;
@@ -186,6 +193,88 @@ namespace SciChartInterface
                 }
                 ///Log.Default.Msg(Log.Level.Error, "Missing data for: " + typeof(List<DataType>).FullName);
                 return false;
+            }
+
+            #endregion
+
+            /* ------------------------------------------------------------------*/
+            #region private functions
+
+            private System.Windows.Style get_series_style()
+            {
+                const int stroke_thickness = 2;
+                const double marker_size   = 8.0;
+
+                var series_style = new System.Windows.Style();
+                series_style.TargetType = typeof(DataType);
+
+                var random_color = ColorTheme.RandomColor();
+
+                if (typeof(DataType) == typeof(FastColumnRenderableSeries))
+                {
+                    // SELECTION STYLE
+                    Setter setter_stroke = new Setter();
+                    setter_stroke.Property = FastColumnRenderableSeries.PaletteProviderProperty;
+                    setter_stroke.Value = new SciChart_StrokePalette();
+                    series_style.Setters.Add(setter_stroke);
+                    // SELECTION STYLE
+
+                    Setter setter_gradient = new Setter();
+                    setter_gradient.Property = FastColumnRenderableSeries.FillProperty;
+                    setter_gradient.Value = new SolidColorBrush(random_color);
+                    series_style.Setters.Add(setter_gradient);
+                }
+                else
+                {
+                    Setter setter_stroke = new Setter();
+                    setter_stroke.Property = BaseRenderableSeries.StrokeProperty;
+                    setter_stroke.Value = random_color;
+                    series_style.Setters.Add(setter_stroke);
+
+                    Setter setter_thickness = new Setter();
+                    setter_thickness.Property = BaseRenderableSeries.StrokeThicknessProperty;
+                    setter_thickness.Value = stroke_thickness;
+                    series_style.Setters.Add(setter_thickness);
+
+                    // SELECTION STYLE
+                    Trigger trigger = new Trigger();
+                    trigger.Property = BaseRenderableSeries.IsSelectedProperty;
+                    trigger.Value = true;
+                    Setter setter_trigger = new Setter();
+                    setter_trigger.Property = BaseRenderableSeries.StrokeProperty;
+                    setter_trigger.Value = new DynamicResourceExtension("Color_StrokeSelected");
+                    trigger.Setters.Add(setter_trigger);
+                    series_style.Triggers.Add(trigger);
+
+                    var pointmarker_default = new EllipsePointMarker()
+                    {
+                        StrokeThickness = 0,
+                        Fill   = random_color,
+                        Width  = marker_size,
+                        Height = marker_size,
+                        AntiAliasing = true,
+                    };
+                    Setter setter_point = new Setter();
+                    setter_point.Property = BaseRenderableSeries.PointMarkerProperty;
+                    setter_point.Value = pointmarker_default;
+                    series_style.Setters.Add(setter_point);
+
+                    var pointmarker_selected = new EllipsePointMarker() 
+                    {
+                        StrokeThickness = 0,
+                        Width  = marker_size,
+                        Height = marker_size,
+                        AntiAliasing = true,
+                    };
+                    pointmarker_selected.SetResourceReference(EllipsePointMarker.FillProperty, "Color_StrokeSelected");
+                    Setter setter_point_selected = new Setter();
+                    setter_point_selected.Property = BaseRenderableSeries.SelectedPointMarkerProperty;
+                    setter_point_selected.Value = pointmarker_selected;
+                    series_style.Setters.Add(setter_point_selected);
+                    // SELECTION STYLE
+                }
+
+                return series_style;
             }
 
             #endregion

@@ -1,14 +1,6 @@
 ﻿using SciChart.Charting.Visuals;
 using SciChart.Charting.Visuals.RenderableSeries;
-using Core.GUI;
-using System.Windows.Media;
-using System.Windows;
-using System.Windows.Controls;
-using System;
 using SciChartInterface.Abstracts;
-using SciChartInterface;
-using Core.Utilities;
-
 
 
 /*

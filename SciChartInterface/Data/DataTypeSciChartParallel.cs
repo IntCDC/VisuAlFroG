@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using SciChart.Charting.Visuals.RenderableSeries;
 using Core.Utilities;
 using System.Dynamic;
-using System.Windows;
-using SciChart.Charting.Visuals.Axes;
-using System.Windows.Shapes;
 using Core.Abstracts;
 using Core.Data;
 using System.ComponentModel;
 using System.Windows.Controls;
 using SciChart.Core.Extensions;
+using SciChart.Charting.Visuals.Axes;
+using System.Windows;
+using System.Windows.Shapes;
 
 
 
@@ -49,7 +49,7 @@ namespace SciChartInterface
 
                 // Create value - property name pairs
                 List<DataType> value_series = new List<DataType>();
-                specificdata_conversion(data, ref value_series);
+                specific_data_conversion(data, ref value_series);
                 if (value_series.IsEmpty())
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing values");
@@ -73,6 +73,7 @@ namespace SciChartInterface
                         Title = property_name,
                         AxisStyle = axes_style()
                     };
+
                     index++;
                     if (index >= value_count)
                     {
@@ -117,7 +118,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region private functions
 
-            private void specificdata_conversion(GenericDataStructure branch, ref List<DataType> value_list)
+            private void specific_data_conversion(GenericDataStructure branch, ref List<DataType> value_list)
             {
                 try
                 {
@@ -146,13 +147,18 @@ namespace SciChartInterface
 
                     foreach (var b in branch._Branches)
                     {
-                        specificdata_conversion(b, ref value_list);
+                        specific_data_conversion(b, ref value_list);
                     }
                 }
                 catch (Exception exc)
                 {
                     Log.Default.Msg(Log.Level.Error, exc.Message);
                 }
+            }
+
+            private string generate_property_name(int index)
+            {
+                return ("p" + index.ToString());
             }
 
             private Style axes_style()
@@ -167,7 +173,7 @@ namespace SciChartInterface
 
                 Setter setter_boder_thickness = new Setter();
                 setter_boder_thickness.Property = AxisBase.BorderThicknessProperty;
-                setter_boder_thickness.Value = new Thickness(1, 0, 0, 0);
+                setter_boder_thickness.Value = new Thickness(1, 0, 0, 0); // Left Top Right Bottom
                 axis_style.Setters.Add(setter_boder_thickness);
 
                 // Major Line
@@ -213,12 +219,7 @@ namespace SciChartInterface
                 return axis_style;
             }
 
-            private string generate_property_name(int index)
-            {
-                return ("p" + index.ToString());
-            }
+            #endregion
         }
-
-        #endregion
     }
 }

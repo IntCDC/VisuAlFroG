@@ -16,7 +16,7 @@ using SciChart.Charting.Visuals.RenderableSeries;
 
 namespace SciChartInterface
 {
-    public class StrokePalette : IStrokePaletteProvider
+    public class SciChart_StrokePalette : IStrokePaletteProvider
     {
         /* ------------------------------------------------------------------*/
         #region public functions

@@ -27,6 +27,7 @@ namespace Core
             public static string TypeString_FilterEditor { get; }  = "Visualizations.WPF_FilterEditor";
             public static string TypeString_DataViewer { get; }    = "Visualizations.WPF_DataViewer";
             public static string TypeString_SciChartLines { get; } = "Visualizations.SciChart_Lines";
+            public static string TypeString_SciChartPCP { get; }   = "Visualizations.SciChart_ParallelCoordinatesPlot";
 
             #endregion
 

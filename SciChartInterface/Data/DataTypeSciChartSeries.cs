@@ -6,7 +6,7 @@ using SciChart.Charting.Visuals.RenderableSeries;
 using Core.Utilities;
 using Core.Data;
 using Core.GUI;
-using SciChart.Charting.Visuals.PointMarkers;
+
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
@@ -45,7 +45,7 @@ namespace SciChartInterface
 
                 _Dimension = data.GetDimension();
                 _data_generic = data.DeepCopy();
-                specificdata_conversion(data);
+                specific_data_conversion(data);
                 _loaded = true;
             }
 
@@ -88,7 +88,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region private functions
 
-            private void specificdata_conversion(GenericDataStructure data)
+            private void specific_data_conversion(GenericDataStructure data)
             {
                 // For each branch add all leafs to one data series
                 if (data._Entries.Count > 0)
@@ -121,85 +121,15 @@ namespace SciChartInterface
                     }
 
                     DataType data_series = new DataType();
-                    data_series.AntiAliasing = true;
-                    data_series.Style = renders_series_style();
                     data_series.DataSeries = series;
                     _data_specific.Add(data_series);
                 }
 
                 foreach (var b in data._Branches)
                 {
-                    specificdata_conversion(b);
+                    specific_data_conversion(b);
                 }
             }
-
-            private System.Windows.Style renders_series_style()
-            {
-                var default_style = new System.Windows.Style();
-                default_style.TargetType = typeof(DataType);
-
-                var new_color = ColorTheme.RandomColor();
-
-                if (typeof(DataType) == typeof(FastColumnRenderableSeries))
-                {
-                    Setter setter_stroke = new Setter();
-                    setter_stroke.Property = FastColumnRenderableSeries.PaletteProviderProperty;
-                    setter_stroke.Value = new StrokePalette();
-                    default_style.Setters.Add(setter_stroke);
-
-                    Setter setter_gradient = new Setter();
-                    setter_gradient.Property = FastColumnRenderableSeries.FillProperty;
-                    setter_gradient.Value = new SolidColorBrush(new_color);
-                    default_style.Setters.Add(setter_gradient);
-                }
-                else
-                {
-                    var pointmarker_default = new EllipsePointMarker()
-                    {
-                        Stroke = new_color,
-                        Fill = new_color,
-                        Width = 10.0,
-                        Height = 10.0
-                    };
-                    var pointmarker_selected = new EllipsePointMarker()
-                    {
-                        StrokeThickness = 3,
-                        Fill = new_color,
-                        Width = 10.0,
-                        Height = 10.0
-                    };
-                    pointmarker_selected.SetResourceReference(EllipsePointMarker.StrokeProperty, "Color_StrokeSelected");
-
-                    Setter setter_stroke = new Setter();
-                    setter_stroke.Property = BaseRenderableSeries.StrokeProperty;
-                    setter_stroke.Value = new_color;
-                    default_style.Setters.Add(setter_stroke);
-
-                    Setter setter_thickness = new Setter();
-                    setter_thickness.Property = BaseRenderableSeries.StrokeThicknessProperty;
-                    setter_thickness.Value = 3;
-                    default_style.Setters.Add(setter_thickness);
-
-                    Setter setter_point = new Setter();
-                    setter_point.Property = BaseRenderableSeries.PointMarkerProperty;
-                    setter_point.Value = pointmarker_default;
-                    default_style.Setters.Add(setter_point);
-
-                    Setter setter_point_selected = new Setter();
-                    setter_point_selected.Property = BaseRenderableSeries.SelectedPointMarkerProperty;
-                    setter_point_selected.Value = pointmarker_selected;
-                    default_style.Setters.Add(setter_point_selected);
-                }
-
-                return default_style;
-            }
-
-            #endregion
-
-            /* ------------------------------------------------------------------*/
-            #region private variables
-
-
 
             #endregion
         }

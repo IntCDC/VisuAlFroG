@@ -10,6 +10,8 @@ using SciChart.Charting.Visuals.RenderableSeries;
 using SciChartInterface.Data;
 using System.Windows.Media;
 using System.Globalization;
+using System.Runtime.Remoting.Contexts;
+using SciChart.Charting.ChartModifiers;
 
 
 
@@ -96,6 +98,7 @@ namespace SciChartInterface
                 if (new_data)
                 {
                     apply_data(_Content);
+                    _Content.UpdateLayout();
                     _Content.ZoomExtents();
                 }
             }
@@ -130,6 +133,41 @@ namespace SciChartInterface
 
                 _Content.Annotations.Clear();
                 _Content.Annotations.Add(text_anno);
+            }
+
+            protected void series_selection_changed(object sender, EventArgs e)
+            {
+                var sender_series_modifier = sender as SeriesSelectionModifier;
+                if (sender_series_modifier == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Unexpected sender");
+                    return;
+                }
+                /// TODO
+                //Log.Default.Msg(Log.Level.Info, "series_selection_changed...");
+
+                foreach (var selected_series in _Content.SelectedRenderableSeries) {
+
+                    if (selected_series.IsSelected) {
+                        var type = selected_series.GetType(); 
+                        Log.Default.Msg(Log.Level.Info, "Selected Series: " + type.ToString());
+                        var series = selected_series as FastLineRenderableSeries;
+                        if (series == null) {
+                            Log.Default.Msg(Log.Level.Error, "Unexpected series type");
+                            return;
+                        }
+                        var data = series.DataSeries;
+                        Log.Default.Msg(Log.Level.Info, "    Series Data: " + data.GetType().ToString());
+
+                        foreach (var meta in data.Metadata) {
+                            meta.IsSelected = true;
+
+                        }
+                    }
+
+                }
+
+
             }
 
             #endregion

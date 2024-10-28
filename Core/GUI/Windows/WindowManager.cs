@@ -134,18 +134,20 @@ namespace Core
                 /*
                 ___________________________________
                 |Data Viewer |Lines      |Filter  |
-                |            |           |        |
-                |            |           |        |
+                |            |___________|        |
+                |            |PCP        |        |
                 |____________|___________|        |
                 |Log Console             |        |
                 |________________________|________|
                 */
                 _window_root.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.None, 0.8);
-                _window_root._Children.Item1.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.None, 0.7);
+                _window_root._Children.Item1.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.None, 0.8);
                 _window_root._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_FilterEditor);
-                _window_root._Children.Item1._Children.Item1.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.None, 0.31);
+                _window_root._Children.Item1._Children.Item1.Split(WindowBranch.SplitOrientation.Vertical, WindowBranch.ChildLocation.None, 0.2);
                 _window_root._Children.Item1._Children.Item1._Children.Item1._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_DataViewer);
-                _window_root._Children.Item1._Children.Item1._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_SciChartLines);
+                _window_root._Children.Item1._Children.Item1._Children.Item2.Split(WindowBranch.SplitOrientation.Horizontal, WindowBranch.ChildLocation.None, 0.5);
+                _window_root._Children.Item1._Children.Item1._Children.Item2._Children.Item1._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_SciChartLines);
+                _window_root._Children.Item1._Children.Item1._Children.Item2._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_SciChartPCP);
                 _window_root._Children.Item1._Children.Item2._Leaf.CreateContent(UniqueID.InvalidInt, AbstractVisualization.TypeString_LogConsole);
 
                 return true;

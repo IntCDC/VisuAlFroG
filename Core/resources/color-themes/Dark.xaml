@@ -2,9 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Color x:Key="Color_StrokeSelected">Red</Color>
-    <Color x:Key="Color_StrokeDefault">LightYellow</Color>
+    <Color x:Key="Color_StrokeDefault">LightSkyBlue</Color>
     <SolidColorBrush x:Key="Brush_StrokeSelected" Color="Red"/>
-	<SolidColorBrush x:Key="Brush_StrokeDefault" Color="LightYellow"/>
+    <SolidColorBrush x:Key="Brush_StrokeDefault" Color="LightSkyBlue"/>
 
 	<SolidColorBrush x:Key="Brush_Foreground" Color="WhiteSmoke"/>
 	<SolidColorBrush x:Key="Brush_Background" Color="Black"/>

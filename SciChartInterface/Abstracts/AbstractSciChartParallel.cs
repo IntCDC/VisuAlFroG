@@ -3,14 +3,12 @@ using SciChart.Charting.Visuals;
 using SciChart.Charting.Visuals.RenderableSeries;
 using SciChart.Charting.ChartModifiers;
 using System.Dynamic;
-using SciChart.Charting.Visuals.Axes.LabelProviders;
-using System.Windows.Controls;
 using Core.Utilities;
 using System;
-using SciChartInterface.Abstracts;
 using SciChartInterface.Data;
-using Core.Data;
 using Core.GUI;
+using System.Windows.Media;
+
 
 
 
@@ -57,25 +55,22 @@ namespace SciChartInterface
 
                 // Interaction -------------------------------------
 
-                /// DEBUG_Content.MouseLeftButtonUp += data_point_mouse_event;
+                /// DEBUG
+                _Content.MouseLeftButtonUp += data_point_mouse_event;
 
 
                 // Modifiers ---------------------------------------
-                var modifier_reorder_axes = new ParallelAxisReorderModifier()
-                {
-                    IsEnabled = true
-                };
+                var modifier_reorder_axes = new ParallelAxisReorderModifier();
+                modifier_reorder_axes.IsEnabled = true;
                 modifier_reorder_axes.AxesReordered += event_axes_reordered;
 
-                var modifier_selection = new SeriesSelectionModifier()
-                {
-                    IsEnabled = true
-                };
-                modifier_selection.SelectionChanged += series_selection_changed;
+                var modifier_selection_series = new SeriesSelectionModifier();
+                modifier_selection_series.IsEnabled = true;
+                modifier_selection_series.SelectionChanged += series_selection_changed;
 
                 _Content.ChartModifier = new ModifierGroup(
                     modifier_reorder_axes,
-                    modifier_selection,
+                    modifier_selection_series,
                     new ZoomPanModifier()
                     {
                         IsEnabled = true,
@@ -95,8 +90,10 @@ namespace SciChartInterface
                     },
                     new RolloverModifier()
                     {
-                        IsEnabled = false,
-                        ShowTooltipOn = ShowTooltipOptions.MouseHover,
+                        IsEnabled = true,
+                        ShowTooltipOn = ShowTooltipOptions.MouseOver,
+                        HoverDelay = 0.0,
+                        ShowAxisLabels = false,
                     },
                     new LegendModifier()
                     {
@@ -151,13 +148,6 @@ namespace SciChartInterface
                 }
 
                 var parent = data_parent as SciChartParallelCoordinateSurface;
-                /*if (parent.ParallelCoordinateDataSource != null)
-                {
-                    if (parent.ParallelCoordinateDataSource is ParallelCoordinateDataSource<DataType> data_source) {
-                        data_source.SetValues(null);
-                        data_source.Invalidate();
-                    }
-                }*/
                 parent.ParallelCoordinateDataSource = null;
                 parent.UpdateLayout();
 
@@ -191,12 +181,6 @@ namespace SciChartInterface
                 var parent = _Content as SciChartParallelCoordinateSurface;
                 var pcp_source = parent.ParallelCoordinateDataSource as ParallelCoordinateDataSource<ExpandoObject>;
                 pcp_source.ReorderItems(e.OldIndex, e.NewIndex);
-            }
-
-            private void series_selection_changed(object sender, EventArgs e)
-            {
-                /// TODO
-                Log.Default.Msg(Log.Level.Info, "series_selection_changed...");
             }
 
             #endregion
