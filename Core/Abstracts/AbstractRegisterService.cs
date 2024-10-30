@@ -57,11 +57,11 @@ namespace Core
                 Type type = default(Type);
                 try
                 {
-                    // Try to load type from current assembly (suppress errors -> return null on error)
-                    type = Type.GetType(type_string);
+                    // Try to load type from "Core" (=current) assembly (suppress errors -> return null on error)
+                    type = Type.GetType(type_string, false);
                     if (type == null)
                     {
-                        // Try to load type from Core assembly - trow error if this is also not possible
+                        // Try to load type from "Visualizations" assembly - trow error if this is also not possible
                         type = Assembly.Load("Visualizations").GetType(type_string, true);
                     }
                 }

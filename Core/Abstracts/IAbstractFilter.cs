@@ -23,6 +23,8 @@ namespace Core
             /// The id string of the content.
             /// </summary>S
             int _UID { get; }
+            bool _UniqueContent { get; }
+            Type _RequiredContentType { get; }
 
             #endregion
 

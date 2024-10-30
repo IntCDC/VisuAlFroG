@@ -16,19 +16,19 @@ using System.Windows.Markup;
  */
 namespace Visualizations
 {
-    public class SciChart_Lines : AbstractSciChartSeries<SciChartSurface, FastLineRenderableSeries>
+    public class SciChart_LinesPlot : AbstractSciChartSeries<SciChartSurface, FastLineRenderableSeries>
     {
         /* ------------------------------------------------------------------*/
         #region public properties
 
-        public override string _Name { get { return "Lines (SciChart)"; } }
+        public override string _Name { get { return "Lines Plot (SciChart)"; } }
 
         #endregion
 
         /* ------------------------------------------------------------------*/
         #region public functions
 
-        public SciChart_Lines(int uid) : base(uid) { }
+        public SciChart_LinesPlot(int uid) : base(uid) { }
 
         #endregion
     }

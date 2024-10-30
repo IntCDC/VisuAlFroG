@@ -7,24 +7,16 @@ using Core.Abstracts;
 using System;
 
 
-/*
-
-INSTRUCTIONS for creating own custom data filter:
-
-see https://github.com/IntCDC/VisuAlFroG/blob/main/docs/developer-guide.md
-
-*/
-
 
 /*
- *  Custom Row Selection Data Filter
+ *  Filter for custom row selection
  * 
  */
 namespace Core
 {
     namespace Filter
     {
-        public class RowSelectionFilter : AbstractFilter
+        public class Filter_RowSelection : AbstractFilter
         {
             /* ------------------------------------------------------------------*/
             #region public classes
@@ -44,9 +36,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public RowSelectionFilter()
+            public Filter_RowSelection()
             {
-                _Name = "Row/Series Selection";
+                _Name = "Select Data Series (Rows)";
                 _UniqueContent = true;
             }
 
@@ -72,7 +64,6 @@ namespace Core
                     info.Margin = new Thickness(_Margin);
 
                     _ui_element.Children.Add(info);
-                    return _ui_element;
                 }
                 else
                 {
@@ -125,8 +116,8 @@ namespace Core
                     Grid.SetRow(_checkable_content_list, 2);
                     _ui_element.Children.Add(_checkable_content_list);
 
-                    return _ui_element;
                 }
+                return _ui_element;
             }
 
             protected override void apply_filter(GenericDataStructure out_data)

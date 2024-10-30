@@ -70,9 +70,10 @@ namespace Core
                 _get_selected_data_callback = get_selected_data_callback;
                 _update_selected_data_callback = update_selected_data_callback;
 
-                register_entry(typeof(TransposeFilter));
-                register_entry(typeof(RowSelectionFilter));
-                register_entry(typeof(ColumnSelectionFilter));
+                register_entry(typeof(Filter_Transpose));
+                register_entry(typeof(Filter_RowSelection));
+                register_entry(typeof(Filter_ColumnSelection));
+                register_entry(typeof(Filter_ValuesAxisMapping));
                 /// >>> Register your new filter type here:
                 /// register_content(typeof(CustomFilter));
 

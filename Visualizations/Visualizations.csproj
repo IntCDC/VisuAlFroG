@@ -138,11 +138,11 @@
   <ItemGroup>
     <Compile Include="ContentManager.cs" />
     <Compile Include="InterfaceManager.cs" />
-    <Compile Include="Visualizations\SciChart_Columns.cs" />
+    <Compile Include="Visualizations\SciChart_BarPlot.cs" />
     <Compile Include="Visualizations\WPF_FilterEditor.cs" />
     <Compile Include="WPFInterface\AbstractWPFVisualization.cs" />
     <Compile Include="Visualizations\WPF_DataViewer.cs" />
-    <Compile Include="Visualizations\SciChart_Lines.cs" />
+    <Compile Include="Visualizations\SciChart_LinesPlot.cs" />
     <Compile Include="Visualizations\WPF_LogConsole.cs" />
     <Compile Include="Visualizations\SciChart_ParallelCoordinatesPlot.cs" />
     <Compile Include="Visualizations\SciChart_ScatterPlot.cs" />

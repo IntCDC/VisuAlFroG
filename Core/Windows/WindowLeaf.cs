@@ -7,10 +7,12 @@ using System.Windows.Input;
 using System.Collections.Generic;
 using Core.Abstracts;
 using Core.Utilities;
+using Core.GUI;
+
 
 
 // Additional types only used here:
-using DragDrop_Type = System.Tuple<Core.GUI.WindowLeaf, int, string, string>;
+using DragDrop_Type = System.Tuple<Core.Windows.WindowLeaf, int, string, string>;
 using AttachedContent_Type = System.Tuple<int, string>;
 
 
@@ -28,7 +30,7 @@ using System.Linq;
 
 namespace Core
 {
-    namespace GUI
+    namespace Windows
     {
         public class WindowLeaf : AbstractWindow
         {

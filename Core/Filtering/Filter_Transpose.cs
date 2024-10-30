@@ -11,19 +11,19 @@ using Core.Abstracts;
 
 
 /*
- *  
+ *  Filter for transposing 2D data
  *  
  */
 namespace Core
 {
     namespace Filter
     {
-        public class TransposeFilter : AbstractFilter
+        public class Filter_Transpose : AbstractFilter
         {
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public TransposeFilter()
+            public Filter_Transpose()
             {
                 _Name = "Transpose";
             }
@@ -36,7 +36,12 @@ namespace Core
             protected override UIElement create_update_ui(in GenericDataStructure in_data)
             {
                 var info = new TextBlock();
-                info.Text = "Transpose tabular 2D data.";
+                /*if (in_data == null)
+                {
+                    Log.Default.Msg(Log.Level.Error, "Missing input data...");
+                    return info;
+                }*/
+                info.Text = "Transpose Tabular 2D Data.";
                 info.FontWeight = FontWeights.Bold;
                 info.Margin = new Thickness(_Margin);
 

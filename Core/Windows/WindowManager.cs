@@ -21,7 +21,7 @@ using ContentCallbacks_Type = System.Tuple<Core.Abstracts.AbstractWindow.Availab
 
 namespace Core
 {
-    namespace GUI
+    namespace Windows
     {
         public class WindowManager : AbstractService, IAbstractConfigurationData
         {

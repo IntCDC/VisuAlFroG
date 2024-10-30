@@ -48,6 +48,8 @@ namespace Core
 				_Name = "Filter Name";
 				/// TODO Uncomment if filter should only be applied to one content at once:
 				//_UniqueContent = true;
+				/// TODO Uncomment and complete if filter should only be applied to one specific content type:
+				//_RequiredContentType = Assembly.Load("Visualizations").GetType("Visualizations.SciChart_...", true);
 			}
 
 			#endregion

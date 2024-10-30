@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Core.Utilities;
 using Core.Abstracts;
+using Core.GUI;
 
 
 
@@ -25,7 +26,7 @@ using ContentCallbacks_Type = System.Tuple<Core.Abstracts.AbstractWindow.Availab
 
 namespace Core
 {
-    namespace GUI
+    namespace Windows
     {
         public class WindowBranch : AbstractWindow
         {

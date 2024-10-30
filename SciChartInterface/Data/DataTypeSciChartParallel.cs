@@ -122,8 +122,9 @@ namespace SciChartInterface
             {
                 try
                 {
-                    /// XXX TODO via filter
-                    int value_index = (int)branch.GetDimension() - 1;
+                    // Always take first values of first dimension as default
+                    // -> Adjustable via filter: Select value dimension from multi-dimensional data
+                    int value_index = 0; // (int)branch.GetDimension() - 1;
 
                     // For each branch add all values to same series
                     if (branch._Entries.Count > 0)

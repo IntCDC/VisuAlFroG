@@ -5,12 +5,7 @@ using System.ComponentModel;
 using SciChart.Charting.Visuals.RenderableSeries;
 using Core.Utilities;
 using Core.Data;
-using Core.GUI;
-
-using System.Windows;
-using System.Windows.Media;
 using System.Windows.Controls;
-using System.Windows.Markup;
 
 
 
@@ -93,27 +88,30 @@ namespace SciChartInterface
                 // For each branch add all leafs to one data series
                 if (data._Entries.Count > 0)
                 {
+                    var dimension = data.GetDimension();
+
+                    // Always take first values of first dimension as default for x-axis and values of second dimension for y-axis
+                    // -> Adjustable via filter: Select value dimension from multi-dimensional data for each available axis individually
+                    int value_index = 0; // (int)data.GetDimension() - 1;
+
                     var series = new SciChart.Charting.Model.DataSeries.XyDataSeries<double, double>();
                     series.SeriesName = (data._Label == "") ? (UniqueID.GenerateString()) : (data._Label);
                     foreach (var entry in data._Entries)
                     {
                         double x = double.NaN;
                         double y = double.NaN;
-                        var dim = data.GetDimension();
-                        if (dim == 1)
+
+                        if (dimension == 1)
                         {
                             x = (double)entry._Metadata._Index;
-                            y = (double)entry._Values[0];
-                            //_axis_value_map[0] = __IndexAxisIdx__;
-                            //_axis_value_map[1] = 0;
+                            y = (double)entry._Values[value_index];
                         }
-                        else if (dim == 2)
+                        else if (dimension == 2)
                         {
-                            x = (double)entry._Values[0];
-                            y = (double)entry._Values[1];
-                            //_axis_value_map[0] = 0;
-                            //_axis_value_map[1] = 1;
-                            // XXX Can result in much slower performance for large unsorted data
+                            x = (double)entry._Values[value_index];
+                            y = (double)entry._Values[value_index + 1];
+
+                            /// XXX Can result in much slower performance for large unsorted data
                             series.AcceptsUnsortedData = true; 
                         }
                         var meta_data = new SciChartMetaData(entry._Metadata._Index, entry._Metadata._Selected, _update_metadata_handler);

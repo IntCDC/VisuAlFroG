@@ -3,6 +3,7 @@ using System.Windows;
 using Core.Utilities;
 using Core.GUI;
 using Core.Data;
+using Core.Windows;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;

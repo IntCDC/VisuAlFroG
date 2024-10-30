@@ -41,6 +41,7 @@ namespace Core
             {
                 public Binding NameBinding { get; set; }
                 public int DataUID { get; set; }
+                public Type ContentType { get; set; }
             }
 
             #endregion
@@ -65,8 +66,9 @@ namespace Core
             public const double _BorderThickness = 2.0;
 
             public int _UID { get; } = UniqueID.GenerateInt();
-            public string _Name { get { return _filter_caption.Text; } protected set { _filter_caption.Text = value; } }
+            public new string _Name { get { return _filter_caption.Text; } protected set { _filter_caption.Text = value; } }
             public bool _UniqueContent { get; protected set; } = false;
+            public Type _RequiredContentType { get; protected set; } = null;
 
             #endregion
 
@@ -379,13 +381,17 @@ namespace Core
                 _checkable_content_list.Children.Clear();
                 foreach (var metadata in content_metadata)
                 {
-                    var check = new CheckBox();
-                    check.SetBinding(CheckBox.ContentProperty, metadata.NameBinding);
-                    check.Margin = new Thickness(_Margin, _Margin, 0.0, 0.0);
-                    check.Tag = metadata.DataUID;
-                    check.Click += _event_content_checked;
-                    check.SetResourceReference(CheckBox.ForegroundProperty, "Brush_Foreground");
-                    _checkable_content_list.Children.Add(check);
+                    // Either show all contents or only those of required content type
+                    if ( (metadata.ContentType == _RequiredContentType) || (_RequiredContentType == null))
+                    {
+                        var check = new CheckBox();
+                        check.SetBinding(CheckBox.ContentProperty, metadata.NameBinding);
+                        check.Margin = new Thickness(_Margin, _Margin, 0.0, 0.0);
+                        check.Tag = metadata.DataUID;
+                        check.Click += _event_content_checked;
+                        check.SetResourceReference(CheckBox.ForegroundProperty, "Brush_Foreground");
+                        _checkable_content_list.Children.Add(check);
+                    }
                 }
             }
 

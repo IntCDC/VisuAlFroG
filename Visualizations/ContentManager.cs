@@ -44,8 +44,8 @@ namespace Visualizations
             register_entry(typeof(WPF_DataViewer));
             register_entry(typeof(WPF_FilterEditor));
             register_entry(typeof(SciChart_ScatterPlot));
-            register_entry(typeof(SciChart_Lines));
-            register_entry(typeof(SciChart_Columns));
+            register_entry(typeof(SciChart_LinesPlot));
+            register_entry(typeof(SciChart_BarPlot));
             register_entry(typeof(SciChart_ParallelCoordinatesPlot));
             /// >>> Register your new content/visualization here:        
             /// register_content(typeof(CustomWPFVisualization));
@@ -275,7 +275,7 @@ namespace Visualizations
                     int data_uid = _entries[type][temp_uid]._DataUID;
                     if (data_uid != UniqueID.InvalidInt)
                     {
-                        var content_metadata = new AbstractFilter.ContentMetadata() { NameBinding = name_binding, DataUID = data_uid };
+                        var content_metadata = new AbstractFilter.ContentMetadata() { NameBinding = name_binding, DataUID = data_uid, ContentType = type };
                         _filtermanager.AddContentMetadataCallback(content_metadata);
                     }
 

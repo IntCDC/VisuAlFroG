@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Controls;
 using System.Collections.Generic;
-using Core.GUI;
+using Core.Windows;
 
 
 

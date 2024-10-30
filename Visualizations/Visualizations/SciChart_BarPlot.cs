@@ -9,19 +9,19 @@ using SciChartInterface.Abstracts;
  */
 namespace Visualizations
 {
-    public class SciChart_Columns : AbstractSciChartSeries<SciChartSurface, FastColumnRenderableSeries>
+    public class SciChart_BarPlot : AbstractSciChartSeries<SciChartSurface, FastColumnRenderableSeries>
     {
         /* ------------------------------------------------------------------*/
         #region public properties
 
-        public override string _Name { get { return "Columns (SciChart)"; } }
+        public override string _Name { get { return "Bar Plot (SciChart)"; } }
 
         #endregion
 
         /* ------------------------------------------------------------------*/
         #region public functions
 
-        public SciChart_Columns(int uid) : base(uid) { }
+        public SciChart_BarPlot(int uid) : base(uid) { }
 
         #endregion
     }

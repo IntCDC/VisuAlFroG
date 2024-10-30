@@ -4,27 +4,18 @@ using System.Windows.Controls;
 using Core.Data;
 using Core.Utilities;
 using Core.Abstracts;
-using System;
 
-
-/*
-
-INSTRUCTIONS for creating own custom data filter:
-
-see https://github.com/IntCDC/VisuAlFroG/blob/main/docs/developer-guide.md
-
-*/
 
 
 /*
- *  Custom Column Selection Data Filter
- * 
+ *  Filter for custom column selection
+ *  
  */
 namespace Core
 {
     namespace Filter
     {
-        public class ColumnSelectionFilter : AbstractFilter
+        public class Filter_ColumnSelection : AbstractFilter
         {
             /* ------------------------------------------------------------------*/
             #region public classes
@@ -44,9 +35,9 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public ColumnSelectionFilter()
+            public Filter_ColumnSelection()
             {
-                _Name = "Column Selection";
+                _Name = "Select Data Parameters (Columns)";
                 _UniqueContent = true;
             }
 
@@ -72,7 +63,6 @@ namespace Core
                     info.Margin = new Thickness(_Margin);
 
                     _ui_element.Children.Add(info);
-                    return _ui_element;
                 }
                 else
                 {
@@ -131,9 +121,8 @@ namespace Core
                     _ui_element.RowDefinitions.Add(list_row);
                     Grid.SetRow(_checkable_content_list, 2);
                     _ui_element.Children.Add(_checkable_content_list);
-
-                    return _ui_element;
                 }
+                return _ui_element;
             }
 
             protected override void apply_filter(GenericDataStructure out_data)
