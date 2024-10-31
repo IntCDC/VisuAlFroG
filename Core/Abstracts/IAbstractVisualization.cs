@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+
 using Core.Data;
 using Core.GUI;
+
+using static Core.Abstracts.AbstractVisualization;
 
 
 
@@ -49,7 +52,8 @@ namespace Core
             /// Initialize the content.
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
-            bool Initialize(DataManager.GetSpecificDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback);
+            bool Initialize(DataManager.GetSpecificDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback,
+                UpdateSeriesSelection_Delegate update_selection_series);
 
             /// <summary>
             /// Create the content. To be called only once.
@@ -74,6 +78,24 @@ namespace Core
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
             bool Terminate();
+
+            /// <summary>
+            /// Called when (partially: new_data=false) updated data is available
+            /// </summary>
+            /// <param name="new_data">True if new data is available, false if existing data has been updated.</param>
+            void Update(bool new_data);
+
+            /// <summary>
+            /// Update selection of specific data entry
+            /// </summary>
+            /// <param name="updated_meta_data"></param>
+            void UpdateEntrySelection(IMetaData updated_meta_data);
+
+            /// <summary>
+            /// Update selection of data series
+            /// </summary>
+            /// <param name="updated_series_indexes"></param>
+            void UpdateSeriesSelection(List<int> updated_series_indexes);
 
             #endregion
         }

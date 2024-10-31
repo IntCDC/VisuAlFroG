@@ -51,7 +51,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public bool Initialize(DataManager.GetGenericDataCallback_Delegate get_selected_data_callback, DataManager.UpdateSelectedDataCallback_Delegate update_selected_data_callback)
+            public bool Initialize(DataManager.GetGenericDataCallback_Delegate get_selected_data_callback, DataManager.UpdateFilteredDataCallback_Delegate update_selected_data_callback)
             {
                 if (!base.Initialize())
                 {
@@ -447,7 +447,7 @@ namespace Core
             private List<AbstractFilter.ContentMetadata> _contents_metadata = null;
             private List<int> _ordered_filter_list = null;
 
-            private DataManager.UpdateSelectedDataCallback_Delegate _update_selected_data_callback = null;
+            private DataManager.UpdateFilteredDataCallback_Delegate _update_selected_data_callback = null;
             private DataManager.GetGenericDataCallback_Delegate _get_selected_data_callback = null;
 
             #endregion

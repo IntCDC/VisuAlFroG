@@ -78,7 +78,7 @@ namespace Core
             public AbstractFilter() { }
 
             public bool Initialize(DataManager.GetGenericDataCallback_Delegate get_selected_data_callback,
-                DataManager.UpdateSelectedDataCallback_Delegate update_selected_data_callback,
+                DataManager.UpdateFilteredDataCallback_Delegate update_selected_data_callback,
                 FilterManager.FilterChanged_Delegate filter_changed_callback,
                 FilterManager.DeleteFilterCallback_Delegate delete_self_callback)
             {
@@ -686,7 +686,7 @@ namespace Core
             private Button _apply_button = null;
             private System.Windows.Media.Brush _apply_button_default_background = null;
 
-            private DataManager.UpdateSelectedDataCallback_Delegate _update_selected_data_callback = null;
+            private DataManager.UpdateFilteredDataCallback_Delegate _update_selected_data_callback = null;
             private DataManager.GetGenericDataCallback_Delegate _get_selected_data_callback = null;
             private FilterManager.FilterChanged_Delegate _filter_changed_callback = null;
             private FilterManager.DeleteFilterCallback_Delegate _delete_self_callback = null;

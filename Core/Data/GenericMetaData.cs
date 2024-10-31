@@ -41,11 +41,12 @@ namespace Core
                 }
                 set
                 {
-                    bool call_property_change = (_selected != value);
-                    _selected = value;
-                    if (call_property_change && (PropertyChanged != null))
+                    if (_selected != value)
                     {
-                        PropertyChanged(this, new PropertyChangedEventArgs("_Selected"));
+                        _selected = value;
+                        if (PropertyChanged != null) {
+                            PropertyChanged(this, new PropertyChangedEventArgs("_Selected"));
+                        }
                     }
                 }
             }

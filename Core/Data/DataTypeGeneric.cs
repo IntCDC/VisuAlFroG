@@ -36,7 +36,6 @@ namespace Core
                 _data_specific = null;
                 _loaded = false;
 
-
                 _Dimension = data.GetDimension();
                 _data_generic = data.DeepCopy();
                 _data_specific = _data_generic;
@@ -45,27 +44,9 @@ namespace Core
                 _loaded = true;
             }
 
-            public override void UpdateMetaDataEntry(IMetaData updated_meta_data)
+            public override List<Control> GetDataMenu()
             {
-                if (!_loaded)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Creation of data required prior to execution");
-                    return;
-                }
-                var entry = _data_specific.GetEntryAtIndex(updated_meta_data._Index);
-                if (entry != null)
-                {
-                    entry._Metadata._Selected = updated_meta_data._Selected;
-                }
-                else
-                {
-                    Log.Default.Msg(Log.Level.Debug, "Can not find data entry at index: " + updated_meta_data._Index.ToString());
-                }
-            }
-
-            public override List<Control> GetMenu()
-            {
-                return base.GetMenu();
+                return base.GetDataMenu();
             }
 
             #endregion

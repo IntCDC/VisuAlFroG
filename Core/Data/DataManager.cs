@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.IO.Ports;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Forms;
-
 using Core.Abstracts;
 using Core.GUI;
 using Core.Utilities;
@@ -35,7 +29,7 @@ namespace Core
             public delegate void SetDataCallback_Delegate(GenericDataStructure ouput_data);
 
             public delegate GenericDataStructure GetGenericDataCallback_Delegate(int data_uid);
-            public delegate void UpdateSelectedDataCallback_Delegate(int data_uid, GenericDataStructure input_data);
+            public delegate void UpdateFilteredDataCallback_Delegate(int data_uid, GenericDataStructure input_data);
 
             public delegate int RegisterDataCallback_Delegate(Type data_type, UpdateVisualizationCallback_Delegate update_callback);
             public delegate void UnregisterUpdateCallback_Delegate(int data_uid);
@@ -47,7 +41,7 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region public functions
 
-            public override bool Initialize()
+            public virtual bool Initialize(PropertyChangedEventHandler event_entry_selection_changed)
             {
                 if (_initialized)
                 {
@@ -55,11 +49,12 @@ namespace Core
                 }
                 _timer.Start();
 
+                _event_metadata_changed = event_entry_selection_changed;
 
                 // Add copy of data that is kept for reference as the original data unmodified
                 var variety = (IDataType)Activator.CreateInstance(typeof(DataTypeGeneric),
                     (PropertyChangedEventHandler)event_data_changed,
-                    (PropertyChangedEventHandler)event_metadata_changed,
+                    (PropertyChangedEventHandler)_event_metadata_changed,
                     ((_outputdata_callback != null) ? ((GetSendOutputCallback_Delegate)callback_send_output) : (null)));
                 _data_library.Add(UniqueID.GenerateInt(), new DataDescription(((bool new_data) => { }), variety));
                 _original_data_hash = _data_library.Last().Key;
@@ -121,7 +116,7 @@ namespace Core
             /// Callback to propagate new input data to selected data types in the data manager.
             /// </summary>
             /// <param name="input_data">The new input data.</param>
-            public void UpdateSelectedDataCallback(int data_uid, GenericDataStructure input_data)
+            public void UpdateFilteredDataCallback(int data_uid, GenericDataStructure input_data)
             {
                 if (!_initialized)
                 {
@@ -172,7 +167,7 @@ namespace Core
                 {
                     var variety = (IDataType)Activator.CreateInstance(data_type,
                         (PropertyChangedEventHandler)event_data_changed,
-                        (PropertyChangedEventHandler)event_metadata_changed,
+                        (PropertyChangedEventHandler)_event_metadata_changed,
                         ((_outputdata_callback != null) ? ((GetSendOutputCallback_Delegate)callback_send_output) : (null)));
                     if (variety == null)
                     {
@@ -280,11 +275,11 @@ namespace Core
 
                 if (!_data_library.ContainsKey(data_uid))
                 {
-                    Log.Default.Msg(Log.Level.Warn, "Requested data menu not available for given data UID: " + data_uid.ToString());
+                    Log.Default.Msg(Log.Level.Warn, "Requested data not available for given data UID: " + data_uid.ToString());
                     return null;
 
                 }
-                return _data_library[data_uid]._Data.GetMenu();
+                return _data_library[data_uid]._Data.GetDataMenu();
             }
 
             public override void AttachMenu(MenubarMain menu_bar)
@@ -357,29 +352,6 @@ namespace Core
             }
 
             /// <summary>
-            /// Callback provided for getting notified on changed meta data 
-            /// !!! This function is currently called for every single change !!!
-            /// </summary>
-            /// <param name="sender">The sender object.</param>
-            /// <param name="e">The property changed event arguments.</param>
-            private void event_metadata_changed(object sender, PropertyChangedEventArgs e)
-            {
-                var sender_selection = sender as IMetaData;
-                if ((sender_selection == null) || (e.PropertyName != "_Selected"))
-                {
-                    Log.Default.Msg(Log.Level.Error, "Unknown sender");
-                    return;
-                }
-
-                // Update meta data in all data series
-                foreach (var pair in _data_library)
-                {
-                    pair.Value._Data.UpdateMetaDataEntry(sender_selection);
-                    pair.Value._UpdateVisualization(false);
-                }
-            }
-
-            /// <summary>
             /// Callback provided for getting notified on changes that should be applied globally
             /// </summary>
             /// <param name="sender">The sender object.</param>
@@ -433,6 +405,8 @@ namespace Core
             private int _original_data_hash = UniqueID.InvalidInt;
             private SetDataCallback_Delegate _outputdata_callback = null;
             private Dictionary<int, DataDescription> _data_library = new Dictionary<int, DataDescription>();
+
+            private PropertyChangedEventHandler _event_metadata_changed = null;
 
             #endregion
         }

@@ -40,30 +40,30 @@ renderer = p.patches('x', 'y', source=source)
 
 def my_tap_handler(attr,old,new):
     print("Python Handler called")
-    indices = source.selected.indices
-    if len(indices) == 1:
-        group = source.data["group"][indices[0]]
-        new_indices = [i for i, g in enumerate(source.data["group"]) if g == group]
-        if new_indices != indices:
-            source.selected = Selection(indices=new_indices)
+    indexes = source.selected.indexes
+    if len(indexes) == 1:
+        group = source.data["group"][indexes[0]]
+        new_indexes = [i for i, g in enumerate(source.data["group"]) if g == group]
+        if new_indexes != indexes:
+            source.selected = Selection(indexes=new_indexes)
 
 
 callback = CustomJS(args=dict(source=source), code="""
     console.log('JavaScript Handler Called ...');
     const data = source.data;
-    const idcs = cb_obj.indices;
+    const idcs = cb_obj.indexes;
     console.log(typeof idcs);
     if (idcs.length == 1) {
         const group = source.data["group"][idcs[0]];
-        var new_indices = [];
+        var new_indexes = [];
         for (const [index, element] of source.data["group"].entries()) {
             if (element == group) {
-                new_indices.push(index);
+                new_indexes.push(index);
             }
         }
-        if (new_indices != idcs) {
-            console.log(new_indices);
-            source.selected.indices = new_indices;
+        if (new_indexes != idcs) {
+            console.log(new_indexes);
+            source.selected.indexes = new_indexes;
         }
     }
 
@@ -72,7 +72,7 @@ callback = CustomJS(args=dict(source=source), code="""
 
 selected_patches = Patches(fill_color="#a6cee3")
 renderer.selection_glyph = selected_patches
-source.selected.js_on_change('indices', callback)
+source.selected.js_on_change('indexes', callback)
 
 print("Show Plot")
 show(p, width=800)

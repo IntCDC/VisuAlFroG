@@ -44,38 +44,9 @@ namespace SciChartInterface
                 _loaded = true;
             }
 
-            public override void UpdateMetaDataEntry(IMetaData updated_meta_data)
+            public override List<Control> GetDataMenu()
             {
-                if (!_loaded)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Creation of data required prior to execution");
-                    return;
-                }
-
-                foreach (var data_series in _data_specific)
-                {
-                    using (data_series.DataSeries.SuspendUpdates())
-                    {
-                        int values_count = data_series.DataSeries.Count;
-                        for (int i = 0; i < values_count; i++)
-                        {
-                            if (updated_meta_data._Index == ((SciChartMetaData)data_series.DataSeries.Metadata[i])._Index)
-                            {
-                                ((SciChartMetaData)data_series.DataSeries.Metadata[i])._Selected = updated_meta_data._Selected;
-                            }
-                        }
-                    }
-                    data_series.InvalidateVisual();
-                }
-            }
-
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <returns></returns>
-            public override List<Control> GetMenu()
-            {
-                return base.GetMenu();
+                return base.GetDataMenu();
             }
 
             #endregion
@@ -112,7 +83,7 @@ namespace SciChartInterface
                             y = (double)entry._Values[value_index + 1];
 
                             /// XXX Can result in much slower performance for large unsorted data
-                            series.AcceptsUnsortedData = true; 
+                            series.AcceptsUnsortedData = true;
                         }
                         var meta_data = new SciChartMetaData(entry._Metadata._Index, entry._Metadata._Selected, _update_metadata_handler);
                         series.Append(x, y, meta_data);

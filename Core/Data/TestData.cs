@@ -45,20 +45,22 @@ namespace Core
 
                 for (int i = 0; i < 7; i++)
                 {
-                    var index_value = generator.Next(0, 50);
+
 
                     data_branch = new GenericDataStructure();
 
                     var data_leaf = new GenericDataEntry();
                     data_leaf.AddValue(("row_" + i.ToString()));
                     data_branch.AddEntry(data_leaf);
-                    for (int j = 0; j < 25; j++)
+                    for (int index = 0; index < 25; index++)
                     {
-                        var value = generator.Next(0, 50);
                         data_leaf = new GenericDataEntry();
 
-                        data_leaf.AddValue((double)j); // index_value
-                        data_leaf.AddValue((double)value);
+                        var x_value = generator.Next(0, 50);
+                        data_leaf.AddValue((double)x_value); // index | x_value
+
+                        var y_value = generator.Next(0, 50);
+                        data_leaf.AddValue((double)y_value);
 
                         data_branch.AddEntry(data_leaf);
                     }

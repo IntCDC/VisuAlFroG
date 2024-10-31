@@ -3,12 +3,12 @@ using SciChart.Charting.Visuals;
 using SciChart.Charting.Visuals.RenderableSeries;
 using SciChart.Charting.ChartModifiers;
 using System.Dynamic;
+using System.Collections.Generic;
 using Core.Utilities;
 using System;
 using SciChartInterface.Data;
 using Core.GUI;
-using System.Windows.Media;
-
+using Core.Data;
 
 
 
@@ -66,7 +66,7 @@ namespace SciChartInterface
 
                 var modifier_selection_series = new SeriesSelectionModifier();
                 modifier_selection_series.IsEnabled = true;
-                modifier_selection_series.SelectionChanged += series_selection_changed;
+                modifier_selection_series.SelectionChanged += event_series_selection_changed;
 
                 _Content.ChartModifier = new ModifierGroup(
                     modifier_reorder_axes,

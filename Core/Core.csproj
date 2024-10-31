@@ -118,7 +118,7 @@
     <Compile Include="Filtering\Filter_ColumnSelection.cs" />
     <Compile Include="Filtering\Filter_ValuesAxisMapping.cs" />
     <Compile Include="Filtering\Filter_RowSelection.cs" />
-    <None Include="Filtering\Filter.cs.template" />
+    <None Include="Filtering\Filter_Custom.cs.template" />
     <Compile Include="Filtering\Filter_Transpose.cs" />
     <Compile Include="Filtering\FilterManager.cs" />
     <Compile Include="GUI\LoadingProgressBar.cs">

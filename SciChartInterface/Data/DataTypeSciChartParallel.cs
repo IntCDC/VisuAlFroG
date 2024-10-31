@@ -93,24 +93,9 @@ namespace SciChartInterface
                 }
             }
 
-            public override void UpdateMetaDataEntry(IMetaData updated_meta_data)
+            public override List<Control> GetDataMenu()
             {
-                if (!_loaded)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Creation of data required prior to execution");
-                    return;
-                }
-
-                /// TODO
-            }
-
-            /// <summary>
-            ///  
-            /// </summary>
-            /// <returns></returns>
-            public override List<Control> GetMenu()
-            {
-                return base.GetMenu();
+                return base.GetDataMenu();
             }
 
             #endregion

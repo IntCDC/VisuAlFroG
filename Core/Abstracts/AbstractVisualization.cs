@@ -5,7 +5,6 @@ using Core.Utilities;
 using System.Windows;
 using Core.GUI;
 using Core.Data;
-using System.Runtime.Remoting.Contexts;
 
 
 
@@ -23,11 +22,11 @@ namespace Core
             /* ------------------------------------------------------------------*/
             #region public static properties
 
-            public static string TypeString_LogConsole { get; }    = "Visualizations.WPF_LogConsole";
-            public static string TypeString_FilterEditor { get; }  = "Visualizations.WPF_FilterEditor";
-            public static string TypeString_DataViewer { get; }    = "Visualizations.WPF_DataViewer";
-            public static string TypeString_SciChartLines { get; } = "Visualizations.SciChart_Lines";
-            public static string TypeString_SciChartPCP { get; }   = "Visualizations.SciChart_ParallelCoordinatesPlot";
+            public static string TypeString_LogConsole { get; } = "Visualizations.WPF_LogConsole";
+            public static string TypeString_FilterEditor { get; } = "Visualizations.WPF_FilterEditor";
+            public static string TypeString_DataViewer { get; } = "Visualizations.WPF_DataViewer";
+            public static string TypeString_SciChartLines { get; } = "Visualizations.SciChart_LinesPlot";
+            public static string TypeString_SciChartPCP { get; } = "Visualizations.SciChart_ParallelCoordinatesPlot";
 
             #endregion
 
@@ -35,6 +34,8 @@ namespace Core
             #region public delegate
 
             public delegate void AttachWindowMenu_Delegate(MenubarWindow menubar);
+
+            public delegate void UpdateSeriesSelection_Delegate(int uid, List<int> series_indexes);
 
             #endregion
 
@@ -64,6 +65,7 @@ namespace Core
             public abstract Type _RequiredDataType { get; }
             public DataManager.GetSpecificDataCallback_Delegate _RequestDataCallback { get; private set; }
             public DataManager.GetDataMenuCallback_Delegate _RequestMenuCallback { get; private set; }
+            public UpdateSeriesSelection_Delegate _UpdateSeriesSelection { get; private set; }
 
             #endregion
 
@@ -88,7 +90,8 @@ namespace Core
             /// </summary>
             /// <returns>True on success, false otherwise.</returns>
             /// <exception cref="InvalidOperationException">...throw error when method of base class is called instead.</exception>
-            public virtual bool Initialize(DataManager.GetSpecificDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback)
+            public virtual bool Initialize(DataManager.GetSpecificDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback,
+                UpdateSeriesSelection_Delegate update_selection_series)
             {
                 if (_initialized)
                 {
@@ -102,13 +105,13 @@ namespace Core
                 }
                 _RequestDataCallback = request_data_callback;
                 _RequestMenuCallback = request_menu_callback;
+                _UpdateSeriesSelection = update_selection_series;
 
                 _content = new Grid();
                 _initialized = true;
 
                 return _initialized;
             }
-
             /* TEMPLATE
             {
                _timer.Start();
@@ -204,12 +207,6 @@ namespace Core
             */
 
             /// <summary>
-            /// Called when (partially: new_data=false) updated data is available
-            /// </summary>
-            /// <param name="new_data">True if new data is available, false if existing data has been updated.</param>
-            public abstract void Update(bool new_data);
-
-            /// <summary>
             /// Called when menu of content should be attached.
             /// </summary>
             /// <param name="menubar"></param>
@@ -245,6 +242,12 @@ namespace Core
                     }
                 }
             }
+
+            public abstract void Update(bool new_data);
+
+            public abstract void UpdateEntrySelection(IMetaData updated_meta_data);
+
+            public abstract void UpdateSeriesSelection(List<int> updated_series_indexes);
 
             #endregion
 
@@ -287,6 +290,13 @@ namespace Core
                 /// Log.Default.Msg(Log.Level.Error, "No data for: " + typeof(DataParentType).FullName);
                 return false;
             }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="sender"></param>
+            /// <param name="e"></param>
+            protected abstract void event_series_selection_changed(object sender, EventArgs e);
 
             #endregion
 

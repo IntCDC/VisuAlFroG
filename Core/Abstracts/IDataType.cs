@@ -32,9 +32,7 @@ namespace Core
 
             void UpdateData(GenericDataStructure data);
 
-            void UpdateMetaDataEntry(IMetaData updated_meta_data);
-
-            List<Control> GetMenu();
+            List<Control> GetDataMenu();
 
             #endregion
         }

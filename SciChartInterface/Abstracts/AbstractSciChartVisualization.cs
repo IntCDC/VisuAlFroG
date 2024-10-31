@@ -6,11 +6,8 @@ using Core.Utilities;
 using SciChart.Charting.Visuals;
 using System.Windows;
 using Core.Data;
-using SciChart.Charting.Visuals.RenderableSeries;
-using SciChartInterface.Data;
 using System.Windows.Media;
 using System.Globalization;
-using System.Runtime.Remoting.Contexts;
 using SciChart.Charting.ChartModifiers;
 
 
@@ -42,11 +39,12 @@ namespace SciChartInterface
 
             public AbstractSciChartVisualization(int uid) : base(uid) { }
 
-            public override bool Initialize(DataManager.GetSpecificDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback)
+            public override bool Initialize(DataManager.GetSpecificDataCallback_Delegate request_data_callback, DataManager.GetDataMenuCallback_Delegate request_menu_callback,
+                UpdateSeriesSelection_Delegate update_selection_series)
             {
                 _timer.Start();
 
-                if (base.Initialize(request_data_callback, request_menu_callback))
+                if (base.Initialize(request_data_callback, request_menu_callback, update_selection_series))
                 {
                     _content_surface = new SurfaceType();
                     _content_surface.Padding = new Thickness(0.0, 0.0, 0.0, 0.0);
@@ -103,6 +101,33 @@ namespace SciChartInterface
                 }
             }
 
+            public override void UpdateEntrySelection(IMetaData updated_meta_data)
+            {
+                /// Entry selection is not supported by all SciChart visualizations (e.g. PCP)
+                // Do nothing... or re-implement in inheriting class
+
+            }
+
+            public override void UpdateSeriesSelection(List<int> updated_series_indexes)
+            {
+                for (int i = 0; i < _Content.RenderableSeries.Count; i++)
+                {
+                    bool selected = updated_series_indexes.Contains(i);
+                    _Content.RenderableSeries[i].IsSelected = selected;
+
+                    /*
+                    // Change meta data for all entries of series
+                    if (_Content.RenderableSeries[i].DataSeries.Metadata.Count > 0)
+                    {
+                        foreach (var meta in _Content.RenderableSeries[i].DataSeries.Metadata)
+                        {
+                            meta.IsSelected = selected;
+                        }
+                    }
+                    */
+                }
+            }
+
             #endregion
 
             /* ------------------------------------------------------------------*/
@@ -135,7 +160,7 @@ namespace SciChartInterface
                 _Content.Annotations.Add(text_anno);
             }
 
-            protected void series_selection_changed(object sender, EventArgs e)
+            protected override void event_series_selection_changed(object sender, EventArgs e)
             {
                 var sender_series_modifier = sender as SeriesSelectionModifier;
                 if (sender_series_modifier == null)
@@ -144,29 +169,15 @@ namespace SciChartInterface
                     return;
                 }
 
-                /// TODO Clean-up
-                foreach (var selected_series in _Content.SelectedRenderableSeries)
+                var series_indexes = new List<int>();
+                for (int i = 0; i < _Content.RenderableSeries.Count; i++)
                 {
-                    if (selected_series.IsSelected)
+                    if (_Content.RenderableSeries[i].IsSelected)
                     {
-                        var type = selected_series.GetType();
-                        Log.Default.Msg(Log.Level.Info, "Selected Series: " + type.ToString());
-                        var series = selected_series as FastLineRenderableSeries;
-                        if (series == null)
-                        {
-                            Log.Default.Msg(Log.Level.Error, "Unexpected series type");
-                            return;
-                        }
-                        var data = series.DataSeries;
-                        Log.Default.Msg(Log.Level.Info, "    Series Data: " + data.GetType().ToString());
-
-                        foreach (var meta in data.Metadata)
-                        {
-                            meta.IsSelected = true;
-                        }
+                        series_indexes.Add(i);
                     }
-
                 }
+                _UpdateSeriesSelection(_UID, series_indexes);
             }
 
             #endregion

@@ -23,7 +23,7 @@ namespace Core
 {
 	namespace Filter
 	{
-		public class CustomFilter : AbstractFilter
+		public class Filter_Custom : AbstractFilter
 		{
 			/* ------------------------------------------------------------------*/
 			#region public classes
@@ -36,18 +36,20 @@ namespace Core
             {
                 /// XXX TODO Add additional information required to restore the filter
             }
-*           */
+            */
 
 			#endregion
 
 			/* ------------------------------------------------------------------*/
 			#region public functions
 
-			public CustomFilter()
+			public Filter_Custom()
 			{
-				_Name = "Filter Name";
+				_Name = "Custom Filter Name";
+
 				/// TODO Uncomment if filter should only be applied to one content at once:
 				//_UniqueContent = true;
+
 				/// TODO Uncomment and complete if filter should only be applied to one specific content type:
 				//_RequiredContentType = Assembly.Load("Visualizations").GetType("Visualizations.SciChart_...", true);
 			}

@@ -10,6 +10,7 @@ using Core.GUI;
 using System.Windows;
 using SciChart.Charting.ChartModifiers;
 using System.Windows.Media;
+using Core.Data;
 
 
 
@@ -84,8 +85,8 @@ namespace SciChartInterface
 
                 var modifier_selection_series = new SeriesSelectionModifier();
                 modifier_selection_series.IsEnabled = true;
-                modifier_selection_series.SelectionChanged += series_selection_changed;
-                
+                modifier_selection_series.SelectionChanged += event_series_selection_changed;
+
                 _Content.ChartModifier = new ModifierGroup(
                     modifier_selection_point,
                     modifier_selection_series,
@@ -128,6 +129,31 @@ namespace SciChartInterface
                 _timer.Stop();
                 _created = true;
                 return _created;
+            }
+
+            public override void UpdateEntrySelection(IMetaData updated_meta_data)
+            {
+                foreach (var data_series in _Content.RenderableSeries)
+                {
+                    using (data_series.DataSeries.SuspendUpdates())
+                    {
+                        int values_count = data_series.DataSeries.Count;
+                        for (int i = 0; i < values_count; i++)
+                        {
+                            if (updated_meta_data._Index == ((SciChartMetaData)data_series.DataSeries.Metadata[i])._Index)
+                            {
+                                ((SciChartMetaData)data_series.DataSeries.Metadata[i])._Selected = updated_meta_data._Selected;
+                            }
+                        }
+                    }
+                    var typed_series = data_series as DataType;
+                    if (typed_series == null)
+                    {
+                        Log.Default.Msg(Log.Level.Error, "Failed to convert to typed series");
+                        break;
+                    }
+                    typed_series.InvalidateVisual();
+                }
             }
 
             public override void AttachMenu(MenubarWindow menubar)
@@ -203,7 +229,7 @@ namespace SciChartInterface
             private System.Windows.Style get_series_style()
             {
                 const int stroke_thickness = 2;
-                const double marker_size   = 8.0;
+                const double marker_size = 8.0;
 
                 var series_style = new System.Windows.Style();
                 series_style.TargetType = typeof(DataType);
@@ -249,8 +275,8 @@ namespace SciChartInterface
                     var pointmarker_default = new EllipsePointMarker()
                     {
                         StrokeThickness = 0,
-                        Fill   = random_color,
-                        Width  = marker_size,
+                        Fill = random_color,
+                        Width = marker_size,
                         Height = marker_size,
                         AntiAliasing = true,
                     };
@@ -259,10 +285,10 @@ namespace SciChartInterface
                     setter_point.Value = pointmarker_default;
                     series_style.Setters.Add(setter_point);
 
-                    var pointmarker_selected = new EllipsePointMarker() 
+                    var pointmarker_selected = new EllipsePointMarker()
                     {
                         StrokeThickness = 0,
-                        Width  = marker_size,
+                        Width = marker_size,
                         Height = marker_size,
                         AntiAliasing = true,
                     };

@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Windows;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Utilities;
 using Core.Abstracts;
-using System.Reflection;
 using SciChart.Core.Extensions;
 using Core.GUI;
 using Core.Data;
 using Core.Filter;
 using System.Windows.Data;
+using System.ComponentModel;
 
 
 
@@ -56,10 +55,10 @@ namespace Visualizations
 
 
             // Data Manager
-            bool initialized = _datamanager.Initialize();
+            bool initialized = _datamanager.Initialize(this.event_update_entry_selection);
 
             // FilterManager
-            initialized &= _filtermanager.Initialize(_datamanager.GetGenericDataCallback, _datamanager.UpdateSelectedDataCallback);
+            initialized &= _filtermanager.Initialize(_datamanager.GetGenericDataCallback, _datamanager.UpdateFilteredDataCallback);
 
             // Service Manager
             /// after registering all contents
@@ -338,6 +337,54 @@ namespace Visualizations
         #region private functions
 
         /// <summary>
+        /// Process series selection forwarded from visualizations
+        /// </summary>
+        /// <param name="uid">UID of the sender that can be omitted</param>
+        /// <param name="series_indexes">The indexes of the currently selected series</param>
+        public void update_series_selection(int uid, List<int> series_indexes)
+        {
+            // Update selected series in all visualizations
+            foreach (var content_types in _entries)
+            {
+                foreach (var content_data in content_types.Value)
+                {
+                    // Omit sender visualization
+                    if (content_data.Key != uid) /// XXX ???
+                    {
+                        content_data.Value.UpdateSeriesSelection(series_indexes);
+                        content_data.Value.Update(false);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Callback provided for getting notified on changed meta data 
+        /// XXX This function is currently called for every single change and can not handle multi-selection
+        /// </summary>
+        /// <param name="sender">The sender object.</param>
+        /// <param name="e">The property changed event arguments.</param>
+        private void event_update_entry_selection(object sender, PropertyChangedEventArgs e)
+        {
+            var sender_selection = sender as IMetaData;
+            if ((sender_selection == null) || (e.PropertyName != "_Selected"))
+            {
+                Log.Default.Msg(Log.Level.Error, "Unknown sender");
+                return;
+            }
+
+            // Update entry selection in all visualizations (called from meta data in data type)
+            foreach (var content_types in _entries)
+            {
+                foreach (var content_data in content_types.Value)
+                {
+                    content_data.Value.UpdateEntrySelection(sender_selection);
+                    content_data.Value.Update(false);
+                }
+            }
+        }
+
+        /// <summary>
         /// Returns distinct list of valid services required by the registered contents.
         /// </summary>
         /// <returns>List of service types.</returns>
@@ -379,7 +426,7 @@ namespace Visualizations
         private AbstractVisualization create_content(Type type, int uid)
         {
             var content = (AbstractVisualization)Activator.CreateInstance(type, uid);
-            if (content.Initialize(_datamanager.GetSpecificDataCallback, _datamanager.GetDataMenuCallback))
+            if (content.Initialize(_datamanager.GetSpecificDataCallback, _datamanager.GetDataMenuCallback, this.update_series_selection))
             {
                 content._DataUID = _datamanager.RegisterDataCallback(content._RequiredDataType, content.Update);
                 // Do not check for invalid DATAUID because it might be intentional that no data should have been created
@@ -410,7 +457,6 @@ namespace Visualizations
         private InterfaceManager _interfacemanager = new InterfaceManager();
         private DataManager _datamanager = new DataManager();
         private FilterManager _filtermanager = new FilterManager();
-
 
         #endregion
     }

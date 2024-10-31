@@ -36,12 +36,12 @@ namespace Core
             ///  DEBUG
             public GenericDataStructure() 
             {
-                Console.WriteLine(" ----> Created new instance of GenericDataStructure");
+                ///Console.WriteLine(" ----> Created new instance of GenericDataStructure");
                 //Log.Default.Msg(Log.Level.Debug, " ----> Created new instance of GenericDataStructure");
             }
             ~GenericDataStructure()
             {
-                Console.WriteLine(" --<<< Deleted instance of GenericDataStructure");
+                ///Console.WriteLine(" --<<< Deleted instance of GenericDataStructure");
                 //Log.Default.Msg(Log.Level.Debug, " --<<< Deleted instance of GenericDataStructure");
             }
             /// DEBUG

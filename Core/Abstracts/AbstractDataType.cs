@@ -50,9 +50,7 @@ namespace Core
 
             public abstract void UpdateData(GenericDataStructure data);
 
-            public abstract void UpdateMetaDataEntry(IMetaData updated_meta_data);
-
-            public virtual List<Control> GetMenu()
+            public virtual List<Control> GetDataMenu()
             {
                 var menu_items = new List<Control>();
                 var send_menu_item = MenubarWindow.GetDefaultMenuItem("Output to External Interface ", callback_output_interface);
@@ -99,6 +97,9 @@ namespace Core
             protected GenericDataStructure _data_generic = null;
 
             protected bool _loaded = false;
+            /// <summary>
+            /// So far, unused ... TODO: implement in DataManageer.event_data_changed()
+            /// </summary>
             protected PropertyChangedEventHandler _update_data_handler = null;
             protected PropertyChangedEventHandler _update_metadata_handler = null;
             protected DataManager.GetSendOutputCallback_Delegate _send_output_callback = null;
