@@ -67,6 +67,7 @@ namespace Core
 
             public int _UID { get; } = UniqueID.GenerateInt();
             public new string _Name { get { return _filter_caption.Text; } protected set { _filter_caption.Text = value; } }
+            public string _Description { get; protected set; }
             public bool _UniqueContent { get; protected set; } = false;
             public Type _RequiredContentType { get; protected set; } = null;
 
@@ -382,7 +383,7 @@ namespace Core
                 foreach (var metadata in content_metadata)
                 {
                     // Either show all contents or only those of required content type
-                    if ( (metadata.ContentType == _RequiredContentType) || (_RequiredContentType == null))
+                    if ((metadata.ContentType == _RequiredContentType) || (_RequiredContentType == null))
                     {
                         var check = new CheckBox();
                         check.SetBinding(CheckBox.ContentProperty, metadata.NameBinding);
@@ -491,34 +492,37 @@ namespace Core
                     _disable_content_checkboxes(data_uid);
 
                     /// Note: Newly selected content is not 'dirty', so no need to set 'Apply' button dirty...
-                    bool dirty = !(_reserved.Count == 0);
-                    if (_reserved.Count > 0)
+                    if (!_UniqueContent)
                     {
-                        dirty = (_applied.Count != _reserved.Count);
-                        foreach (var key_applied in _applied.Keys.ToList())
+                        bool dirty = !(_reserved.Count == 0);
+                        if (_reserved.Count > 0)
                         {
-                            if (!_reserved.ContainsKey(key_applied))
+                            dirty = (_applied.Count != _reserved.Count);
+                            foreach (var key_applied in _applied.Keys.ToList())
                             {
-                                dirty = true;
+                                if (!_reserved.ContainsKey(key_applied))
+                                {
+                                    dirty = true;
+                                }
+                                else if (_reserved[key_applied].Item1 != _applied[key_applied].Item1)
+                                {
+                                    dirty = true;
+                                }
                             }
-                            else if (_reserved[key_applied].Item1 != _applied[key_applied].Item1)
+                            foreach (var key_reserved in _reserved.Keys.ToList())
                             {
-                                dirty = true;
+                                if (!_applied.ContainsKey(key_reserved))
+                                {
+                                    dirty = true;
+                                }
+                                else if (_reserved[key_reserved].Item1 != _applied[key_reserved].Item1)
+                                {
+                                    dirty = true;
+                                }
                             }
                         }
-                        foreach (var key_reserved in _reserved.Keys.ToList())
-                        {
-                            if (!_applied.ContainsKey(key_reserved))
-                            {
-                                dirty = true;
-                            }
-                            else if (_reserved[key_reserved].Item1 != _applied[key_reserved].Item1)
-                            {
-                                dirty = true;
-                            }
-                        }
+                        _set_dirty(dirty);
                     }
-                    _set_dirty(dirty);
                 }
                 else
                 {

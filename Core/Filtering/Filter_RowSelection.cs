@@ -38,7 +38,8 @@ namespace Core
 
             public Filter_RowSelection()
             {
-                _Name = "Select Data Series (Rows)";
+                _Name = "Row Selection";
+                _Description = "Select Data Series (Rows)";
                 _UniqueContent = true;
             }
 
@@ -74,7 +75,7 @@ namespace Core
                     _checkable_content_list.Children.Clear();
 
                     var info = new TextBlock();
-                    info.Text = "Select rows/series:";
+                    info.Text = _Description;
                     info.FontWeight = FontWeights.Bold;
                     info.Margin = new Thickness(_Margin);
 

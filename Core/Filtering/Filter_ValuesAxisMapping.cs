@@ -40,7 +40,8 @@ namespace Core
 
             public Filter_ValuesAxisMapping()
             {
-                _Name = "Map values of certain dimension to axes";
+                _Name = "Values Axis Mapping";
+                _Description = "Map values of certain dimension to axes";
                 _UniqueContent = true;
             }
 
@@ -73,70 +74,85 @@ namespace Core
                     /// - Always one value dimension has to be selected
                     /// - Each value dimension has always be selected (switch axis on value dimension change)
                     /// - Default and shown value dimensions depending on actually available value dimensions
+                    // Hence, not all axis might be available in the selected content(s
+                    //_ui_element.ShowGridLines = true;
+                    //_Description
 
-                    // Hence, not all axis might be available in the selected content(s)
-                    // ---
-                    // Content: X-Axis (1D/BarPlot/ParallelCoordinatesPlot)
-                    // Value Dimension: [] Index | [X] 1 | [] 2 | [] 3
-                    // ----
-                    // Content: Y-Axis (2D)
-                    // Value Dimension: [] Index | [] 1 | [X] 2 | [] 3
-                    // ---
-                    // Content: Z-Axis (3D)
-                    // Value Dimension: [] Index | [] 1 | [] 2 | [X] 3
-
-                    /// Als Tablelle mit Trennstrichen?
-                    /// 
-
-                    RadioButton[,] radio_buttons = new RadioButton[3, 3];
-
-                    _ui_element.ShowGridLines = true;
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < 5; i++)
                     {
                         var col = new ColumnDefinition();
                         col.Width = new GridLength(0.0, GridUnitType.Auto);
                         _ui_element.ColumnDefinitions.Add(col);
                     }
+
+                    var label_column = new Grid();
                     for (int i = 0; i < 3; i++)
                     {
                         var row = new RowDefinition();
                         row.Height = new GridLength(0.0, GridUnitType.Auto);
-                        _ui_element.RowDefinitions.Add(row);
+                        label_column.RowDefinitions.Add(row);
                     }
+                    var label_text_x = new TextBlock();
+                    label_text_x.Text = "  X-Axis (1D/PCP) ";
+                    Grid.SetRow(label_text_x, 0);
+                    label_column.Children.Add(label_text_x);
+                    var label_text_y = new TextBlock();
+                    label_text_y.Text = "  Y-Axis (2D) ";
+                    Grid.SetRow(label_text_y, 1);
+                    label_column.Children.Add(label_text_y);
+                    var label_text_z = new TextBlock();
+                    label_text_z.Text = "  Z-Axis (3D) ";
+                    Grid.SetRow(label_text_z, 2);
+                    label_column.Children.Add(label_text_z);
 
-                    var dim_text_x = new TextBlock();
-                    dim_text_x.Text = " X Dimension ";
-                    Grid.SetColumn(dim_text_x, 0);
-                    Grid.SetRow(dim_text_x, 0);
-                    _ui_element.Children.Add(dim_text_x);
+                    var label_group = new GroupBox();
+                    var header_label = new Label();
+                    header_label.Content = "Axes";
+                    header_label.SetResourceReference(Label.ForegroundProperty, "Brush_Foreground");
+                    label_group.Header = header_label;
+                    label_group.BorderThickness = new Thickness(0.25);
+                    label_group.Content = label_column;
+                    Grid.SetColumn(label_group, 0);
+                    _ui_element.Children.Add(label_group);
 
-                    var dim_text_y = new TextBlock();
-                    dim_text_y.Text = " Y Dimension ";
-                    Grid.SetColumn(dim_text_y, 0);
-                    Grid.SetRow(dim_text_y, 1);
-                    _ui_element.Children.Add(dim_text_y);
-                    var dim_text_z = new TextBlock();
-
-                    dim_text_z.Text = " Z Dimension ";
-                    Grid.SetColumn(dim_text_z, 0);
-                    Grid.SetRow(dim_text_z, 2);
-                    _ui_element.Children.Add(dim_text_z);
-
-
-                    for (int i = 0; i < 3; i++)
+                    RadioButton[,] radio_buttons = new RadioButton[4, 3];
+                    for (int i = 0; i < 4; i++)
                     {
+                        var group = new GroupBox();
+                        var label = new Label();
+                        switch (i)
+                        {
+                            case 0: label.Content = "Index"; break;
+                            case 1: label.Content = "1"; break;
+                            case 2: label.Content = "2"; break;
+                            case 3: label.Content = "3"; break;
+                        }
+
+                        label.SetResourceReference(Label.ForegroundProperty, "Brush_Foreground");
+                        group.Header = label;
+                        group.BorderThickness = new Thickness(0.25);
+
+                        var dim_column = new Grid();
+                        group.Content = dim_column;
+                        Grid.SetColumn(group, i + 1);
+                        _ui_element.Children.Add(group);
+
                         for (int j = 0; j < 3; j++)
                         {
                             radio_buttons[i, j] = new RadioButton();
                             radio_buttons[i, j].Content = " [" + i.ToString() + "," + j.ToString() + "] ";
                             radio_buttons[i, j].SetResourceReference(RadioButton.ForegroundProperty, "Brush_Foreground");
-                            Grid.SetRow(radio_buttons[i, j], i);
-                            Grid.SetColumn(radio_buttons[i, j], j+1);
-                            _ui_element.Children.Add(radio_buttons[i, j]);
+
+                            var row = new RowDefinition();
+                            row.Height = new GridLength(0.0, GridUnitType.Auto);
+                            dim_column.RowDefinitions.Add(row);
+
+                            Grid.SetRow(radio_buttons[i, j], j);
+                            dim_column.Children.Add(radio_buttons[i, j]);
                         }
                     }
-
                 }
+
                 return _ui_element;
             }
 

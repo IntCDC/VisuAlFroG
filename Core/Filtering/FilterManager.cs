@@ -3,19 +3,9 @@ using System.Windows;
 using System.Collections.Generic;
 using Core.Abstracts;
 using Core.GUI;
-using System.Drawing;
 using Core.Utilities;
-using Core.Filter;
 using Core.Data;
-using static Core.Abstracts.AbstractFilter;
-using System.Runtime.Remoting.Contexts;
 using System.Windows.Controls;
-using SciChart.Charting.Model.Filters;
-using System.Xml.Linq;
-using System.Runtime.InteropServices;
-using System.Windows.Controls.Primitives;
-using SciChart.Charting2D.Interop;
-using static System.Net.Mime.MediaTypeNames;
 
 
 
@@ -91,7 +81,8 @@ namespace Core
                 foreach (var filter_data in _entries)
                 {
                     var filter_metadata = new FilterTypeMetadata();
-                    filter_metadata.Name = filter_data.Key.Name;
+                    var filter = (AbstractFilter)Activator.CreateInstance(filter_data.Key);
+                    filter_metadata.Name = filter._Name;
                     filter_metadata.Type = filter_data.Key;
                     list.Add(filter_metadata);
                 }
@@ -328,12 +319,12 @@ namespace Core
                 _add_filter_list.IsEditable = false;
                 _add_filter_list.DisplayMemberPath = "Name";
                 _add_filter_list.SelectedIndex = 0;
-                _add_filter_list.Margin = new Thickness(0.0, _Margin, _Margin, _Margin);
+                _add_filter_list.Margin = new Thickness(0.0, AbstractFilter._Margin, AbstractFilter._Margin, AbstractFilter._Margin);
 
                 var add_button = new Button();
                 add_button.Content = " Add Filter ";
                 add_button.Click += event_apply_button;
-                add_button.Margin = new Thickness(_Margin, _Margin / 2.0, _Margin, _Margin / 2.0);
+                add_button.Margin = new Thickness(AbstractFilter._Margin, AbstractFilter._Margin / 2.0, AbstractFilter._Margin, AbstractFilter._Margin / 2.0);
 
                 _list_scrolling.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
                 _list_scrolling.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
@@ -349,10 +340,10 @@ namespace Core
                 var hrule = new Border();
                 hrule.SetResourceReference(Border.BackgroundProperty, "Brush_Background");
                 hrule.SetResourceReference(Border.BorderBrushProperty, "Brush_Foreground");
-                hrule.BorderThickness = new Thickness(_BorderThickness);
-                hrule.Margin = new Thickness(_Margin);
+                hrule.BorderThickness = new Thickness(AbstractFilter._BorderThickness);
+                hrule.Margin = new Thickness(AbstractFilter._Margin);
                 hrule.CornerRadius = new CornerRadius(0);
-                hrule.Height = _BorderThickness;
+                hrule.Height = AbstractFilter._BorderThickness;
                 hrule.VerticalAlignment = VerticalAlignment.Bottom;
                 hrule.HorizontalAlignment = HorizontalAlignment.Stretch;
 

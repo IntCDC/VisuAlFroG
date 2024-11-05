@@ -26,6 +26,7 @@ namespace Core
             public Filter_Transpose()
             {
                 _Name = "Transpose";
+                _Description = "Transpose Tabular 2D Data";
             }
 
             #endregion
@@ -36,12 +37,7 @@ namespace Core
             protected override UIElement create_update_ui(in GenericDataStructure in_data)
             {
                 var info = new TextBlock();
-                /*if (in_data == null)
-                {
-                    Log.Default.Msg(Log.Level.Error, "Missing input data...");
-                    return info;
-                }*/
-                info.Text = "Transpose Tabular 2D Data.";
+                info.Text = _Description;
                 info.FontWeight = FontWeights.Bold;
                 info.Margin = new Thickness(_Margin);
 

@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using Core.Data;
 using Core.Utilities;
 using Core.Abstracts;
+using System.Windows.Controls.Primitives;
 
 
 
@@ -37,7 +38,8 @@ namespace Core
 
             public Filter_ColumnSelection()
             {
-                _Name = "Select Data Parameters (Columns)";
+                _Name = "Column Selection";
+                _Description = "Select Data Parameters (Columns)";
                 _UniqueContent = true;
             }
 
@@ -73,7 +75,7 @@ namespace Core
                     _checkable_content_list.Children.Clear();
 
                     var info = new TextBlock();
-                    info.Text = "Select columns:";
+                    info.Text = _Description;
                     info.FontWeight = FontWeights.Bold;
                     info.Margin = new Thickness(_Margin);
 
