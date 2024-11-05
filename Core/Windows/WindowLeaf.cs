@@ -99,12 +99,10 @@ namespace Core
                 _content_child.Drop += event_content_drop;
 
                 // Default usage hint
-                /*
                 var info_text = new TextBlock();
-                info_text.Text = "HINT: Add new content via menu 'Content' -> 'Add Content'";
+                info_text.Text = "START: Click the 'Content' menu for all relevant options.";
                 info_text.SetResourceReference(TextBlock.ForegroundProperty, "Brush_TextDisabled");
                 _content_child.Children.Add(info_text);
-                */
 
                 var content_panel = new DockPanel();
                 StackPanel stack = new StackPanel();
@@ -130,6 +128,7 @@ namespace Core
                 {
                     if ((content_metadata.Item1 != UniqueID.InvalidInt) && (content_metadata.Item3 != null))
                     {
+                        delete_content();
                         _content_child.Children.Add(content_metadata.Item3);
                         _AttachedContent = new AttachedContent_Type(content_metadata.Item1, content_type);
 
@@ -454,7 +453,7 @@ namespace Core
                     sender_content.IsEnabled = false;
                 }
 
-                // Call Available Contents
+                // Create content
                 List<ReadContentMetaData_Type> available_contents = _content_callbacks.Item1();
                 foreach (var content_data in available_contents)
                 {

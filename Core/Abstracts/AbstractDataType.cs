@@ -97,10 +97,13 @@ namespace Core
             protected GenericDataStructure _data_generic = null;
 
             protected bool _loaded = false;
+
             /// <summary>
-            /// So far, unused ... TODO: implement in DataManageer.event_data_changed()
+            /// So far, unused ...
+            /// TODO: implement in DataManager.event_data_changed()
             /// </summary>
             protected PropertyChangedEventHandler _update_data_handler = null;
+
             protected PropertyChangedEventHandler _update_metadata_handler = null;
             protected DataManager.GetSendOutputCallback_Delegate _send_output_callback = null;
 

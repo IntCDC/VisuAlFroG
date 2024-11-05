@@ -134,6 +134,7 @@
     <Compile Include="GUI\MenubarMain.cs" />
     <Compile Include="GUI\ConfigurationService.cs" />
     <Compile Include="GUI\RenameLabel.cs" />
+    <Compile Include="Utilities\HelpText.cs" />
     <Compile Include="Windows\WindowBranch.cs" />
     <Compile Include="Windows\WindowLeaf.cs" />
     <Compile Include="Abstracts\AbstractService.cs" />

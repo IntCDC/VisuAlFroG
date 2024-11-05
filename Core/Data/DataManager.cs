@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+
 using Core.Abstracts;
 using Core.GUI;
 using Core.Utilities;
@@ -234,6 +235,13 @@ namespace Core
                     return null;
                 }
 
+                if (data_uid == UniqueID.InvalidInt)
+                {
+                    // Silently continue
+                    Log.Default.Msg(Log.Level.Debug, "Requested data for invalid UID.");
+                    return null;
+                }
+
                 if (!_data_library.ContainsKey(data_uid))
                 {
                     Log.Default.Msg(Log.Level.Warn, "Requested data not available for given data UID: " + data_uid.ToString());
@@ -248,6 +256,13 @@ namespace Core
                 if (!_initialized)
                 {
                     Log.Default.Msg(Log.Level.Error, "Initialization required prior to execution");
+                    return null;
+                }
+
+                if (data_uid == UniqueID.InvalidInt)
+                {
+                    // Silently continue
+                    Log.Default.Msg(Log.Level.Debug, "Requested data for invalid UID.");
                     return null;
                 }
 

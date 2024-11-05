@@ -90,7 +90,6 @@ namespace Visualizations
         public override void AttachMenu(MenubarWindow menubar)
         {
             base.AttachMenu(menubar);
-
         }
 
         #endregion

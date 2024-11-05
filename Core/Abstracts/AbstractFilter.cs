@@ -491,6 +491,34 @@ namespace Core
                     _disable_content_checkboxes(data_uid);
 
                     /// Note: Newly selected content is not 'dirty', so no need to set 'Apply' button dirty...
+                    bool dirty = !(_reserved.Count == 0);
+                    if (_reserved.Count > 0)
+                    {
+                        dirty = (_applied.Count != _reserved.Count);
+                        foreach (var key_applied in _applied.Keys.ToList())
+                        {
+                            if (!_reserved.ContainsKey(key_applied))
+                            {
+                                dirty = true;
+                            }
+                            else if (_reserved[key_applied].Item1 != _applied[key_applied].Item1)
+                            {
+                                dirty = true;
+                            }
+                        }
+                        foreach (var key_reserved in _reserved.Keys.ToList())
+                        {
+                            if (!_applied.ContainsKey(key_reserved))
+                            {
+                                dirty = true;
+                            }
+                            else if (_reserved[key_reserved].Item1 != _applied[key_reserved].Item1)
+                            {
+                                dirty = true;
+                            }
+                        }
+                    }
+                    _set_dirty(dirty);
                 }
                 else
                 {

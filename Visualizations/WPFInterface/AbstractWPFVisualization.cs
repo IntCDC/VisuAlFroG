@@ -144,13 +144,10 @@ namespace Visualizations
             /// <param name="e"></param>
             protected override void event_series_selection_changed(object sender, EventArgs e)
             {
-                // TODO Series selection is currently not used/supported for WPF content
-                /// Add branch meta data storing information about series selection = all entires óf a branch are selected
+                // TODO Series selection in WPF content is currently not used
+                /// Add branch meta data storing information about series selection = all entires of a branch are selected
                 var series_indexes = new List<int>();
                 _UpdateSeriesSelection(_UID, series_indexes);
-
-
-
             }
 
             #endregion

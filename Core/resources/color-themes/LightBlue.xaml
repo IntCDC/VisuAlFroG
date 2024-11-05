@@ -13,7 +13,7 @@
 	
 	<SolidColorBrush x:Key="Brush_LogMessageInfo" Color="Black"/>
 	<SolidColorBrush x:Key="Brush_LogMessageDebug" Color="Gray"/>
-	<SolidColorBrush x:Key="Brush_LogMessageWarn" Color="Yellow"/>
+	<SolidColorBrush x:Key="Brush_LogMessageWarn" Color="Goldenrod"/>
 	<SolidColorBrush x:Key="Brush_LogMessageError" Color="IndianRed"/>
 	
 	<SolidColorBrush x:Key="Brush_GridSplitterBackground" Color="LightSteelBlue"/>

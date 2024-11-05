@@ -6,6 +6,7 @@ using Core.Utilities;
 using Core.Abstracts;
 using System;
 using System.Reflection;
+using System.Runtime.Remoting.Contexts;
 
 
 
@@ -40,6 +41,7 @@ namespace Core
             public Filter_ValuesAxisMapping()
             {
                 _Name = "Map values of certain dimension to axes";
+                _UniqueContent = true;
             }
 
             #endregion
@@ -58,7 +60,7 @@ namespace Core
                 if (in_data == null)
                 {
                     var info = new TextBlock();
-                    info.Text = "Select content(s) to get filter options";
+                    info.Text = "Select content to get filter options";
                     info.SetResourceReference(TextBlock.ForegroundProperty, "Brush_LogMessageWarn");
                     info.FontWeight = FontWeights.Bold;
                     info.Margin = new Thickness(_Margin);
@@ -83,6 +85,57 @@ namespace Core
                     // Content: Z-Axis (3D)
                     // Value Dimension: [] Index | [] 1 | [] 2 | [X] 3
 
+                    /// Als Tablelle mit Trennstrichen?
+                    /// 
+
+                    RadioButton[,] radio_buttons = new RadioButton[3, 3];
+
+                    _ui_element.ShowGridLines = true;
+                    for (int i = 0; i < 4; i++)
+                    {
+                        var col = new ColumnDefinition();
+                        col.Width = new GridLength(0.0, GridUnitType.Auto);
+                        _ui_element.ColumnDefinitions.Add(col);
+                    }
+                    for (int i = 0; i < 3; i++)
+                    {
+                        var row = new RowDefinition();
+                        row.Height = new GridLength(0.0, GridUnitType.Auto);
+                        _ui_element.RowDefinitions.Add(row);
+                    }
+
+                    var dim_text_x = new TextBlock();
+                    dim_text_x.Text = " X Dimension ";
+                    Grid.SetColumn(dim_text_x, 0);
+                    Grid.SetRow(dim_text_x, 0);
+                    _ui_element.Children.Add(dim_text_x);
+
+                    var dim_text_y = new TextBlock();
+                    dim_text_y.Text = " Y Dimension ";
+                    Grid.SetColumn(dim_text_y, 0);
+                    Grid.SetRow(dim_text_y, 1);
+                    _ui_element.Children.Add(dim_text_y);
+                    var dim_text_z = new TextBlock();
+
+                    dim_text_z.Text = " Z Dimension ";
+                    Grid.SetColumn(dim_text_z, 0);
+                    Grid.SetRow(dim_text_z, 2);
+                    _ui_element.Children.Add(dim_text_z);
+
+
+                    for (int i = 0; i < 3; i++)
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            radio_buttons[i, j] = new RadioButton();
+                            radio_buttons[i, j].Content = " [" + i.ToString() + "," + j.ToString() + "] ";
+                            radio_buttons[i, j].SetResourceReference(RadioButton.ForegroundProperty, "Brush_Foreground");
+                            Grid.SetRow(radio_buttons[i, j], i);
+                            Grid.SetColumn(radio_buttons[i, j], j+1);
+                            _ui_element.Children.Add(radio_buttons[i, j]);
+                        }
+                    }
+
                 }
                 return _ui_element;
             }
@@ -90,7 +143,7 @@ namespace Core
             protected override void apply_filter(GenericDataStructure out_data)
             {
                 /// TODO
-          
+
 
 
 

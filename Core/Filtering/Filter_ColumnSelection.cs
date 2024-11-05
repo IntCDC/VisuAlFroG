@@ -105,19 +105,19 @@ namespace Core
                     }
 
                     var top_row = new RowDefinition();
-                    top_row.Height = new GridLength(1.0, GridUnitType.Auto);
+                    top_row.Height = new GridLength(0.0, GridUnitType.Auto);
                     _ui_element.RowDefinitions.Add(top_row);
                     Grid.SetRow(info, 0);
                     _ui_element.Children.Add(info);
 
                     var button_row = new RowDefinition();
-                    button_row.Height = new GridLength(1.0, GridUnitType.Auto);
+                    button_row.Height = new GridLength(0.0, GridUnitType.Auto);
                     _ui_element.RowDefinitions.Add(button_row);
                     Grid.SetRow(deselect_button, 1);
                     _ui_element.Children.Add(deselect_button);
 
                     var list_row = new RowDefinition();
-                    list_row.Height = new GridLength(1.0, GridUnitType.Auto);
+                    list_row.Height = new GridLength(0.0, GridUnitType.Auto);
                     _ui_element.RowDefinitions.Add(list_row);
                     Grid.SetRow(_checkable_content_list, 2);
                     _ui_element.Children.Add(_checkable_content_list);

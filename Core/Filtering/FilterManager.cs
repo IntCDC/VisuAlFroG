@@ -3,6 +3,7 @@ using System.Windows;
 using System.Collections.Generic;
 using Core.Abstracts;
 using Core.GUI;
+using System.Drawing;
 using Core.Utilities;
 using Core.Filter;
 using Core.Data;
@@ -12,6 +13,9 @@ using System.Windows.Controls;
 using SciChart.Charting.Model.Filters;
 using System.Xml.Linq;
 using System.Runtime.InteropServices;
+using System.Windows.Controls.Primitives;
+using SciChart.Charting2D.Interop;
+using static System.Net.Mime.MediaTypeNames;
 
 
 
@@ -81,6 +85,7 @@ namespace Core
                 _add_filter_list = new ComboBox();
                 _list_scrolling = new ScrollViewer();
                 _filter_list = new StackPanel();
+
 
                 var list = new List<FilterTypeMetadata>();
                 foreach (var filter_data in _entries)
@@ -335,16 +340,11 @@ namespace Core
                 _list_scrolling.SetResourceReference(ScrollViewer.BackgroundProperty, "Brush_Background");
                 _list_scrolling.SetResourceReference(ScrollViewer.ForegroundProperty, "Brush_Foreground");
                 _list_scrolling.PreviewMouseWheel += event_scrollviewer_mousewheel;
-
                 _list_scrolling.Content = _filter_list;
 
-                var note = new TextBlock();
-                note.Text = "NOTE: Filters are applied sequentially from top to bottom. " +
-                            "On filter change, below filters with same checked content are automatically re-applied.";
-                note.TextWrapping = TextWrapping.Wrap;
-                note.SetResourceReference(TextBlock.BackgroundProperty, "Brush_Background");
-                note.SetResourceReference(TextBlock.ForegroundProperty, "Brush_Foreground");
-                note.Margin = new Thickness(_Margin);
+                var help = new HelpText();
+                help._HelpText = "NOTE: Filters are applied sequentially from top to bottom. \n" +
+                    "On filter change, below filters with same checked content are automatically re-applied";
 
                 var hrule = new Border();
                 hrule.SetResourceReference(Border.BackgroundProperty, "Brush_Background");
@@ -371,13 +371,13 @@ namespace Core
                 Grid.SetColumn(_add_filter_list, 1);
                 add_grid.Children.Add(_add_filter_list);
 
-                var row_index = -1;
+                var column_help = new ColumnDefinition();
+                column_help.Width = new GridLength(0.0, GridUnitType.Auto);
+                add_grid.ColumnDefinitions.Add(column_help);
+                Grid.SetColumn(help, 2);
+                add_grid.Children.Add(help);
 
-                var row_note = new RowDefinition();
-                row_note.Height = new GridLength(1.0, GridUnitType.Star);
-                caption_grid.RowDefinitions.Add(row_note);
-                Grid.SetRow(note, ++row_index);
-                caption_grid.Children.Add(note);
+                var row_index = -1;
 
                 var apply_row = new RowDefinition();
                 apply_row.Height = new GridLength(1.0, GridUnitType.Star);
