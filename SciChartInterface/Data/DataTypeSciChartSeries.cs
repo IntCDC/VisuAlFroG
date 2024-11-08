@@ -74,11 +74,13 @@ namespace SciChartInterface
 
                         if (dimension == 1)
                         {
+                            // Default values, if changed, also change default mapping in respective filters!
                             x = (double)entry._Metadata._Index;
                             y = (double)entry._Values[value_index];
                         }
                         else if (dimension == 2)
                         {
+                            // Default values, if changed, also change default mapping in respective filters!
                             x = (double)entry._Values[value_index];
                             y = (double)entry._Values[value_index + 1];
 

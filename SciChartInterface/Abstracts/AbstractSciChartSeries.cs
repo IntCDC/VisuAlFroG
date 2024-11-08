@@ -192,6 +192,10 @@ namespace SciChartInterface
                     return false;
                 }
 
+                foreach (var data_series in _Content.RenderableSeries)
+                {
+                    data_series.DataSeries.Clear();
+                }
                 data_parent.RenderableSeries.Clear();
 
                 if (this._RequestDataCallback == null)
@@ -204,11 +208,15 @@ namespace SciChartInterface
                     var data = (List<DataType>)_RequestDataCallback(_DataUID);
                     if (data != null)
                     {
+                        double color_idx = 0.0;
                         foreach (var data_series in data)
                         {
+                            double palette_index = color_idx / (double)data.Count;
                             data_series.AntiAliasing = true;
-                            data_series.Style = get_series_style();
+                            data_series.Style = get_series_style(palette_index);
                             data_parent.RenderableSeries.Add(data_series);
+
+                            color_idx++;
                         }
                         return true;
                     }
@@ -226,7 +234,7 @@ namespace SciChartInterface
             /* ------------------------------------------------------------------*/
             #region private functions
 
-            private System.Windows.Style get_series_style()
+            private System.Windows.Style get_series_style(double palette_index)
             {
                 const int stroke_thickness = 2;
                 const double marker_size = 8.0;
@@ -234,7 +242,7 @@ namespace SciChartInterface
                 var series_style = new System.Windows.Style();
                 series_style.TargetType = typeof(DataType);
 
-                var random_color = ColorTheme.RandomColor();
+                var random_color = ColorTheme.PaletteColor(palette_index); // ColorTheme.RandomColor();
 
                 if (typeof(DataType) == typeof(FastColumnRenderableSeries))
                 {

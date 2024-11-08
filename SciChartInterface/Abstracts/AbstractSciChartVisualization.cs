@@ -9,6 +9,7 @@ using Core.Data;
 using System.Windows.Media;
 using System.Globalization;
 using SciChart.Charting.ChartModifiers;
+using System.Runtime.Remoting.Contexts;
 
 
 

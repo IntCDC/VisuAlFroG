@@ -39,7 +39,7 @@ namespace Core
             public Filter_RowSelection()
             {
                 _Name = "Row Selection";
-                _Description = "Select Data Series (Rows)";
+                _Description = "Select Data Series (Rows):";
                 _UniqueContent = true;
             }
 
@@ -61,18 +61,17 @@ namespace Core
                     var info = new TextBlock();
                     info.Text = "Select content to get filter options";
                     info.SetResourceReference(TextBlock.ForegroundProperty, "Brush_LogMessageWarn");
-                    info.FontWeight = FontWeights.Bold;
                     info.Margin = new Thickness(_Margin);
 
                     _ui_element.Children.Add(info);
                 }
                 else
                 {
-                    if (_checkable_content_list == null)
+                    if (_checkable_rows_list == null)
                     {
-                        _checkable_content_list = new StackPanel();
+                        _checkable_rows_list = new StackPanel();
                     }
-                    _checkable_content_list.Children.Clear();
+                    _checkable_rows_list.Children.Clear();
 
                     var info = new TextBlock();
                     info.Text = _Description;
@@ -87,7 +86,7 @@ namespace Core
                     deselect_button.Width = Miscellaneous.MeasureButtonString(deselect_button).Width + (2 * _Margin);
                     _deselect = true;
 
-                    _checkable_content_list.Children.Clear();
+                    _checkable_rows_list.Children.Clear();
                     foreach (var row in in_data._Branches)
                     {
                         var check = new CheckBox();
@@ -96,7 +95,7 @@ namespace Core
                         check.Content = row._Label;
                         check.IsChecked = true;
                         check.SetResourceReference(CheckBox.ForegroundProperty, "Brush_Foreground");
-                        _checkable_content_list.Children.Add(check);
+                        _checkable_rows_list.Children.Add(check);
                     }
 
                     var top_row = new RowDefinition();
@@ -114,8 +113,8 @@ namespace Core
                     var list_row = new RowDefinition();
                     list_row.Height = new GridLength(1.0, GridUnitType.Auto);
                     _ui_element.RowDefinitions.Add(list_row);
-                    Grid.SetRow(_checkable_content_list, 2);
-                    _ui_element.Children.Add(_checkable_content_list);
+                    Grid.SetRow(_checkable_rows_list, 2);
+                    _ui_element.Children.Add(_checkable_rows_list);
 
                 }
                 return _ui_element;
@@ -124,7 +123,7 @@ namespace Core
             protected override void apply_filter(GenericDataStructure out_data)
             {
                 // Change out_data accordingly...
-                foreach (var child in _checkable_content_list.Children)
+                foreach (var child in _checkable_rows_list.Children)
                 {
                     var checkable_row = child as CheckBox;
                     if (checkable_row == null)
@@ -171,7 +170,7 @@ namespace Core
                     Log.Default.Msg(Log.Level.Error, "Unexpected sender");
                 }
 
-                foreach (var child in _checkable_content_list.Children)
+                foreach (var child in _checkable_rows_list.Children)
                 {
                     var checkable_row = child as CheckBox;
                     if (checkable_row == null)
@@ -203,7 +202,7 @@ namespace Core
             #region private variables
 
             private Grid _ui_element = null;
-            private StackPanel _checkable_content_list = null;
+            private StackPanel _checkable_rows_list = null;
             private bool _deselect = true;
 
             #endregion

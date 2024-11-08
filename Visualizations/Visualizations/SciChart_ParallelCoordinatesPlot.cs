@@ -96,8 +96,7 @@ namespace Visualizations
 
             var setter_stroke = new Setter();
             setter_stroke.Property = BaseRenderableSeries.StrokeProperty;
-            var random_color = ColorTheme.RandomColor();
-            var theme_color = new DynamicResourceExtension("Color_StrokeDefault");
+            var theme_color = ColorTheme.SinglePaletteColor(); // new DynamicResourceExtension("Color_StrokeDefault"); ColorTheme.RandomColor();
             setter_stroke.Value = theme_color; // new_color;
             series_style.Setters.Add(setter_stroke);
 

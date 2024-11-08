@@ -75,6 +75,52 @@ namespace Core
                 return Color.FromArgb(alpha, (byte)r_byte, (byte)g_byte, (byte)b_byte);
             }
 
+            public static Color SinglePaletteColor()
+            {
+                byte alpha = 0xAF;
+                var r = 34;
+                var g = 168;
+                var b = 132;
+                return Color.FromArgb(alpha, (byte)r, (byte)g, (byte)b);
+            }
+                public static Color PaletteColor(double palette_index)
+            {
+                if ((palette_index < 0.0) || (palette_index > 1.0))
+                {
+                    Log.Default.Msg(Log.Level.Error, "Palette index out of range");
+                    return Colors.Transparent;
+                }
+
+                byte alpha = 0xAF;
+                int[,] palette_colors = new int[16, 3] {
+                    { 253, 231, 37 },
+                    { 210, 226, 27 },
+                    { 165, 219, 54 },
+                    { 122, 209, 81 },
+                    { 84, 197, 104 },
+                    { 53, 183, 121 },
+                    { 34, 168, 132 },
+                    { 31, 152, 139 },
+                    { 35, 136, 142 },
+                    { 42, 120, 142 },
+                    { 49, 104, 142 },
+                    { 57, 86, 140 },
+                    { 65, 68, 135 },
+                    { 71, 47, 125 },
+                    { 72, 26, 108 },
+                    { 68, 1, 84 }};
+
+                double max_color_index = 12.0;
+                int color_index_floor = (int)Math.Floor(palette_index * max_color_index);
+                double color_fraction = (palette_index * max_color_index) - (double)color_index_floor;
+
+                double r = palette_colors[color_index_floor, 0] + (palette_colors[color_index_floor + 1, 0] - palette_colors[color_index_floor, 0]) * color_fraction;
+                double g = palette_colors[color_index_floor, 1] + (palette_colors[color_index_floor + 1, 1] - palette_colors[color_index_floor, 1]) * color_fraction;
+                double b = palette_colors[color_index_floor, 2] + (palette_colors[color_index_floor + 1, 2] - palette_colors[color_index_floor, 2]) * color_fraction;
+
+                return Color.FromArgb(alpha, (byte)Math.Round(r), (byte)Math.Round(g), (byte)Math.Round(b));
+            }
+
             //  HYPER LINK ----------------------
 
             public static Style HyperlinkStyle()

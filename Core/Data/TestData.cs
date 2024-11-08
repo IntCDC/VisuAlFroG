@@ -38,15 +38,11 @@ namespace Core
                         data_leaf.AddValue("column_" + (j - 1).ToString());
                     }
                     data_branch.AddEntry(data_leaf);
-
-
                 }
                 sample_data.AddBranch(data_branch);
 
                 for (int i = 0; i < 7; i++)
                 {
-
-
                     data_branch = new GenericDataStructure();
 
                     var data_leaf = new GenericDataEntry();

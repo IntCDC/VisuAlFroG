@@ -28,9 +28,9 @@ namespace Core
 
             public HelpText()
             {
-                this.Text = " ? ";
+                this.Text = "[?] ";
                 this.FontSize = 16;
-                this.FontWeight = FontWeights.Bold;
+                //this.FontWeight = FontWeights.Bold;
                 this.VerticalAlignment = VerticalAlignment.Center;
                 this.HorizontalAlignment = HorizontalAlignment.Center;
                 this.SetResourceReference(TextBlock.ForegroundProperty, "Brush_Foreground");

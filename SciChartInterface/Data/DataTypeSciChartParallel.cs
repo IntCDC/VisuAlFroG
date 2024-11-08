@@ -109,6 +109,7 @@ namespace SciChartInterface
                 {
                     // Always take first values of first dimension as default
                     // -> Adjustable via filter: Select value dimension from multi-dimensional data
+                    // If changed, also change default mapping in respective filters!
                     int value_index = 0; // (int)branch.GetDimension() - 1;
 
                     // For each branch add all values to same series

@@ -9,6 +9,7 @@ using System;
 using SciChartInterface.Data;
 using Core.GUI;
 using Core.Data;
+using System.Runtime.Remoting.Contexts;
 
 
 
@@ -149,7 +150,11 @@ namespace SciChartInterface
 
                 var parent = data_parent as SciChartParallelCoordinateSurface;
                 parent.ParallelCoordinateDataSource = null;
-                parent.UpdateLayout();
+                foreach (var data_series in _Content.RenderableSeries)
+                {
+                    data_series.DataSeries.Clear();
+                }
+                data_parent.RenderableSeries.Clear();
 
                 try
                 {
@@ -158,7 +163,6 @@ namespace SciChartInterface
                     {
                         parent.ParallelCoordinateDataSource = data;
                         parent.ParallelCoordinateDataSource.Invalidate();
-                        parent.UpdateLayout();
 
                         return true;
                     }
