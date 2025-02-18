@@ -49,7 +49,7 @@ namespace Visualizations
             register_entry(typeof(SciChart_BarPlot));
             register_entry(typeof(SciChart_ParallelCoordinatesPlot));
             /// >>> Register your new content/visualization here:        
-            /// register_content(typeof(CustomWPFVisualization));
+            /// register_entry(typeof(CustomWPFVisualization));
 
 
             _timer.Stop();

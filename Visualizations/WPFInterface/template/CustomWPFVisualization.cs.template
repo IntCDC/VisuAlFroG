@@ -32,8 +32,10 @@ namespace Visualizations
         /* ------------------------------------------------------------------*/
         #region public properties
 
-        public override string _TypeName { get { return "CustomWPFVisualization"; } }
-        public override bool _MultipleInstances { get { return true; } }
+
+        public override string _Name { get { return "Custom WPF Visualization"; } }
+        public override bool _MultipleInstances { get { return false; } }
+
 
         #endregion
 
@@ -55,7 +57,7 @@ namespace Visualizations
             _Content.Height = 0.0; // = full height of parent
             _Content.Children.Clear();
 
-            if (apply_data(out GenericDataStructure data))
+            if (get_data(out GenericDataStructure data))
             {
                 if (true) // data.GetDimension() <= 1)
                 {

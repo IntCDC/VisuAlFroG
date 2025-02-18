@@ -69,7 +69,7 @@ namespace Core
                 register_entry(typeof(Filter_ColumnSelection));
                 register_entry(typeof(Filter_ValuesAxisMapping));
                 /// >>> Register your new filter type here:
-                /// register_content(typeof(CustomFilter));
+                /// register_entry(typeof(Filter_Custom));
 
 
                 _add_filter_list = new ComboBox();
