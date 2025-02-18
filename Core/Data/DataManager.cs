@@ -57,6 +57,7 @@ namespace Core
                     (PropertyChangedEventHandler)event_data_changed,
                     (PropertyChangedEventHandler)_event_metadata_changed,
                     ((_outputdata_callback != null) ? ((GetSendOutputCallback_Delegate)callback_send_output) : (null)));
+
                 _data_library.Add(UniqueID.GenerateInt(), new DataDescription(((bool new_data) => { }), variety));
                 _original_data_hash = _data_library.Last().Key;
 
@@ -170,6 +171,7 @@ namespace Core
                         (PropertyChangedEventHandler)event_data_changed,
                         (PropertyChangedEventHandler)_event_metadata_changed,
                         ((_outputdata_callback != null) ? ((GetSendOutputCallback_Delegate)callback_send_output) : (null)));
+
                     if (variety == null)
                     {
                         Log.Default.Msg(Log.Level.Error, "Expected data type of IDataVariety but received: " + data_type.FullName);
@@ -351,7 +353,6 @@ namespace Core
                         var out_data_selected = new GenericDataStructure();
 
                         /// TODO
-
 
                         out_data = out_data_selected;
                     }

@@ -100,7 +100,7 @@ namespace Core
 
                 // Default usage hint
                 var info_text = new TextBlock();
-                info_text.Text = "START: Click the 'Content' menu for all relevant options.";
+                info_text.Text = "  START: Click the 'Content' menu for all relevant options.";
                 info_text.SetResourceReference(TextBlock.ForegroundProperty, "Brush_TextDisabled");
                 _content_child.Children.Add(info_text);
 

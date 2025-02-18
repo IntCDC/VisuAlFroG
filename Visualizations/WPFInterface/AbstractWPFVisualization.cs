@@ -102,7 +102,7 @@ namespace Visualizations
 
             public override void UpdateEntrySelection(IMetaData updated_meta_data)
             {
-                if (apply_data(out GenericDataStructure data))
+                if (get_data(out GenericDataStructure data))
                 {
                     var entry = data.GetEntryAtIndex(updated_meta_data._Index);
                     if (entry != null)
@@ -118,7 +118,7 @@ namespace Visualizations
 
             public override void UpdateSeriesSelection(List<int> updated_series_indexes)
             {
-                if (apply_data(out GenericDataStructure data))
+                if (get_data(out GenericDataStructure data))
                 {
                     for (int i = 0; i < data._Branches.Count; i++)
                     {

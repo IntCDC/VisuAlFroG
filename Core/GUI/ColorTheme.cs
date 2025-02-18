@@ -83,7 +83,8 @@ namespace Core
                 var b = 132;
                 return Color.FromArgb(alpha, (byte)r, (byte)g, (byte)b);
             }
-                public static Color PaletteColor(double palette_index)
+
+            public static Color PaletteColorViridis(double palette_index)
             {
                 if ((palette_index < 0.0) || (palette_index > 1.0))
                 {

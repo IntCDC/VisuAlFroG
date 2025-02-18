@@ -46,7 +46,7 @@ namespace Visualizations
             _Content.SetResourceReference(StackPanel.BackgroundProperty, "Brush_Background");
             _Content.PreviewMouseWheel += event_scrollviewer_mousewheel;
 
-            if (apply_data(out GenericDataStructure data))
+            if (get_data(out GenericDataStructure data))
             {
                 create_table(data);
 
@@ -78,7 +78,7 @@ namespace Visualizations
             }
             else
             {
-                if (!apply_data(out GenericDataStructure data))
+                if (!get_data(out GenericDataStructure data))
                 {
                     Log.Default.Msg(Log.Level.Error, "Missing data");
                     return;

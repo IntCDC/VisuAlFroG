@@ -242,7 +242,7 @@ namespace SciChartInterface
                 var series_style = new System.Windows.Style();
                 series_style.TargetType = typeof(DataType);
 
-                var random_color = ColorTheme.PaletteColor(palette_index); // ColorTheme.RandomColor();
+                var random_color = ColorTheme.PaletteColorViridis(palette_index); // ColorTheme.RandomColor();
 
                 if (typeof(DataType) == typeof(FastColumnRenderableSeries))
                 {

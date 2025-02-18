@@ -9,6 +9,8 @@ using Core.Data;
 using Core.Filter;
 using System.Windows.Data;
 using System.ComponentModel;
+using Visualizations.WebAPI;
+using Visualizations.PythonInterface;
 
 
 
@@ -67,9 +69,12 @@ namespace Visualizations
                 var new_service = (AbstractService)Activator.CreateInstance(service_type);
                 _interfacemanager.AddService(new_service);
             }
+
             /// DEBUG
-            //_servicemanager.AddService(new PythonInterfaceService());
-            //_servicemanager.AddService(new WebAPIService());
+            _interfacemanager.AddService(new PythonInterfaceService());
+            _interfacemanager.AddService(new WebAPIService());
+            /// DEBUG
+            
             initialized &= _interfacemanager.Initialize();
 
 

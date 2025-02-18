@@ -136,7 +136,7 @@ namespace SciChartInterface
 
             protected abstract bool apply_data(SciChartSurface data_parent);
 
-            protected sealed override bool apply_data<DataParentType>(out DataParentType data_parent)
+            protected sealed override bool get_data<DataParentType>(out DataParentType data_parent)
             {
                 throw new InvalidOperationException("Call apply_data(SciChartSurface data_parent) instead.");
             }

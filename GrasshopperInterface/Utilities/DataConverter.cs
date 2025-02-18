@@ -84,22 +84,21 @@ namespace GrasshopperInterface
             {
                 var ghstructure_data = new GH_Structure<IGH_Goo>();
 
-                if (input_data._Branches.Count > 0)
-                {
-                    /// TODO Support branches -> Is this supported by GH_Structure nevertheless?
-                    Log.Default.Msg(Log.Level.Error, "Converting sub branches is currently not supported... ");
-                    return ghstructure_data;
-                }
-
                 int branch_index = 0;
-                foreach (var input_entry in input_data._Entries)
-                {
-                    GH_Path path = new GH_Path(branch_index);
-                    foreach (var generic_value in input_entry._Values)
+                foreach (var input_branch in input_data._Branches) {
+
+                    int entry_index = 0;
+                    foreach (var input_entry in input_branch._Entries)
                     {
-                        ghstructure_data.Append(new GH_String(generic_value.ToString()), path);
+                        GH_Path path = new GH_Path(branch_index, entry_index);
+                        foreach (var generic_value in input_entry._Values)
+                        {
+                            ghstructure_data.Append(new GH_String(generic_value.ToString()), path);
+                        }
+                        ghstructure_data.EnsurePath(path);
+
+                        entry_index++;
                     }
-                    ghstructure_data.EnsurePath(path);
                     branch_index++;
                 }
 

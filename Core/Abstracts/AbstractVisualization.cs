@@ -227,6 +227,7 @@ namespace Core
                         MenuItem menu_item = menu_control as MenuItem;
                         if (menu_item != null)
                         {
+                            /* Data is not modified via menu...
                             // Add additional callback for updating the visualization after the data has been modified via the DATA menu
                             menu_item.Click += (object sender, RoutedEventArgs e) =>
                             {
@@ -235,8 +236,10 @@ namespace Core
                                 {
                                     return;
                                 }
+                                ///XXX Why clears SciChart canvas: 
                                 Update(true);
                             };
+                            */
                             menubar.AddMenu(MenubarWindow.PredefinedMenuOption.DATA, menu_item);
                         }
                     }
@@ -262,7 +265,7 @@ namespace Core
             /// </summary>
             /// <param name="data_parent"></param>
             /// <returns></returns>
-            protected virtual bool apply_data<DataParentType>(out DataParentType data_parent)
+            protected virtual bool get_data<DataParentType>(out DataParentType data_parent)
             {
                 data_parent = default(DataParentType);
 
