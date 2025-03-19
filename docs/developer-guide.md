@@ -17,10 +17,10 @@
 
 
 <!-- ###################################################################### -->
-## Rhino 8
+## Switching between Rhino 7 and 8
 
-- In Visual Studio open the **NuGet package manager** of the *VisuAlFroG* solution and update the *Grasshopper* package to version 8.
-- Open the project file `..\GrasshopperInterface\GrasshopperInterface.csproj` in a text editor and change the path to the Rhino executable file (*Rhino.exe*) in the tag `StartProgram` accordingly.
+- In Visual Studio open the **NuGet package manager** of the *VisuAlFroG* solution and update the *Grasshopper* package to **the same or smaller** as the Rhino desktop application (check the version given in *Help* -> *About Rhinoceros...*).
+- Open the project file `..\GrasshopperInterface\GrasshopperInterface.csproj` in a text editor and change the path to the right Rhino executable file (*Rhino.exe*, default path is `C:\Program Files\Rhino <X>\System\Rhino.exe`) in the tag `StartProgram` accordingly.
 - Rebuild the complete *VisuAlFroG* solution
 
 

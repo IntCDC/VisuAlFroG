@@ -25,18 +25,18 @@
 ### Prerequisites
 
 The following software is required to be installed beforehand:
-- [Microsoft *Visual Studio* 2022](https://visualstudio.microsoft.com/vs/)  |  VisualStudio.17.Release/17.9.0+34607.119 Enterprise, Microsoft .NET Framework Version 4.8.09037)
-- [Rhinoceros 3D](https://www.rhino3d.com/)(includes [Grasshopper](https://www.grasshopper3d.com/))  |  Version 7 SR37 7.37.24107.15001, 2024-04-16 Educational Lab License )
-- [SciChart](https://www.scichart.com/)  |  Version 8.3.0.28019
+- [Microsoft *Visual Studio* 2022](https://visualstudio.microsoft.com/vs/)  |  VisualStudio.17.Release/17.13.2 Enterprise, Microsoft .NET Framework Version 4.8.09037
+- [Rhinoceros 3D](https://www.rhino3d.com/)(includes [Grasshopper](https://www.grasshopper3d.com/))  |  Version 8.17.25066.7001, Educational Lab License
+- [SciChart](https://www.scichart.com/)  |  Version 8.7.0.28455
 - [Python](https://www.python.org/downloads/)  |  Version 3.11.5 (3.9 and above)
-- [Bokeh](https://bokeh.org/)  |  Version 3.4.0, see [First Steps](https://docs.bokeh.org/en/latest/docs/first_steps.html#first-steps))
+- [Bokeh](https://bokeh.org/)  |  Version 3.4.0, see [First Steps](https://docs.bokeh.org/en/latest/docs/first_steps.html#first-steps)
 
 (The appended version numbers show the last tested versions)
 
 > **Note**
-> - Upon account creation, the [full version 7 of Rhinoceros 3D](https://www.rhino3d.com/download/archive/rhino/7/latest) can be used for free for 90 days.
->    - Rhino 8 is already supported but requires re-building VisuAlFrog, see [Developer Guid](developer-guide.md)
-> - Upon account creation, the free [trial version of SciChart](https://www.scichart.com/getting-started/scichart-wpf/) can be used for 30 days
+> - Upon account creation, the [full version 8 of Rhinoceros 3D](https://www.rhino3d.com/download/archive/rhino/8/latest) can be used for free for 90 days.
+>    - In the [Developer Guide](developer-guide.md) there es a desciption on how to switch between different Rhino versions.
+> - Upon account creation, the free [trial version of SciChart](https://www.scichart.com/getting-started/scichart-wpf/) can be used for 30 days.
 
 > **Warn**
 > - The .NET SDK version of Rhino and Grasshopper should not be larger than the version of the desktop application.

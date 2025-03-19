@@ -71,8 +71,8 @@ namespace Visualizations
             }
 
             /// DEBUG
-            _interfacemanager.AddService(new PythonInterfaceService());
-            _interfacemanager.AddService(new WebAPIService());
+            //_interfacemanager.AddService(new PythonInterfaceService());
+            //_interfacemanager.AddService(new WebAPIService());
             /// DEBUG
             
             initialized &= _interfacemanager.Initialize();
