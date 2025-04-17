@@ -67,17 +67,17 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="SciChart.Charting, Version=8.7.0.28455, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
-      <HintPath>..\packages\SciChart.8.7.0.28455\lib\net462\SciChart.Charting.dll</HintPath>
+    <Reference Include="SciChart.Charting, Version=8.7.1.28499, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>..\packages\SciChart.8.7.1.28499\lib\net462\SciChart.Charting.dll</HintPath>
     </Reference>
-    <Reference Include="SciChart.Core, Version=8.7.0.28455, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
-      <HintPath>..\packages\SciChart.8.7.0.28455\lib\net462\SciChart.Core.dll</HintPath>
+    <Reference Include="SciChart.Core, Version=8.7.1.28499, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>..\packages\SciChart.8.7.1.28499\lib\net462\SciChart.Core.dll</HintPath>
     </Reference>
-    <Reference Include="SciChart.Data, Version=8.7.0.28455, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
-      <HintPath>..\packages\SciChart.8.7.0.28455\lib\net462\SciChart.Data.dll</HintPath>
+    <Reference Include="SciChart.Data, Version=8.7.1.28499, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>..\packages\SciChart.8.7.1.28499\lib\net462\SciChart.Data.dll</HintPath>
     </Reference>
-    <Reference Include="SciChart.Drawing, Version=8.7.0.28455, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
-      <HintPath>..\packages\SciChart.8.7.0.28455\lib\net462\SciChart.Drawing.dll</HintPath>
+    <Reference Include="SciChart.Drawing, Version=8.7.1.28499, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>..\packages\SciChart.8.7.1.28499\lib\net462\SciChart.Drawing.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
