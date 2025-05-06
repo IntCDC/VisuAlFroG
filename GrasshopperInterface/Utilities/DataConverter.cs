@@ -6,6 +6,7 @@ using Grasshopper.Kernel.Types;
 using System.Globalization;
 using Grasshopper.Kernel.Data;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 
 
@@ -27,9 +28,9 @@ namespace GrasshopperInterface
             /// </summary>
             /// <param name="input_data">The input data.</param>
             /// <returns>The converted output data.</returns>
-            public static GenericDataStructure ConvertFromGHStructure(GH_Structure<IGH_Goo> input_data)
+            public static GenericDataStructure ConvertFromGHStructure(GH_Structure<IGH_Goo> input_data, GenericDataStructure generic_data)
             {
-                var generic_data = new GenericDataStructure();
+                //var generic_data = new GenericDataStructure();
 
                 foreach (var input_entries in input_data.Branches)
                 {
@@ -104,6 +105,92 @@ namespace GrasshopperInterface
 
                 return ghstructure_data;
             }
+
+            public static GenericDataStructure ConvertJsonSamplesToGenericData(List<Dictionary<string, object>> jsonSamples, GenericDataStructure generic_data)
+            {
+                char[] separators = new char[] { ' ', ',', '|', ';' };  // align with GH delimiter logic
+
+                foreach (var dict in jsonSamples)
+                {
+                    var output_branch = new GenericDataStructure();
+
+                    foreach (var topLevelKvp in dict)
+                    {
+                        string key = topLevelKvp.Key;
+                        object value = topLevelKvp.Value;
+
+                        if (value is Newtonsoft.Json.Linq.JObject nestedObject)
+                        {
+                            foreach (var nested in nestedObject)
+                            {
+                                var output_entry = new GenericDataEntry();
+                                string value_string = nested.Value.ToString();
+                                string[] subs = value_string.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+
+                                foreach (var sub in subs)
+                                {
+                                    if (TryConvertToDouble(sub, out double numericValue))
+                                    {
+                                        output_entry.AddValue(numericValue);
+                                    }
+                                    else
+                                    {
+                                        output_entry.AddValue(sub);  // Keep string if not convertible
+                                    }
+                                }
+
+                                if (subs.Length == 0)
+                                {
+                                    output_entry.AddValue(value_string);  // fallback for empty strings
+                                }
+
+                                output_branch.AddEntry(output_entry);
+                            }
+                        }
+                        else
+                        {
+                            var output_entry = new GenericDataEntry();
+                            string value_string = value.ToString();
+                            string[] subs = value_string.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+
+                            foreach (var sub in subs)
+                            {
+                                if (TryConvertToDouble(sub, out double numericValue))
+                                {
+                                    output_entry.AddValue(numericValue);
+                                }
+                                else
+                                {
+                                    output_entry.AddValue(sub);
+                                }
+                            }
+
+                            if (subs.Length == 0)
+                            {
+                                output_entry.AddValue(value_string);
+                            }
+
+                            output_branch.AddEntry(output_entry);
+                        }
+                    }
+
+                    generic_data.AddBranch(output_branch);
+                }
+
+                return generic_data;
+            }
+
+            private static bool TryConvertToDouble(object input, out double result)
+            {
+                if (input is double d)
+                {
+                    result = d;
+                    return true;
+                }
+
+                return double.TryParse(input?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+            }
+
 
             #endregion
         }

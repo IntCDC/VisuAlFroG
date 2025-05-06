@@ -35,11 +35,12 @@ namespace GrasshopperInterface
             /// _runtimemessages.Add(Log.Level.Warn, "[ComponentAttributes] ...");
 
             _linker_list = new List<AbstractParamLinker>() {
+                new ParamLinker<GH_NumberSlider>(AbstractParamLinker.ParamType.IN, "JsonLog", runtimemessages),
                 new ParamLinker<GH_NumberSlider>(AbstractParamLinker.ParamType.IN, "Variables", runtimemessages),
-                new ParamLinker<GH_NumberSlider>(AbstractParamLinker.ParamType.IN, "Objectives", runtimemessages),
+                new ParamLinker<GH_NumberSlider>(AbstractParamLinker.ParamType.IN, "Simulator(s)", runtimemessages),
+                new ParamLinker<GH_NumberSlider>(AbstractParamLinker.ParamType.IN, "Objective(s)", runtimemessages),
                 // new ParamLinker<GH_NumberSlider>(ParamType.OUT, "Results"),
             };
-
 
             float in_count = 0.0f;
             float out_count = 0.0f;
