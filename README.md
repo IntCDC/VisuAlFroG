@@ -14,11 +14,12 @@
 
 ## Description
 
-**VisuAlFroG** is a framework that provides various visualizations to support visual analytics for the algorithmic modelling software [Grasshopper](https://www.grasshopper3d.com/). 
-Grasshopper for its part is a plug-in of the commercial 3D computer graphics and computer-aided design application software [Rhinoceros](https://www.rhino3d.com/) (short Rhino3D).
-The basic architecture of **VisuAlFroG** consists of a core framework providing general functionality and a module-based extension mechanism that easily allows to integrate new visualizations.
-New custom visualizations can be based on the following existing visualization libraries: [WPF](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/?view=netdesktop-7.0), [SciChart](https://www.scichart.com/), [d3.js](https://d3js.org/), and [Bokeh](https://bokeh.org/).
-Predefined standard visualizations like *Scatter Plot*, *Line Chart*, *Column/Bar Chart*, and *Parallel Coordinates Plot (PCP)* are already provided based on the SciChart library.
+**VisuAlFroG** is a framework that provides various 2D visualizations to support visual analytics for the algorithmic modelling software [Grasshopper](https://www.grasshopper3d.com/) which is a plug-in of the commercial 3D computer graphics and computer-aided design application software [Rhinoceros](https://www.rhino3d.com/) (short Rhino3D).
+The main contribution is the interactive combination of different visualizations via brushing and linking, as well as individual data filtering for each visualization. 
+Although the framework was developed without specific domain in mind, it is geared towards the original requirements of computational design in architecture. 
+**VisuAlFroG** provides a core framework with general UI functionality. 
+A module-based extension mechanism easily allows to integrate new custom visualizations that can be based on the following visualization libraries: [WPF](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/?view=netdesktop-7.0), [SciChart](https://www.scichart.com/), [d3.js](https://d3js.org/), and [Bokeh](https://bokeh.org/).
+For interactive standard visualizations like *Scatter Plots*, *Line Charts*, *Column/Bar Charts*, and *Parallel Coordinates Plots (PCP)* we rely on the sophisticated implementations provided by the SciChart library.
 
 <!-- Teaser Image -->
 ![visualfrog-teaser](docs/visualfrog-screenshot.png)

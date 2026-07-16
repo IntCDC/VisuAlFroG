@@ -63,21 +63,21 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="SciChart.Charting, Version=8.7.0.28455, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
-      <HintPath>..\packages\SciChart.8.7.0.28455\lib\net462\SciChart.Charting.dll</HintPath>
+    <Reference Include="SciChart.Charting, Version=9.0.0.29196, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>..\packages\SciChart.9.0.0.29196\lib\net462\SciChart.Charting.dll</HintPath>
     </Reference>
-    <Reference Include="SciChart.Core, Version=8.7.0.28455, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
-      <HintPath>..\packages\SciChart.8.7.0.28455\lib\net462\SciChart.Core.dll</HintPath>
+    <Reference Include="SciChart.Core, Version=9.0.0.29196, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>..\packages\SciChart.9.0.0.29196\lib\net462\SciChart.Core.dll</HintPath>
     </Reference>
-    <Reference Include="SciChart.Data, Version=8.7.0.28455, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
-      <HintPath>..\packages\SciChart.8.7.0.28455\lib\net462\SciChart.Data.dll</HintPath>
+    <Reference Include="SciChart.Data, Version=9.0.0.29196, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>..\packages\SciChart.9.0.0.29196\lib\net462\SciChart.Data.dll</HintPath>
     </Reference>
-    <Reference Include="SciChart.Drawing, Version=8.7.0.28455, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
-      <HintPath>..\packages\SciChart.8.7.0.28455\lib\net462\SciChart.Drawing.dll</HintPath>
+    <Reference Include="SciChart.Drawing, Version=9.0.0.29196, Culture=neutral, PublicKeyToken=b55dd9efe817e823, processorArchitecture=MSIL">
+      <HintPath>..\packages\SciChart.9.0.0.29196\lib\net462\SciChart.Drawing.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -149,8 +149,6 @@
     <Compile Include="Utilities\Log.cs" />
     <Compile Include="Utilities\TimeBenchmark.cs" />
     <Compile Include="Utilities\UniqueID.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

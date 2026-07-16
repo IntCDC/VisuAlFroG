@@ -166,11 +166,10 @@ namespace GrasshopperInterface
 #if LINKING
         }
 #endif
+            // Log --------------------------------------------------------
 
-        // Log --------------------------------------------------------
-
-        // DEBUG
-        _exec_count++;
+            // DEBUG
+            _exec_count++;
             _runtimemessages.Add(Log.Level.Info, "Solution execution number: " + _exec_count);
 
             _timer.Stop();
